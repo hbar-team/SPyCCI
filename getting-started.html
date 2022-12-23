@@ -1,0 +1,667 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Getting Started &#8212; GES-compechem User Guide</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="User guide" href="user-guide.html" />
+    <link rel="prev" title="GES-comp-echem User Guide" href="intro.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay overlay-navbar" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
+<label class="overlay overlay-pagetoc" for="__page-toc">
+    <div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+    <div class="bd-sidebar__content">
+        <div class="bd-sidebar__top"><div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="index.html">
+      
+      
+      
+      <h1 class="site-logo" id="site-title">GES-compechem User Guide</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    GES-comp-echem User Guide
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Getting Started
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="user-guide.html">
+   User guide
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Guide/systems.html">
+     Defining molecular systems
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Guide/setup.html">
+     Setting up calculations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Guide/run.html">
+     Running calculations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Guide/functions.html">
+     Analysing results
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Guide/tools.html">
+     Useful tools
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="api.html">
+   API Documentation
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="API/systems.html">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       compechem.systems
+      </span>
+     </code>
+     sub-module
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="API/wrappers.html">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       compechem.engines
+      </span>
+     </code>
+     sub-module
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="API/functions.html">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       compechem.functions
+      </span>
+     </code>
+     sub-module
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="API/tools.html">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       compechem.tools
+      </span>
+     </code>
+     sub-module
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="contributor-guide.html">
+   Contributor’s guide
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="release-notes.html">
+   Release notes
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav></div>
+        <div class="bd-sidebar__bottom">
+             <!-- To handle the deprecated key -->
+            
+            <div class="navbar_extra_footer">
+            Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+            </div>
+            
+        </div>
+    </div>
+    <div id="rtd-footer-container"></div>
+</div>
+
+
+          
+
+
+          
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+    
+    <div class="header-article row sticky-top noprint">
+        
+
+
+
+<div class="col py-1 d-flex header-article-main">
+    <div class="header-article__left">
+        
+        <label for="__navigation"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="right"
+title="Toggle navigation"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-bars"></i>
+  </span>
+
+</label>
+
+        
+    </div>
+    <div class="header-article__right">
+<button onclick="toggleFullScreen()"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="bottom"
+title="Fullscreen mode"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+<div class="menu-dropdown menu-dropdown-repository-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Source repositories">
+      <i class="fab fa-github"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://github.com/GES-lbabetto/GES-comp-echem"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Source repository"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="headerbtn__text-container">repository</span>
+</a>
+
+      </li>
+      
+      <li>
+        <a href="https://github.com/GES-lbabetto/GES-comp-echem/issues/new?title=Issue%20on%20page%20%2Fgetting-started.html&body=Your%20issue%20content%20here."
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Open an issue"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="headerbtn__text-container">open issue</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+<div class="menu-dropdown menu-dropdown-download-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Download this page">
+      <i class="fas fa-download"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="_sources/getting-started.md"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Download source file"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="headerbtn__text-container">.md</span>
+</a>
+
+      </li>
+      
+      <li>
+        
+<button onclick="printPdf(this)"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="left"
+title="Print to PDF"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="headerbtn__text-container">.pdf</span>
+</button>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
+
+    </div>
+</div>
+
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> Contents
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#my-first-calculation">
+   My first calculation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#introduction">
+     Introduction
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#importing-the-library">
+     Importing the library
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#creating-the-system-object">
+     Creating the System object
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#creating-a-xtbinput-object">
+     Creating a XtbInput object
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#carrying-out-the-calculation">
+     Carrying out the calculation
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#printing-the-results">
+     Printing the results
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+    </nav>
+</div>
+    </div>
+    <div class="article row">
+        <div class="col pl-md-3 pl-lg-5 content-container">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Getting Started</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#my-first-calculation">
+   My first calculation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#introduction">
+     Introduction
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#importing-the-library">
+     Importing the library
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#creating-the-system-object">
+     Creating the System object
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#creating-a-xtbinput-object">
+     Creating a XtbInput object
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#carrying-out-the-calculation">
+     Carrying out the calculation
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#printing-the-results">
+     Printing the results
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <main id="main-content" role="main">
+                
+              <div>
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="getting-started">
+<span id="id1"></span><h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">#</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">GES-comp-echem</span></code> package can be installed in a Conda environment with the command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">greenenergystorage</span> <span class="n">GES</span><span class="o">-</span><span class="n">comp</span><span class="o">-</span><span class="n">echem</span>
+</pre></div>
+</div>
+<p>The library can be imported in a Python script via the following syntax:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">compechem</span>
+</pre></div>
+</div>
+<p>Alternatively, individual submodules, classes, and functions can be imported separately:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem</span> <span class="kn">import</span> <span class="n">systems</span>
+<span class="kn">from</span> <span class="nn">compechem.wrappers</span> <span class="kn">import</span> <span class="n">dftbplus</span>
+<span class="kn">from</span> <span class="nn">compechem.wrappers.packmol</span> <span class="kn">import</span> <span class="n">packmol_cube</span>
+</pre></div>
+</div>
+<p>For a more detailed explanation of the available features in each submodule, please refer to their specific page in this <a class="reference internal" href="user-guide.html"><span class="doc std std-doc">User Guide</span></a>.</p>
+<hr class="docutils" />
+<section id="my-first-calculation">
+<h2>My first calculation<a class="headerlink" href="#my-first-calculation" title="Permalink to this headline">#</a></h2>
+<section id="introduction">
+<h3>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">#</a></h3>
+<p>Let us go through the very basics of using the library. We are going to carry out a geometry optimisation on a water molecule. At the very least, you will need the geometrical structure of the system you want to study, in the form of a .xyz file. You can obtain it from available databases, or you can draw the structures yourself in programs such as <a class="reference external" href="https://avogadro.cc/">Avogadro</a>.</p>
+<p>Below is the <code class="docutils literal notranslate"><span class="pre">water.xyz</span></code> file, containing the structure of the water molecule, which we will use in these examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">3</span>
+
+<span class="n">O</span>   <span class="mf">0.000</span>  <span class="o">-</span><span class="mf">0.736</span>   <span class="mf">0.000</span>  
+<span class="n">H</span>   <span class="mf">1.442</span>   <span class="mf">0.368</span>   <span class="mf">0.000</span>  
+<span class="n">H</span>  <span class="o">-</span><span class="mf">1.442</span>   <span class="mf">0.368</span>   <span class="mf">0.000</span>  
+</pre></div>
+</div>
+<p>If you open the file in a molecular visualization software, you will notice the structure is distorted from the typical equilibrium geometry. We can then optimise the structure by utilising one of the wrappers implemented in <code class="docutils literal notranslate"><span class="pre">GES-comp-echem</span></code>. We will use <a class="reference external" href="https://github.com/grimme-lab/xtb">xTB</a> in this example, due to its balance between accuracy and speed. The library needs the program to already be installed (<a class="reference external" href="https://xtb-docs.readthedocs.io/en/latest/setup.html#setup-and-installation">preferably via conda</a>) and ready to go.</p>
+</section>
+<section id="importing-the-library">
+<h3>Importing the library<a class="headerlink" href="#importing-the-library" title="Permalink to this headline">#</a></h3>
+<p>Before starting, we need to create a Python script and import the necessary classes from the library. We need the <code class="docutils literal notranslate"><span class="pre">System</span></code> class to store the information about our water molecule, and the <code class="docutils literal notranslate"><span class="pre">XtbInput</span></code> class to define the simulation setup (Hamiltonian, parameters, solvation, etc.):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem.systems</span> <span class="kn">import</span> <span class="n">System</span>
+<span class="kn">from</span> <span class="nn">compechem</span> <span class="kn">import</span> <span class="n">XtbInput</span>
+</pre></div>
+</div>
+</section>
+<section id="creating-the-system-object">
+<h3>Creating the System object<a class="headerlink" href="#creating-the-system-object" title="Permalink to this headline">#</a></h3>
+<p>After importing the necessary modules, we can create our molecule, by indicating the (relative, or complete) path where the .xyz file is located:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">water</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="s2">&quot;example_files/water.xyz&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="creating-a-xtbinput-object">
+<h3>Creating a XtbInput object<a class="headerlink" href="#creating-a-xtbinput-object" title="Permalink to this headline">#</a></h3>
+<p>We can now setup a wrapper object using an instance of <code class="docutils literal notranslate"><span class="pre">XtbInput</span></code>. Most of these wrappers come with sensible default options for electrochemical calculations in solution. To see all the available options, please refer to the <a class="reference internal" href="API/wrappers.html#api-wrappers"><span class="std std-ref">wrappers</span></a> section.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xtb</span> <span class="o">=</span> <span class="n">XtbInput</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="carrying-out-the-calculation">
+<h3>Carrying out the calculation<a class="headerlink" href="#carrying-out-the-calculation" title="Permalink to this headline">#</a></h3>
+<p>We can now carry out the calculation. We want to do a geometry optimization on our water molecule, and we want the original information for the molecule to be updated after the calculation (<code class="docutils literal notranslate"><span class="pre">inplace</span></code> flag). The syntax for this calculation is as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xtb</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">water</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="printing-the-results">
+<h3>Printing the results<a class="headerlink" href="#printing-the-results" title="Permalink to this headline">#</a></h3>
+<p>If you want to see the data currently stored in our <code class="docutils literal notranslate"><span class="pre">System</span></code> object, simply ask for it to be printed to screen:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">water</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">=========================================================</span>
+<span class="n">SYSTEM</span><span class="p">:</span> <span class="n">water</span>
+<span class="o">=========================================================</span>
+
+<span class="n">Number</span> <span class="n">of</span> <span class="n">atoms</span><span class="p">:</span> <span class="mi">3</span>
+<span class="n">Charge</span><span class="p">:</span> <span class="mi">0</span>
+<span class="n">Spin</span> <span class="n">multeplicity</span><span class="p">:</span> <span class="mi">1</span>
+
+<span class="o">**********************</span> <span class="n">GEOMETRY</span> <span class="o">*************************</span>
+
+<span class="n">Total</span> <span class="n">system</span> <span class="n">mass</span><span class="p">:</span> <span class="mf">18.0153</span> <span class="n">amu</span>
+
+<span class="o">----------------------------------------------</span>
+ <span class="n">index</span>  <span class="n">atom</span>    <span class="n">x</span> <span class="p">(</span><span class="n">Å</span><span class="p">)</span>      <span class="n">y</span> <span class="p">(</span><span class="n">Å</span><span class="p">)</span>      <span class="n">z</span> <span class="p">(</span><span class="n">Å</span><span class="p">)</span>   
+<span class="o">----------------------------------------------</span>
+ <span class="mi">0</span>       <span class="n">O</span>    <span class="o">-</span><span class="mf">0.00001</span>   <span class="o">-</span><span class="mf">0.37937</span>    <span class="mf">0.00000</span>  
+ <span class="mi">1</span>       <span class="n">H</span>     <span class="mf">0.77221</span>    <span class="mf">0.18968</span>   <span class="o">-</span><span class="mf">0.00000</span>  
+ <span class="mi">2</span>       <span class="n">H</span>    <span class="o">-</span><span class="mf">0.77221</span>    <span class="mf">0.18969</span>    <span class="mf">0.00000</span>  
+<span class="o">----------------------------------------------</span>
+
+<span class="o">**********************</span> <span class="n">PROPERTIES</span> <span class="o">*************************</span>
+
+<span class="n">Electronic</span> <span class="n">level</span> <span class="n">of</span> <span class="n">theory</span><span class="p">:</span> <span class="n">XtbInput</span> <span class="o">||</span> <span class="n">method</span><span class="p">:</span> <span class="n">gfn2</span> <span class="o">|</span> <span class="n">solvent</span><span class="p">:</span> <span class="kc">None</span>
+<span class="n">Vibronic</span> <span class="n">level</span> <span class="n">of</span> <span class="n">theory</span><span class="p">:</span> <span class="n">XtbInput</span> <span class="o">||</span> <span class="n">method</span><span class="p">:</span> <span class="n">gfn2</span> <span class="o">|</span> <span class="n">solvent</span><span class="p">:</span> <span class="kc">None</span>
+
+<span class="n">Electronic</span> <span class="n">energy</span><span class="p">:</span> <span class="o">-</span><span class="mf">5.070544446446</span> <span class="n">Eh</span>
+<span class="n">Vibronic</span> <span class="n">energy</span><span class="p">:</span> <span class="mf">0.002508816182</span> <span class="n">Eh</span>
+<span class="n">Helmholtz</span> <span class="n">free</span> <span class="n">energy</span><span class="p">:</span> <span class="kc">None</span> <span class="n">Eh</span>
+<span class="n">Gibbs</span> <span class="n">free</span> <span class="n">energy</span><span class="p">:</span> <span class="kc">None</span> <span class="n">Eh</span>
+<span class="n">pKa</span><span class="p">:</span> <span class="kc">None</span>
+</pre></div>
+</div>
+<p>Et voilà! You have successfully carried out a geometry optimization for the water molecule using the <code class="docutils literal notranslate"><span class="pre">GES-comp-echem</span></code> library!</p>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+            </main>
+            <footer class="footer-article noprint">
+                
+    <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="intro.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">GES-comp-echem User Guide</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="user-guide.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">User guide</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+            </footer>
+        </div>
+    </div>
+    <div class="footer-content row">
+        <footer class="col footer"><p>
+  
+    By Luca Babetto<br/>
+  
+      &copy; Copyright 2022.<br/>
+</p>
+        </footer>
+    </div>
+    
+</div>
+
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
+
+  </body>
+</html>

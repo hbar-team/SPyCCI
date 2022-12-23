@@ -1,0 +1,966 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Running calculations &#8212; GES-compechem User Guide</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Analysing results" href="functions.html" />
+    <link rel="prev" title="Setting up calculations" href="setup.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay overlay-navbar" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
+<label class="overlay overlay-pagetoc" for="__page-toc">
+    <div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+    <div class="bd-sidebar__content">
+        <div class="bd-sidebar__top"><div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="../index.html">
+      
+      
+      
+      <h1 class="site-logo" id="site-title">GES-compechem User Guide</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    GES-comp-echem User Guide
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../getting-started.html">
+   Getting Started
+  </a>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="../user-guide.html">
+   User guide
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="systems.html">
+     Defining molecular systems
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="setup.html">
+     Setting up calculations
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Running calculations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="functions.html">
+     Analysing results
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="tools.html">
+     Useful tools
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../api.html">
+   API Documentation
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../API/systems.html">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       compechem.systems
+      </span>
+     </code>
+     sub-module
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../API/wrappers.html">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       compechem.engines
+      </span>
+     </code>
+     sub-module
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../API/functions.html">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       compechem.functions
+      </span>
+     </code>
+     sub-module
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../API/tools.html">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       compechem.tools
+      </span>
+     </code>
+     sub-module
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../contributor-guide.html">
+   Contributor’s guide
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../release-notes.html">
+   Release notes
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav></div>
+        <div class="bd-sidebar__bottom">
+             <!-- To handle the deprecated key -->
+            
+            <div class="navbar_extra_footer">
+            Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+            </div>
+            
+        </div>
+    </div>
+    <div id="rtd-footer-container"></div>
+</div>
+
+
+          
+
+
+          
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+    
+    <div class="header-article row sticky-top noprint">
+        
+
+
+
+<div class="col py-1 d-flex header-article-main">
+    <div class="header-article__left">
+        
+        <label for="__navigation"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="right"
+title="Toggle navigation"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-bars"></i>
+  </span>
+
+</label>
+
+        
+    </div>
+    <div class="header-article__right">
+<button onclick="toggleFullScreen()"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="bottom"
+title="Fullscreen mode"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+<div class="menu-dropdown menu-dropdown-repository-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Source repositories">
+      <i class="fab fa-github"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://github.com/GES-lbabetto/GES-comp-echem"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Source repository"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="headerbtn__text-container">repository</span>
+</a>
+
+      </li>
+      
+      <li>
+        <a href="https://github.com/GES-lbabetto/GES-comp-echem/issues/new?title=Issue%20on%20page%20%2FGuide/run.html&body=Your%20issue%20content%20here."
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Open an issue"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="headerbtn__text-container">open issue</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+<div class="menu-dropdown menu-dropdown-download-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Download this page">
+      <i class="fas fa-download"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="../_sources/Guide/run.md"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Download source file"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="headerbtn__text-container">.md</span>
+</a>
+
+      </li>
+      
+      <li>
+        
+<button onclick="printPdf(this)"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="left"
+title="Print to PDF"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="headerbtn__text-container">.pdf</span>
+</button>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
+
+    </div>
+</div>
+
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> Contents
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#generic-calculations">
+   Generic calculations
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#special-calculations">
+   Special calculations
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#crest">
+     CREST
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#packmol">
+     Packmol
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+    </nav>
+</div>
+    </div>
+    <div class="article row">
+        <div class="col pl-md-3 pl-lg-5 content-container">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Running calculations</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#generic-calculations">
+   Generic calculations
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#special-calculations">
+   Special calculations
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#crest">
+     CREST
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#packmol">
+     Packmol
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <main id="main-content" role="main">
+                
+              <div>
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="running-calculations">
+<span id="guide-run"></span><h1>Running calculations<a class="headerlink" href="#running-calculations" title="Permalink to this headline">#</a></h1>
+<p>After creating a <code class="docutils literal notranslate"><span class="pre">System</span></code>, and having initialized a <code class="docutils literal notranslate"><span class="pre">engines</span></code>, we can actually start running calculations.</p>
+<hr class="docutils" />
+<section id="generic-calculations">
+<h2>Generic calculations<a class="headerlink" href="#generic-calculations" title="Permalink to this headline">#</a></h2>
+<p>Generic calculations are implemented as class methods in the various <code class="docutils literal notranslate"><span class="pre">engines</span></code>. The available options, the class method name, and the engines for which they have been implemented are:</p>
+<table class="colwidths-auto table">
+<thead>
+<tr class="row-odd"><th class="text-align:left head"><p>Calculation type</p></th>
+<th class="text-align:left head"><p>method name</p></th>
+<th class="text-align:left head"><p>Engines implemented</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-align:left"><p>Single point energy</p></td>
+<td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">spe</span></code></p></td>
+<td class="text-align:left"><p>xTB, Orca, DFTB+</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p>Geometry optimisation + Frequency analysis</p></td>
+<td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">opt</span></code></p></td>
+<td class="text-align:left"><p>xTB, Orca, DFTB+</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:left"><p>Frequency analysis</p></td>
+<td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">freq</span></code></p></td>
+<td class="text-align:left"><p>xTB, Orca</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p>Numerical frequency analysis</p></td>
+<td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">nfreq</span></code></p></td>
+<td class="text-align:left"><p>Orca</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:left"><p>Relaxed surface scan</p></td>
+<td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">scan</span></code></p></td>
+<td class="text-align:left"><p>Orca</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p>NVT Molecular Dynamics</p></td>
+<td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">md_nvt</span></code></p></td>
+<td class="text-align:left"><p>DFTB+</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:left"><p>Simulated annealing</p></td>
+<td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">simulated_annealing</span></code></p></td>
+<td class="text-align:left"><p>DFTB+</p></td>
+</tr>
+</tbody>
+</table>
+<hr class="docutils" />
+<p>The only mandatory parameter to be passed is the <code class="docutils literal notranslate"><span class="pre">System</span></code> on which to run the calculation. To run the calculation, simply call the function. The output of a calculation is a <code class="docutils literal notranslate"><span class="pre">System</span></code> object which can be assigned to a new variable:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem.systems</span> <span class="kn">import</span> <span class="n">System</span>
+<span class="kn">from</span> <span class="nn">compechem.engines.xtb</span> <span class="kn">import</span> <span class="n">XtbInput</span>
+
+<span class="n">mol</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="s2">&quot;mymol.xyz&quot;</span><span class="p">)</span>
+<span class="n">xtb</span> <span class="o">=</span> <span class="n">XtbInput</span><span class="p">()</span>
+
+<span class="n">mol_opt</span> <span class="o">=</span> <span class="n">xtb</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;mol:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;mol_opt:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mol_opt</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mol</span><span class="p">:</span>
+<span class="o">===</span> <span class="n">System</span><span class="p">:</span> <span class="n">water</span> <span class="o">===</span>
+
+<span class="n">Number</span> <span class="n">of</span> <span class="n">atoms</span><span class="p">:</span> <span class="mi">3</span>
+<span class="n">Charge</span><span class="p">:</span> <span class="mi">0</span>
+<span class="n">Spin</span><span class="p">:</span> <span class="mi">1</span>
+
+<span class="o">---</span> <span class="n">Warnings</span> <span class="o">---</span>
+
+<span class="o">---</span> <span class="n">Energies</span> <span class="p">(</span><span class="n">Eh</span><span class="p">)</span> <span class="o">---</span>
+
+<span class="o">---</span> <span class="n">Coordinates</span> <span class="p">(</span><span class="n">Å</span><span class="p">)</span> <span class="o">---</span>
+
+<span class="n">O</span>       <span class="mf">0.000</span>   <span class="o">-</span><span class="mf">0.736</span>  <span class="mf">0.000</span>
+<span class="n">H</span>       <span class="mf">1.442</span>   <span class="mf">0.368</span>   <span class="mf">0.000</span>
+<span class="n">H</span>       <span class="o">-</span><span class="mf">1.442</span>  <span class="mf">0.368</span>   <span class="mf">0.000</span>
+
+<span class="o">---</span> <span class="n">Velocities</span> <span class="p">(</span><span class="n">Å</span><span class="o">/</span><span class="n">ps</span><span class="p">)</span> <span class="o">---</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mol_opt</span><span class="p">:</span>
+<span class="o">===</span> <span class="n">System</span><span class="p">:</span> <span class="n">water</span> <span class="o">===</span>
+
+<span class="n">Number</span> <span class="n">of</span> <span class="n">atoms</span><span class="p">:</span> <span class="mi">3</span>
+<span class="n">Charge</span><span class="p">:</span> <span class="mi">0</span>
+<span class="n">Spin</span><span class="p">:</span> <span class="mi">1</span>
+
+<span class="o">---</span> <span class="n">Warnings</span> <span class="o">---</span>
+
+<span class="o">---</span> <span class="n">Energies</span> <span class="p">(</span><span class="n">Eh</span><span class="p">)</span> <span class="o">---</span>
+
+<span class="o">*</span> <span class="n">Method</span><span class="p">:</span> <span class="n">gfn2</span>
+<span class="n">Electronic</span><span class="p">:</span> <span class="o">-</span><span class="mf">5.085021284485</span> <span class="n">Eh</span>
+<span class="n">Vibronic</span><span class="p">:</span> <span class="mf">0.002047859242</span> <span class="n">Eh</span>
+
+<span class="o">---</span> <span class="n">Coordinates</span> <span class="p">(</span><span class="n">Å</span><span class="p">)</span> <span class="o">---</span>
+
+<span class="n">O</span>       <span class="o">-</span><span class="mf">0.00000460644656</span>       <span class="o">-</span><span class="mf">0.38108317130711</span>       <span class="mf">0.00000066512472</span>
+<span class="n">H</span>       <span class="mf">0.77437021701733</span>        <span class="mf">0.19053853060686</span>        <span class="o">-</span><span class="mf">0.00000303561805</span>
+<span class="n">H</span>       <span class="o">-</span><span class="mf">0.77436561057077</span>       <span class="mf">0.19054464070025</span>        <span class="mf">0.00000237049333</span>
+
+<span class="o">---</span> <span class="n">Velocities</span> <span class="p">(</span><span class="n">Å</span><span class="o">/</span><span class="n">ps</span><span class="p">)</span> <span class="o">---</span>
+
+</pre></div>
+</div>
+<p>Alternatively, you can directly update the input <code class="docutils literal notranslate"><span class="pre">System</span></code> with the <code class="docutils literal notranslate"><span class="pre">inplace</span></code> flag:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem.systems</span> <span class="kn">import</span> <span class="n">System</span>
+<span class="kn">from</span> <span class="nn">compechem.engines.xtb</span> <span class="kn">import</span> <span class="n">XtbInput</span>
+
+<span class="n">mol</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="s2">&quot;mymol.xyz&quot;</span><span class="p">)</span>
+<span class="n">xtb</span> <span class="o">=</span> <span class="n">XtbInput</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;mol before opt:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+
+<span class="n">xtb</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;mol after opt:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mol</span> <span class="n">before</span> <span class="n">opt</span><span class="p">:</span>
+<span class="o">===</span> <span class="n">System</span><span class="p">:</span> <span class="n">water</span> <span class="o">===</span>
+
+<span class="n">Number</span> <span class="n">of</span> <span class="n">atoms</span><span class="p">:</span> <span class="mi">3</span>
+<span class="n">Charge</span><span class="p">:</span> <span class="mi">0</span>
+<span class="n">Spin</span><span class="p">:</span> <span class="mi">1</span>
+
+<span class="o">---</span> <span class="n">Warnings</span> <span class="o">---</span>
+
+<span class="o">---</span> <span class="n">Energies</span> <span class="p">(</span><span class="n">Eh</span><span class="p">)</span> <span class="o">---</span>
+
+<span class="o">---</span> <span class="n">Coordinates</span> <span class="p">(</span><span class="n">Å</span><span class="p">)</span> <span class="o">---</span>
+
+<span class="n">O</span>       <span class="mf">0.000</span>   <span class="o">-</span><span class="mf">0.736</span>  <span class="mf">0.000</span>
+<span class="n">H</span>       <span class="mf">1.442</span>   <span class="mf">0.368</span>   <span class="mf">0.000</span>
+<span class="n">H</span>       <span class="o">-</span><span class="mf">1.442</span>  <span class="mf">0.368</span>   <span class="mf">0.000</span>
+
+<span class="o">---</span> <span class="n">Velocities</span> <span class="p">(</span><span class="n">Å</span><span class="o">/</span><span class="n">ps</span><span class="p">)</span> <span class="o">---</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mol</span> <span class="n">after</span> <span class="n">opt</span><span class="p">:</span>
+<span class="o">===</span> <span class="n">System</span><span class="p">:</span> <span class="n">water</span> <span class="o">===</span>
+
+<span class="n">Number</span> <span class="n">of</span> <span class="n">atoms</span><span class="p">:</span> <span class="mi">3</span>
+<span class="n">Charge</span><span class="p">:</span> <span class="mi">0</span>
+<span class="n">Spin</span><span class="p">:</span> <span class="mi">1</span>
+
+<span class="o">---</span> <span class="n">Warnings</span> <span class="o">---</span>
+
+<span class="o">---</span> <span class="n">Energies</span> <span class="p">(</span><span class="n">Eh</span><span class="p">)</span> <span class="o">---</span>
+
+<span class="o">*</span> <span class="n">Method</span><span class="p">:</span> <span class="n">gfn2</span>
+<span class="n">Electronic</span><span class="p">:</span> <span class="o">-</span><span class="mf">5.085021284485</span> <span class="n">Eh</span>
+<span class="n">Vibronic</span><span class="p">:</span> <span class="mf">0.002047859242</span> <span class="n">Eh</span>
+
+<span class="o">---</span> <span class="n">Coordinates</span> <span class="p">(</span><span class="n">Å</span><span class="p">)</span> <span class="o">---</span>
+
+<span class="n">O</span>       <span class="o">-</span><span class="mf">0.00000460644656</span>       <span class="o">-</span><span class="mf">0.38108317130711</span>       <span class="mf">0.00000066512472</span>
+<span class="n">H</span>       <span class="mf">0.77437021701733</span>        <span class="mf">0.19053853060686</span>        <span class="o">-</span><span class="mf">0.00000303561805</span>
+<span class="n">H</span>       <span class="o">-</span><span class="mf">0.77436561057077</span>       <span class="mf">0.19054464070025</span>        <span class="mf">0.00000237049333</span>
+
+<span class="o">---</span> <span class="n">Velocities</span> <span class="p">(</span><span class="n">Å</span><span class="o">/</span><span class="n">ps</span><span class="p">)</span> <span class="o">---</span>
+
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="special-calculations">
+<h2>Special calculations<a class="headerlink" href="#special-calculations" title="Permalink to this headline">#</a></h2>
+<p>Some calculations are instead implemented as functions within the corresponding submodule, and work a little differently from the previous methods.</p>
+<section id="crest">
+<h3>CREST<a class="headerlink" href="#crest" title="Permalink to this headline">#</a></h3>
+<table class="colwidths-auto table">
+<thead>
+<tr class="row-odd"><th class="text-align:left head"><p>Calculation type</p></th>
+<th class="text-align:left head"><p>method name</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-align:left"><p>Tautomer search</p></td>
+<td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">tautomer_search</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p>Conformer search</p></td>
+<td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">conformer_search</span></code></p></td>
+</tr>
+<tr class="row-even"><td class="text-align:left"><p>Deprotomer search</p></td>
+<td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">deprotonate</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p>Protomer search</p></td>
+<td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">protonate</span></code></p></td>
+</tr>
+<tr class="row-even"><td class="text-align:left"><p>Quantum Cluster Growth</p></td>
+<td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">qcg_grow</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p>Quantum Cluster Growth + ensemble evaluation</p></td>
+<td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">qcg_ensemble</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>These can be imported directly from the corresponding submodule. For more details on each specific function, please refer to the corresponding <a class="reference internal" href="../API/wrappers/crest.html#api-wrappers-crest"><span class="std std-ref">API</span></a> page.</p>
+<p>The CREST tautomer, conformer, deprotonation, and protonation routines all require a <code class="docutils literal notranslate"><span class="pre">System</span></code> object as input, and return a list of tautomer, conformers, deprotomers, and protomers, respectively, ordered by relative energy:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem.systems</span> <span class="kn">import</span> <span class="n">System</span>
+<span class="kn">from</span> <span class="nn">compechem.wrappers.crest</span> <span class="kn">import</span> <span class="n">conformer_search</span>
+
+<span class="n">mol</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="s2">&quot;mymol.xyz&quot;</span><span class="p">)</span>
+<span class="n">conformers</span> <span class="o">=</span> <span class="n">conformer_search</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+
+<span class="n">lowest_energy_conformer</span> <span class="o">=</span> <span class="n">conformers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The QCG routines are used to create an explicitly solvated cluster, surrounding a solute with a certain number of solvent molecules. By default, the program keeps adding solvent molecules until energy convergence is reached with respect to the addition of other molecules. For more details on how to customise this kind of calculation, please refer to the <a class="reference internal" href="../API/wrappers/crest.html#api-wrappers-crest"><span class="std std-ref">API</span></a> page.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem.systems</span> <span class="kn">import</span> <span class="n">System</span>
+<span class="kn">from</span> <span class="nn">compechem.wrappers.crest</span> <span class="kn">import</span> <span class="n">qcg_grow</span>
+
+<span class="n">solute</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="s2">&quot;solute.xyz&quot;</span><span class="p">)</span>
+<span class="n">solvent</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="s2">&quot;solvent.xyz&quot;</span><span class="p">)</span>
+
+<span class="n">cluster</span> <span class="o">=</span> <span class="n">qcg_grow</span><span class="p">(</span><span class="n">solute</span><span class="p">,</span> <span class="n">solvent</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="packmol">
+<h3>Packmol<a class="headerlink" href="#packmol" title="Permalink to this headline">#</a></h3>
+<p>The Packmol wrapper allows for the construction of explicitly solvated systems, as a fast alternative to the QCG routines, useful for setting up MD calculations. The currently available functions are:</p>
+<table class="colwidths-auto table">
+<thead>
+<tr class="row-odd"><th class="text-align:left head"><p>Calculation type</p></th>
+<th class="text-align:left head"><p>method name</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-align:left"><p>Generation of explicit solvation cube</p></td>
+<td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">packmol_cube</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Like the QCG routines, you need to provide a solute and a solvent <code class="docutils literal notranslate"><span class="pre">System</span></code>. The <code class="docutils literal notranslate"><span class="pre">packmol_cube</span></code> routine however allows you a finer degree of control, as you also need to provide two of the following three parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">nsolv</span></code>: number of solvent molecules to put in the cube</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">target_dens</span></code>: target density of the solvated box, in g/L</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cube_side</span></code>: length of the simulation box, in Å</p></li>
+</ul>
+<p>Given two of these parameters, the third will be calculated accordingly. For example, the following code generates a cubic solvation box with 50 solvent molecules and a target density of 997 g/L:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem.systems</span> <span class="kn">import</span> <span class="n">System</span>
+<span class="kn">from</span> <span class="nn">compechem.wrappers.packmol</span> <span class="kn">import</span> <span class="n">packmol_cube</span>
+
+<span class="n">solute</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="s2">&quot;solute.xyz&quot;</span><span class="p">)</span>
+<span class="n">solvent</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="s2">&quot;solvent.xyz&quot;</span><span class="p">)</span>
+
+<span class="n">solvated_cube</span> <span class="o">=</span> <span class="n">packmol_cube</span><span class="p">(</span><span class="n">solute</span><span class="p">,</span> <span class="n">solvent</span><span class="p">,</span> <span class="n">nsolv</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">target_dens</span><span class="o">=</span><span class="mi">997</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">solvated_cube</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">===</span> <span class="n">System</span><span class="p">:</span> <span class="n">urea_50waters</span> <span class="o">===</span>
+
+<span class="n">Number</span> <span class="n">of</span> <span class="n">atoms</span><span class="p">:</span> <span class="mi">158</span>
+<span class="n">Charge</span><span class="p">:</span> <span class="mi">0</span>
+<span class="n">Spin</span><span class="p">:</span> <span class="mi">1</span>
+
+<span class="o">---</span> <span class="n">Warnings</span> <span class="o">---</span>
+
+<span class="o">---</span> <span class="n">Energies</span> <span class="p">(</span><span class="n">Eh</span><span class="p">)</span> <span class="o">---</span>
+
+<span class="o">---</span> <span class="n">Coordinates</span> <span class="p">(</span><span class="n">Å</span><span class="p">)</span> <span class="o">---</span>
+
+<span class="n">C</span>       <span class="mf">5.67500</span> <span class="mf">5.59400</span> <span class="mf">6.27900</span>
+<span class="n">N</span>       <span class="mf">5.71300</span> <span class="mf">4.95300</span> <span class="mf">5.03000</span>
+<span class="n">H</span>       <span class="mf">5.90100</span> <span class="mf">3.95900</span> <span class="mf">5.06700</span>
+<span class="n">H</span>       <span class="mf">6.17200</span> <span class="mf">5.43600</span> <span class="mf">4.26800</span>
+<span class="n">N</span>       <span class="mf">5.71500</span> <span class="mf">6.99700</span> <span class="mf">6.23800</span>
+<span class="n">H</span>       <span class="mf">6.16900</span> <span class="mf">7.43100</span> <span class="mf">5.44400</span>
+<span class="n">H</span>       <span class="mf">5.90800</span> <span class="mf">7.44500</span> <span class="mf">7.12600</span>
+<span class="n">O</span>       <span class="mf">5.53500</span> <span class="mf">4.97100</span> <span class="mf">7.33300</span>
+<span class="n">H</span>       <span class="mf">2.90600</span> <span class="mf">11.30900</span>        <span class="mf">9.82900</span>
+<span class="n">H</span>       <span class="mf">3.10100</span> <span class="mf">9.69600</span> <span class="mf">9.66300</span>
+<span class="n">O</span>       <span class="mf">3.57300</span> <span class="mf">10.57700</span>        <span class="mf">9.69100</span>
+<span class="n">H</span>       <span class="mf">10.81500</span>        <span class="mf">5.61800</span> <span class="mf">8.60100</span>
+<span class="n">H</span>       <span class="mf">11.74700</span>        <span class="mf">6.62100</span> <span class="mf">9.49100</span>
+<span class="n">O</span>       <span class="mf">11.00700</span>        <span class="mf">5.95000</span> <span class="mf">9.52500</span>
+<span class="n">H</span>       <span class="mf">1.42900</span> <span class="mf">11.26600</span>        <span class="mf">11.46900</span>
+<span class="n">H</span>       <span class="mf">2.64700</span> <span class="mf">10.20900</span>        <span class="mf">11.72600</span>
+<span class="n">O</span>       <span class="mf">1.71500</span> <span class="mf">10.31100</span>        <span class="mf">11.38000</span>
+<span class="n">H</span>       <span class="mf">9.39700</span> <span class="mf">7.79600</span> <span class="mf">7.73200</span>
+<span class="n">H</span>       <span class="mf">10.77400</span>        <span class="mf">8.65600</span> <span class="mf">7.90700</span>
+<span class="n">O</span>       <span class="mf">10.36700</span>        <span class="mf">7.74500</span> <span class="mf">7.97000</span>
+<span class="n">H</span>       <span class="mf">10.35700</span>        <span class="mf">4.25900</span> <span class="mf">11.32800</span>
+<span class="n">H</span>       <span class="mf">10.56700</span>        <span class="mf">5.84000</span> <span class="mf">11.67800</span>
+<span class="n">O</span>       <span class="mf">11.03400</span>        <span class="mf">4.97900</span> <span class="mf">11.47800</span>
+<span class="n">H</span>       <span class="mf">11.39800</span>        <span class="mf">5.98000</span> <span class="mf">2.11400</span>
+<span class="n">H</span>       <span class="mf">10.24000</span>        <span class="mf">4.86600</span> <span class="mf">1.82300</span>
+<span class="n">O</span>       <span class="mf">11.22400</span>        <span class="mf">5.04000</span> <span class="mf">1.82000</span>
+<span class="n">H</span>       <span class="mf">10.46800</span>        <span class="mf">1.13000</span> <span class="mf">1.32300</span>
+<span class="n">H</span>       <span class="mf">11.30100</span>        <span class="mf">2.52300</span> <span class="mf">1.13800</span>
+<span class="n">O</span>       <span class="mf">11.38000</span>        <span class="mf">1.53200</span> <span class="mf">1.24300</span>
+<span class="n">H</span>       <span class="mf">4.91200</span> <span class="mf">3.04200</span> <span class="mf">9.77300</span>
+<span class="n">H</span>       <span class="mf">4.66100</span> <span class="mf">3.14100</span> <span class="mf">8.16200</span>
+<span class="n">O</span>       <span class="mf">4.55400</span> <span class="mf">2.56400</span> <span class="mf">8.97000</span>
+<span class="n">H</span>       <span class="mf">9.47800</span> <span class="mf">10.32500</span>        <span class="mf">11.69900</span>
+<span class="n">H</span>       <span class="mf">8.18200</span> <span class="mf">9.34900</span> <span class="mf">11.51300</span>
+<span class="n">O</span>       <span class="mf">8.48400</span> <span class="mf">10.29800</span>        <span class="mf">11.59400</span>
+<span class="n">H</span>       <span class="mf">2.81600</span> <span class="mf">0.99900</span> <span class="mf">9.18700</span>
+<span class="n">H</span>       <span class="mf">1.98200</span> <span class="mf">2.39200</span> <span class="mf">9.35400</span>
+<span class="n">O</span>       <span class="mf">1.90300</span> <span class="mf">1.40500</span> <span class="mf">9.22300</span>
+<span class="n">H</span>       <span class="mf">6.93400</span> <span class="mf">4.54800</span> <span class="mf">9.99800</span>
+<span class="n">H</span>       <span class="mf">7.36000</span> <span class="mf">4.39900</span> <span class="mf">8.42900</span>
+<span class="n">O</span>       <span class="mf">6.64000</span> <span class="mf">4.22300</span> <span class="mf">9.09900</span>
+<span class="n">H</span>       <span class="mf">1.89500</span> <span class="mf">10.77200</span>        <span class="mf">3.13000</span>
+<span class="n">H</span>       <span class="mf">3.27000</span> <span class="mf">11.57200</span>        <span class="mf">3.49600</span>
+<span class="n">O</span>       <span class="mf">2.28800</span> <span class="mf">11.51700</span>        <span class="mf">3.66900</span>
+<span class="n">H</span>       <span class="mf">9.33800</span> <span class="mf">6.21400</span> <span class="mf">5.46100</span>
+<span class="n">H</span>       <span class="mf">9.73100</span> <span class="mf">5.45700</span> <span class="mf">4.06800</span>
+<span class="n">O</span>       <span class="mf">8.97500</span> <span class="mf">5.79700</span> <span class="mf">4.62700</span>
+<span class="n">H</span>       <span class="mf">1.56300</span> <span class="mf">8.04600</span> <span class="mf">7.83300</span>
+<span class="n">H</span>       <span class="mf">2.00000</span> <span class="mf">6.66100</span> <span class="mf">7.08700</span>
+<span class="n">O</span>       <span class="mf">2.33500</span> <span class="mf">7.51500</span> <span class="mf">7.48500</span>
+<span class="n">H</span>       <span class="mf">5.45200</span> <span class="mf">11.69800</span>        <span class="mf">10.95200</span>
+<span class="n">H</span>       <span class="mf">5.96500</span> <span class="mf">10.25200</span>        <span class="mf">11.50900</span>
+<span class="n">O</span>       <span class="mf">6.11000</span> <span class="mf">10.95700</span>        <span class="mf">10.81600</span>
+<span class="n">H</span>       <span class="mf">10.21800</span>        <span class="mf">11.15500</span>        <span class="mf">6.90600</span>
+<span class="n">H</span>       <span class="mf">11.61000</span>        <span class="mf">11.37000</span>        <span class="mf">7.73100</span>
+<span class="n">O</span>       <span class="mf">10.63400</span>        <span class="mf">11.17400</span>        <span class="mf">7.81500</span>
+<span class="n">H</span>       <span class="mf">4.59200</span> <span class="mf">4.84200</span> <span class="mf">10.95600</span>
+<span class="n">H</span>       <span class="mf">5.30000</span> <span class="mf">6.11100</span> <span class="mf">11.70200</span>
+<span class="n">O</span>       <span class="mf">4.43400</span> <span class="mf">5.73900</span> <span class="mf">11.37000</span>
+<span class="n">H</span>       <span class="mf">4.52600</span> <span class="mf">6.39200</span> <span class="mf">8.77900</span>
+<span class="n">H</span>       <span class="mf">4.17900</span> <span class="mf">7.42900</span> <span class="mf">9.99300</span>
+<span class="n">O</span>       <span class="mf">3.84600</span> <span class="mf">7.03200</span> <span class="mf">9.13800</span>
+<span class="n">H</span>       <span class="mf">10.33400</span>        <span class="mf">0.99800</span> <span class="mf">5.04900</span>
+<span class="n">H</span>       <span class="mf">9.41900</span> <span class="mf">2.35000</span> <span class="mf">5.11300</span>
+<span class="n">O</span>       <span class="mf">9.41800</span> <span class="mf">1.35700</span> <span class="mf">5.23200</span>
+<span class="n">H</span>       <span class="mf">10.37500</span>        <span class="mf">8.36500</span> <span class="mf">5.65100</span>
+<span class="n">H</span>       <span class="mf">9.27900</span> <span class="mf">9.56900</span> <span class="mf">5.78200</span>
+<span class="n">O</span>       <span class="mf">10.24800</span>        <span class="mf">9.35800</span> <span class="mf">5.65900</span>
+<span class="n">H</span>       <span class="mf">9.95100</span> <span class="mf">4.03700</span> <span class="mf">6.52300</span>
+<span class="n">H</span>       <span class="mf">8.53000</span> <span class="mf">3.33500</span> <span class="mf">6.91500</span>
+<span class="n">O</span>       <span class="mf">8.97600</span> <span class="mf">4.19800</span> <span class="mf">6.68000</span>
+<span class="n">H</span>       <span class="mf">11.64100</span>        <span class="mf">9.78700</span> <span class="mf">3.15500</span>
+<span class="n">H</span>       <span class="mf">10.08300</span>        <span class="mf">10.23500</span>        <span class="mf">2.95900</span>
+<span class="n">O</span>       <span class="mf">10.69900</span>        <span class="mf">9.45800</span> <span class="mf">3.07900</span>
+<span class="n">H</span>       <span class="mf">5.27600</span> <span class="mf">11.70000</span>        <span class="mf">6.51800</span>
+<span class="n">H</span>       <span class="mf">6.45600</span> <span class="mf">10.57600</span>        <span class="mf">6.42200</span>
+<span class="n">O</span>       <span class="mf">5.48300</span> <span class="mf">10.75200</span>        <span class="mf">6.27700</span>
+<span class="n">H</span>       <span class="mf">10.47900</span>        <span class="mf">11.73000</span>        <span class="mf">4.50300</span>
+<span class="n">H</span>       <span class="mf">11.72700</span>        <span class="mf">11.69200</span>        <span class="mf">5.55500</span>
+<span class="n">O</span>       <span class="mf">11.37700</span>        <span class="mf">11.33200</span>        <span class="mf">4.69100</span>
+<span class="n">H</span>       <span class="mf">3.99200</span> <span class="mf">9.05800</span> <span class="mf">4.66900</span>
+<span class="n">H</span>       <span class="mf">4.96500</span> <span class="mf">10.27500</span>        <span class="mf">4.18000</span>
+<span class="n">O</span>       <span class="mf">4.49500</span> <span class="mf">9.44100</span> <span class="mf">3.89400</span>
+<span class="n">H</span>       <span class="mf">0.99800</span> <span class="mf">11.67200</span>        <span class="mf">5.89500</span>
+<span class="n">H</span>       <span class="mf">0.99700</span> <span class="mf">10.04100</span>        <span class="mf">5.97000</span>
+<span class="n">O</span>       <span class="mf">1.45700</span> <span class="mf">10.84000</span>        <span class="mf">5.58400</span>
+<span class="n">H</span>       <span class="mf">3.33600</span> <span class="mf">11.70000</span>        <span class="mf">7.60900</span>
+<span class="n">H</span>       <span class="mf">2.87500</span> <span class="mf">10.13700</span>        <span class="mf">7.50200</span>
+<span class="n">O</span>       <span class="mf">3.15200</span> <span class="mf">10.94300</span>        <span class="mf">6.98100</span>
+<span class="n">H</span>       <span class="mf">8.16600</span> <span class="mf">2.80400</span> <span class="mf">11.71900</span>
+<span class="n">H</span>       <span class="mf">8.93800</span> <span class="mf">1.38600</span> <span class="mf">11.46900</span>
+<span class="n">O</span>       <span class="mf">9.05600</span> <span class="mf">2.37400</span> <span class="mf">11.56400</span>
+<span class="n">H</span>       <span class="mf">9.33800</span> <span class="mf">9.39800</span> <span class="mf">9.67400</span>
+<span class="n">H</span>       <span class="mf">10.33300</span>        <span class="mf">8.18300</span> <span class="mf">10.12300</span>
+<span class="n">O</span>       <span class="mf">9.39000</span> <span class="mf">8.42400</span> <span class="mf">9.89400</span>
+<span class="n">H</span>       <span class="mf">10.11400</span>        <span class="mf">9.35700</span> <span class="mf">0.97700</span>
+<span class="n">H</span>       <span class="mf">11.74500</span>        <span class="mf">9.41900</span> <span class="mf">1.00200</span>
+<span class="n">O</span>       <span class="mf">10.90800</span>        <span class="mf">9.96400</span> <span class="mf">0.97000</span>
+<span class="n">H</span>       <span class="mf">3.59600</span> <span class="mf">2.04400</span> <span class="mf">4.52500</span>
+<span class="n">H</span>       <span class="mf">3.49200</span> <span class="mf">3.64900</span> <span class="mf">4.24400</span>
+<span class="n">O</span>       <span class="mf">4.05500</span> <span class="mf">2.83300</span> <span class="mf">4.11800</span>
+<span class="n">H</span>       <span class="mf">2.34300</span> <span class="mf">1.32100</span> <span class="mf">7.04000</span>
+<span class="n">H</span>       <span class="mf">2.66900</span> <span class="mf">2.89400</span> <span class="mf">7.33100</span>
+<span class="n">O</span>       <span class="mf">3.06600</span> <span class="mf">1.98200</span> <span class="mf">7.24200</span>
+<span class="n">H</span>       <span class="mf">8.22400</span> <span class="mf">5.88300</span> <span class="mf">11.60400</span>
+<span class="n">H</span>       <span class="mf">8.96400</span> <span class="mf">7.33600</span> <span class="mf">11.69100</span>
+<span class="n">O</span>       <span class="mf">8.08200</span> <span class="mf">6.87300</span> <span class="mf">11.61700</span>
+<span class="n">H</span>       <span class="mf">11.30900</span>        <span class="mf">3.51000</span> <span class="mf">8.25900</span>
+<span class="n">H</span>       <span class="mf">11.07600</span>        <span class="mf">2.69700</span> <span class="mf">9.65600</span>
+<span class="n">O</span>       <span class="mf">11.72300</span>        <span class="mf">3.25000</span> <span class="mf">9.13100</span>
+<span class="n">H</span>       <span class="mf">3.07700</span> <span class="mf">3.09300</span> <span class="mf">11.21500</span>
+<span class="n">H</span>       <span class="mf">1.59100</span> <span class="mf">3.76700</span> <span class="mf">11.15500</span>
+<span class="n">O</span>       <span class="mf">2.57200</span> <span class="mf">3.95300</span> <span class="mf">11.13700</span>
+<span class="n">H</span>       <span class="mf">11.67400</span>        <span class="mf">6.81400</span> <span class="mf">6.52000</span>
+<span class="n">H</span>       <span class="mf">11.70500</span>        <span class="mf">5.19700</span> <span class="mf">6.74500</span>
+<span class="n">O</span>       <span class="mf">11.41100</span>        <span class="mf">5.93000</span> <span class="mf">6.13200</span>
+<span class="n">H</span>       <span class="mf">8.47400</span> <span class="mf">10.22100</span>        <span class="mf">7.84500</span>
+<span class="n">H</span>       <span class="mf">7.71100</span> <span class="mf">11.64500</span>        <span class="mf">8.08700</span>
+<span class="n">O</span>       <span class="mf">8.26100</span> <span class="mf">10.93000</span>        <span class="mf">8.51800</span>
+<span class="n">H</span>       <span class="mf">9.99200</span> <span class="mf">1.35100</span> <span class="mf">7.46700</span>
+<span class="n">H</span>       <span class="mf">11.36300</span>        <span class="mf">1.89300</span> <span class="mf">6.76600</span>
+<span class="n">O</span>       <span class="mf">10.99100</span>        <span class="mf">1.35000</span> <span class="mf">7.51800</span>
+<span class="n">H</span>       <span class="mf">2.01100</span> <span class="mf">7.81400</span> <span class="mf">10.23800</span>
+<span class="n">H</span>       <span class="mf">1.00000</span> <span class="mf">6.60300</span> <span class="mf">9.81700</span>
+<span class="n">O</span>       <span class="mf">1.21600</span> <span class="mf">7.27700</span> <span class="mf">10.52200</span>
+<span class="n">H</span>       <span class="mf">8.58700</span> <span class="mf">8.78200</span> <span class="mf">3.56700</span>
+<span class="n">H</span>       <span class="mf">9.68300</span> <span class="mf">7.57200</span> <span class="mf">3.56700</span>
+<span class="n">O</span>       <span class="mf">8.70800</span> <span class="mf">7.78900</span> <span class="mf">3.56700</span>
+<span class="n">H</span>       <span class="mf">9.41200</span> <span class="mf">4.03300</span> <span class="mf">9.18800</span>
+<span class="n">H</span>       <span class="mf">8.96600</span> <span class="mf">2.46800</span> <span class="mf">9.04700</span>
+<span class="n">O</span>       <span class="mf">8.84600</span> <span class="mf">3.30600</span> <span class="mf">9.57800</span>
+<span class="n">H</span>       <span class="mf">10.55000</span>        <span class="mf">11.59300</span>        <span class="mf">10.27800</span>
+<span class="n">H</span>       <span class="mf">11.33800</span>        <span class="mf">10.16200</span>        <span class="mf">10.23800</span>
+<span class="n">O</span>       <span class="mf">11.44900</span>        <span class="mf">11.15600</span>        <span class="mf">10.22900</span>
+<span class="n">H</span>       <span class="mf">1.52100</span> <span class="mf">7.58200</span> <span class="mf">3.27100</span>
+<span class="n">H</span>       <span class="mf">2.99000</span> <span class="mf">7.66000</span> <span class="mf">2.56100</span>
+<span class="n">O</span>       <span class="mf">2.21900</span> <span class="mf">8.19700</span> <span class="mf">2.90200</span>
+<span class="n">H</span>       <span class="mf">6.95000</span> <span class="mf">1.94500</span> <span class="mf">10.20500</span>
+<span class="n">H</span>       <span class="mf">5.81800</span> <span class="mf">0.92900</span> <span class="mf">9.61100</span>
+<span class="n">O</span>       <span class="mf">6.79900</span> <span class="mf">1.08100</span> <span class="mf">9.72400</span>
+<span class="n">H</span>       <span class="mf">1.59400</span> <span class="mf">3.81200</span> <span class="mf">1.92200</span>
+<span class="n">H</span>       <span class="mf">1.06900</span> <span class="mf">2.30200</span> <span class="mf">1.58700</span>
+<span class="n">O</span>       <span class="mf">1.87000</span> <span class="mf">2.85700</span> <span class="mf">1.80700</span>
+<span class="n">H</span>       <span class="mf">6.44500</span> <span class="mf">9.32500</span> <span class="mf">9.05900</span>
+<span class="n">H</span>       <span class="mf">7.21500</span> <span class="mf">8.06400</span> <span class="mf">9.75400</span>
+<span class="n">O</span>       <span class="mf">6.75200</span> <span class="mf">8.93200</span> <span class="mf">9.92700</span>
+<span class="n">H</span>       <span class="mf">9.84900</span> <span class="mf">2.77700</span> <span class="mf">2.99400</span>
+<span class="n">H</span>       <span class="mf">11.38900</span>        <span class="mf">2.92200</span> <span class="mf">3.51700</span>
+<span class="n">O</span>       <span class="mf">10.50700</span>        <span class="mf">3.38500</span> <span class="mf">3.44000</span>
+<span class="n">H</span>       <span class="mf">4.94300</span> <span class="mf">1.99600</span> <span class="mf">11.67600</span>
+<span class="n">H</span>       <span class="mf">3.65200</span> <span class="mf">1.00100</span> <span class="mf">11.58100</span>
+<span class="n">O</span>       <span class="mf">4.64900</span> <span class="mf">1.04100</span> <span class="mf">11.62600</span>
+<span class="n">H</span>       <span class="mf">0.99900</span> <span class="mf">2.00800</span> <span class="mf">4.74700</span>
+<span class="n">H</span>       <span class="mf">0.99900</span> <span class="mf">3.62500</span> <span class="mf">4.97600</span>
+<span class="n">O</span>       <span class="mf">1.57400</span> <span class="mf">2.81000</span> <span class="mf">4.91000</span>
+<span class="n">H</span>       <span class="mf">6.27500</span> <span class="mf">9.33000</span> <span class="mf">2.04200</span>
+<span class="n">H</span>       <span class="mf">5.19600</span> <span class="mf">10.20100</span>        <span class="mf">1.18100</span>
+<span class="n">O</span>       <span class="mf">5.68800</span> <span class="mf">10.13900</span>        <span class="mf">2.04900</span>
+
+<span class="o">---</span> <span class="n">Velocities</span> <span class="p">(</span><span class="n">Å</span><span class="o">/</span><span class="n">ps</span><span class="p">)</span> <span class="o">---</span>
+
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./Guide"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+            </main>
+            <footer class="footer-article noprint">
+                
+    <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="setup.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">Setting up calculations</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="functions.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Analysing results</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+            </footer>
+        </div>
+    </div>
+    <div class="footer-content row">
+        <footer class="col footer"><p>
+  
+    By Luca Babetto<br/>
+  
+      &copy; Copyright 2022.<br/>
+</p>
+        </footer>
+    </div>
+    
+</div>
+
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
+
+  </body>
+</html>

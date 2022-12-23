@@ -1,0 +1,709 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Analysing results &#8212; GES-compechem User Guide</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Useful tools" href="tools.html" />
+    <link rel="prev" title="Running calculations" href="run.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay overlay-navbar" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
+<label class="overlay overlay-pagetoc" for="__page-toc">
+    <div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+    <div class="bd-sidebar__content">
+        <div class="bd-sidebar__top"><div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="../index.html">
+      
+      
+      
+      <h1 class="site-logo" id="site-title">GES-compechem User Guide</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    GES-comp-echem User Guide
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../getting-started.html">
+   Getting Started
+  </a>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="../user-guide.html">
+   User guide
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="systems.html">
+     Defining molecular systems
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="setup.html">
+     Setting up calculations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="run.html">
+     Running calculations
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Analysing results
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="tools.html">
+     Useful tools
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../api.html">
+   API Documentation
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../API/systems.html">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       compechem.systems
+      </span>
+     </code>
+     sub-module
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../API/wrappers.html">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       compechem.engines
+      </span>
+     </code>
+     sub-module
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../API/functions.html">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       compechem.functions
+      </span>
+     </code>
+     sub-module
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../API/tools.html">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       compechem.tools
+      </span>
+     </code>
+     sub-module
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../contributor-guide.html">
+   Contributor’s guide
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../release-notes.html">
+   Release notes
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav></div>
+        <div class="bd-sidebar__bottom">
+             <!-- To handle the deprecated key -->
+            
+            <div class="navbar_extra_footer">
+            Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+            </div>
+            
+        </div>
+    </div>
+    <div id="rtd-footer-container"></div>
+</div>
+
+
+          
+
+
+          
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+    
+    <div class="header-article row sticky-top noprint">
+        
+
+
+
+<div class="col py-1 d-flex header-article-main">
+    <div class="header-article__left">
+        
+        <label for="__navigation"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="right"
+title="Toggle navigation"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-bars"></i>
+  </span>
+
+</label>
+
+        
+    </div>
+    <div class="header-article__right">
+<button onclick="toggleFullScreen()"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="bottom"
+title="Fullscreen mode"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+<div class="menu-dropdown menu-dropdown-repository-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Source repositories">
+      <i class="fab fa-github"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://github.com/GES-lbabetto/GES-comp-echem"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Source repository"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="headerbtn__text-container">repository</span>
+</a>
+
+      </li>
+      
+      <li>
+        <a href="https://github.com/GES-lbabetto/GES-comp-echem/issues/new?title=Issue%20on%20page%20%2FGuide/functions.html&body=Your%20issue%20content%20here."
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Open an issue"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="headerbtn__text-container">open issue</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+<div class="menu-dropdown menu-dropdown-download-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Download this page">
+      <i class="fas fa-download"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="../_sources/Guide/functions.md"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Download source file"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="headerbtn__text-container">.md</span>
+</a>
+
+      </li>
+      
+      <li>
+        
+<button onclick="printPdf(this)"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="left"
+title="Print to PDF"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="headerbtn__text-container">.pdf</span>
+</button>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
+
+    </div>
+</div>
+
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> Contents
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#pka">
+   pKa
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#el-redox-potential">
+   1-el redox potential
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#fukui-functions">
+   Fukui functions
+  </a>
+ </li>
+</ul>
+
+    </nav>
+</div>
+    </div>
+    <div class="article row">
+        <div class="col pl-md-3 pl-lg-5 content-container">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Analysing results</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#pka">
+   pKa
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#el-redox-potential">
+   1-el redox potential
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#fukui-functions">
+   Fukui functions
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <main id="main-content" role="main">
+                
+              <div>
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="analysing-results">
+<span id="guide-functions"></span><h1>Analysing results<a class="headerlink" href="#analysing-results" title="Permalink to this headline">#</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">compechem.functions</span></code> submodule contains a series of methods to “manually” calculate some physical properties of the system under study. The user is expected to provide the exact intended states for the system(s) under study, as the functions will simply take the inputs and generate the output without carrying out any checks. For example, if the user calculates the pKa of a molecule in an unoptimised geometry, the resulting pKa will be that of the unoptimised geometry.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">compechem.functions</span></code> functions can be imported via the following syntax:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem.functions</span> <span class="kn">import</span> <span class="n">calculate_pka</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<section id="pka">
+<h2>pKa<a class="headerlink" href="#pka" title="Permalink to this headline">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">compechem.functions.calculate_pka</span></code> function calculates the pKa of a molecule <span class="math notranslate nohighlight">\(HA\)</span> considering a reaction of the type:</p>
+<div class="math notranslate nohighlight">
+\[
+HA \rightarrow H^{+} + A^{-}
+\]</div>
+<p>provided the following arguments:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">protonated</span></code> (<code class="docutils literal notranslate"><span class="pre">System</span></code>): molecule in its protonated form</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">deprotonated</span></code> (<code class="docutils literal notranslate"><span class="pre">System</span></code>): molecule in its deprotonated form</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">method_el</span></code> (<code class="docutils literal notranslate"><span class="pre">System</span></code>): level of theory for the electronic component of the total energy (must be present in the <code class="docutils literal notranslate"><span class="pre">System.energies</span></code> dictionary)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">method_vib</span></code> (<code class="docutils literal notranslate"><span class="pre">System</span></code>): level of theory for the vibronic component of the total energy (must be present in the <code class="docutils literal notranslate"><span class="pre">System.energies</span></code> dictionary). If not specified, defaults to the same level of theory as the electronic energy</p></li>
+</ul>
+<p>The function returns the pKa of the molecule considering the provided states, calculated as:</p>
+<div class="math notranslate nohighlight">
+\[
+pK_{a} = \frac{G_{A^{-}} + G_{H^{+}} - G_{HA}}{2.303 \cdot RT}
+\]</div>
+<p>Where <span class="math notranslate nohighlight">\(G_{A^{-}}\)</span> and <span class="math notranslate nohighlight">\(G_{HA}\)</span> are calculated summing the electronic + vibronic energies at the selected level of theory, <span class="math notranslate nohighlight">\(G_{H^{+}} = -270.29 kcal/mol\)</span>, <span class="math notranslate nohighlight">\(R = 1.987 \cdot 10^{-3} kcal/(mol \cdot K)\)</span> and <span class="math notranslate nohighlight">\(T = 298.15 K\)</span></p>
+</section>
+<hr class="docutils" />
+<section id="el-redox-potential">
+<h2>1-el redox potential<a class="headerlink" href="#el-redox-potential" title="Permalink to this headline">#</a></h2>
+<p>Calculates the one-electron reduction potential of a molecule <span class="math notranslate nohighlight">\(MH_{n}\)</span>, considering a generic reaction of the type:</p>
+<div class="math notranslate nohighlight">
+\[
+MH_{n} \rightarrow M^{\cdot (n-1)-} + n\cdot H^{+} + e^{-}
+\]</div>
+<p>provided the following arguments:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">oxidised</span></code> (<code class="docutils literal notranslate"><span class="pre">System</span></code>): molecule in its oxidised state</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reduced</span></code> (<code class="docutils literal notranslate"><span class="pre">System</span></code>): molecule in its reduced state</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">method_el</span></code> (<code class="docutils literal notranslate"><span class="pre">System</span></code>): level of theory for the electronic component of the total energy (must be present in the <code class="docutils literal notranslate"><span class="pre">System.energies</span></code> dictionary)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">method_vib</span></code> (<code class="docutils literal notranslate"><span class="pre">System</span></code>): level of theory for the vibronic component of the total energy (must be present in the <code class="docutils literal notranslate"><span class="pre">System.energies</span></code> dictionary). If not specified, defaults to the same level of theory as the electronic energy</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pH</span></code> (<code class="docutils literal notranslate"><span class="pre">float</span></code>, default: <code class="docutils literal notranslate"><span class="pre">7.0</span></code>): pH at which the reduction potential is calculated</p></li>
+</ul>
+<p>and returns the reduction potential of the molecule considering the provided states at the provided pH, including eventual PCET mechanisms, calculated as:</p>
+<div class="math notranslate nohighlight">
+\[
+E°_{MH_{n}/M^{\cdot(n-1)-}} = - \frac{G_{M^{\cdot(n-1)-}} - (G_{MH_{n}} + n \cdot G_{H^{+}}) }{F} - E°_{SHE} - n \cdot 0.059 \cdot pH 
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(G_{M^{\cdot(n-1)-}}\)</span> and <span class="math notranslate nohighlight">\(G_{MH_{n}}\)</span> are calculated summing the electronic + vibronic energies at the selected level of theory, <span class="math notranslate nohighlight">\(G_{H^{+}} = -270.29 kcal/mol\)</span>, <span class="math notranslate nohighlight">\(F = 23.061 kcal/volt–gram-equivalent\)</span>, and <span class="math notranslate nohighlight">\(E_{SHE} = 4.28 V\)</span>.</p>
+</section>
+<section id="fukui-functions">
+<h2>Fukui functions<a class="headerlink" href="#fukui-functions" title="Permalink to this headline">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">compechem.functions.calculate_fukui</span></code> function calculates the Fukui functions <span class="math notranslate nohighlight">\(f^+(r)\)</span>, <span class="math notranslate nohighlight">\(f^-(r)\)</span> and <span class="math notranslate nohighlight">\(f^0(r)\)</span> associated with a given molecular geometry. The Fukui functions are computed according to the definitions:</p>
+<div class="math notranslate nohighlight">
+\[
+f^+(r) = \rho_{N+1}(r) - \rho_{N}(r)
+\]</div>
+<div class="math notranslate nohighlight">
+\[
+f^-(r) = \rho_{N}(r) - \rho_{N-1}(r)
+\]</div>
+<div class="math notranslate nohighlight">
+\[
+f^0(r) = \frac{1}{2} \left[\rho_{N+1}(r) - \rho_{N-1}(r)\right]
+\]</div>
+<p>Where, given a molecule with <span class="math notranslate nohighlight">\(N\)</span> electrons, <span class="math notranslate nohighlight">\(\rho_{N}(r)\)</span> represents its electronic density while <span class="math notranslate nohighlight">\(\rho_{N\pm1}(r)\)</span> represents the electronic density of the molecule, in the same nuclear configuration, when one electron is either added (<span class="math notranslate nohighlight">\(+1\)</span>) or removed (<span class="math notranslate nohighlight">\(-1\)</span>).</p>
+<p>The Fukui functions are both computed as volumetric quantities and saved in a <a class="reference external" href="http://paulbourke.net/dataformats/cube/">Gaussian Cube</a> compatible format in the <code class="docutils literal notranslate"><span class="pre">output_density</span></code> folder and as condensed values saved in the <code class="docutils literal notranslate"><span class="pre">System</span></code> object <code class="docutils literal notranslate"><span class="pre">properties</span></code> attribute in the form of a dictionary. The condensed Fukui functions are computed by applying the <span class="math notranslate nohighlight">\(f^+\)</span>, <span class="math notranslate nohighlight">\(f^-\)</span> and <span class="math notranslate nohighlight">\(f^0\)</span> definitions replacing the charge density with either the Mulliken charges or the Hirshfeld charges (changing the sign accordingly given that a localized electronic density represents an accumulation of electrons hence of negative charge).</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Please notice how the Fukui cubes contain the localized Mulliken-charge-based Fukui values in place of the atomic charges. This is explained in the first comment line of each cube file and, for sake of clarity, all the files are saved using the extension <code class="docutils literal notranslate"><span class="pre">.fukui.cube</span></code>.</p>
+</div>
+<p>The function can be called with the following minimal arguments:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">molecule</span></code> (<code class="docutils literal notranslate"><span class="pre">System</span></code>): The molecular structure to be used in the computation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">orca</span></code> (<code class="docutils literal notranslate"><span class="pre">OrcaInput</span></code>): The ORCA wrapper defining the level of theory to be used in the calculation.</p></li>
+</ul>
+<p>The function assumes that the molecule supports only singlet and doublet states and switches the spin multeplicity according to the number of electrons. If different spin states needs to be considered the <code class="docutils literal notranslate"><span class="pre">spins_states</span></code> option can be used to provide the spin multeplicity values as a list.</p>
+<p>An example code snippet is provided in what follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mol</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="s2">&quot;./acetaldehyde.xyz&quot;</span><span class="p">)</span>
+<span class="n">orca</span> <span class="o">=</span> <span class="n">OrcaInput</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;M062X&quot;</span><span class="p">,</span> <span class="n">basis_set</span><span class="o">=</span><span class="s2">&quot;def2-TZVP&quot;</span><span class="p">)</span>
+
+<span class="n">orca</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">calculate_fukui</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">orca</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>That for the acetaldehyde molecule returns the following result:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">=========================================================</span>
+<span class="n">SYSTEM</span><span class="p">:</span> <span class="n">acetaldehyde</span>
+<span class="o">=========================================================</span>
+
+<span class="n">Number</span> <span class="n">of</span> <span class="n">atoms</span><span class="p">:</span> <span class="mi">7</span>
+<span class="n">Charge</span><span class="p">:</span> <span class="mi">0</span>
+<span class="n">Spin</span> <span class="n">multeplicity</span><span class="p">:</span> <span class="mi">1</span>
+
+<span class="o">**********************</span> <span class="n">GEOMETRY</span> <span class="o">*************************</span>
+
+<span class="n">Total</span> <span class="n">system</span> <span class="n">mass</span><span class="p">:</span> <span class="mf">44.0526</span> <span class="n">amu</span>
+
+<span class="o">----------------------------------------------</span>
+ <span class="n">index</span>  <span class="n">atom</span>    <span class="n">x</span> <span class="p">(</span><span class="n">Å</span><span class="p">)</span>      <span class="n">y</span> <span class="p">(</span><span class="n">Å</span><span class="p">)</span>      <span class="n">z</span> <span class="p">(</span><span class="n">Å</span><span class="p">)</span>   
+<span class="o">----------------------------------------------</span>
+ <span class="mi">0</span>       <span class="n">C</span>    <span class="o">-</span><span class="mf">3.01613</span>    <span class="mf">0.18024</span>    <span class="mf">0.12796</span>  
+ <span class="mi">1</span>       <span class="n">C</span>    <span class="o">-</span><span class="mf">3.66703</span>    <span class="mf">1.53166</span>    <span class="mf">0.10866</span>  
+ <span class="mi">2</span>       <span class="n">H</span>    <span class="o">-</span><span class="mf">3.20495</span>    <span class="mf">2.18867</span>    <span class="mf">0.84147</span>  
+ <span class="mi">3</span>       <span class="n">H</span>    <span class="o">-</span><span class="mf">4.73073</span>    <span class="mf">1.41446</span>    <span class="mf">0.32944</span>  
+ <span class="mi">4</span>       <span class="n">H</span>    <span class="o">-</span><span class="mf">3.59505</span>    <span class="mf">1.96256</span>   <span class="o">-</span><span class="mf">0.89180</span>  
+ <span class="mi">5</span>       <span class="n">O</span>    <span class="o">-</span><span class="mf">2.16724</span>   <span class="o">-</span><span class="mf">0.15157</span>    <span class="mf">0.90619</span>  
+ <span class="mi">6</span>       <span class="n">H</span>    <span class="o">-</span><span class="mf">3.37637</span>   <span class="o">-</span><span class="mf">0.53412</span>   <span class="o">-</span><span class="mf">0.63890</span>  
+<span class="o">----------------------------------------------</span>
+
+<span class="o">**********************</span> <span class="n">PROPERTIES</span> <span class="o">*************************</span>
+
+<span class="n">Electronic</span> <span class="n">level</span> <span class="n">of</span> <span class="n">theory</span><span class="p">:</span> <span class="n">OrcaInput</span> <span class="o">||</span> <span class="n">method</span><span class="p">:</span> <span class="n">M062X</span> <span class="o">|</span> <span class="n">basis</span><span class="p">:</span> <span class="n">def2</span><span class="o">-</span><span class="n">TZVP</span> <span class="o">|</span> <span class="n">solvent</span><span class="p">:</span> <span class="kc">None</span>
+<span class="n">Vibronic</span> <span class="n">level</span> <span class="n">of</span> <span class="n">theory</span><span class="p">:</span> <span class="n">OrcaInput</span> <span class="o">||</span> <span class="n">method</span><span class="p">:</span> <span class="n">M062X</span> <span class="o">|</span> <span class="n">basis</span><span class="p">:</span> <span class="n">def2</span><span class="o">-</span><span class="n">TZVP</span> <span class="o">|</span> <span class="n">solvent</span><span class="p">:</span> <span class="kc">None</span>
+
+<span class="n">Electronic</span> <span class="n">energy</span><span class="p">:</span> <span class="o">-</span><span class="mf">153.820570037973</span> <span class="n">Eh</span>
+<span class="n">Vibronic</span> <span class="n">energy</span><span class="p">:</span> <span class="mf">0.03120153</span> <span class="n">Eh</span>
+<span class="n">Helmholtz</span> <span class="n">free</span> <span class="n">energy</span><span class="p">:</span> <span class="kc">None</span> <span class="n">Eh</span>
+<span class="n">Gibbs</span> <span class="n">free</span> <span class="n">energy</span><span class="p">:</span> <span class="kc">None</span> <span class="n">Eh</span>
+<span class="n">pKa</span><span class="p">:</span> <span class="kc">None</span>
+
+<span class="n">MULLIKEN</span> <span class="n">ANALYSIS</span>
+<span class="o">----------------------------------------------</span>
+ <span class="n">index</span>  <span class="n">atom</span>   <span class="n">charge</span>    <span class="n">spin</span>
+<span class="o">----------------------------------------------</span>
+ <span class="mi">0</span>       <span class="n">C</span>    <span class="mf">0.14039</span>   <span class="mf">0.00000</span>  
+ <span class="mi">1</span>       <span class="n">C</span>    <span class="o">-</span><span class="mf">0.38791</span>  <span class="mf">0.00000</span>  
+ <span class="mi">2</span>       <span class="n">H</span>    <span class="mf">0.14438</span>   <span class="mf">0.00000</span>  
+ <span class="mi">3</span>       <span class="n">H</span>    <span class="mf">0.14899</span>   <span class="mf">0.00000</span>  
+ <span class="mi">4</span>       <span class="n">H</span>    <span class="mf">0.14587</span>   <span class="mf">0.00000</span>  
+ <span class="mi">5</span>       <span class="n">O</span>    <span class="o">-</span><span class="mf">0.27129</span>  <span class="mf">0.00000</span>  
+ <span class="mi">6</span>       <span class="n">H</span>    <span class="mf">0.07956</span>   <span class="mf">0.00000</span>  
+
+<span class="n">CONDENSED</span> <span class="n">FUKUI</span> <span class="o">-</span> <span class="n">MULLIKEN</span>
+<span class="o">----------------------------------------------</span>
+ <span class="n">index</span>  <span class="n">atom</span>    <span class="n">f</span><span class="o">+</span>      <span class="n">f</span><span class="o">-</span>      <span class="n">f0</span>
+<span class="o">----------------------------------------------</span>
+ <span class="mi">0</span>       <span class="n">C</span>    <span class="mf">0.43686</span>   <span class="mf">0.09908</span>   <span class="mf">0.26797</span>  
+ <span class="mi">1</span>       <span class="n">C</span>    <span class="o">-</span><span class="mf">0.12756</span>  <span class="mf">0.01427</span>   <span class="o">-</span><span class="mf">0.05665</span> 
+ <span class="mi">2</span>       <span class="n">H</span>    <span class="mf">0.09539</span>   <span class="mf">0.07534</span>   <span class="mf">0.08537</span>  
+ <span class="mi">3</span>       <span class="n">H</span>    <span class="mf">0.09967</span>   <span class="mf">0.09191</span>   <span class="mf">0.09579</span>  
+ <span class="mi">4</span>       <span class="n">H</span>    <span class="mf">0.09621</span>   <span class="mf">0.09169</span>   <span class="mf">0.09395</span>  
+ <span class="mi">5</span>       <span class="n">O</span>    <span class="mf">0.23951</span>   <span class="mf">0.42159</span>   <span class="mf">0.33055</span>  
+ <span class="mi">6</span>       <span class="n">H</span>    <span class="mf">0.15992</span>   <span class="mf">0.20612</span>   <span class="mf">0.18302</span>  
+
+<span class="n">HIRSHFELD</span> <span class="n">ANALYSIS</span>
+<span class="o">----------------------------------------------</span>
+ <span class="n">index</span>  <span class="n">atom</span>   <span class="n">charge</span>    <span class="n">spin</span>
+<span class="o">----------------------------------------------</span>
+ <span class="mi">0</span>       <span class="n">C</span>    <span class="mf">0.15867</span>   <span class="mf">0.00000</span>  
+ <span class="mi">1</span>       <span class="n">C</span>    <span class="o">-</span><span class="mf">0.07114</span>  <span class="mf">0.00000</span>  
+ <span class="mi">2</span>       <span class="n">H</span>    <span class="mf">0.04496</span>   <span class="mf">0.00000</span>  
+ <span class="mi">3</span>       <span class="n">H</span>    <span class="mf">0.04637</span>   <span class="mf">0.00000</span>  
+ <span class="mi">4</span>       <span class="n">H</span>    <span class="mf">0.04447</span>   <span class="mf">0.00000</span>  
+ <span class="mi">5</span>       <span class="n">O</span>    <span class="o">-</span><span class="mf">0.25678</span>  <span class="mf">0.00000</span>  
+ <span class="mi">6</span>       <span class="n">H</span>    <span class="mf">0.03345</span>   <span class="mf">0.00000</span>  
+
+<span class="n">CONDENSED</span> <span class="n">FUKUI</span> <span class="o">-</span> <span class="n">HIRSHFELD</span>
+<span class="o">----------------------------------------------</span>
+ <span class="n">index</span>  <span class="n">atom</span>    <span class="n">f</span><span class="o">+</span>      <span class="n">f</span><span class="o">-</span>      <span class="n">f0</span>
+<span class="o">----------------------------------------------</span>
+ <span class="mi">0</span>       <span class="n">C</span>    <span class="mf">0.31068</span>   <span class="mf">0.16128</span>   <span class="mf">0.23598</span>  
+ <span class="mi">1</span>       <span class="n">C</span>    <span class="mf">0.07070</span>   <span class="mf">0.09203</span>   <span class="mf">0.08137</span>  
+ <span class="mi">2</span>       <span class="n">H</span>    <span class="mf">0.05364</span>   <span class="mf">0.05358</span>   <span class="mf">0.05361</span>  
+ <span class="mi">3</span>       <span class="n">H</span>    <span class="mf">0.08273</span>   <span class="mf">0.06865</span>   <span class="mf">0.07569</span>  
+ <span class="mi">4</span>       <span class="n">H</span>    <span class="mf">0.07600</span>   <span class="mf">0.06840</span>   <span class="mf">0.07220</span>  
+ <span class="mi">5</span>       <span class="n">O</span>    <span class="mf">0.27091</span>   <span class="mf">0.40759</span>   <span class="mf">0.33925</span>  
+ <span class="mi">6</span>       <span class="n">H</span>    <span class="mf">0.13535</span>   <span class="mf">0.14846</span>   <span class="mf">0.14191</span>
+</pre></div>
+</div>
+<p>The volumetric fukui functions can then be plotted using the built in <code class="docutils literal notranslate"><span class="pre">vmd</span></code> based rendering tool. As an example the following code can be used to render the the <span class="math notranslate nohighlight">\(f^+(r)\)</span> Fukui function.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem.tools.vmdtools</span> <span class="kn">import</span> <span class="n">render_fukui_cube</span>
+
+<span class="n">render_fukui_cube</span><span class="p">(</span>
+    <span class="s2">&quot;./output_densities/acetaldehyde_Fukui_plus.fukui.cube&quot;</span><span class="p">,</span>
+    <span class="n">include_negative</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">isovalue</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The rendered volume is saved in a <code class="docutils literal notranslate"><span class="pre">.bmp</span></code> bitmap image format. In the case of the acetaldehyde molecule considered in the example, the following image is obtained:</p>
+<a class="bg-primary mb-1 reference internal image-reference" href="../_images/acetaldehyde_fukui_plus.bmp"><img alt="fukui_plus" class="bg-primary mb-1 align-center" src="../_images/acetaldehyde_fukui_plus.bmp" style="width: 600px;" /></a>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./Guide"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+            </main>
+            <footer class="footer-article noprint">
+                
+    <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="run.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">Running calculations</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="tools.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Useful tools</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+            </footer>
+        </div>
+    </div>
+    <div class="footer-content row">
+        <footer class="col footer"><p>
+  
+    By Luca Babetto<br/>
+  
+      &copy; Copyright 2022.<br/>
+</p>
+        </footer>
+    </div>
+    
+</div>
+
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
+
+  </body>
+</html>
