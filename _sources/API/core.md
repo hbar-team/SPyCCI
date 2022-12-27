@@ -4,7 +4,7 @@
 ## The `compechem.core.base` sub-module
 
 ```{eval-rst}
-.. autoclass:: compechem.core.base.BaseEngine
+.. autoclass:: compechem.core.base.Engine
     :members:
 ```
 
