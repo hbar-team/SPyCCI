@@ -161,6 +161,16 @@ const thebe_selector_output = ".output, .cell_output"
   </label>
   <ul>
    <li class="toctree-l2">
+    <a class="reference internal" href="API/core.html">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       compechem.core
+      </span>
+     </code>
+     module
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="API/systems.html">
      <code class="docutils literal notranslate">
       <span class="pre">
@@ -285,7 +295,7 @@ title="Fullscreen mode"
   <div class="menu-dropdown__content">
     <ul>
       <li>
-        <a href="https://github.com/GES-lbabetto/GES-comp-echem"
+        <a href="https://github.com/GES-compchem/GES-comp-echem"
    class="headerbtn"
    data-toggle="tooltip"
 data-placement="left"
@@ -302,7 +312,7 @@ title="Source repository"
       </li>
       
       <li>
-        <a href="https://github.com/GES-lbabetto/GES-comp-echem/issues/new?title=Issue%20on%20page%20%2Frelease-notes.html&body=Your%20issue%20content%20here."
+        <a href="https://github.com/GES-compchem/GES-comp-echem/issues/new?title=Issue%20on%20page%20%2Frelease-notes.html&body=Your%20issue%20content%20here."
    class="headerbtn"
    data-toggle="tooltip"
 data-placement="left"
@@ -391,7 +401,12 @@ title="Print to PDF"
         <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#version-0-3-0">
-   Version 0.3.0
+   Version
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     0.3.0
+    </span>
+   </code>
   </a>
  </li>
 </ul>
@@ -415,7 +430,12 @@ title="Print to PDF"
                             <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#version-0-3-0">
-   Version 0.3.0
+   Version
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     0.3.0
+    </span>
+   </code>
   </a>
  </li>
 </ul>
@@ -431,12 +451,13 @@ title="Print to PDF"
   <section class="tex2jax_ignore mathjax_ignore" id="release-notes">
 <span id="id1"></span><h1>Release notes<a class="headerlink" href="#release-notes" title="Permalink to this headline">#</a></h1>
 <section id="version-0-3-0">
-<h2>Version 0.3.0<a class="headerlink" href="#version-0-3-0" title="Permalink to this headline">#</a></h2>
+<h2>Version <code class="docutils literal notranslate"><span class="pre">0.3.0</span></code><a class="headerlink" href="#version-0-3-0" title="Permalink to this headline">#</a></h2>
 <ul class="simple">
 <li><p>Refactoring of <code class="docutils literal notranslate"><span class="pre">System</span></code>:</p>
 <ul>
 <li><p>The geometry of the molecule has been moved to a <code class="docutils literal notranslate"><span class="pre">MolecularGeometry</span></code> class that is now an attribute of the <code class="docutils literal notranslate"><span class="pre">System</span></code> class.</p></li>
-<li><p>The properties are now organized in a <code class="docutils literal notranslate"><span class="pre">Properties</span></code> class holding the reference to the electronic and vibronic levels of theory</p></li>
+<li><p>The properties are now organized in a <code class="docutils literal notranslate"><span class="pre">Properties</span></code> class holding the reference to the electronic and vibronic levels of theory.</p></li>
+<li><p>Added option to save and load <code class="docutils literal notranslate"><span class="pre">Sysyem</span></code> data in <code class="docutils literal notranslate"><span class="pre">.json</span></code> data format.</p></li>
 </ul>
 </li>
 <li><p>Differentiated engines from wrappers</p>
@@ -496,7 +517,7 @@ title="Print to PDF"
     <div class="footer-content row">
         <footer class="col footer"><p>
   
-    By Luca Babetto<br/>
+    By Luca Babetto, Pierpaolo Pravatto<br/>
   
       &copy; Copyright 2022.<br/>
 </p>
