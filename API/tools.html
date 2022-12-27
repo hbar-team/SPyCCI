@@ -633,42 +633,208 @@ title="Print to PDF"
 <span id="api-tools"></span><h1><code class="docutils literal notranslate"><span class="pre">compechem.tools</span></code> sub-module<a class="headerlink" href="#compechem-tools-sub-module" title="Permalink to this headline">#</a></h1>
 <section id="split-multixyz-function">
 <h2><code class="docutils literal notranslate"><span class="pre">split_multixyz</span></code> function<a class="headerlink" href="#split-multixyz-function" title="Permalink to this headline">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="compechem.tools.split_multixyz">
+<span class="sig-prename descclassname"><span class="pre">compechem.tools.</span></span><span class="sig-name descname"><span class="pre">split_multixyz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.tools.split_multixyz" title="Permalink to this definition">#</a></dt>
+<dd><p>Splits a .xyz file containing multiple structures into individual structures.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol</strong> (<em>System object</em>) – Input molecule, giving the charge/spin (if not defined) and name of the output molecules</p></li>
+<li><p><strong>file</strong> (<em>str</em>) – .xyz file containing the multiple structures</p></li>
+<li><p><strong>suffix</strong> (<em>str</em><em>, </em><em>optional</em>) – suffix to add to the new molecule names. By default, empty.</p></li>
+<li><p><strong>charge</strong> (<em>int</em><em>, </em><em>optional</em>) – Charge of the output molecules, by default the same as the input molecule</p></li>
+<li><p><strong>spin</strong> (<em>int</em><em>, </em><em>optional</em>) – Spin of the output molecules, by default the same as the input molecule</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>molecules_list</strong> – List containing the individual System object, whose structure is taken from the .xyz file</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <hr class="docutils" />
 <section id="compress-dftb-trajectory-function">
 <h2><code class="docutils literal notranslate"><span class="pre">compress_dftb_trajectory</span></code> function<a class="headerlink" href="#compress-dftb-trajectory-function" title="Permalink to this headline">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="compechem.tools.compress_dftb_trajectory">
+<span class="sig-prename descclassname"><span class="pre">compechem.tools.</span></span><span class="sig-name descname"><span class="pre">compress_dftb_trajectory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'md.out'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geo_xyz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'geo_end.xyz'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.tools.compress_dftb_trajectory" title="Permalink to this definition">#</a></dt>
+<dd><p>Parses a geo_end.xyz trajectory and an md.out file to export a single compressed
+trajectory file also containing the energies for all frames</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>str</em>) – name of the output trajectory files</p></li>
+<li><p><strong>md_out</strong> (<em>str</em><em>, </em><em>optional</em>) – path to the md.out file containing energy info (by default, ./md.out)</p></li>
+<li><p><strong>geo_xyz</strong> (<em>str</em><em>, </em><em>optional</em>) – path to the geo_end.xyz file containing energy info (by default, ./geo_end.xyz)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <hr class="docutils" />
 <section id="maxdist-function">
 <h2><code class="docutils literal notranslate"><span class="pre">maxdist</span></code> function<a class="headerlink" href="#maxdist-function" title="Permalink to this headline">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="compechem.tools.maxdist">
+<span class="sig-prename descclassname"><span class="pre">compechem.tools.</span></span><span class="sig-name descname"><span class="pre">maxdist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputmol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_charged_fragments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_chiral</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_huckel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.tools.maxdist" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
 </section>
 <hr class="docutils" />
 <section id="add-flag-function">
 <h2><code class="docutils literal notranslate"><span class="pre">add_flag</span></code> function<a class="headerlink" href="#add-flag-function" title="Permalink to this headline">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="compechem.tools.add_flag">
+<span class="sig-prename descclassname"><span class="pre">compechem.tools.</span></span><span class="sig-name descname"><span class="pre">add_flag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flag</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.tools.add_flag" title="Permalink to this definition">#</a></dt>
+<dd><p>Adds a warning flag to a System object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol</strong> (<em>System object</em>) – System object to which the flag will be added</p></li>
+<li><p><strong>flag</strong> (<em>str</em>) – String representing the warning which needs to be added</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <hr class="docutils" />
 <section id="dump-function">
 <h2><code class="docutils literal notranslate"><span class="pre">dump</span></code> function<a class="headerlink" href="#dump-function" title="Permalink to this headline">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="compechem.tools.dump">
+<span class="sig-prename descclassname"><span class="pre">compechem.tools.</span></span><span class="sig-name descname"><span class="pre">dump</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.tools.dump" title="Permalink to this definition">#</a></dt>
+<dd><p>Generates a pickle file containing an object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> (<em>anything</em>) – Object to dump to pickle file. Can be anything, including individual System objects</p></li>
+<li><p><strong>filename</strong> (<em>str</em>) – string containing the filename of the pickle file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Saves a pickle file containing the input object</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <hr class="docutils" />
 <section id="cyclization-check-function">
 <h2><code class="docutils literal notranslate"><span class="pre">cyclization_check</span></code> function<a class="headerlink" href="#cyclization-check-function" title="Permalink to this headline">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="compechem.tools.cyclization_check">
+<span class="sig-prename descclassname"><span class="pre">compechem.tools.</span></span><span class="sig-name descname"><span class="pre">cyclization_check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.tools.cyclization_check" title="Permalink to this definition">#</a></dt>
+<dd><p>Checks if a cyclization has occurred (e.g., during a
+geometry optimization), or if a ring opening has occurred.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_file</strong> (<em>str</em>) – .xyz file containing the starting geometry</p></li>
+<li><p><strong>end_file</strong> (<em>str</em>) – .xyz file containing the final geometry</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>If a change in the number of rings is detected, returns True.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <hr class="docutils" />
 <section id="dissociation-check-function">
 <h2><code class="docutils literal notranslate"><span class="pre">dissociation_check</span></code> function<a class="headerlink" href="#dissociation-check-function" title="Permalink to this headline">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="compechem.tools.dissociation_check">
+<span class="sig-prename descclassname"><span class="pre">compechem.tools.</span></span><span class="sig-name descname"><span class="pre">dissociation_check</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#compechem.tools.dissociation_check" title="Permalink to this definition">#</a></dt>
+<dd><p>Checks if a dissociation has occurred (e.g., during a geometry optimization).
+Requires the presence of a .mol file in the current directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>True, if a dissociation is detected</em></p></li>
+<li><p><em>False, if a dissociation is not detected</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <hr class="docutils" />
 <section id="process-output-function">
 <h2><code class="docutils literal notranslate"><span class="pre">process_output</span></code> function<a class="headerlink" href="#process-output-function" title="Permalink to this headline">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="compechem.tools.process_output">
+<span class="sig-prename descclassname"><span class="pre">compechem.tools.</span></span><span class="sig-name descname"><span class="pre">process_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_cubes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.tools.process_output" title="Permalink to this definition">#</a></dt>
+<dd><p>Processes the output of a calculation, copying the output files to a safe directory
+(output_files) in the parent directory tree, and cleans the temporary directory if requested.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol</strong> (<em>System object</em>) – Systems processed in the calculation</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – String indicating the level of theory for the calculation</p></li>
+<li><p><strong>calc</strong> (<em>str</em>) – Type of calculation</p></li>
+<li><p><strong>charge</strong> (<em>int</em><em>, </em><em>optional</em>) – Charge of the molecule in the calculation</p></li>
+<li><p><strong>spin</strong> (<em>int</em><em>, </em><em>optional</em>) – Spin of the molecule in the calculation</p></li>
+<li><p><strong>save_cubes</strong> (<em>bool</em>) – If set to true will copy the <cite>.cube</cite> files in a safe directory (<cite>output_densities</cite>)
+in the parent directory tree</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <hr class="docutils" />
 <section id="save-dftb-trajectory-function">
 <h2><code class="docutils literal notranslate"><span class="pre">save_dftb_trajectory</span></code> function<a class="headerlink" href="#save-dftb-trajectory-function" title="Permalink to this headline">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="compechem.tools.save_dftb_trajectory">
+<span class="sig-prename descclassname"><span class="pre">compechem.tools.</span></span><span class="sig-name descname"><span class="pre">save_dftb_trajectory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_prefix</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.tools.save_dftb_trajectory" title="Permalink to this definition">#</a></dt>
+<dd><p>Saves the geo_end.xyz and md.out files to a temporary directory where an MDTrajectory
+object can go read the data it needs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>output_prefix</strong> (<em>str</em>) – name of the output trajectory files prefix</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <hr class="docutils" />
 <section id="reorder-energies-function">
 <h2><code class="docutils literal notranslate"><span class="pre">reorder_energies</span></code> function<a class="headerlink" href="#reorder-energies-function" title="Permalink to this headline">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="compechem.tools.reorder_energies">
+<span class="sig-prename descclassname"><span class="pre">compechem.tools.</span></span><span class="sig-name descname"><span class="pre">reorder_energies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxcore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">350</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method_opt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method_el</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method_vib</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.tools.reorder_energies" title="Permalink to this definition">#</a></dt>
+<dd><p>Reorders a System list (generated by a CREST routine such as deprotonation) at a different
+level of theory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>system_list</strong> (<em>list</em><em>(</em><a class="reference internal" href="systems.html#compechem.systems.System" title="compechem.systems.System"><em>System</em></a><em>)</em>) – list containing the System objects to be reordered (e.g., generated by a CREST routine)</p></li>
+<li><p><strong>ncores</strong> (<em>int</em><em>, </em><em>optional</em>) – number of cores, by default all available cores</p></li>
+<li><p><strong>maxcore</strong> (<em>int</em><em>, </em><em>optional</em>) – memory per core, in MB, by default 350</p></li>
+<li><p><strong>method_opt</strong> (<em>XtbInput/OrcaInput</em><em>, </em><em>optional</em>) – level of theory for the geometry optimization. By default converted to gfn2</p></li>
+<li><p><strong>method_el</strong> (<em>XtbInput/OrcaInput</em><em>, </em><em>optional</em>) – level of theory for the electronic part of the energy. By default converted to M06-2X</p></li>
+<li><p><strong>method_vib</strong> (<em>XtbInput/OrcaInput</em><em>, </em><em>optional</em>) – level of theory for the vibronic contribution to the energy. By default converted to gfn2</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>molecule_list</strong> – System list, reordered at the new level of theory.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list(<a class="reference internal" href="systems.html#compechem.systems.System" title="compechem.systems.System">System</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 

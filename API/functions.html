@@ -493,13 +493,92 @@ title="Print to PDF"
 <span id="api-functions"></span><h1><code class="docutils literal notranslate"><span class="pre">compechem.functions</span></code> sub-module<a class="headerlink" href="#compechem-functions-sub-module" title="Permalink to this headline">#</a></h1>
 <section id="calculate-pka-function">
 <h2><code class="docutils literal notranslate"><span class="pre">calculate_pka</span></code> function<a class="headerlink" href="#calculate-pka-function" title="Permalink to this headline">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="compechem.functions.calculate_pka">
+<span class="sig-prename descclassname"><span class="pre">compechem.functions.</span></span><span class="sig-name descname"><span class="pre">calculate_pka</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">protonated</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deprotonated</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method_el</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method_vib</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.functions.calculate_pka" title="Permalink to this definition">#</a></dt>
+<dd><p>Calculates the pKa of a molecule, given the protonated and deprotonated forms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>protonated</strong> (<em>System object</em>) – molecule in the protonated form</p></li>
+<li><p><strong>deprotonated</strong> (<em>System object</em>) – molecule in the deprotonated form</p></li>
+<li><p><strong>method_el</strong> (<em>str</em>) – level of theory for the electronic energy</p></li>
+<li><p><strong>method_vib</strong> (<em>str</em><em>, </em><em>optional</em>) – level of theory for the vibronic contributions, if method_vib is None (default),
+the pKa calculation will be carried out only considering the electronic component</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>pKa</strong> – pKa of the molecule.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <hr class="docutils" />
 <section id="calculate-potential-function">
 <h2><code class="docutils literal notranslate"><span class="pre">calculate_potential</span></code> function<a class="headerlink" href="#calculate-potential-function" title="Permalink to this headline">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="compechem.functions.calculate_potential">
+<span class="sig-prename descclassname"><span class="pre">compechem.functions.</span></span><span class="sig-name descname"><span class="pre">calculate_potential</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">oxidised</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduced</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method_el</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method_vib</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pH</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.functions.calculate_potential" title="Permalink to this definition">#</a></dt>
+<dd><p>Calculates the reduction potential of a molecule, given the oxidised and reduced forms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>oxidised</strong> (<em>System object</em>) – molecule in the oxidised state</p></li>
+<li><p><strong>reduced</strong> (<em>System object</em>) – molecule in the reduced state</p></li>
+<li><p><strong>method_el</strong> (<em>str</em>) – level of theory for the electronic energy</p></li>
+<li><p><strong>method_vib</strong> (<em>str</em><em>, </em><em>optional</em>) – level of theory for the vibronic contributions, if method_vib is None (default),
+the potential calculation will be carried out only considering the electronic component</p></li>
+<li><p><strong>pH</strong> (<em>float</em>) – pH at which the redox potential is evaluated, by default pH=7</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>potential</strong> – reduction potential of the molecule.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="calculate-fukui-function">
 <h2><code class="docutils literal notranslate"><span class="pre">calculate_fukui</span></code> function<a class="headerlink" href="#calculate-fukui-function" title="Permalink to this headline">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="compechem.functions.calculate_fukui">
+<span class="sig-prename descclassname"><span class="pre">compechem.functions.</span></span><span class="sig-name descname"><span class="pre">calculate_fukui</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">molecule</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orca</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spins_states</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cube_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">250</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxcore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.functions.calculate_fukui" title="Permalink to this definition">#</a></dt>
+<dd><p>Computes the Fukui f+, f- and f0 functions starting from a given input molecule. The
+functions are saved in Gaussian cube compatible format and stored in the
+<cite>output_densities</cite> folder. Localized Fukui functions are also computed from the Mulliken
+and Hirshfeld charges and saved in the molecule properties. Please notice that the charges
+in the <cite>.fukui.cube</cite> produced are replaced by the Mulliken condensed fukui functions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>molecule</strong> (<a class="reference internal" href="systems.html#compechem.systems.System" title="compechem.systems.System"><em>System</em></a>) – The System object containing the geometry of the selected molecule (if the geometry
+has not been optimized, please enable the optimize option)</p></li>
+<li><p><strong>orca</strong> (<a class="reference internal" href="wrappers/orca.html#compechem.engines.orca.OrcaInput" title="compechem.engines.orca.OrcaInput"><em>OrcaInput</em></a>) – The orca input wrapper object that defines the protocol to be used in the calculation.</p></li>
+<li><p><strong>spin_states</strong> (<em>Union</em><em>[</em><em>None</em><em>, </em><em>List</em><em>[</em><em>int</em><em>]</em><em>]</em>) – If set to None, when adding or subtracting electrons will automatically switch the
+spin state from singlet to doublet and vice versa (Maximum one unpaired electrons).
+If manually set to <cite>List[int]</cite> will force the spin multeplicities according to the
+user specified values. The order of the spin multiplicity values is: molecule with
+one electron added (-1), the molecule as it is (0) and the molecule  with one of its
+electrons removed (+1).</p></li>
+<li><p><strong>cube_dim</strong> (<em>int</em>) – Resolution for the cube files (default 250)</p></li>
+<li><p><strong>ncores</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of cores, by default all available cores (None)</p></li>
+<li><p><strong>maxcore</strong> (<em>int</em>) – The maximum amount of memory in MB to be allocated for each core.</p></li>
+<li><p><strong>spins_states</strong> (<em>Union</em><em>[</em><em>None</em><em>, </em><em>List</em><em>[</em><em>int</em><em>]</em><em>]</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><em>Dict</em>[str, <em>Dict</em>[str, <em>List</em>[float]]]</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 

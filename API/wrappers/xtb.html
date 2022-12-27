@@ -453,6 +453,105 @@ title="Print to PDF"
 <span id="api-wrappers-xtb"></span><h1><code class="docutils literal notranslate"><span class="pre">compechem.engines.xtb</span></code> sub-module<a class="headerlink" href="#compechem-engines-xtb-sub-module" title="Permalink to this headline">#</a></h1>
 <section id="xtbinput-class">
 <h2><code class="docutils literal notranslate"><span class="pre">XtbInput</span></code> class<a class="headerlink" href="#xtbinput-class" title="Permalink to this headline">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="compechem.engines.xtb.XtbInput">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">compechem.engines.xtb.</span></span><span class="sig-name descname"><span class="pre">XtbInput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gfn2'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optionals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">XTBPATH</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.engines.xtb.XtbInput" title="Permalink to this definition">#</a></dt>
+<dd><p>Interface for running xTB calculations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> (<em>str</em>) – </p></li>
+<li><p><strong>solvent</strong> (<em>str</em>) – </p></li>
+<li><p><strong>optionals</strong> (<em>str</em>) – </p></li>
+<li><p><strong>XTBPATH</strong> (<em>str</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="compechem.engines.xtb.XtbInput.freq">
+<span class="sig-name descname"><span class="pre">freq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxcore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_tdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.engines.xtb.XtbInput.freq" title="Permalink to this definition">#</a></dt>
+<dd><p>Frequency analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol</strong> (<em>System object</em>) – input system to use in the calculation</p></li>
+<li><p><strong>ncores</strong> (<em>int</em><em>, </em><em>optional</em>) – number of cores, by default all available cores</p></li>
+<li><p><strong>maxcore</strong> (<em>dummy variable</em>) – dummy variable used for compatibility with Orca calculations</p></li>
+<li><p><strong>charge</strong> (<em>int</em><em>, </em><em>optional</em>) – Total charge of the system. Default is taken from the input system.</p></li>
+<li><p><strong>spin</strong> (<em>int</em><em>, </em><em>optional</em>) – Total spin of the system. Default is taken from the input system.</p></li>
+<li><p><strong>inplace</strong> (<em>bool</em><em>, </em><em>optional</em>) – updates info for the input system instead of outputting a new system object,
+by default False</p></li>
+<li><p><strong>remove_tdir</strong> (<em>bool</em><em>, </em><em>optional</em>) – temporary work directory will be removed, by default True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>newmol</strong> – Output system containing the new energies.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>System object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="compechem.engines.xtb.XtbInput.opt">
+<span class="sig-name descname"><span class="pre">opt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxcore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_tdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.engines.xtb.XtbInput.opt" title="Permalink to this definition">#</a></dt>
+<dd><p>Geometry optimization + frequency analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol</strong> (<em>System object</em>) – Input system to use in the calculation</p></li>
+<li><p><strong>ncores</strong> (<em>int</em><em>, </em><em>optional</em>) – number of cores, by default all available cores</p></li>
+<li><p><strong>maxcore</strong> (<em>dummy variable</em>) – dummy variable used for compatibility with Orca calculations</p></li>
+<li><p><strong>charge</strong> (<em>int</em><em>, </em><em>optional</em>) – Total charge of the system. Default is taken from the input system.</p></li>
+<li><p><strong>spin</strong> (<em>int</em><em>, </em><em>optional</em>) – Total spin of the system. Default is taken from the input system.</p></li>
+<li><p><strong>inplace</strong> (<em>bool</em><em>, </em><em>optional</em>) – updates info for the input system instead of outputting a new system object,
+by default False</p></li>
+<li><p><strong>remove_tdir</strong> (<em>bool</em><em>, </em><em>optional</em>) – Temporary work directory will be removed, by default True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>newmol</strong> (<em>System object</em>) – Output system containing the new geometry and energies.</p></li>
+<li><p><em>If a dissociation or a cyclization is observed, ignore the calculation and return the</em></p></li>
+<li><p><em>original “mol” system.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="compechem.engines.xtb.XtbInput.spe">
+<span class="sig-name descname"><span class="pre">spe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxcore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_tdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.engines.xtb.XtbInput.spe" title="Permalink to this definition">#</a></dt>
+<dd><p>Single point energy calculation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol</strong> (<em>System object</em>) – Input system to use in the calculation.</p></li>
+<li><p><strong>ncores</strong> (<em>int</em><em>, </em><em>optional</em>) – number of cores, by default all available cores</p></li>
+<li><p><strong>maxcore</strong> (<em>dummy variable</em>) – dummy variable used for compatibility with Orca calculations</p></li>
+<li><p><strong>charge</strong> (<em>int</em><em>, </em><em>optional</em>) – total charge of the system. Default is taken from the input system.</p></li>
+<li><p><strong>spin</strong> (<em>int</em><em>, </em><em>optional</em>) – total spin of the system. Default is taken from the input system.</p></li>
+<li><p><strong>inplace</strong> (<em>bool</em><em>, </em><em>optional</em>) – updates info for the input system instead of outputting a new system object,
+by default False</p></li>
+<li><p><strong>remove_tdir</strong> (<em>bool</em><em>, </em><em>optional</em>) – Temporary work directory will be removed, by default True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>newmol</strong> – Output system containing the new energies.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>System object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 

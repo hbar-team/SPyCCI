@@ -453,6 +453,202 @@ title="Print to PDF"
 <span id="api-wrappers-orca"></span><h1><code class="docutils literal notranslate"><span class="pre">compechem.engines.orca</span></code> sub-module<a class="headerlink" href="#compechem-engines-orca-sub-module" title="Permalink to this headline">#</a></h1>
 <section id="orcainput-class">
 <h2><code class="docutils literal notranslate"><span class="pre">OrcaInput</span></code> class<a class="headerlink" href="#orcainput-class" title="Permalink to this headline">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="compechem.engines.orca.OrcaInput">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">compechem.engines.orca.</span></span><span class="sig-name descname"><span class="pre">OrcaInput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'PBE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'def2-TZVP'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aux_basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'def2/J'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optionals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">MPI_FLAGS</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ORCADIR</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.engines.orca.OrcaInput" title="Permalink to this definition">#</a></dt>
+<dd><p>Interface for running Orca calculations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> (<em>str</em>) – </p></li>
+<li><p><strong>basis_set</strong> (<em>str</em>) – </p></li>
+<li><p><strong>aux_basis</strong> (<em>str</em>) – </p></li>
+<li><p><strong>solvent</strong> (<em>str</em>) – </p></li>
+<li><p><strong>optionals</strong> (<em>str</em>) – </p></li>
+<li><p><strong>MPI_FLAGS</strong> (<em>str</em>) – </p></li>
+<li><p><strong>ORCADIR</strong> (<em>str</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="compechem.engines.orca.OrcaInput.freq">
+<span class="sig-name descname"><span class="pre">freq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxcore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">350</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_tdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.engines.orca.OrcaInput.freq" title="Permalink to this definition">#</a></dt>
+<dd><p>Frequency analysis (analytical frequencies).</p>
+<p>Note: if the SMD solvation model is detected, defaults to numerical frequencies
+(analytical frequencies are not currently supported)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol</strong> (<em>System object</em>) – input molecule to use in the calculation</p></li>
+<li><p><strong>ncores</strong> (<em>int</em><em>, </em><em>optional</em>) – number of cores, by default all available cores</p></li>
+<li><p><strong>maxcore</strong> (<em>int</em><em>, </em><em>optional</em>) – memory per core, in MB, by default 350</p></li>
+<li><p><strong>charge</strong> (<em>int</em><em>, </em><em>optional</em>) – total charge of the molecule. Default is taken from the input molecule.</p></li>
+<li><p><strong>spin</strong> (<em>int</em><em>, </em><em>optional</em>) – total spin of the molecule. Default is taken from the input molecule.</p></li>
+<li><p><strong>inplace</strong> (<em>bool</em><em>, </em><em>optional</em>) – updates info for the input molecule instead of outputting a new molecule object,
+by default False</p></li>
+<li><p><strong>remove_tdir</strong> (<em>bool</em><em>, </em><em>optional</em>) – temporary work directory will be removed, by default True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>newmol</strong> – Output molecule containing the new energies.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>System object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="compechem.engines.orca.OrcaInput.nfreq">
+<span class="sig-name descname"><span class="pre">nfreq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxcore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">350</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_tdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.engines.orca.OrcaInput.nfreq" title="Permalink to this definition">#</a></dt>
+<dd><p>Frequency analysis (numerical frequencies).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol</strong> (<em>System object</em>) – input molecule to use in the calculation</p></li>
+<li><p><strong>ncores</strong> (<em>int</em><em>, </em><em>optional</em>) – number of cores, by default all available cores</p></li>
+<li><p><strong>maxcore</strong> (<em>int</em><em>, </em><em>optional</em>) – memory per core, in MB, by default 350</p></li>
+<li><p><strong>charge</strong> (<em>int</em><em>, </em><em>optional</em>) – total charge of the molecule. Default is taken from the input molecule.</p></li>
+<li><p><strong>spin</strong> (<em>int</em><em>, </em><em>optional</em>) – total spin of the molecule. Default is taken from the input molecule.</p></li>
+<li><p><strong>inplace</strong> (<em>bool</em><em>, </em><em>optional</em>) – updates info for the input molecule instead of outputting a new molecule object,
+by default False</p></li>
+<li><p><strong>remove_tdir</strong> (<em>bool</em><em>, </em><em>optional</em>) – temporary work directory will be removed, by default True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>newmol</strong> – Output molecule containing the new energies.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>System object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="compechem.engines.orca.OrcaInput.opt">
+<span class="sig-name descname"><span class="pre">opt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxcore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">350</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_cubes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cube_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">250</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hirshfeld</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_tdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.engines.orca.OrcaInput.opt" title="Permalink to this definition">#</a></dt>
+<dd><p>Geometry optimization + frequency analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol</strong> (<em>System object</em>) – input molecule to use in the calculation</p></li>
+<li><p><strong>ncores</strong> (<em>int</em><em>, </em><em>optional</em>) – number of cores, by default all available cores</p></li>
+<li><p><strong>maxcore</strong> (<em>int</em><em>, </em><em>optional</em>) – memory per core, in MB, by default 350</p></li>
+<li><p><strong>charge</strong> (<em>int</em><em>, </em><em>optional</em>) – total charge of the molecule. Default is taken from the input molecule.</p></li>
+<li><p><strong>spin</strong> (<em>int</em><em>, </em><em>optional</em>) – total spin of the molecule. Default is taken from the input molecule.</p></li>
+<li><p><strong>save_cubes</strong> (<em>bool</em><em>, </em><em>optional</em>) – if set to True, will save a cube file containing electronic and spin densities,
+by default False.</p></li>
+<li><p><strong>cube_dim</strong> (<em>int</em><em>, </em><em>optional</em>) – resolution for the cube files (default 250)</p></li>
+<li><p><strong>hirshfeld</strong> (<em>bool</em>) – if set to true, will run the Hirshfeld population analysis. (default: False)</p></li>
+<li><p><strong>inplace</strong> (<em>bool</em><em>, </em><em>optional</em>) – updates info for the input molecule instead of outputting a new molecule object,
+by default False</p></li>
+<li><p><strong>remove_tdir</strong> (<em>bool</em><em>, </em><em>optional</em>) – temporary work directory will be removed, by default True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>newmol</strong> – Output molecule containing the new geometry and energies.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>System object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="compechem.engines.orca.OrcaInput.output_suffix">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">output_suffix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#compechem.engines.orca.OrcaInput.output_suffix" title="Permalink to this definition">#</a></dt>
+<dd><p>Suffix used to compose the name of calculation output files</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The output suffix string</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="compechem.engines.orca.OrcaInput.parse_output">
+<span class="sig-name descname"><span class="pre">parse_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.engines.orca.OrcaInput.parse_output" title="Permalink to this definition">#</a></dt>
+<dd><p>The function will parse an ORCA output file automatically looking for all the relevant
+numerical properties derived form a calculation. All the properties of the given molecule
+will be set or updated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mol</strong> (<em>str</em>) – The system to which the properties must be written to.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – Exception raised if the given path to the output file is not valid.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="compechem.engines.orca.OrcaInput.scan">
+<span class="sig-name descname"><span class="pre">scan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constraints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invertconstraints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxcore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">350</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_tdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.engines.orca.OrcaInput.scan" title="Permalink to this definition">#</a></dt>
+<dd><p>Relaxed surface scan.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol</strong> (<em>System object</em>) – input molecule to use in the calculation</p></li>
+<li><p><strong>scan</strong> (<em>str</em>) – string for the scan section in the %geom block</p></li>
+<li><p><strong>constraints</strong> (<em>str</em>) – string for the constraints section in the %geom block</p></li>
+<li><p><strong>invertconstraints</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True, treats the constraints block as the only coordinate NOT to constrain</p></li>
+<li><p><strong>ncores</strong> (<em>int</em><em>, </em><em>optional</em>) – number of cores, by default all available cores</p></li>
+<li><p><strong>maxcore</strong> (<em>int</em><em>, </em><em>optional</em>) – memory per core, in MB, by default 350</p></li>
+<li><p><strong>charge</strong> (<em>int</em><em>, </em><em>optional</em>) – total charge of the molecule. Default is taken from the input molecule.</p></li>
+<li><p><strong>spin</strong> (<em>int</em><em>, </em><em>optional</em>) – total spin of the molecule. Default is taken from the input molecule.</p></li>
+<li><p><strong>remove_tdir</strong> (<em>bool</em><em>, </em><em>optional</em>) – temporary work directory will be removed, by default True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>scan_list</strong> – Output Ensemble containing the scan frames.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Ensemble object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="compechem.engines.orca.OrcaInput.spe">
+<span class="sig-name descname"><span class="pre">spe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxcore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">350</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_cubes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cube_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">250</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hirshfeld</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_tdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.engines.orca.OrcaInput.spe" title="Permalink to this definition">#</a></dt>
+<dd><p>Single point energy calculation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol</strong> (<em>System object</em>) – input molecule to use in the calculation</p></li>
+<li><p><strong>ncores</strong> (<em>int</em><em>, </em><em>optional</em>) – number of cores, by default all available cores</p></li>
+<li><p><strong>maxcore</strong> (<em>int</em><em>, </em><em>optional</em>) – memory per core, in MB, by default 350</p></li>
+<li><p><strong>charge</strong> (<em>int</em><em>, </em><em>optional</em>) – total charge of the molecule. Default is taken from the input molecule.</p></li>
+<li><p><strong>spin</strong> (<em>int</em><em>, </em><em>optional</em>) – total spin of the molecule. Default is taken from the input molecule.</p></li>
+<li><p><strong>save_cubes</strong> (<em>bool</em><em>, </em><em>optional</em>) – if set to True, will save a cube file containing electronic and spin densities,
+by default False.</p></li>
+<li><p><strong>cube_dim</strong> (<em>int</em><em>, </em><em>optional</em>) – resolution for the cube files (default 250)</p></li>
+<li><p><strong>hirshfeld</strong> (<em>bool</em>) – if set to true, will run the Hirshfeld population analysis. (default: False)</p></li>
+<li><p><strong>inplace</strong> (<em>bool</em><em>, </em><em>optional</em>) – updates info for the input molecule instead of outputting a new molecule object,
+by default False</p></li>
+<li><p><strong>remove_tdir</strong> (<em>bool</em><em>, </em><em>optional</em>) – temporary work directory will be removed, by default True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>newmol</strong> – Output molecule containing the new energies.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>System object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 
