@@ -500,6 +500,17 @@ title="Print to PDF"
    function
   </a>
  </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-compechem.tools.vmdtools">
+   The
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     compechem.tools.vmdtools
+    </span>
+   </code>
+   sub-module
+  </a>
+ </li>
 </ul>
 
     </nav>
@@ -619,6 +630,17 @@ title="Print to PDF"
    function
   </a>
  </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-compechem.tools.vmdtools">
+   The
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     compechem.tools.vmdtools
+    </span>
+   </code>
+   sub-module
+  </a>
+ </li>
 </ul>
 
                         </nav>
@@ -683,7 +705,12 @@ trajectory file also containing the energies for all frames</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="compechem.tools.maxdist">
 <span class="sig-prename descclassname"><span class="pre">compechem.tools.</span></span><span class="sig-name descname"><span class="pre">maxdist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputmol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_charged_fragments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_chiral</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_huckel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.tools.maxdist" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inputmol</strong> (<a class="reference internal" href="systems.html#compechem.systems.System" title="compechem.systems.System"><em>compechem.systems.System</em></a>) – </p>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 <hr class="docutils" />
@@ -831,6 +858,84 @@ level of theory.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>list(<a class="reference internal" href="systems.html#compechem.systems.System" title="compechem.systems.System">System</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-compechem.tools.vmdtools">
+<span id="the-compechem-tools-vmdtools-sub-module"></span><h2>The <code class="docutils literal notranslate"><span class="pre">compechem.tools.vmdtools</span></code> sub-module<a class="headerlink" href="#module-compechem.tools.vmdtools" title="Permalink to this headline">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="compechem.tools.vmdtools.render_condensed_fukui">
+<span class="sig-prename descclassname"><span class="pre">compechem.tools.vmdtools.</span></span><span class="sig-name descname"><span class="pre">render_condensed_fukui</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cubfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4800</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shadows</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ambientocclusion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dof</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">VMD_PATH</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.tools.vmdtools.render_condensed_fukui" title="Permalink to this definition">#</a></dt>
+<dd><p>Given the path to a Fukui function cube file saves a <cite>.bmp</cite> render of the condensed Fukui
+functions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cubefile</strong> (<em>str</em>) – The path to the <cite>.fukui.cube</cite> file that must be rendered.</p></li>
+<li><p><strong>resolution</strong> (<em>int</em>) – The resolution of the output image (default: 4800).</p></li>
+<li><p><strong>shadows</strong> (<em>bool</em>) – If set to True will enable the vmd shadows option</p></li>
+<li><p><strong>ambientocclusion</strong> (<em>bool</em>) – If set to True will enable the vmd ambientocclusion option</p></li>
+<li><p><strong>dof</strong> (<em>bool</em>) – If set to True will enable the vmd dof option</p></li>
+<li><p><strong>VMD_PATH</strong> (<em>str</em>) – The path to the vmd folder. Is set to None (default), will automatically search vmd
+in the system PATH.</p></li>
+<li><p><strong>cubfile</strong> (<em>str</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="compechem.tools.vmdtools.render_fukui_cube">
+<span class="sig-prename descclassname"><span class="pre">compechem.tools.vmdtools.</span></span><span class="sig-name descname"><span class="pre">render_fukui_cube</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cubfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isovalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.003</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_negative</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4800</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shadows</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ambientocclusion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dof</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">VMD_PATH</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.tools.vmdtools.render_fukui_cube" title="Permalink to this definition">#</a></dt>
+<dd><p>Given the path to a Fukui function cube file saves a <cite>.bmp</cite> render the volumetric Fukui
+function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cubefile</strong> (<em>str</em>) – The path to the <cite>.fukui.cube</cite> file that must be rendered.</p></li>
+<li><p><strong>isovalue</strong> (<em>float</em>) – The isovalue at which the contour must be plotted (default: 0.003).</p></li>
+<li><p><strong>include_negative</strong> (<em>bool</em>) – If set to True, will render also the negative part of the Fukui function. (default:
+False)</p></li>
+<li><p><strong>resolution</strong> (<em>int</em>) – The resolution of the output image (default: 4800).</p></li>
+<li><p><strong>shadows</strong> (<em>bool</em>) – If set to True will enable the vmd shadows option</p></li>
+<li><p><strong>ambientocclusion</strong> (<em>bool</em>) – If set to True will enable the vmd ambientocclusion option</p></li>
+<li><p><strong>dof</strong> (<em>bool</em>) – If set to True will enable the vmd dof option</p></li>
+<li><p><strong>VMD_PATH</strong> (<em>str</em>) – The path to the vmd folder. Is set to None (default), will automatically search vmd
+in the system PATH.</p></li>
+<li><p><strong>cubfile</strong> (<em>str</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="compechem.tools.vmdtools.render_spin_density_cube">
+<span class="sig-prename descclassname"><span class="pre">compechem.tools.vmdtools.</span></span><span class="sig-name descname"><span class="pre">render_spin_density_cube</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cubfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isovalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.005</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4800</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shadows</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ambientocclusion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dof</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">VMD_PATH</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.tools.vmdtools.render_spin_density_cube" title="Permalink to this definition">#</a></dt>
+<dd><p>Given the path to a spin density cube file saves a <cite>.bmp</cite> render the function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cubefile</strong> (<em>str</em>) – The path to the <cite>.fukui.cube</cite> file that must be rendered.</p></li>
+<li><p><strong>isovalue</strong> (<em>float</em>) – The isovalue at which the contour must be plotted (default: 0.003).</p></li>
+<li><p><strong>resolution</strong> (<em>int</em>) – The resolution of the output image (default: 4800).</p></li>
+<li><p><strong>shadows</strong> (<em>bool</em>) – If set to True will enable the vmd shadows option</p></li>
+<li><p><strong>ambientocclusion</strong> (<em>bool</em>) – If set to True will enable the vmd ambientocclusion option</p></li>
+<li><p><strong>dof</strong> (<em>bool</em>) – If set to True will enable the vmd dof option</p></li>
+<li><p><strong>VMD_PATH</strong> (<em>str</em>) – The path to the vmd folder. Is set to None (default), will automatically search vmd
+in the system PATH.</p></li>
+<li><p><strong>cubfile</strong> (<em>str</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>

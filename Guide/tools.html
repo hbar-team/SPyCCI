@@ -445,6 +445,11 @@ title="Print to PDF"
    </code>
   </a>
  </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#vmd-based-tools">
+   VMD based tools
+  </a>
+ </li>
 </ul>
 
     </nav>
@@ -509,6 +514,11 @@ title="Print to PDF"
    </code>
   </a>
  </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#vmd-based-tools">
+   VMD based tools
+  </a>
+ </li>
 </ul>
 
                         </nav>
@@ -571,6 +581,20 @@ title="Print to PDF"
 <li><p><code class="docutils literal notranslate"><span class="pre">method_vib</span></code> (any Input type from a <code class="docutils literal notranslate"><span class="pre">wrapper</span></code>): level of theory for the vibronic component of the total energy. By default GFN2-xTB</p></li>
 </ul>
 <p>and returns the same list, but with a new ordering, given by the total energies recalculated at the new level of theory.</p>
+</section>
+<section id="vmd-based-tools">
+<h2>VMD based tools<a class="headerlink" href="#vmd-based-tools" title="Permalink to this headline">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">copechem.tools</span></code> module also provides a <code class="docutils literal notranslate"><span class="pre">vmdtools</span></code> submodule containing simple VMD-based functions to render graphical representations of molecular properties such as:</p>
+<ul class="simple">
+<li><p>Volumetric and condensed Fukui functions</p></li>
+<li><p>Spin densities</p></li>
+</ul>
+<p>The following conventions have been adopted in the representation:</p>
+<ul class="simple">
+<li><p>Positive/high values of functions/densities related to the electronic density are represented in red while negative/low values are represented in blue.</p></li>
+<li><p>Positive/high values of functions/densities related to the spin density are represented in orange while negative/low values are represented in violet.</p></li>
+</ul>
+<p>Please refer to the API for details about the call to the various render functions.</p>
 </section>
 </section>
 

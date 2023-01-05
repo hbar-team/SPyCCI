@@ -78,3 +78,10 @@
 ```{eval-rst}
 .. autofunction:: compechem.tools.reorder_energies
 ```
+
+## The `compechem.tools.vmdtools` sub-module 
+
+```{eval-rst}
+.. automodule:: compechem.tools.vmdtools
+    :members:
+```
