@@ -77,7 +77,7 @@ $$
 
 Where, given a molecule with $N$ electrons, $\rho_{N}(r)$ represents its electronic density while $\rho_{N\pm1}(r)$ represents the electronic density of the molecule, in the same nuclear configuration, when one electron is either added ($+1$) or removed ($-1$).
 
-The Fukui functions are both computed as volumetric quantities and saved in a [Gaussian Cube](http://paulbourke.net/dataformats/cube/) compatible format in the `output_density` folder and as condensed values saved in the `System` object `properties` attribute in the form of a dictionary. The condensed Fukui functions are computed by applying the $f^+$, $f^-$ and $f^0$ definitions replacing the charge density with either the Mulliken charges or the Hirshfeld charges (changing the sign accordingly given that a localized electronic density represents an accumulation of electrons hence of negative charge).
+The Fukui functions are both computed as volumetric quantities and saved in a [Gaussian Cube](http://paulbourke.net/dataformats/cube/) compatible format in the `output_density` folder and as condensed values saved in the `System` object `properties` attribute in the form of a dictionary. The condensed Fukui functions are computed by applying the $f^+$, $f^-$ and $f^0$ definitions replacing the charge density with either the Mulliken charges or the Hirshfeld charges (changing the sign accordingly given that a localized electronic density represents an accumulation of electrons hence of negative charge). Please notice how the Hirshfeld charges are supported only by the `OrcaInput` engine.
 
 ::::{important}
 Please notice how the Fukui cubes contain the localized Mulliken-charge-based Fukui values in place of the atomic charges. This is explained in the first comment line of each cube file and, for sake of clarity, all the files are saved using the extension `.fukui.cube`.
@@ -85,7 +85,7 @@ Please notice how the Fukui cubes contain the localized Mulliken-charge-based Fu
 
 The function can be called with the following minimal arguments:
 * `molecule` (`System`): The molecular structure to be used in the computation
-* `orca` (`OrcaInput`): The ORCA wrapper defining the level of theory to be used in the calculation.
+* `engine` (`OrcaInput` or `XtbInput`): The engine defining the level of theory to be used in the calculation.
 
 The function assumes that the molecule supports only singlet and doublet states and switches the spin multeplicity according to the number of electrons. If different spin states needs to be considered the `spins_states` option can be used to provide the spin multeplicity values as a list.
 
