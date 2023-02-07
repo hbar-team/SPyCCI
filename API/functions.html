@@ -495,23 +495,29 @@ title="Print to PDF"
 <h2><code class="docutils literal notranslate"><span class="pre">calculate_pka</span></code> function<a class="headerlink" href="#calculate-pka-function" title="Permalink to this headline">#</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="compechem.functions.calculate_pka">
-<span class="sig-prename descclassname"><span class="pre">compechem.functions.</span></span><span class="sig-name descname"><span class="pre">calculate_pka</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">protonated</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deprotonated</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method_el</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method_vib</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.functions.calculate_pka" title="Permalink to this definition">#</a></dt>
-<dd><p>Calculates the pKa of a molecule, given the protonated and deprotonated forms.</p>
+<span class="sig-prename descclassname"><span class="pre">compechem.functions.</span></span><span class="sig-name descname"><span class="pre">calculate_pka</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">protonated</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deprotonated</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.functions.calculate_pka" title="Permalink to this definition">#</a></dt>
+<dd><p>Calculates the pKa of a molecule, given the protonated and deprotonated forms assuming
+that energies have already been computed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>protonated</strong> (<em>System object</em>) – molecule in the protonated form</p></li>
 <li><p><strong>deprotonated</strong> (<em>System object</em>) – molecule in the deprotonated form</p></li>
-<li><p><strong>method_el</strong> (<em>str</em>) – level of theory for the electronic energy</p></li>
-<li><p><strong>method_vib</strong> (<em>str</em><em>, </em><em>optional</em>) – level of theory for the vibronic contributions, if method_vib is None (default),
-the pKa calculation will be carried out only considering the electronic component</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>pKa</strong> – pKa of the molecule.</p>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Exception raised if either protonated or deprotonated molecules are Ensembles</p></li>
+<li><p><strong>RuntimeError</strong> – Exception raised if the difference in number of atoms between protonated and
+    deprotonated species is different from 1 or if a mismatch is detected between electronic
+    levels of theory.</p></li>
+</ul>
 </dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>float</p>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>pKa</strong> – pKa of the molecule.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
 </dd>
 </dl>
 </dd></dl>
