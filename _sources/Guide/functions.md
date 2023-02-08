@@ -13,26 +13,82 @@ from compechem.functions import calculate_pka
 
 ## pKa
 
-The `compechem.functions.calculate_pka` function calculates the pKa of a molecule $HA$ considering a reaction of the type:
+The `compechem.functions.pka` submodule provides an interface for the computation of the pKa or a given species. The module is, at this time, composed by two functions:
+
+* `calculate_pka`: Computes the pKa of a molecular system and its deprotomer. The user must provide both streucture in the form of `System` objects with an already defined electronic energy and possibly a vibronic one.
+* `auto_calculate_pka`: Computes the pKa of a given molecule by automatically searching the lowest-energy deprotomer using CREST. Once the proper deprotomer has been identified the function take care of the geometry optimization of both structures, the calculation of electronic energies and frequencies.
+
+Please notice how both functions return the computed pKa value while the `auto_calculate_pka` function also sets the pKa as a property of the protonated system.
+
+In general terms both functions calculate the pKa of a molecule $HA$ considering a reaction of the type:
 
 $$
 HA \rightarrow H^{+} + A^{-}
 $$
 
-provided the following arguments:
-
-* `protonated` (`System`): molecule in its protonated form
-* `deprotonated` (`System`): molecule in its deprotonated form
-* `method_el` (`System`): level of theory for the electronic component of the total energy (must be present in the `System.energies` dictionary)
-* `method_vib` (`System`): level of theory for the vibronic component of the total energy (must be present in the `System.energies` dictionary). If not specified, defaults to the same level of theory as the electronic energy
-
-The function returns the pKa of the molecule considering the provided states, calculated as:
+The equilibrium constant of the reaction is calculated as 
 
 $$
 pK_{a} = \frac{G_{A^{-}} + G_{H^{+}} - G_{HA}}{2.303 \cdot RT}
 $$
 
-Where $G_{A^{-}}$ and $G_{HA}$ are calculated summing the electronic + vibronic energies at the selected level of theory, $G_{H^{+}} = -270.29 kcal/mol$, $R = 1.987 \cdot 10^{-3} kcal/(mol \cdot K)$ and $T = 298.15 K$
+where $G_{A^{-}}$ and $G_{HA}$ are calculated summing the electronic + vibronic energies at the selected/provided level of theory, $G_{H^{+}} = -270.29 kcal/mol$, $R = 1.987 \cdot 10^{-3} kcal/(mol \cdot K)$ and $T = 298.15 K$.
+
+### The `calculate_pka()` function:
+
+The `calculate_pka` function takes as arguments the following elements:
+
+* `protonated` (`System`): molecule in its protonated form
+* `deprotonated` (`System`): molecule in its deprotonated form
+
+Please notice how both the `protonated` and `deprotonated` molecules must already be optimized (in water) and must posses a valid electronic energy value. If the vibronic energy is provided, its contribution is taken into account during the calculation.
+
+An example script that can be used to compute the pKa of a molecule is provided in what follows:
+
+```python
+from compechem.engines.xtb import XtbInput
+from compechem.systems import System
+from compechem.functions.pka import calculate_pka
+
+protonated = System("protonated.xyz", charge=0, spin=1)
+deprotonated = System("deprotonated.xyz", charge=-1, spin=1)
+
+xtb = XtbInput(solvent="water")
+xtb.opt(protonated, inplace=True)
+xtb.opt(deprotonated, inplace=True)
+
+pka = calculate_pka(protonated, deprotonated)
+```
+
+### The `auto_calculate_pka()` function:
+
+The `auto_calculate_pka` function takes as main argument the protonated molecule structure (in the form of a `System` object). The molecule is sequentially deprotonated using the CREST deprotomer search routine until the lowest energy deprotomer is identified. Once the deprotomer search has been completed, the structure of both molecules is optimized using the specified level of theory and both electronic and vibronic energies are computed at the user defined level of theory. The routine takes as arguments the following elements:
+
+* `protonated` (`System`): The protonated molecule for which the pKa must be computed.
+* `method_el` (`Engine`): The computational engine to be used in the electronic level of theory calculations.
+* `method_vib` (`Engine`):  The computational engine to be used in the vibronic level of theory calculations. (optional)
+* `method_opt` (`Engine`): The computational engine to be used in the geometry optimization of the protonated molecule and its deprotomers. (optional)
+* `ncores` (`int`): The number of cores to be used in the calculations. (optional)
+* `maxcore` (`int`):  For the engines that supprots it, the memory assigned to each core used in the computation. (optional)
+
+An example script that can be used to compute the pKa of a molecule is provided in what follows:
+
+```python
+from compechem.engines.xtb import XtbInput
+from compechem.systems import System
+from compechem.functions.pka import calculate_pka
+
+protonated = System(f"protonated.xyz", charge=0, spin=1)
+xtb = XtbInput(solvent="water")
+
+pka, deprotonated = auto_calculate_pka(
+    protonated,
+    method_el=xtb,
+    method_vib=xtb,
+    method_opt=xtb,
+)
+```
+Please notice how the optimized structure of the deprotonated system is also returned together with the pKa value.
 
 ---
 
