@@ -18,7 +18,11 @@ The `compechem.functions.pka` submodule provides an interface for the computatio
 * `calculate_pka`: Computes the pKa of a molecular system and its deprotomer. The user must provide both streucture in the form of `System` objects with an already defined electronic energy and possibly a vibronic one.
 * `auto_calculate_pka`: Computes the pKa of a given molecule by automatically searching the lowest-energy deprotomer using CREST. Once the proper deprotomer has been identified the function take care of the geometry optimization of both structures, the calculation of electronic energies and frequencies.
 
-Please notice how both functions return the computed pKa value while the `auto_calculate_pka` function also sets the pKa as a property of the protonated system.
+
+:::{admonition} Note
+:class: info
+Both functions return the computed pKa value and set the pKa as a property (`system.properties.pka`) of the protonated system. The `auto_calculate_pka` also returns the deprotonated system.
+:::
 
 In general terms both functions calculate the pKa of a molecule $HA$ considering a reaction of the type:
 

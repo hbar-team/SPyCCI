@@ -524,7 +524,10 @@ title="Print to PDF"
 <li><p><code class="docutils literal notranslate"><span class="pre">calculate_pka</span></code>: Computes the pKa of a molecular system and its deprotomer. The user must provide both streucture in the form of <code class="docutils literal notranslate"><span class="pre">System</span></code> objects with an already defined electronic energy and possibly a vibronic one.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">auto_calculate_pka</span></code>: Computes the pKa of a given molecule by automatically searching the lowest-energy deprotomer using CREST. Once the proper deprotomer has been identified the function take care of the geometry optimization of both structures, the calculation of electronic energies and frequencies.</p></li>
 </ul>
-<p>Please notice how both functions return the computed pKa value while the <code class="docutils literal notranslate"><span class="pre">auto_calculate_pka</span></code> function also sets the pKa as a property of the protonated system.</p>
+<div class="info admonition">
+<p class="admonition-title">Note</p>
+<p>Both functions return the computed pKa value and set the pKa as a property (<code class="docutils literal notranslate"><span class="pre">system.properties.pka</span></code>) of the protonated system. The <code class="docutils literal notranslate"><span class="pre">auto_calculate_pka</span></code> also returns the deprotonated system.</p>
+</div>
 <p>In general terms both functions calculate the pKa of a molecule <span class="math notranslate nohighlight">\(HA\)</span> considering a reaction of the type:</p>
 <div class="math notranslate nohighlight">
 \[
