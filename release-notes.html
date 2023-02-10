@@ -140,7 +140,7 @@ const thebe_selector_output = ".output, .cell_output"
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="Guide/functions.html">
-     Analysing results
+     Calculating properties
     </a>
    </li>
    <li class="toctree-l2">
@@ -409,6 +409,22 @@ title="Print to PDF"
    </code>
   </a>
  </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-0-3-0-alpha">
+   Version
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     0.3.0
+    </span>
+    <span class="pre">
+     -
+    </span>
+    <span class="pre">
+     alpha
+    </span>
+   </code>
+  </a>
+ </li>
 </ul>
 
     </nav>
@@ -438,6 +454,22 @@ title="Print to PDF"
    </code>
   </a>
  </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-0-3-0-alpha">
+   Version
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     0.3.0
+    </span>
+    <span class="pre">
+     -
+    </span>
+    <span class="pre">
+     alpha
+    </span>
+   </code>
+  </a>
+ </li>
 </ul>
 
                         </nav>
@@ -452,6 +484,27 @@ title="Print to PDF"
 <span id="id1"></span><h1>Release notes<a class="headerlink" href="#release-notes" title="Permalink to this headline">#</a></h1>
 <section id="version-0-3-0">
 <h2>Version <code class="docutils literal notranslate"><span class="pre">0.3.0</span></code><a class="headerlink" href="#version-0-3-0" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Updated <code class="docutils literal notranslate"><span class="pre">functions</span></code> and added automatic routine for computing pKa</p>
+<ul>
+<li><p>Added functional tests</p></li>
+<li><p>Updated documentation</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Properties</span></code> class now accepts also levels of theory in string format and performs an early validation of the format</p></li>
+<li><p>Added gibbs free energy parser to <code class="docutils literal notranslate"><span class="pre">OrcaInput</span></code> and <code class="docutils literal notranslate"><span class="pre">XtbInput</span></code> classes</p></li>
+<li><p>Moved <code class="docutils literal notranslate"><span class="pre">MPI_FLAGS</span></code> to the <code class="docutils literal notranslate"><span class="pre">config</span></code> module as global variables</p></li>
+<li><p>Various bugfixes and code uniformation</p>
+<ul>
+<li><p>VMD based wrapper no longer strips characters at the beginning of filenames</p></li>
+<li><p>Mulliken charges and spin populations are correctly parsed for coupled-cluster calculations</p></li>
+<li><p>Removed forbidden characters to output files (e.g. partentheses and slash)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="version-0-3-0-alpha">
+<h2>Version <code class="docutils literal notranslate"><span class="pre">0.3.0</span> <span class="pre">-</span> <span class="pre">alpha</span></code><a class="headerlink" href="#version-0-3-0-alpha" title="Permalink to this headline">#</a></h2>
 <ul class="simple">
 <li><p>Refactoring of <code class="docutils literal notranslate"><span class="pre">System</span></code>:</p>
 <ul>

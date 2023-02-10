@@ -8,7 +8,7 @@ This user guide is divided into the following sections:
 
 * [Running calculations](Guide-run): how to run different types of calculations (single point energies, geometry optimisations, molecular dynamics, etc.) using the built-in methods available in the various `engines`.
 
-* [Automated workflows](Guide-functions): how to use the output of your calculations to obtain physical observables such as pKa or redox potentials
+* [Calculating properties](Guide-functions): how to use the output of your calculations to obtain physical observables such as pKa or redox potentials
 
 * [Useful tools](Guide-tools): a collection of useful tools for advanced users
 

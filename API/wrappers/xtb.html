@@ -141,7 +141,7 @@ const thebe_selector_output = ".output, .cell_output"
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="../../Guide/functions.html">
-     Analysing results
+     Calculating properties
     </a>
    </li>
    <li class="toctree-l2">
@@ -460,10 +460,11 @@ title="Print to PDF"
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>method</strong> (<em>str</em>) – </p></li>
-<li><p><strong>solvent</strong> (<em>str</em>) – </p></li>
-<li><p><strong>optionals</strong> (<em>str</em>) – </p></li>
-<li><p><strong>XTBPATH</strong> (<em>str</em>) – </p></li>
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – level of theory, by default “gfn2”</p></li>
+<li><p><strong>solvent</strong> (<em>str</em><em>, </em><em>optional</em>) – ALPB solvent, by default no solvent (vacuum)</p></li>
+<li><p><strong>optionals</strong> (<em>str</em><em>, </em><em>optional</em>) – optional keywords/flags, by default “”</p></li>
+<li><p><strong>XTBPATH</strong> (<em>str</em><em>, </em><em>optional</em>) – the path to the xtb executable. If set to None (default) the xtb executable will
+be loaded automatically.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>

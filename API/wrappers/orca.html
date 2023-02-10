@@ -141,7 +141,7 @@ const thebe_selector_output = ".output, .cell_output"
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="../../Guide/functions.html">
-     Analysing results
+     Calculating properties
     </a>
    </li>
    <li class="toctree-l2">
@@ -457,6 +457,24 @@ title="Print to PDF"
 <dt class="sig sig-object py" id="compechem.engines.orca.OrcaInput">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">compechem.engines.orca.</span></span><span class="sig-name descname"><span class="pre">OrcaInput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'PBE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'def2-TZVP'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aux_basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'def2/J'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optionals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ORCADIR</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.engines.orca.OrcaInput" title="Permalink to this definition">#</a></dt>
 <dd><p>Interface for running Orca calculations.</p>
+<dl class="simple">
+<dt>Parameters</dt><dd><dl class="simple">
+<dt>method<span class="classifier">str</span></dt><dd><p>level of theory, by default “PBE”</p>
+</dd>
+<dt>basis_set<span class="classifier">str, optional</span></dt><dd><p>basis set, by default “def2-TZVP”</p>
+</dd>
+<dt>aux_basis<span class="classifier">str, optional</span></dt><dd><p>auxiliary basis set for RIJCOSX, by default “def2/J”</p>
+</dd>
+<dt>solvent<span class="classifier">str, optional</span></dt><dd><p>SMD solvent, by default None</p>
+</dd>
+<dt>optionals<span class="classifier">str, optional</span></dt><dd><p>optional keywords, by default “”</p>
+</dd>
+<dt>ORCADIR: str, optional</dt><dd><p>the path or environment variable containing the path to the ORCA folder. If set
+to None (default) the orca executable will be loaded automatically.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">

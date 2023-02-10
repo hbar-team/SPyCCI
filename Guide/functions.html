@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Analysing results &#8212; GES-compechem User Guide</title>
+    <title>Calculating properties &#8212; GES-compechem User Guide</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -143,7 +143,7 @@ const thebe_selector_output = ".output, .cell_output"
    </li>
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
-     Analysing results
+     Calculating properties
     </a>
    </li>
    <li class="toctree-l2">
@@ -450,7 +450,7 @@ title="Print to PDF"
         <div class="col pl-md-3 pl-lg-5 content-container">
             <!-- Table of contents that is only displayed when printing the page -->
             <div id="jb-print-docs-body" class="onlyprint">
-                <h1>Analysing results</h1>
+                <h1>Calculating properties</h1>
                 <!-- Table of contents -->
                 <div id="print-main-content">
                     <div id="jb-print-toc">
@@ -509,8 +509,8 @@ title="Print to PDF"
                 
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="analysing-results">
-<span id="guide-functions"></span><h1>Analysing results<a class="headerlink" href="#analysing-results" title="Permalink to this headline">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="calculating-properties">
+<span id="guide-functions"></span><h1>Calculating properties<a class="headerlink" href="#calculating-properties" title="Permalink to this headline">#</a></h1>
 <p>The <code class="docutils literal notranslate"><span class="pre">compechem.functions</span></code> submodule contains a series of methods to “manually” calculate some physical properties of the system under study. The user is expected to provide the exact intended states for the system(s) under study, as the functions will simply take the inputs and generate the output without carrying out any checks. For example, if the user calculates the pKa of a molecule in an unoptimised geometry, the resulting pKa will be that of the unoptimised geometry.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">compechem.functions</span></code> functions can be imported via the following syntax:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem.functions</span> <span class="kn">import</span> <span class="n">calculate_pka</span>
