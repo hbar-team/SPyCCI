@@ -7,12 +7,17 @@
 .. autofunction:: compechem.functions.calculate_pka
 ```
 
+## `auto_calculate_pka` function
+```{eval-rst}
+.. autofunction:: compechem.functions.auto_calculate_pka
+```
+
 ---
 
-## `calculate_potential` function
+## `calculate_reduction_potential` function
 
 ```{eval-rst}
-.. autofunction:: compechem.functions.calculate_potential
+.. autofunction:: compechem.functions.calculate_reduction_potential
 ```
 
 

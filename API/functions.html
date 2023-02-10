@@ -411,10 +411,20 @@ title="Print to PDF"
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#calculate-potential-function">
+  <a class="reference internal nav-link" href="#auto-calculate-pka-function">
    <code class="docutils literal notranslate">
     <span class="pre">
-     calculate_potential
+     auto_calculate_pka
+    </span>
+   </code>
+   function
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#calculate-reduction-potential-function">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     calculate_reduction_potential
     </span>
    </code>
    function
@@ -460,10 +470,20 @@ title="Print to PDF"
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#calculate-potential-function">
+  <a class="reference internal nav-link" href="#auto-calculate-pka-function">
    <code class="docutils literal notranslate">
     <span class="pre">
-     calculate_potential
+     auto_calculate_pka
+    </span>
+   </code>
+   function
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#calculate-reduction-potential-function">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     calculate_reduction_potential
     </span>
    </code>
    function
@@ -523,29 +543,72 @@ that energies have already been computed.</p>
 </dd></dl>
 
 </section>
-<hr class="docutils" />
-<section id="calculate-potential-function">
-<h2><code class="docutils literal notranslate"><span class="pre">calculate_potential</span></code> function<a class="headerlink" href="#calculate-potential-function" title="Permalink to this headline">#</a></h2>
+<section id="auto-calculate-pka-function">
+<h2><code class="docutils literal notranslate"><span class="pre">auto_calculate_pka</span></code> function<a class="headerlink" href="#auto-calculate-pka-function" title="Permalink to this headline">#</a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="compechem.functions.calculate_potential">
-<span class="sig-prename descclassname"><span class="pre">compechem.functions.</span></span><span class="sig-name descname"><span class="pre">calculate_potential</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">oxidised</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduced</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method_el</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method_vib</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pH</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.functions.calculate_potential" title="Permalink to this definition">#</a></dt>
-<dd><p>Calculates the reduction potential of a molecule, given the oxidised and reduced forms.</p>
+<dt class="sig sig-object py" id="compechem.functions.auto_calculate_pka">
+<span class="sig-prename descclassname"><span class="pre">compechem.functions.</span></span><span class="sig-name descname"><span class="pre">auto_calculate_pka</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">protonated</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method_el</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method_vib</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method_opt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxcore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">350</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.functions.auto_calculate_pka" title="Permalink to this definition">#</a></dt>
+<dd><p>Automatically calculates the pKa of a given <cite>protonated</cite> molecule. The routine computes
+all the deprotomers of the molecule using CREST, orders the deprotomers according to
+their energy computed with a user-defined level of theory and calculates the pKa.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>protonated</strong> (<a class="reference internal" href="systems.html#compechem.systems.System" title="compechem.systems.System"><em>System</em></a>) – The protonated molecule for which the pKa must be computed</p></li>
+<li><p><strong>method_el</strong> (<a class="reference internal" href="core.html#compechem.core.base.Engine" title="compechem.core.base.Engine"><em>Engine</em></a>) – The computational engine to be used in the electronic level of theory calculations</p></li>
+<li><p><strong>method_vib</strong> (<a class="reference internal" href="core.html#compechem.core.base.Engine" title="compechem.core.base.Engine"><em>Engine</em></a><em> (</em><em>optional</em><em>)</em>) – The computational engine to be used in the vibronic level of theory calculations. If
+set to None (default) the pKa will be computed without the vibronic contributions.</p></li>
+<li><p><strong>method_opt</strong> (<a class="reference internal" href="core.html#compechem.core.base.Engine" title="compechem.core.base.Engine"><em>Engine</em></a><em> (</em><em>optional</em><em>)</em>) – The computational engine to be used in the geometry optimization of the protonated
+molecule and its deprotomers. If set to None (default) will use xTB gfn2 and the
+alpb solvent model for water.</p></li>
+<li><p><strong>ncores</strong> (<em>int</em><em> (</em><em>optional</em><em>)</em>) – The number of cores to be used in the calculations. If set to None (default) will use
+the maximun number of available cores.</p></li>
+<li><p><strong>maxcore</strong> (<em>int</em><em> (</em><em>optional</em><em>)</em>) – For the engines that supprots it, the memory assigned to each core used in the
+computation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>float</em> – pKa of the molecule.</p></li>
+<li><p><em>System</em> – the structure of the considered deprotomer.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<hr class="docutils" />
+<section id="calculate-reduction-potential-function">
+<h2><code class="docutils literal notranslate"><span class="pre">calculate_reduction_potential</span></code> function<a class="headerlink" href="#calculate-reduction-potential-function" title="Permalink to this headline">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="compechem.functions.calculate_reduction_potential">
+<span class="sig-prename descclassname"><span class="pre">compechem.functions.</span></span><span class="sig-name descname"><span class="pre">calculate_reduction_potential</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">oxidised</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduced</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pH</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.functions.calculate_reduction_potential" title="Permalink to this definition">#</a></dt>
+<dd><p>Calculates the reduction potential of a molecule, given the oxidized and reduced forms
+assuming that energies have already been computed. The number of electrons exchanged in
+the process is automatically computed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>oxidised</strong> (<em>System object</em>) – molecule in the oxidised state</p></li>
 <li><p><strong>reduced</strong> (<em>System object</em>) – molecule in the reduced state</p></li>
-<li><p><strong>method_el</strong> (<em>str</em>) – level of theory for the electronic energy</p></li>
-<li><p><strong>method_vib</strong> (<em>str</em><em>, </em><em>optional</em>) – level of theory for the vibronic contributions, if method_vib is None (default),
-the potential calculation will be carried out only considering the electronic component</p></li>
-<li><p><strong>pH</strong> (<em>float</em>) – pH at which the redox potential is evaluated, by default pH=7</p></li>
+<li><p><strong>pH</strong> (<em>float</em>) – pH at which the redox potential is evaluated, by default pH=7. This is important in
+case of a proton-coupled electron transfer (PCET) redox process</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>potential</strong> – reduction potential of the molecule.</p>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Exception raised if either oxidised or reduced molecules are Ensembles</p></li>
+<li><p><strong>RuntimeError</strong> – Exception raised if a mismatch is detected between electronic levels of theory.</p></li>
+</ul>
 </dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>float</p>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>float</em> – reduction potential of the molecule.</p></li>
+<li><p><em>int</em> – number of exchanged electrons</p></li>
+<li><p><em>int</em> – number of exchanged protons</p></li>
+</ul>
+</p>
 </dd>
 </dl>
 </dd></dl>

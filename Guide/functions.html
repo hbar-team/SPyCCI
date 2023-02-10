@@ -516,6 +516,14 @@ title="Print to PDF"
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem.functions</span> <span class="kn">import</span> <span class="n">calculate_pka</span>
 </pre></div>
 </div>
+<div class="warning admonition">
+<p class="admonition-title">Empirical corrections</p>
+<p>The functions to calculate pKa and reduction potentials take into account the self-energy of proton and electron for calculations carried out with GFN2-xTB:</p>
+<ul class="simple">
+<li><p>electron self energy = <span class="math notranslate nohighlight">\(111.75\, \mathrm{kcal/mol}\)</span></p></li>
+<li><p>proton self energy = <span class="math notranslate nohighlight">\(164.22\, \mathrm{kcal/mol}\)</span></p></li>
+</ul>
+</div>
 <hr class="docutils" />
 <section id="pka">
 <h2>pKa<a class="headerlink" href="#pka" title="Permalink to this headline">#</a></h2>
@@ -605,8 +613,6 @@ MH_{n} \rightarrow M^{\cdot (n-1)-} + n\cdot H^{+} + e^{-}
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">oxidised</span></code> (<code class="docutils literal notranslate"><span class="pre">System</span></code>): molecule in its oxidised state</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">reduced</span></code> (<code class="docutils literal notranslate"><span class="pre">System</span></code>): molecule in its reduced state</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">method_el</span></code> (<code class="docutils literal notranslate"><span class="pre">System</span></code>): level of theory for the electronic component of the total energy (must be present in the <code class="docutils literal notranslate"><span class="pre">System.energies</span></code> dictionary)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">method_vib</span></code> (<code class="docutils literal notranslate"><span class="pre">System</span></code>): level of theory for the vibronic component of the total energy (must be present in the <code class="docutils literal notranslate"><span class="pre">System.energies</span></code> dictionary). If not specified, defaults to the same level of theory as the electronic energy</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">pH</span></code> (<code class="docutils literal notranslate"><span class="pre">float</span></code>, default: <code class="docutils literal notranslate"><span class="pre">7.0</span></code>): pH at which the reduction potential is calculated</p></li>
 </ul>
 <p>and returns the reduction potential of the molecule considering the provided states at the provided pH, including eventual PCET mechanisms, calculated as:</p>

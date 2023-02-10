@@ -9,6 +9,13 @@ The `compechem.functions` functions can be imported via the following syntax:
 from compechem.functions import calculate_pka
 ```
 
+:::{admonition} Empirical corrections
+:class: warning
+The functions to calculate pKa and reduction potentials take into account the self-energy of proton and electron for calculations carried out with GFN2-xTB:
+* electron self energy = $111.75\, \mathrm{kcal/mol}$
+* proton self energy = $164.22\, \mathrm{kcal/mol}$
+:::
+
 ---
 
 ## pKa
@@ -108,8 +115,6 @@ provided the following arguments:
 
 * `oxidised` (`System`): molecule in its oxidised state
 * `reduced` (`System`): molecule in its reduced state
-* `method_el` (`System`): level of theory for the electronic component of the total energy (must be present in the `System.energies` dictionary)
-* `method_vib` (`System`): level of theory for the vibronic component of the total energy (must be present in the `System.energies` dictionary). If not specified, defaults to the same level of theory as the electronic energy
 * `pH` (`float`, default: `7.0`): pH at which the reduction potential is calculated
 
 and returns the reduction potential of the molecule considering the provided states at the provided pH, including eventual PCET mechanisms, calculated as:
