@@ -608,6 +608,25 @@ by default False</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="compechem.engines.dftbplus.DFTBInput.parse_output">
+<span class="sig-name descname"><span class="pre">parse_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.engines.dftbplus.DFTBInput.parse_output" title="Permalink to this definition">#</a></dt>
+<dd><p>The function will parse a DFTB+ output file automatically looking for all the
+relevant numerical properties derived form a calculation. All the properties of the
+given molecule will be set or updated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mol</strong> (<a class="reference internal" href="../systems.html#compechem.systems.System" title="compechem.systems.System"><em>System</em></a>) – The System to which the properties must be written to.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – Exception raised if the given path to the output file is not valid.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="compechem.engines.dftbplus.DFTBInput.simulated_annealing">
 <span class="sig-name descname"><span class="pre">simulated_annealing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_temp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_temp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ramp_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hold_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mdrestartfreq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box_side</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxcore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_tdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compress_traj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.engines.dftbplus.DFTBInput.simulated_annealing" title="Permalink to this definition">#</a></dt>
 <dd><p>Molecular Dynamics simulated annealing simulation in the Canonical Ensemble (NVT)</p>

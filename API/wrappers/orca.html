@@ -455,7 +455,7 @@ title="Print to PDF"
 <h2><code class="docutils literal notranslate"><span class="pre">OrcaInput</span></code> class<a class="headerlink" href="#orcainput-class" title="Permalink to this headline">#</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="compechem.engines.orca.OrcaInput">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">compechem.engines.orca.</span></span><span class="sig-name descname"><span class="pre">OrcaInput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'PBE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'def2-TZVP'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aux_basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'def2/J'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optionals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ORCADIR</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.engines.orca.OrcaInput" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">compechem.engines.orca.</span></span><span class="sig-name descname"><span class="pre">OrcaInput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'PBE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'def2-TZVP'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aux_basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'def2/J'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optionals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scf_block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ORCADIR</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.engines.orca.OrcaInput" title="Permalink to this definition">#</a></dt>
 <dd><p>Interface for running Orca calculations.</p>
 <dl class="simple">
 <dt>Parameters</dt><dd><dl class="simple">
@@ -468,6 +468,8 @@ title="Print to PDF"
 <dt>solvent<span class="classifier">str, optional</span></dt><dd><p>SMD solvent, by default None</p>
 </dd>
 <dt>optionals<span class="classifier">str, optional</span></dt><dd><p>optional keywords, by default “”</p>
+</dd>
+<dt>scf_block: Dict[str, str], optional</dt><dd><p>the dictionary containing the key and values to be added under the <cite>%scf</cite> block</p>
 </dd>
 <dt>ORCADIR: str, optional</dt><dd><p>the path or environment variable containing the path to the ORCA folder. If set
 to None (default) the orca executable will be loaded automatically.</p>
@@ -483,6 +485,7 @@ to None (default) the orca executable will be loaded automatically.</p>
 <li><p><strong>aux_basis</strong> (<em>str</em>) – </p></li>
 <li><p><strong>solvent</strong> (<em>str</em>) – </p></li>
 <li><p><strong>optionals</strong> (<em>str</em>) – </p></li>
+<li><p><strong>scf_block</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – </p></li>
 <li><p><strong>ORCADIR</strong> (<em>str</em>) – </p></li>
 </ul>
 </dd>
