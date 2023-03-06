@@ -690,7 +690,8 @@ If manually set to <cite>List[int]</cite> will force the spin multeplicities acc
 user specified values. The order of the spin multiplicity values is: molecule with
 one electron added (-1), the molecule as it is (0) and the molecule  with one of its
 electrons removed (+1).</p></li>
-<li><p><strong>cube_grid</strong> (<em>CubeGrids</em>) – Resolution for the cube files (default Normal)</p></li>
+<li><p><strong>cube_grid</strong> (<em>Union</em><em>[</em><em>CubeGrids</em><em>, </em><em>None</em><em>]</em>) – Resolution for the cube files (default Normal). If set to None the function will avoid
+the generation of cube files and will only compute condensed fukui values.</p></li>
 <li><p><strong>ncores</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of cores, by default all available cores (None)</p></li>
 <li><p><strong>maxcore</strong> (<em>int</em>) – The maximum amount of memory in MB to be allocated for each core.</p></li>
 <li><p><strong>engine</strong> (<em>Union</em><em>[</em><a class="reference internal" href="wrappers/orca.html#compechem.engines.orca.OrcaInput" title="compechem.engines.orca.OrcaInput"><em>OrcaInput</em></a><em>, </em><a class="reference internal" href="wrappers/xtb.html#compechem.engines.xtb.XtbInput" title="compechem.engines.xtb.XtbInput"><em>XtbInput</em></a><em>]</em>) – </p></li>
@@ -698,7 +699,7 @@ electrons removed (+1).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>Dict</em>[str, <em>Dict</em>[str, <em>List</em>[float]]]</p>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>

@@ -791,6 +791,42 @@ position of the atom in the tridimensional space</p></li>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="compechem.core.geometry.MolecularGeometry.buried_volume_fraction">
+<span class="sig-name descname"><span class="pre">buried_volume_fraction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">site</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_hydrogens</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excluded_atoms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radii</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radii_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bondi'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radii_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.17</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.geometry.MolecularGeometry.buried_volume_fraction" title="Permalink to this definition">#</a></dt>
+<dd><p>Computes the buried volume fraction around a given site. The functions adopts the implementation
+provided in the morfeus python package (<a class="reference external" href="https://kjelljorner.github.io/morfeus/buried_volume.html">https://kjelljorner.github.io/morfeus/buried_volume.html</a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>site</strong> (<em>int</em>) – The index (starting the numeration from zero) of the reactive atom around which
+the buried volume must be computed</p></li>
+<li><p><strong>radius</strong> (<em>float</em>) – The radius (in Angstrom) of the sphere in which the buried volume should be computed</p></li>
+<li><p><strong>density</strong> (<em>float</em>) – The volume (in Angstrom^3) per point in the sphere used in the calculation</p></li>
+<li><p><strong>include_hydrogens</strong> (<em>bool</em>) – If set to True (default) will consider the hydrogen atoms in the calculation</p></li>
+<li><p><strong>excluded_atoms</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – The list of indices (starting the numeration from zero) of the atom that should be
+excluded from the compuitation of the buried volume (default: None)</p></li>
+<li><p><strong>radii</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – The custom list of atomic radii to be used in the computation (default: None).
+If set to a value different from <cite>None</cite>, will override the <cite>radii_type</cite> and
+<cite>radii_scale</cite> options.</p></li>
+<li><p><strong>radii_type</strong> (<em>str</em>) – Type of radii to use in the calculation. The available options are <cite>alvarez</cite>,
+<cite>bondi</cite>, <cite>crc</cite> or <cite>truhlar</cite>.</p></li>
+<li><p><strong>radii_scale</strong> (<em>float</em>) – Scaling factor for the selected radii_type</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Exception raised if either the index of the selected atoms are out of bounds or
+    if the radii type does not match any of the presets.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The fraction of buried volume of the sphere (between 0 and 1)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="compechem.core.geometry.MolecularGeometry.coordinates">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">coordinates</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#compechem.core.geometry.MolecularGeometry.coordinates" title="Permalink to this definition">#</a></dt>
