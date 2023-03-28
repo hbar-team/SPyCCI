@@ -85,3 +85,10 @@
 .. automodule:: compechem.tools.vmdtools
     :members:
 ```
+
+## The `compechem.tools.moglitools` sub-module 
+
+```{eval-rst}
+.. automodule:: compechem.tools.moglitools
+    :members:
+```

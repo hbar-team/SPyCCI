@@ -80,3 +80,8 @@ The following conventions have been adopted in the representation:
 * Positive/high values of functions/densities related to the spin density are represented in orange while negative/low values are represented in violet.
 
 Please refer to the API for details about the call to the various render functions.
+
+
+## `Mogli` based tools
+
+The `copechem.tools` module also provides a `moglitools` submodule containing simple mogli-based molecular viewer. Please refer to the API for details about the call to the various render functions.
