@@ -27,7 +27,7 @@ dftb = DFTBInput()
 orca = OrcaInput()
 ```
 
-If you do not specify anything, some default options are chosen automatically for level of theory, basis set, solvation, etc. Please refer to the [API](API-wrappers) section for a complete list of options and default values.
+If you do not specify anything, some default options are chosen automatically for level of theory, basis set, solvation, etc. Please refer to the [API](API-engines) section for a complete list of options and default values.
 
 As an example, let us set up a calculation with Orca, using the B3LYP functional, with the def2-TZVP basis set and def2/J auxiliary basis set, using the SMD implicit solvation model for water, and including Grimme's D3BJ dispersion corrections:
 

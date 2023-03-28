@@ -1,4 +1,4 @@
-(API-wrappers)=
+(API-engines)=
 # `compechem.engines` sub-module
 The engine sub-module contains the wrappers to those software capable of running numerical calculations on `System` object computing or updating their properties.
 
@@ -6,6 +6,7 @@ The engine sub-module contains the wrappers to those software capable of running
 * [`compechem.engines.orca`](API-wrappers-orca)
 * [`compechem.engines.dftbplus`](API-wrappers-dftbplus)
 
+(API-wrappers)=
 # `compechem.wrappers` sub-module
 The wrappers sub-module contains all the other wrappers capable of running other types of operations.
 
