@@ -1147,6 +1147,23 @@ are stored in the dictionary according to the <cite>f+</cite>, <cite>f-</cite> a
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="compechem.core.properties.Properties.set_vibrational_data">
+<span class="sig-name descname"><span class="pre">set_vibrational_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vibronic_engine</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.properties.Properties.set_vibrational_data" title="Permalink to this definition">#</a></dt>
+<dd><p>Sets condensed Fukui values computed from the Hirshfeld charges.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<em>VibrationalData</em>) – The class encoding all the vibrational data associated to the molecule</p></li>
+<li><p><strong>vibronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#compechem.core.base.Engine" title="compechem.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the vibronic calculation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="compechem.core.properties.Properties.set_vibronic_energy">
 <span class="sig-name descname"><span class="pre">set_vibronic_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vibronic_engine</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.properties.Properties.set_vibronic_energy" title="Permalink to this definition">#</a></dt>
 <dd><p>Sets the vibronic energy of the system.</p>
@@ -1174,6 +1191,20 @@ saved and used to re-load the object using the built-in <cite>from_dict</cite> c
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="compechem.core.properties.Properties.vibrational_data">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">vibrational_data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">VibrationalData</span></em><a class="headerlink" href="#compechem.core.properties.Properties.vibrational_data" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns the class containing all the available vibrational data about the molecule</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The class containing all the available vibrational data</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>VibrationalData</p>
 </dd>
 </dl>
 </dd></dl>
