@@ -363,6 +363,7 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-3-1">Version <code class="docutils literal notranslate"><span class="pre">0.3.1</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-3-0">Version <code class="docutils literal notranslate"><span class="pre">0.3.0</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-3-0-alpha">Version <code class="docutils literal notranslate"><span class="pre">0.3.0</span> <span class="pre">-</span> <span class="pre">alpha</span></code></a></li>
 </ul>
@@ -378,6 +379,34 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="release-notes">
 <span id="changelog"></span><h1>Release notes<a class="headerlink" href="#release-notes" title="Permalink to this heading">#</a></h1>
+<section id="version-0-3-1">
+<h2>Version <code class="docutils literal notranslate"><span class="pre">0.3.1</span></code><a class="headerlink" href="#version-0-3-1" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Update of <code class="docutils literal notranslate"><span class="pre">System</span></code> and <code class="docutils literal notranslate"><span class="pre">JSON</span></code> format:</p>
+<ul>
+<li><p>Defined extension-based identification of <code class="docutils literal notranslate"><span class="pre">.xyz</span></code> and <code class="docutils literal notranslate"><span class="pre">.json</span></code> file types in <code class="docutils literal notranslate"><span class="pre">System</span></code> class constructor.</p></li>
+<li><p>Defined versioning of <code class="docutils literal notranslate"><span class="pre">JSON</span></code> files and auto-update routines to ensure retro-compatibility</p></li>
+</ul>
+</li>
+<li><p>Update to the engines classes behavior and testing:</p>
+<ul>
+<li><p>Charge and spin cannot be changed from engine during calculation (Must be changed manually by the user acting on <code class="docutils literal notranslate"><span class="pre">System</span></code>)</p></li>
+<li><p>Added test for non-inplace calculations after bugfix.</p></li>
+<li><p>Added explicit option in <code class="docutils literal notranslate"><span class="pre">OrcaInput</span></code> to run frequency analysis when running optimization. Removed automatic switch to numerical frequencies when requiring analytical frequencies in solvent.</p></li>
+<li><p>Added option to select the level of geometry convergence to be used during optimization in <code class="docutils literal notranslate"><span class="pre">OrcaInput</span></code>.</p></li>
+</ul>
+</li>
+<li><p>Added vibrational spectroscopy functions to <code class="docutils literal notranslate"><span class="pre">OrcaInput</span></code> parser:</p>
+<ul>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">VibrationalData</span></code> object in properties to store vibrational informations and plot infrared and raman spectra.</p></li>
+<li><p>Added option to compute Raman spectra when calling frequency analysis.</p></li>
+<li><p>Added option to compute overtones and combination bands in infrared spectra when calling frequency analysis.</p></li>
+</ul>
+</li>
+<li><p>Implemented buried volume calculation from <code class="docutils literal notranslate"><span class="pre">System</span></code> geometry.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">mogli</span></code> tools to visualize molecule and use custom coloring (early)</p></li>
+</ul>
+</section>
 <section id="version-0-3-0">
 <h2>Version <code class="docutils literal notranslate"><span class="pre">0.3.0</span></code><a class="headerlink" href="#version-0-3-0" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
@@ -406,7 +435,7 @@ document.write(`
 <ul>
 <li><p>The geometry of the molecule has been moved to a <code class="docutils literal notranslate"><span class="pre">MolecularGeometry</span></code> class that is now an attribute of the <code class="docutils literal notranslate"><span class="pre">System</span></code> class.</p></li>
 <li><p>The properties are now organized in a <code class="docutils literal notranslate"><span class="pre">Properties</span></code> class holding the reference to the electronic and vibronic levels of theory.</p></li>
-<li><p>Added option to save and load <code class="docutils literal notranslate"><span class="pre">Sysyem</span></code> data in <code class="docutils literal notranslate"><span class="pre">.json</span></code> data format.</p></li>
+<li><p>Added option to save and load <code class="docutils literal notranslate"><span class="pre">System</span></code> data in <code class="docutils literal notranslate"><span class="pre">.json</span></code> data format.</p></li>
 </ul>
 </li>
 <li><p>Differentiated engines from wrappers</p>
@@ -477,6 +506,7 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-3-1">Version <code class="docutils literal notranslate"><span class="pre">0.3.1</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-3-0">Version <code class="docutils literal notranslate"><span class="pre">0.3.0</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-3-0-alpha">Version <code class="docutils literal notranslate"><span class="pre">0.3.0</span> <span class="pre">-</span> <span class="pre">alpha</span></code></a></li>
 </ul>

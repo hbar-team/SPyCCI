@@ -1,6 +1,29 @@
 (changelog)=
 # Release notes
 
+## Version `0.3.1`
+
+* Update of `System` and `JSON` format:
+  * Defined extension-based identification of `.xyz` and `.json` file types in `System` class constructor.
+  * Defined versioning of `JSON` files and auto-update routines to ensure retro-compatibility
+
+* Update to the engines classes behavior and testing:
+  * Charge and spin cannot be changed from engine during calculation (Must be changed manually by the user acting on `System`)
+  * Added test for non-inplace calculations after bugfix.
+  * Added explicit option in `OrcaInput` to run frequency analysis when running optimization. Removed automatic switch to numerical frequencies when requiring analytical frequencies in solvent.
+  * Added option to select the level of geometry convergence to be used during optimization in `OrcaInput`.
+
+* Added vibrational spectroscopy functions to `OrcaInput` parser:
+  * Added `VibrationalData` object in properties to store vibrational informations and plot infrared and raman spectra.
+  * Added option to compute Raman spectra when calling frequency analysis.
+  * Added option to compute overtones and combination bands in infrared spectra when calling frequency analysis.
+
+* Implemented buried volume calculation from `System` geometry.
+
+* Added `mogli` tools to visualize molecule and use custom coloring (early)
+
+
+
 ## Version `0.3.0`
 
 * Updated `functions` and added automatic routine for computing pKa
@@ -23,7 +46,7 @@
 * Refactoring of `System`:
   * The geometry of the molecule has been moved to a `MolecularGeometry` class that is now an attribute of the `System` class.
   * The properties are now organized in a `Properties` class holding the reference to the electronic and vibronic levels of theory.
-  * Added option to save and load `Sysyem` data in `.json` data format.
+  * Added option to save and load `System` data in `.json` data format.
 
 * Differentiated engines from wrappers
   * Engines: take as argument a `System` object and update its properties
