@@ -1,4 +1,4 @@
-(release-notes)=
+(changelog)=
 # Release notes
 
 ## Version `0.3.0`

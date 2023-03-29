@@ -1,3 +1,15 @@
+---
+jupytext:
+  formats: md:myst
+  text_representation:
+    extension: .md
+    format_name: myst
+kernelspec:
+  display_name: Python 3
+  language: python
+  name: python3
+---
+
 (getting-started)=
 
 # Getting Started
@@ -49,7 +61,7 @@ Before starting, we need to create a Python script and import the necessary clas
 
 ```python
 from compechem.systems import System
-from compechem import XtbInput
+from compechem import XtbInput  # Engines can also be imported directly from compechem 
 ```
 
 ### Creating the System object
@@ -62,7 +74,7 @@ water = System("example_files/water.xyz")
 
 ### Creating a XtbInput object
 
-We can now setup a engine object using an instance of `XtbInput`. Most of these engine come with sensible default options for electrochemical calculations in solution. To see all the available options, please refer to the [engine](API-engines) section of the API documentation.
+We can now set up a engine object using an instance of `XtbInput`. Most of these engines come with sensible default options for calculations on small organic molecules in vacuum. To see all the available options, please refer to the [engine](API-engines) section of the API documentation.
 
 ```python
 xtb = XtbInput()
@@ -84,37 +96,11 @@ If you want to see the data currently stored in our `System` object, simply ask 
 print(water)
 ```
 
-```
-=========================================================
-SYSTEM: water
-=========================================================
-
-Number of atoms: 3
-Charge: 0
-Spin multeplicity: 1
-
-********************** GEOMETRY *************************
-
-Total system mass: 18.0153 amu
-
-----------------------------------------------
- index  atom    x (Å)      y (Å)      z (Å)   
-----------------------------------------------
- 0       O    -0.00001   -0.37937    0.00000  
- 1       H     0.77221    0.18968   -0.00000  
- 2       H    -0.77221    0.18969    0.00000  
-----------------------------------------------
-
-********************** PROPERTIES *************************
-
-Electronic level of theory: XtbInput || method: gfn2 | solvent: None
-Vibronic level of theory: XtbInput || method: gfn2 | solvent: None
-
-Electronic energy: -5.070544446446 Eh
-Vibronic energy: 0.002508816182 Eh
-Helmholtz free energy: None Eh
-Gibbs free energy: None Eh
-pKa: None
+```{code-cell} python
+:tags: ["remove-input"]
+from compechem.systems import System
+water = System("./example_files/water.json")
+print(water)
 ```
 
 Et voilà! You have successfully carried out a geometry optimization for the water molecule using the `GES-comp-echem` library!

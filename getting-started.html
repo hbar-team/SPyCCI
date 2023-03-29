@@ -421,7 +421,7 @@ document.write(`
 <h3>Importing the library<a class="headerlink" href="#importing-the-library" title="Permalink to this heading">#</a></h3>
 <p>Before starting, we need to create a Python script and import the necessary classes from the library. We need the <code class="docutils literal notranslate"><span class="pre">System</span></code> class to store the information about our water molecule, and the <code class="docutils literal notranslate"><span class="pre">XtbInput</span></code> class to define the simulation setup (Hamiltonian, parameters, solvation, etc.):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem.systems</span> <span class="kn">import</span> <span class="n">System</span>
-<span class="kn">from</span> <span class="nn">compechem</span> <span class="kn">import</span> <span class="n">XtbInput</span>
+<span class="kn">from</span> <span class="nn">compechem</span> <span class="kn">import</span> <span class="n">XtbInput</span>  <span class="c1"># Engines can also be imported directly from compechem </span>
 </pre></div>
 </div>
 </section>
@@ -434,7 +434,7 @@ document.write(`
 </section>
 <section id="creating-a-xtbinput-object">
 <h3>Creating a XtbInput object<a class="headerlink" href="#creating-a-xtbinput-object" title="Permalink to this heading">#</a></h3>
-<p>We can now setup a engine object using an instance of <code class="docutils literal notranslate"><span class="pre">XtbInput</span></code>. Most of these engine come with sensible default options for electrochemical calculations in solution. To see all the available options, please refer to the <a class="reference internal" href="API/wrappers.html#api-engines"><span class="std std-ref">engine</span></a> section of the API documentation.</p>
+<p>We can now set up a engine object using an instance of <code class="docutils literal notranslate"><span class="pre">XtbInput</span></code>. Most of these engines come with sensible default options for calculations on small organic molecules in vacuum. To see all the available options, please refer to the <a class="reference internal" href="API/wrappers.html#api-engines"><span class="std std-ref">engine</span></a> section of the API documentation.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xtb</span> <span class="o">=</span> <span class="n">XtbInput</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -452,37 +452,50 @@ document.write(`
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">water</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">=========================================================</span>
-<span class="n">SYSTEM</span><span class="p">:</span> <span class="n">water</span>
-<span class="o">=========================================================</span>
+<div class="cell tag_remove-input docutils container">
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=========================================================
+SYSTEM: water
+=========================================================
 
-<span class="n">Number</span> <span class="n">of</span> <span class="n">atoms</span><span class="p">:</span> <span class="mi">3</span>
-<span class="n">Charge</span><span class="p">:</span> <span class="mi">0</span>
-<span class="n">Spin</span> <span class="n">multeplicity</span><span class="p">:</span> <span class="mi">1</span>
+Number of atoms: 3
+Charge: 0
+Spin multiplicity: 1
 
-<span class="o">**********************</span> <span class="n">GEOMETRY</span> <span class="o">*************************</span>
+********************** GEOMETRY *************************
 
-<span class="n">Total</span> <span class="n">system</span> <span class="n">mass</span><span class="p">:</span> <span class="mf">18.0153</span> <span class="n">amu</span>
+Total system mass: 18.0153 amu
 
-<span class="o">----------------------------------------------</span>
- <span class="n">index</span>  <span class="n">atom</span>    <span class="n">x</span> <span class="p">(</span><span class="n">Å</span><span class="p">)</span>      <span class="n">y</span> <span class="p">(</span><span class="n">Å</span><span class="p">)</span>      <span class="n">z</span> <span class="p">(</span><span class="n">Å</span><span class="p">)</span>   
-<span class="o">----------------------------------------------</span>
- <span class="mi">0</span>       <span class="n">O</span>    <span class="o">-</span><span class="mf">0.00001</span>   <span class="o">-</span><span class="mf">0.37937</span>    <span class="mf">0.00000</span>  
- <span class="mi">1</span>       <span class="n">H</span>     <span class="mf">0.77221</span>    <span class="mf">0.18968</span>   <span class="o">-</span><span class="mf">0.00000</span>  
- <span class="mi">2</span>       <span class="n">H</span>    <span class="o">-</span><span class="mf">0.77221</span>    <span class="mf">0.18969</span>    <span class="mf">0.00000</span>  
-<span class="o">----------------------------------------------</span>
+----------------------------------------------
+ index  atom    x (Å)      y (Å)      z (Å)   
+----------------------------------------------
+ 0       O     0.00000   -0.37937    0.00000  
+ 1       H     0.77221    0.18968   -0.00000  
+ 2       H    -0.77221    0.18969    0.00000  
+----------------------------------------------
 
-<span class="o">**********************</span> <span class="n">PROPERTIES</span> <span class="o">*************************</span>
+********************** PROPERTIES *************************
 
-<span class="n">Electronic</span> <span class="n">level</span> <span class="n">of</span> <span class="n">theory</span><span class="p">:</span> <span class="n">XtbInput</span> <span class="o">||</span> <span class="n">method</span><span class="p">:</span> <span class="n">gfn2</span> <span class="o">|</span> <span class="n">solvent</span><span class="p">:</span> <span class="kc">None</span>
-<span class="n">Vibronic</span> <span class="n">level</span> <span class="n">of</span> <span class="n">theory</span><span class="p">:</span> <span class="n">XtbInput</span> <span class="o">||</span> <span class="n">method</span><span class="p">:</span> <span class="n">gfn2</span> <span class="o">|</span> <span class="n">solvent</span><span class="p">:</span> <span class="kc">None</span>
+Geometry level of theory: XtbInput || method: gfn2 | solvent: None
+Electronic level of theory: XtbInput || method: gfn2 | solvent: None
+Vibronic level of theory: XtbInput || method: gfn2 | solvent: None
 
-<span class="n">Electronic</span> <span class="n">energy</span><span class="p">:</span> <span class="o">-</span><span class="mf">5.070544446446</span> <span class="n">Eh</span>
-<span class="n">Vibronic</span> <span class="n">energy</span><span class="p">:</span> <span class="mf">0.002508816182</span> <span class="n">Eh</span>
-<span class="n">Helmholtz</span> <span class="n">free</span> <span class="n">energy</span><span class="p">:</span> <span class="kc">None</span> <span class="n">Eh</span>
-<span class="n">Gibbs</span> <span class="n">free</span> <span class="n">energy</span><span class="p">:</span> <span class="kc">None</span> <span class="n">Eh</span>
-<span class="n">pKa</span><span class="p">:</span> <span class="kc">None</span>
+Electronic energy: -5.070544446692 Eh
+Vibronic energy: 0.002508973529 Eh
+Helmholtz free energy: None Eh
+Gibbs free energy: -5.068035473164 Eh
+pKa: None
+
+MULLIKEN ANALYSIS
+----------------------------------------------
+ index  atom   charge    spin
+----------------------------------------------
+ 0       O    -0.56500  0.00000  
+ 1       H    0.28200   0.00000  
+ 2       H    0.28200   0.00000  
 </pre></div>
+</div>
+</div>
 </div>
 <p>Et voilà! You have successfully carried out a geometry optimization for the water molecule using the <code class="docutils literal notranslate"><span class="pre">GES-comp-echem</span></code> library!</p>
 <div class="tip admonition">
