@@ -7,3 +7,9 @@
 .. autoclass:: compechem.engines.orca.OrcaInput
     :members:
 ```
+## `OrcaJobInfo` class
+
+```{eval-rst}
+.. autoclass:: compechem.engines.orca.OrcaJobInfo
+    :members:
+```

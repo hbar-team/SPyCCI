@@ -18,12 +18,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
   
-  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -37,8 +37,8 @@
     <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
@@ -347,8 +347,6 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/systems.html#compechem.systems.Ensemble.add">add() (compechem.systems.Ensemble method)</a>
 </li>
-      <li><a href="API/tools.html#compechem.tools.add_flag">add_flag() (in module compechem.tools)</a>
-</li>
       <li><a href="API/core.html#compechem.core.geometry.MolecularGeometry.append">append() (compechem.core.geometry.MolecularGeometry method)</a>
 </li>
       <li><a href="API/core.html#compechem.core.geometry.MolecularGeometry.atomcount">atomcount (compechem.core.geometry.MolecularGeometry property)</a>
@@ -383,6 +381,8 @@ document.write(`
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.calc_hess">calc_hess (compechem.engines.orca.OrcaJobInfo attribute)</a>
+</li>
       <li><a href="API/functions.html#compechem.functions.calculate_fukui">calculate_fukui() (in module compechem.functions)</a>
 </li>
       <li><a href="API/functions.html#compechem.functions.calculate_pka">calculate_pka() (in module compechem.functions)</a>
@@ -403,8 +403,6 @@ document.write(`
         <li><a href="API/core.html#module-compechem.core.geometry">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     compechem.tools.vmdtools
 
@@ -412,6 +410,8 @@ document.write(`
         <li><a href="API/tools.html#module-compechem.tools.vmdtools">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/tools.html#compechem.tools.compress_dftb_trajectory">compress_dftb_trajectory() (in module compechem.tools)</a>
 </li>
       <li><a href="API/core.html#compechem.core.properties.Properties.condensed_fukui_hirshfeld">condensed_fukui_hirshfeld (compechem.core.properties.Properties property)</a>
@@ -420,7 +420,13 @@ document.write(`
 </li>
       <li><a href="API/wrappers/crest.html#compechem.wrappers.crest.conformer_search">conformer_search() (in module compechem.wrappers.crest)</a>
 </li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.constraints">constraints (compechem.engines.orca.OrcaJobInfo attribute)</a>
+</li>
       <li><a href="API/core.html#compechem.core.geometry.MolecularGeometry.coordinates">coordinates (compechem.core.geometry.MolecularGeometry property)</a>
+</li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.cpcm_block">cpcm_block (compechem.engines.orca.OrcaJobInfo property)</a>
+</li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.cube_dim">cube_dim (compechem.engines.orca.OrcaJobInfo attribute)</a>
 </li>
       <li><a href="API/tools.html#compechem.tools.cyclization_check">cyclization_check() (in module compechem.tools)</a>
 </li>
@@ -440,8 +446,6 @@ document.write(`
 </li>
       <li><a href="API/tools.html#compechem.tools.dissociation_check">dissociation_check() (in module compechem.tools)</a>
 </li>
-      <li><a href="API/tools.html#compechem.tools.dump">dump() (in module compechem.tools)</a>
-</li>
   </ul></td>
 </tr></table>
 
@@ -449,6 +453,8 @@ document.write(`
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/core.html#compechem.core.properties.Properties.electronic_energy">electronic_energy (compechem.core.properties.Properties property)</a>
+</li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.elprop_block">elprop_block (compechem.engines.orca.OrcaJobInfo property)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -462,6 +468,8 @@ document.write(`
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.freq">freq (compechem.engines.orca.OrcaJobInfo attribute)</a>
+</li>
       <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaInput.freq">freq() (compechem.engines.orca.OrcaInput method)</a>
 
       <ul>
@@ -478,11 +486,17 @@ document.write(`
       </ul></li>
       <li><a href="API/core.html#compechem.core.geometry.MolecularGeometry.from_xyz">from_xyz() (compechem.core.geometry.MolecularGeometry class method)</a>
 </li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.fullscan">fullscan (compechem.engines.orca.OrcaJobInfo attribute)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.geom_block">geom_block (compechem.engines.orca.OrcaJobInfo property)</a>
+</li>
+  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/core.html#compechem.core.properties.Properties.gibbs_free_energy">gibbs_free_energy (compechem.core.properties.Properties property)</a>
 </li>
@@ -493,6 +507,8 @@ document.write(`
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/core.html#compechem.core.properties.Properties.helmholtz_free_energy">helmholtz_free_energy (compechem.core.properties.Properties property)</a>
+</li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.hirshfeld">hirshfeld (compechem.engines.orca.OrcaJobInfo attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -506,7 +522,13 @@ document.write(`
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.invert_constraints">invert_constraints (compechem.engines.orca.OrcaJobInfo attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/systems.html#compechem.systems.System.is_periodic">is_periodic (compechem.systems.System property)</a>
+</li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.is_singlet">is_singlet (compechem.engines.orca.OrcaJobInfo attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -546,6 +568,8 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/core.html#compechem.core.geometry.MolecularGeometry.mass">mass (compechem.core.geometry.MolecularGeometry property)</a>
 </li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.maxcore">maxcore (compechem.engines.orca.OrcaJobInfo property)</a>
+</li>
       <li><a href="API/tools.html#compechem.tools.maxdist">maxdist() (in module compechem.tools)</a>
 </li>
       <li><a href="API/wrappers/dftbplus.html#compechem.engines.dftbplus.DFTBInput.md_nvt">md_nvt() (compechem.engines.dftbplus.DFTBInput method)</a>
@@ -579,8 +603,30 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/systems.html#compechem.systems.Ensemble.name">name (compechem.systems.Ensemble attribute)</a>
 </li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.ncores">ncores (compechem.engines.orca.OrcaJobInfo property)</a>
+</li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.nearir">nearir (compechem.engines.orca.OrcaJobInfo attribute)</a>
+</li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.neb_block">neb_block (compechem.engines.orca.OrcaJobInfo property)</a>
+</li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.neb_ci">neb_ci (compechem.engines.orca.OrcaJobInfo attribute)</a>
+</li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaInput.neb_ci">neb_ci() (compechem.engines.orca.OrcaInput method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.neb_images">neb_images (compechem.engines.orca.OrcaJobInfo attribute)</a>
+</li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.neb_preopt">neb_preopt (compechem.engines.orca.OrcaJobInfo attribute)</a>
+</li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.neb_product">neb_product (compechem.engines.orca.OrcaJobInfo attribute)</a>
+</li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaInput.neb_ts">neb_ts() (compechem.engines.orca.OrcaInput method)</a>
+</li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.neb_ts_guess">neb_ts_guess (compechem.engines.orca.OrcaJobInfo attribute)</a>
+</li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.nfreq">nfreq (compechem.engines.orca.OrcaJobInfo attribute)</a>
+</li>
       <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaInput.nfreq">nfreq() (compechem.engines.orca.OrcaInput method)</a>
 </li>
   </ul></td>
@@ -589,6 +635,8 @@ document.write(`
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.opt">opt (compechem.engines.orca.OrcaJobInfo attribute)</a>
+</li>
       <li><a href="API/wrappers/dftbplus.html#compechem.engines.dftbplus.DFTBInput.opt">opt() (compechem.engines.dftbplus.DFTBInput method)</a>
 
       <ul>
@@ -597,9 +645,19 @@ document.write(`
         <li><a href="API/wrappers/xtb.html#compechem.engines.xtb.XtbInput.opt">(compechem.engines.xtb.XtbInput method)</a>
 </li>
       </ul></li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.opt_ts">opt_ts (compechem.engines.orca.OrcaJobInfo attribute)</a>
+</li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaInput.opt_ts">opt_ts() (compechem.engines.orca.OrcaInput method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.optimization_level">optimization_level (compechem.engines.orca.OrcaJobInfo property)</a>
+</li>
       <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaInput">OrcaInput (class in compechem.engines.orca)</a>
+</li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo">OrcaJobInfo (class in compechem.engines.orca)</a>
+</li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.output_block">output_block (compechem.engines.orca.OrcaJobInfo property)</a>
 </li>
       <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaInput.output_suffix">output_suffix (compechem.engines.orca.OrcaInput property)</a>
 
@@ -627,9 +685,15 @@ document.write(`
         <li><a href="API/wrappers/xtb.html#compechem.engines.xtb.XtbInput.parse_output">(compechem.engines.xtb.XtbInput method)</a>
 </li>
       </ul></li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.parsed_blocks">parsed_blocks (compechem.engines.orca.OrcaJobInfo property)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/core.html#compechem.core.properties.Properties.pka">pka (compechem.core.properties.Properties property)</a>
+</li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.plots_block">plots_block (compechem.engines.orca.OrcaJobInfo property)</a>
+</li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.print_level">print_level (compechem.engines.orca.OrcaJobInfo property)</a>
 </li>
       <li><a href="API/tools.html#compechem.tools.process_output">process_output() (in module compechem.tools)</a>
 </li>
@@ -657,12 +721,14 @@ document.write(`
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="API/tools.html#compechem.tools.vmdtools.render_condensed_fukui">render_condensed_fukui() (in module compechem.tools.vmdtools)</a>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.raman">raman (compechem.engines.orca.OrcaJobInfo attribute)</a>
 </li>
-      <li><a href="API/tools.html#compechem.tools.vmdtools.render_fukui_cube">render_fukui_cube() (in module compechem.tools.vmdtools)</a>
+      <li><a href="API/tools.html#compechem.tools.vmdtools.render_condensed_fukui">render_condensed_fukui() (in module compechem.tools.vmdtools)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="API/tools.html#compechem.tools.vmdtools.render_fukui_cube">render_fukui_cube() (in module compechem.tools.vmdtools)</a>
+</li>
       <li><a href="API/tools.html#compechem.tools.vmdtools.render_spin_density_cube">render_spin_density_cube() (in module compechem.tools.vmdtools)</a>
 </li>
       <li><a href="API/tools.html#compechem.tools.reorder_energies">reorder_energies() (in module compechem.tools)</a>
@@ -677,7 +743,17 @@ document.write(`
 </li>
       <li><a href="API/systems.html#compechem.systems.System.save_json">save_json() (compechem.systems.System method)</a>
 </li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.scan">scan (compechem.engines.orca.OrcaJobInfo attribute)</a>
+</li>
       <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaInput.scan">scan() (compechem.engines.orca.OrcaInput method)</a>
+</li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.scan_ts">scan_ts (compechem.engines.orca.OrcaJobInfo attribute)</a>
+</li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaInput.scan_ts">scan_ts() (compechem.engines.orca.OrcaInput method)</a>
+</li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.scf_convergence_level">scf_convergence_level (compechem.engines.orca.OrcaJobInfo property)</a>
+</li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.scf_convergence_strategy">scf_convergence_strategy (compechem.engines.orca.OrcaJobInfo property)</a>
 </li>
       <li><a href="API/core.html#compechem.core.properties.Properties.set_condensed_fukui_hirshfeld">set_condensed_fukui_hirshfeld() (compechem.core.properties.Properties method)</a>
 </li>
@@ -691,12 +767,12 @@ document.write(`
 </li>
       <li><a href="API/core.html#compechem.core.properties.Properties.set_hirshfeld_charges">set_hirshfeld_charges() (compechem.core.properties.Properties method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/core.html#compechem.core.properties.Properties.set_hirshfeld_spin_populations">set_hirshfeld_spin_populations() (compechem.core.properties.Properties method)</a>
 </li>
       <li><a href="API/core.html#compechem.core.properties.Properties.set_mulliken_charges">set_mulliken_charges() (compechem.core.properties.Properties method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/core.html#compechem.core.properties.Properties.set_mulliken_spin_populations">set_mulliken_spin_populations() (compechem.core.properties.Properties method)</a>
 </li>
       <li><a href="API/core.html#compechem.core.properties.Properties.set_pka">set_pka() (compechem.core.properties.Properties method)</a>
@@ -706,6 +782,8 @@ document.write(`
       <li><a href="API/core.html#compechem.core.properties.Properties.set_vibronic_energy">set_vibronic_energy() (compechem.core.properties.Properties method)</a>
 </li>
       <li><a href="API/wrappers/dftbplus.html#compechem.engines.dftbplus.DFTBInput.simulated_annealing">simulated_annealing() (compechem.engines.dftbplus.DFTBInput method)</a>
+</li>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaJobInfo.solvent">solvent (compechem.engines.orca.OrcaJobInfo attribute)</a>
 </li>
       <li><a href="API/wrappers/dftbplus.html#compechem.engines.dftbplus.DFTBInput.solver">solver (compechem.engines.dftbplus.DFTBInput attribute)</a>
 </li>
@@ -763,6 +841,8 @@ document.write(`
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="API/wrappers/orca.html#compechem.engines.orca.OrcaInput.write_input">write_input() (compechem.engines.orca.OrcaInput method)</a>
+</li>
       <li><a href="API/core.html#compechem.core.geometry.MolecularGeometry.write_xyz">write_xyz() (compechem.core.geometry.MolecularGeometry method)</a>
 </li>
   </ul></td>
@@ -784,9 +864,15 @@ document.write(`
               
               
                 <footer class="bd-footer-article">
-                  <!-- Previous / next buttons -->
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
+</div></div>
+  
 </div>
+
                 </footer>
               
             </div>
@@ -796,7 +882,7 @@ document.write(`
             
           </div>
           <footer class="bd-footer-content">
-            <div class="bd-footer-content__inner">
+            
 <div class="bd-footer-content__inner container">
   
   <div class="footer-item">
@@ -826,7 +912,7 @@ By Luca Babetto, Pierpaolo Pravatto
     
   </div>
   
-</div></div>
+</div>
           </footer>
         
 
@@ -835,8 +921,8 @@ By Luca Babetto, Pierpaolo Pravatto
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+  <script src="_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
   <footer class="bd-footer">
   </footer>

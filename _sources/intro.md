@@ -1,6 +1,6 @@
 # GES-comp-echem User Guide
 
-Version: [`0.3.1`](changelog)
+Version: [`0.3.2`](changelog)
 
 This is the user guide for the `GES-comp-echem` Python library. The philosophy of this software package is to provide a simple interface for carrying out calculations with a number of computational chemistry programs.
 

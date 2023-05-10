@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -38,8 +38,8 @@
     <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -368,19 +368,29 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="setting-up-calculations">
 <span id="guide-setup"></span><h1>Setting up calculations<a class="headerlink" href="#setting-up-calculations" title="Permalink to this heading">#</a></h1>
-<p>After creating a <code class="docutils literal notranslate"><span class="pre">System</span></code>, you need to set up the calculation to which you wish to subject it. This is done with the <code class="docutils literal notranslate"><span class="pre">compechem.engines</span></code> submodule.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">compechem.engines</span></code> submodule contains a series of program-specific submodules for interfacing with external code. The currently supported programs are:</p>
+<p>After creating a <code class="docutils literal notranslate"><span class="pre">System</span></code>, you need to set up the calculation to which you wish to subject it. This is done with the <code class="docutils literal notranslate"><span class="pre">compechem.engines</span></code> and <code class="docutils literal notranslate"><span class="pre">compechem.wrappers</span></code> submodules.</p>
+<p>Both <code class="docutils literal notranslate"><span class="pre">engines</span></code> and <code class="docutils literal notranslate"><span class="pre">wrappers</span></code> submodules contains a series of program-specific classes and functions for interfacing with external code and carrying out calculations on <code class="docutils literal notranslate"><span class="pre">System</span></code> objects. The distinction between the two and the philosophy behind them is as follows:</p>
+<ul class="simple">
+<li><p>an <code class="docutils literal notranslate"><span class="pre">engine</span></code> carries out calculations on a <code class="docutils literal notranslate"><span class="pre">System</span></code> for computing properties. For example, geometry optimizations, single point energies, frequencies, etc.</p></li>
+<li><p>a <code class="docutils literal notranslate"><span class="pre">wrapper</span></code> carries out calculations on a <code class="docutils literal notranslate"><span class="pre">System</span></code> for obtaining other, “processed” <code class="docutils literal notranslate"><span class="pre">System</span></code> objects. For example, conformer/tautomer searches, building of solvation boxes, etc.</p></li>
+</ul>
+<p>The programs currently implemented as <code class="docutils literal notranslate"><span class="pre">engines</span></code> are:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/grimme-lab/xtb">xTB</a></p></li>
 <li><p><a class="reference external" href="https://orcaforum.kofo.mpg.de/index.php?sid=3c6c78cae3dd0cfffa26a293953422e3">Orca</a></p></li>
 <li><p><a class="reference external" href="https://dftbplus.org/">DFTB+</a></p></li>
 <li><p><a class="reference external" href="http://www.ks.uiuc.edu/Research/namd/">NAMD</a> (coming soon!)</p></li>
 </ul>
+<p>The programs currently implemented as <code class="docutils literal notranslate"><span class="pre">wrappers</span></code> are:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://crest-lab.github.io/crest-docs/">CREST</a></p></li>
+<li><p><a class="reference external" href="https://m3g.github.io/packmol/">PackMol</a></p></li>
+</ul>
 <div class="warning admonition">
 <p class="admonition-title">Note</p>
 <p>To function with the library, the external programs need to be already installed and available to the system from command line!</p>
 </div>
-<p>These general-purpose engines are implemented as <code class="docutils literal notranslate"><span class="pre">&lt;Program&gt;Input</span></code> classes in the corresponding submodules. To initialise a wrapper, you need to import it from its submodule and then create an instance of it:</p>
+<p>These general-purpose <code class="docutils literal notranslate"><span class="pre">engines</span></code> are implemented as <code class="docutils literal notranslate"><span class="pre">&lt;Program&gt;Input</span></code> classes in the corresponding submodules. To initialise an <code class="docutils literal notranslate"><span class="pre">engine</span></code>, you need to import it from its submodule and then create an instance of it:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem.engines.xtb</span> <span class="kn">import</span> <span class="n">XtbInput</span>
 <span class="kn">from</span> <span class="nn">compechem.engines.dftbplus</span> <span class="kn">import</span> <span class="n">DFTBInput</span>
 <span class="kn">from</span> <span class="nn">compechem.engines.orca</span> <span class="kn">import</span> <span class="n">OrcaInput</span>
@@ -401,6 +411,13 @@ document.write(`
     <span class="n">solvent</span> <span class="o">=</span> <span class="s2">&quot;water&quot;</span><span class="p">,</span>
     <span class="n">optionals</span> <span class="o">=</span> <span class="s2">&quot;D3BJ&quot;</span><span class="p">,</span>
 <span class="p">)</span>
+</pre></div>
+</div>
+<p>For <code class="docutils literal notranslate"><span class="pre">wrappers</span></code>, you just need to import the corresponding <code class="docutils literal notranslate"><span class="pre">wrapper</span></code> submodule or any of the specific functions you wish to use:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem.wrappers.crest</span> <span class="kn">import</span> <span class="n">tautomer_search</span>
+
+<span class="n">mol</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="s2">&quot;water.xyz&quot;</span><span class="p">)</span>
+<span class="n">tautomers_list</span> <span class="o">=</span> <span class="n">tautomer_search</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -431,7 +448,10 @@ document.write(`
               
               
                 <footer class="bd-footer-article">
-                  <!-- Previous / next buttons -->
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="systems.html"
@@ -451,7 +471,10 @@ document.write(`
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
+</div></div>
+  
 </div>
+
                 </footer>
               
             </div>
@@ -461,7 +484,7 @@ document.write(`
             
           </div>
           <footer class="bd-footer-content">
-            <div class="bd-footer-content__inner">
+            
 <div class="bd-footer-content__inner container">
   
   <div class="footer-item">
@@ -491,7 +514,7 @@ By Luca Babetto, Pierpaolo Pravatto
     
   </div>
   
-</div></div>
+</div>
           </footer>
         
 
@@ -500,8 +523,8 @@ By Luca Babetto, Pierpaolo Pravatto
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
   <footer class="bd-footer">
   </footer>

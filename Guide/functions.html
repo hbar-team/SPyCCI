@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -38,8 +38,8 @@
     <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -525,8 +525,12 @@ f^0(r) = \frac{1}{2} \left[\rho_{N+1}(r) - \rho_{N-1}(r)\right]
 </ul>
 <p>The function assumes that the molecule supports only singlet and doublet states and switches the spin multeplicity according to the number of electrons. If different spin states needs to be considered the <code class="docutils literal notranslate"><span class="pre">spins_states</span></code> option can be used to provide the spin multeplicity values as a list.</p>
 <p>An example code snippet is provided in what follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mol</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="s2">&quot;./acetaldehyde.xyz&quot;</span><span class="p">)</span>
-<span class="n">orca</span> <span class="o">=</span> <span class="n">OrcaInput</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;M062X&quot;</span><span class="p">,</span> <span class="n">basis_set</span><span class="o">=</span><span class="s2">&quot;def2-TZVP&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem.systems</span> <span class="kn">import</span> <span class="n">System</span>
+<span class="kn">from</span> <span class="nn">compechem.engines.orca</span> <span class="kn">import</span> <span class="n">OrcaInput</span>
+<span class="kn">from</span> <span class="nn">compechem.functions.fukui</span> <span class="kn">import</span> <span class="n">calculate_fukui</span>
+
+<span class="n">mol</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="s2">&quot;./acetaldehyde.xyz&quot;</span><span class="p">)</span>
+<span class="n">orca</span> <span class="o">=</span> <span class="n">OrcaInput</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;PBE&quot;</span><span class="p">,</span> <span class="n">basis_set</span><span class="o">=</span><span class="s2">&quot;def2-SVP&quot;</span><span class="p">)</span>
 
 <span class="n">orca</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">calculate_fukui</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">orca</span><span class="p">)</span>
@@ -535,89 +539,94 @@ f^0(r) = \frac{1}{2} \left[\rho_{N+1}(r) - \rho_{N-1}(r)\right]
 </pre></div>
 </div>
 <p>That for the acetaldehyde molecule returns the following result:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">=========================================================</span>
-<span class="n">SYSTEM</span><span class="p">:</span> <span class="n">acetaldehyde</span>
-<span class="o">=========================================================</span>
+<div class="cell tag_remove-input docutils container">
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=========================================================
+SYSTEM: acetaldehyde
+=========================================================
 
-<span class="n">Number</span> <span class="n">of</span> <span class="n">atoms</span><span class="p">:</span> <span class="mi">7</span>
-<span class="n">Charge</span><span class="p">:</span> <span class="mi">0</span>
-<span class="n">Spin</span> <span class="n">multeplicity</span><span class="p">:</span> <span class="mi">1</span>
+Number of atoms: 7
+Charge: 0
+Spin multiplicity: 1
 
-<span class="o">**********************</span> <span class="n">GEOMETRY</span> <span class="o">*************************</span>
+********************** GEOMETRY *************************
 
-<span class="n">Total</span> <span class="n">system</span> <span class="n">mass</span><span class="p">:</span> <span class="mf">44.0526</span> <span class="n">amu</span>
+Total system mass: 44.0526 amu
 
-<span class="o">----------------------------------------------</span>
- <span class="n">index</span>  <span class="n">atom</span>    <span class="n">x</span> <span class="p">(</span><span class="n">Å</span><span class="p">)</span>      <span class="n">y</span> <span class="p">(</span><span class="n">Å</span><span class="p">)</span>      <span class="n">z</span> <span class="p">(</span><span class="n">Å</span><span class="p">)</span>   
-<span class="o">----------------------------------------------</span>
- <span class="mi">0</span>       <span class="n">C</span>    <span class="o">-</span><span class="mf">3.01613</span>    <span class="mf">0.18024</span>    <span class="mf">0.12796</span>  
- <span class="mi">1</span>       <span class="n">C</span>    <span class="o">-</span><span class="mf">3.66703</span>    <span class="mf">1.53166</span>    <span class="mf">0.10866</span>  
- <span class="mi">2</span>       <span class="n">H</span>    <span class="o">-</span><span class="mf">3.20495</span>    <span class="mf">2.18867</span>    <span class="mf">0.84147</span>  
- <span class="mi">3</span>       <span class="n">H</span>    <span class="o">-</span><span class="mf">4.73073</span>    <span class="mf">1.41446</span>    <span class="mf">0.32944</span>  
- <span class="mi">4</span>       <span class="n">H</span>    <span class="o">-</span><span class="mf">3.59505</span>    <span class="mf">1.96256</span>   <span class="o">-</span><span class="mf">0.89180</span>  
- <span class="mi">5</span>       <span class="n">O</span>    <span class="o">-</span><span class="mf">2.16724</span>   <span class="o">-</span><span class="mf">0.15157</span>    <span class="mf">0.90619</span>  
- <span class="mi">6</span>       <span class="n">H</span>    <span class="o">-</span><span class="mf">3.37637</span>   <span class="o">-</span><span class="mf">0.53412</span>   <span class="o">-</span><span class="mf">0.63890</span>  
-<span class="o">----------------------------------------------</span>
+----------------------------------------------
+ index  atom    x (Å)      y (Å)      z (Å)   
+----------------------------------------------
+ 0       C    -3.00790    0.17495    0.13810  
+ 1       C    -3.66800    1.53034    0.11359  
+ 2       H    -3.22195    2.19896    0.87341  
+ 3       H    -4.75895    1.41874    0.29379  
+ 4       H    -3.56793    1.97830   -0.89850  
+ 5       O    -2.11052   -0.15105    0.88722  
+ 6       H    -3.42225   -0.55833   -0.62459  
+----------------------------------------------
 
-<span class="o">**********************</span> <span class="n">PROPERTIES</span> <span class="o">*************************</span>
+********************** PROPERTIES *************************
 
-<span class="n">Electronic</span> <span class="n">level</span> <span class="n">of</span> <span class="n">theory</span><span class="p">:</span> <span class="n">OrcaInput</span> <span class="o">||</span> <span class="n">method</span><span class="p">:</span> <span class="n">M062X</span> <span class="o">|</span> <span class="n">basis</span><span class="p">:</span> <span class="n">def2</span><span class="o">-</span><span class="n">TZVP</span> <span class="o">|</span> <span class="n">solvent</span><span class="p">:</span> <span class="kc">None</span>
-<span class="n">Vibronic</span> <span class="n">level</span> <span class="n">of</span> <span class="n">theory</span><span class="p">:</span> <span class="n">OrcaInput</span> <span class="o">||</span> <span class="n">method</span><span class="p">:</span> <span class="n">M062X</span> <span class="o">|</span> <span class="n">basis</span><span class="p">:</span> <span class="n">def2</span><span class="o">-</span><span class="n">TZVP</span> <span class="o">|</span> <span class="n">solvent</span><span class="p">:</span> <span class="kc">None</span>
+Geometry level of theory: OrcaInput || method: PBE | basis: def2-SVP | solvent: None
+Electronic level of theory: OrcaInput || method: PBE | basis: def2-SVP | solvent: None
+Vibronic level of theory: OrcaInput || method: PBE | basis: def2-SVP | solvent: None
 
-<span class="n">Electronic</span> <span class="n">energy</span><span class="p">:</span> <span class="o">-</span><span class="mf">153.820570037973</span> <span class="n">Eh</span>
-<span class="n">Vibronic</span> <span class="n">energy</span><span class="p">:</span> <span class="mf">0.03120153</span> <span class="n">Eh</span>
-<span class="n">Helmholtz</span> <span class="n">free</span> <span class="n">energy</span><span class="p">:</span> <span class="kc">None</span> <span class="n">Eh</span>
-<span class="n">Gibbs</span> <span class="n">free</span> <span class="n">energy</span><span class="p">:</span> <span class="kc">None</span> <span class="n">Eh</span>
-<span class="n">pKa</span><span class="p">:</span> <span class="kc">None</span>
+Electronic energy: -153.528266323306 Eh
+Vibronic energy: 0.02861407 Eh
+Helmholtz free energy: None Eh
+Gibbs free energy: -153.49965226 Eh
+pKa: None
 
-<span class="n">MULLIKEN</span> <span class="n">ANALYSIS</span>
-<span class="o">----------------------------------------------</span>
- <span class="n">index</span>  <span class="n">atom</span>   <span class="n">charge</span>    <span class="n">spin</span>
-<span class="o">----------------------------------------------</span>
- <span class="mi">0</span>       <span class="n">C</span>    <span class="mf">0.14039</span>   <span class="mf">0.00000</span>  
- <span class="mi">1</span>       <span class="n">C</span>    <span class="o">-</span><span class="mf">0.38791</span>  <span class="mf">0.00000</span>  
- <span class="mi">2</span>       <span class="n">H</span>    <span class="mf">0.14438</span>   <span class="mf">0.00000</span>  
- <span class="mi">3</span>       <span class="n">H</span>    <span class="mf">0.14899</span>   <span class="mf">0.00000</span>  
- <span class="mi">4</span>       <span class="n">H</span>    <span class="mf">0.14587</span>   <span class="mf">0.00000</span>  
- <span class="mi">5</span>       <span class="n">O</span>    <span class="o">-</span><span class="mf">0.27129</span>  <span class="mf">0.00000</span>  
- <span class="mi">6</span>       <span class="n">H</span>    <span class="mf">0.07956</span>   <span class="mf">0.00000</span>  
+MULLIKEN ANALYSIS
+----------------------------------------------
+ index  atom   charge    spin
+----------------------------------------------
+ 0       C    0.05436   0.00000  
+ 1       C    -0.04823  0.00000  
+ 2       H    0.05176   0.00000  
+ 3       H    0.05695   0.00000  
+ 4       H    0.05677   0.00000  
+ 5       O    -0.17156  0.00000  
+ 6       H    -0.00005  0.00000  
 
-<span class="n">CONDENSED</span> <span class="n">FUKUI</span> <span class="o">-</span> <span class="n">MULLIKEN</span>
-<span class="o">----------------------------------------------</span>
- <span class="n">index</span>  <span class="n">atom</span>    <span class="n">f</span><span class="o">+</span>      <span class="n">f</span><span class="o">-</span>      <span class="n">f0</span>
-<span class="o">----------------------------------------------</span>
- <span class="mi">0</span>       <span class="n">C</span>    <span class="mf">0.43686</span>   <span class="mf">0.09908</span>   <span class="mf">0.26797</span>  
- <span class="mi">1</span>       <span class="n">C</span>    <span class="o">-</span><span class="mf">0.12756</span>  <span class="mf">0.01427</span>   <span class="o">-</span><span class="mf">0.05665</span> 
- <span class="mi">2</span>       <span class="n">H</span>    <span class="mf">0.09539</span>   <span class="mf">0.07534</span>   <span class="mf">0.08537</span>  
- <span class="mi">3</span>       <span class="n">H</span>    <span class="mf">0.09967</span>   <span class="mf">0.09191</span>   <span class="mf">0.09579</span>  
- <span class="mi">4</span>       <span class="n">H</span>    <span class="mf">0.09621</span>   <span class="mf">0.09169</span>   <span class="mf">0.09395</span>  
- <span class="mi">5</span>       <span class="n">O</span>    <span class="mf">0.23951</span>   <span class="mf">0.42159</span>   <span class="mf">0.33055</span>  
- <span class="mi">6</span>       <span class="n">H</span>    <span class="mf">0.15992</span>   <span class="mf">0.20612</span>   <span class="mf">0.18302</span>  
+CONDENSED FUKUI - MULLIKEN
+----------------------------------------------
+ index  atom    f+      f-      f0
+----------------------------------------------
+ 0       C    0.23610   0.08077   0.15843  
+ 1       C    -0.11416  -0.02731  -0.07074 
+ 2       H    0.12882   0.11125   0.12003  
+ 3       H    0.15563   0.12121   0.13842  
+ 4       H    0.15492   0.12121   0.13806  
+ 5       O    0.22073   0.35571   0.28822  
+ 6       H    0.21797   0.23717   0.22757  
 
-<span class="n">HIRSHFELD</span> <span class="n">ANALYSIS</span>
-<span class="o">----------------------------------------------</span>
- <span class="n">index</span>  <span class="n">atom</span>   <span class="n">charge</span>    <span class="n">spin</span>
-<span class="o">----------------------------------------------</span>
- <span class="mi">0</span>       <span class="n">C</span>    <span class="mf">0.15867</span>   <span class="mf">0.00000</span>  
- <span class="mi">1</span>       <span class="n">C</span>    <span class="o">-</span><span class="mf">0.07114</span>  <span class="mf">0.00000</span>  
- <span class="mi">2</span>       <span class="n">H</span>    <span class="mf">0.04496</span>   <span class="mf">0.00000</span>  
- <span class="mi">3</span>       <span class="n">H</span>    <span class="mf">0.04637</span>   <span class="mf">0.00000</span>  
- <span class="mi">4</span>       <span class="n">H</span>    <span class="mf">0.04447</span>   <span class="mf">0.00000</span>  
- <span class="mi">5</span>       <span class="n">O</span>    <span class="o">-</span><span class="mf">0.25678</span>  <span class="mf">0.00000</span>  
- <span class="mi">6</span>       <span class="n">H</span>    <span class="mf">0.03345</span>   <span class="mf">0.00000</span>  
+HIRSHFELD ANALYSIS
+----------------------------------------------
+ index  atom   charge    spin
+----------------------------------------------
+ 0       C    0.14702   0.00000  
+ 1       C    -0.07279  0.00000  
+ 2       H    0.04088   0.00000  
+ 3       H    0.04575   0.00000  
+ 4       H    0.04567   0.00000  
+ 5       O    -0.22623  0.00000  
+ 6       H    0.01970   0.00000  
 
-<span class="n">CONDENSED</span> <span class="n">FUKUI</span> <span class="o">-</span> <span class="n">HIRSHFELD</span>
-<span class="o">----------------------------------------------</span>
- <span class="n">index</span>  <span class="n">atom</span>    <span class="n">f</span><span class="o">+</span>      <span class="n">f</span><span class="o">-</span>      <span class="n">f0</span>
-<span class="o">----------------------------------------------</span>
- <span class="mi">0</span>       <span class="n">C</span>    <span class="mf">0.31068</span>   <span class="mf">0.16128</span>   <span class="mf">0.23598</span>  
- <span class="mi">1</span>       <span class="n">C</span>    <span class="mf">0.07070</span>   <span class="mf">0.09203</span>   <span class="mf">0.08137</span>  
- <span class="mi">2</span>       <span class="n">H</span>    <span class="mf">0.05364</span>   <span class="mf">0.05358</span>   <span class="mf">0.05361</span>  
- <span class="mi">3</span>       <span class="n">H</span>    <span class="mf">0.08273</span>   <span class="mf">0.06865</span>   <span class="mf">0.07569</span>  
- <span class="mi">4</span>       <span class="n">H</span>    <span class="mf">0.07600</span>   <span class="mf">0.06840</span>   <span class="mf">0.07220</span>  
- <span class="mi">5</span>       <span class="n">O</span>    <span class="mf">0.27091</span>   <span class="mf">0.40759</span>   <span class="mf">0.33925</span>  
- <span class="mi">6</span>       <span class="n">H</span>    <span class="mf">0.13535</span>   <span class="mf">0.14846</span>   <span class="mf">0.14191</span>
+CONDENSED FUKUI - HIRSHFELD
+----------------------------------------------
+ index  atom    f+      f-      f0
+----------------------------------------------
+ 0       C    0.28818   0.15946   0.22382  
+ 1       C    0.07190   0.09734   0.08462  
+ 2       H    0.05820   0.06063   0.05941  
+ 3       H    0.09907   0.07355   0.08631  
+ 4       H    0.09850   0.07352   0.08601  
+ 5       O    0.25823   0.37205   0.31514  
+ 6       H    0.12592   0.16345   0.14468  
 </pre></div>
+</div>
+</div>
 </div>
 <p>The volumetric fukui functions can then be plotted using the built in <code class="docutils literal notranslate"><span class="pre">vmd</span></code> based rendering tool. As an example the following code can be used to render the the <span class="math notranslate nohighlight">\(f^+(r)\)</span> Fukui function.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem.tools.vmdtools</span> <span class="kn">import</span> <span class="n">render_fukui_cube</span>
@@ -660,7 +669,10 @@ f^0(r) = \frac{1}{2} \left[\rho_{N+1}(r) - \rho_{N-1}(r)\right]
               
               
                 <footer class="bd-footer-article">
-                  <!-- Previous / next buttons -->
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="run.html"
@@ -680,7 +692,10 @@ f^0(r) = \frac{1}{2} \left[\rho_{N+1}(r) - \rho_{N-1}(r)\right]
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
+</div></div>
+  
 </div>
+
                 </footer>
               
             </div>
@@ -710,7 +725,7 @@ f^0(r) = \frac{1}{2} \left[\rho_{N+1}(r) - \rho_{N-1}(r)\right]
             
           </div>
           <footer class="bd-footer-content">
-            <div class="bd-footer-content__inner">
+            
 <div class="bd-footer-content__inner container">
   
   <div class="footer-item">
@@ -740,7 +755,7 @@ By Luca Babetto, Pierpaolo Pravatto
     
   </div>
   
-</div></div>
+</div>
           </footer>
         
 
@@ -749,8 +764,8 @@ By Luca Babetto, Pierpaolo Pravatto
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
   <footer class="bd-footer">
   </footer>

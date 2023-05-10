@@ -14,9 +14,17 @@ kernelspec:
 
 # Getting Started
 
-The `GES-comp-echem` package can be installed in a Conda environment with the command:
+The `GES-comp-echem` package can be installed by first downloading the repository from our [GitHub](https://github.com/GES-compchem/GES-comp-echem) page and then installing via `pip`. 
+
+:::{admonition} Note
+:class: warning
+We always recommend installing new Python packages in a clean Conda environment and avoid installing in the system Python distribution or in the base Conda environment! If you are unfamiliar with Conda, please refer to their [documentation](https://docs.anaconda.com/free/anaconda/install/index.html) for a guide on how to set up environments.
+:::
+
 ```
-conda install -c greenenergystorage GES-comp-echem
+git clone https://github.com/GES-compchem/GES-comp-echem.git
+cd GES-comp-echem
+pip install .
 ```
 
 The library can be imported in a Python script via the following syntax:
@@ -99,7 +107,7 @@ print(water)
 ```{code-cell} python
 :tags: ["remove-input"]
 from compechem.systems import System
-water = System("./example_files/water.json")
+water = System("./example_files/water.xyz")
 print(water)
 ```
 

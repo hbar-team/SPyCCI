@@ -25,22 +25,6 @@
 
 ---
 
-## `add_flag` function
-
-```{eval-rst}
-.. autofunction:: compechem.tools.add_flag
-```
-
----
-
-## `dump` function
-
-```{eval-rst}
-.. autofunction:: compechem.tools.dump
-```
-
----
-
 ## `cyclization_check` function
 
 ```{eval-rst}
@@ -79,14 +63,14 @@
 .. autofunction:: compechem.tools.reorder_energies
 ```
 
-## The `compechem.tools.vmdtools` sub-module 
+## `compechem.tools.vmdtools` sub-module 
 
 ```{eval-rst}
 .. automodule:: compechem.tools.vmdtools
     :members:
 ```
 
-## The `compechem.tools.moglitools` sub-module 
+## `compechem.tools.moglitools` sub-module 
 
 ```{eval-rst}
 .. automodule:: compechem.tools.moglitools

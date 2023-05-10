@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -38,8 +38,8 @@
     <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -366,6 +366,7 @@ document.write(`
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#single-systems">Single systems</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ensembles">Ensembles</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#saving-loading-system-objects">Saving/Loading System objects</a></li>
 </ul>
             </nav>
         </div>
@@ -396,7 +397,7 @@ document.write(`
 <h2>Single systems<a class="headerlink" href="#single-systems" title="Permalink to this heading">#</a></h2>
 <p>A <code class="docutils literal notranslate"><span class="pre">System</span></code> object is defined as a molecular system, containing one or more individual molecules, and is initialized by providing a molecular structure via a <code class="docutils literal notranslate"><span class="pre">.xyz</span></code> file:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem.systems</span> <span class="kn">import</span> <span class="n">System</span>
-<span class="n">my_mol</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="s2">&quot;path/to/xyz/my_mol.xyz&quot;</span><span class="p">)</span>
+<span class="n">my_mol</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="s2">&quot;path/to/xyz/water.xyz&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Optionally, the following parameters can be provided (if not provided, some default values are set):</p>
@@ -408,7 +409,7 @@ document.write(`
 <p>Example of a periodic system of side 18.27 Å containing a cation radical:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem.systems</span> <span class="kn">import</span> <span class="n">System</span>
 <span class="n">my_mol</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span>
-    <span class="s2">&quot;path/to/xyz/my_mol.xyz&quot;</span><span class="p">,</span> 
+    <span class="s2">&quot;path/to/xyz/water.xyz&quot;</span><span class="p">,</span> 
     <span class="n">charge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> 
     <span class="n">spin</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
     <span class="n">box_side</span><span class="o">=</span><span class="mf">18.27</span><span class="p">,</span>
@@ -420,37 +421,42 @@ document.write(`
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">my_system</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">=========================================================</span>
-<span class="n">SYSTEM</span><span class="p">:</span> <span class="n">water</span>
-<span class="o">=========================================================</span>
+<div class="cell tag_remove-input docutils container">
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=========================================================
+SYSTEM: water
+=========================================================
 
-<span class="n">Number</span> <span class="n">of</span> <span class="n">atoms</span><span class="p">:</span> <span class="mi">3</span>
-<span class="n">Charge</span><span class="p">:</span> <span class="mi">0</span>
-<span class="n">Spin</span> <span class="n">multeplicity</span><span class="p">:</span> <span class="mi">1</span>
+Number of atoms: 3
+Charge: 0
+Spin multiplicity: 1
 
-<span class="o">**********************</span> <span class="n">GEOMETRY</span> <span class="o">*************************</span>
+********************** GEOMETRY *************************
 
-<span class="n">Total</span> <span class="n">system</span> <span class="n">mass</span><span class="p">:</span> <span class="mf">18.0153</span> <span class="n">amu</span>
+Total system mass: 18.0153 amu
 
-<span class="o">----------------------------------------------</span>
- <span class="n">index</span>  <span class="n">atom</span>    <span class="n">x</span> <span class="p">(</span><span class="n">Å</span><span class="p">)</span>      <span class="n">y</span> <span class="p">(</span><span class="n">Å</span><span class="p">)</span>      <span class="n">z</span> <span class="p">(</span><span class="n">Å</span><span class="p">)</span>   
-<span class="o">----------------------------------------------</span>
- <span class="mi">0</span>       <span class="n">O</span>    <span class="o">-</span><span class="mf">0.00001</span>   <span class="o">-</span><span class="mf">0.37937</span>    <span class="mf">0.00000</span>  
- <span class="mi">1</span>       <span class="n">H</span>     <span class="mf">0.77221</span>    <span class="mf">0.18968</span>   <span class="o">-</span><span class="mf">0.00000</span>  
- <span class="mi">2</span>       <span class="n">H</span>    <span class="o">-</span><span class="mf">0.77221</span>    <span class="mf">0.18969</span>    <span class="mf">0.00000</span>  
-<span class="o">----------------------------------------------</span>
+----------------------------------------------
+ index  atom    x (Å)      y (Å)      z (Å)   
+----------------------------------------------
+ 0       O     0.03595    2.78898    0.00000  
+ 1       H     1.00595    2.78898    0.00000  
+ 2       H    -0.28738    2.19789    0.69783  
+----------------------------------------------
 
-<span class="o">**********************</span> <span class="n">PROPERTIES</span> <span class="o">*************************</span>
+********************** PROPERTIES *************************
 
-<span class="n">Electronic</span> <span class="n">level</span> <span class="n">of</span> <span class="n">theory</span><span class="p">:</span> <span class="n">XtbInput</span> <span class="o">||</span> <span class="n">method</span><span class="p">:</span> <span class="n">gfn2</span> <span class="o">|</span> <span class="n">solvent</span><span class="p">:</span> <span class="kc">None</span>
-<span class="n">Vibronic</span> <span class="n">level</span> <span class="n">of</span> <span class="n">theory</span><span class="p">:</span> <span class="n">XtbInput</span> <span class="o">||</span> <span class="n">method</span><span class="p">:</span> <span class="n">gfn2</span> <span class="o">|</span> <span class="n">solvent</span><span class="p">:</span> <span class="kc">None</span>
+Geometry level of theory: None
+Electronic level of theory: None
+Vibronic level of theory: None
 
-<span class="n">Electronic</span> <span class="n">energy</span><span class="p">:</span> <span class="o">-</span><span class="mf">5.070544446446</span> <span class="n">Eh</span>
-<span class="n">Vibronic</span> <span class="n">energy</span><span class="p">:</span> <span class="mf">0.002508816182</span> <span class="n">Eh</span>
-<span class="n">Helmholtz</span> <span class="n">free</span> <span class="n">energy</span><span class="p">:</span> <span class="kc">None</span> <span class="n">Eh</span>
-<span class="n">Gibbs</span> <span class="n">free</span> <span class="n">energy</span><span class="p">:</span> <span class="kc">None</span> <span class="n">Eh</span>
-<span class="n">pKa</span><span class="p">:</span> <span class="kc">None</span>
+Electronic energy: None Eh
+Vibronic energy: None Eh
+Helmholtz free energy: None Eh
+Gibbs free energy: None Eh
+pKa: None
 </pre></div>
+</div>
+</div>
 </div>
 </section>
 <hr class="docutils" />
@@ -470,7 +476,72 @@ document.write(`
 </pre></div>
 </div>
 <p>To get a list of all the available properties, please refer to the <a class="reference internal" href="../API/systems.html#api-systems"><span class="std std-ref">API</span></a>.</p>
+</section>
 <hr class="docutils" />
+<section id="saving-loading-system-objects">
+<h2>Saving/Loading System objects<a class="headerlink" href="#saving-loading-system-objects" title="Permalink to this heading">#</a></h2>
+<p>It is possible to save/load <code class="docutils literal notranslate"><span class="pre">System</span></code> objects to/from <code class="docutils literal notranslate"><span class="pre">.json</span></code> files. To save a <code class="docutils literal notranslate"><span class="pre">System</span></code> object, dumping all the information currently stored in it after the undergone calculations (structure, charge, spin multiplicity, energies, frequencies, etc…) use the <code class="docutils literal notranslate"><span class="pre">system.save_json()</span></code> function and specify the path where you want to store the file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem.systems</span> <span class="kn">import</span> <span class="n">System</span>
+
+<span class="n">mol</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="s2">&quot;water.xyz&quot;</span><span class="p">)</span>
+
+<span class="o">...</span> <span class="n">calculations</span> <span class="o">...</span>
+
+<span class="n">mol</span><span class="o">.</span><span class="n">save_json</span><span class="p">(</span><span class="s2">&quot;water.json&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then, you can load a previously saved <code class="docutils literal notranslate"><span class="pre">System</span></code> by passing the <code class="docutils literal notranslate"><span class="pre">.json</span></code> file path instead of a <code class="docutils literal notranslate"><span class="pre">.xyz</span></code> file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem.systems</span> <span class="kn">import</span> <span class="n">System</span>
+
+<span class="n">mol</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="s2">&quot;water.json&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="cell tag_remove-input docutils container">
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=========================================================
+SYSTEM: water
+=========================================================
+
+Number of atoms: 3
+Charge: 0
+Spin multiplicity: 1
+
+********************** GEOMETRY *************************
+
+Total system mass: 18.0153 amu
+
+----------------------------------------------
+ index  atom    x (Å)      y (Å)      z (Å)   
+----------------------------------------------
+ 0       O     0.00000   -0.37937    0.00000  
+ 1       H     0.77221    0.18968   -0.00000  
+ 2       H    -0.77221    0.18969    0.00000  
+----------------------------------------------
+
+********************** PROPERTIES *************************
+
+Geometry level of theory: XtbInput || method: gfn2 | solvent: None
+Electronic level of theory: XtbInput || method: gfn2 | solvent: None
+Vibronic level of theory: XtbInput || method: gfn2 | solvent: None
+
+Electronic energy: -5.070544446692 Eh
+Vibronic energy: 0.002508973529 Eh
+Helmholtz free energy: None Eh
+Gibbs free energy: -5.068035473164 Eh
+pKa: None
+
+MULLIKEN ANALYSIS
+----------------------------------------------
+ index  atom   charge    spin
+----------------------------------------------
+ 0       O    -0.56500  0.00000  
+ 1       H    0.28200   0.00000  
+ 2       H    0.28200   0.00000  
+</pre></div>
+</div>
+</div>
+</div>
 <!-- ## Molecular Dynamics Trajectories
 
 :::{admonition} Note
@@ -532,7 +603,10 @@ Note: individual "frames" are automatically internally renamed according to the 
               
               
                 <footer class="bd-footer-article">
-                  <!-- Previous / next buttons -->
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="../user-guide.html"
@@ -552,7 +626,10 @@ Note: individual "frames" are automatically internally renamed according to the 
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
+</div></div>
+  
 </div>
+
                 </footer>
               
             </div>
@@ -569,6 +646,7 @@ Note: individual "frames" are automatically internally renamed according to the 
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#single-systems">Single systems</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ensembles">Ensembles</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#saving-loading-system-objects">Saving/Loading System objects</a></li>
 </ul>
   </nav></div>
 
@@ -577,7 +655,7 @@ Note: individual "frames" are automatically internally renamed according to the 
             
           </div>
           <footer class="bd-footer-content">
-            <div class="bd-footer-content__inner">
+            
 <div class="bd-footer-content__inner container">
   
   <div class="footer-item">
@@ -607,7 +685,7 @@ By Luca Babetto, Pierpaolo Pravatto
     
   </div>
   
-</div></div>
+</div>
           </footer>
         
 
@@ -616,8 +694,8 @@ By Luca Babetto, Pierpaolo Pravatto
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
   <footer class="bd-footer">
   </footer>

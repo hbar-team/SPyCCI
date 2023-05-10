@@ -1,3 +1,15 @@
+---
+jupytext:
+  formats: md:myst
+  text_representation:
+    extension: .md
+    format_name: myst
+kernelspec:
+  display_name: Python 3
+  language: python
+  name: python3
+---
+
 (Guide-functions)=
 # Calculating properties
 
@@ -156,8 +168,12 @@ The function assumes that the molecule supports only singlet and doublet states 
 
 An example code snippet is provided in what follows:
 ```python
+from compechem.systems import System
+from compechem.engines.orca import OrcaInput
+from compechem.functions.fukui import calculate_fukui
+
 mol = System("./acetaldehyde.xyz")
-orca = OrcaInput(method="M062X", basis_set="def2-TZVP")
+orca = OrcaInput(method="PBE", basis_set="def2-SVP")
 
 orca.opt(mol, inplace=True)
 calculate_fukui(mol, orca)
@@ -166,89 +182,12 @@ print(mol)
 ```
 
 That for the acetaldehyde molecule returns the following result:
-```
-=========================================================
-SYSTEM: acetaldehyde
-=========================================================
 
-Number of atoms: 7
-Charge: 0
-Spin multeplicity: 1
-
-********************** GEOMETRY *************************
-
-Total system mass: 44.0526 amu
-
-----------------------------------------------
- index  atom    x (Å)      y (Å)      z (Å)   
-----------------------------------------------
- 0       C    -3.01613    0.18024    0.12796  
- 1       C    -3.66703    1.53166    0.10866  
- 2       H    -3.20495    2.18867    0.84147  
- 3       H    -4.73073    1.41446    0.32944  
- 4       H    -3.59505    1.96256   -0.89180  
- 5       O    -2.16724   -0.15157    0.90619  
- 6       H    -3.37637   -0.53412   -0.63890  
-----------------------------------------------
-
-********************** PROPERTIES *************************
-
-Electronic level of theory: OrcaInput || method: M062X | basis: def2-TZVP | solvent: None
-Vibronic level of theory: OrcaInput || method: M062X | basis: def2-TZVP | solvent: None
-
-Electronic energy: -153.820570037973 Eh
-Vibronic energy: 0.03120153 Eh
-Helmholtz free energy: None Eh
-Gibbs free energy: None Eh
-pKa: None
-
-MULLIKEN ANALYSIS
-----------------------------------------------
- index  atom   charge    spin
-----------------------------------------------
- 0       C    0.14039   0.00000  
- 1       C    -0.38791  0.00000  
- 2       H    0.14438   0.00000  
- 3       H    0.14899   0.00000  
- 4       H    0.14587   0.00000  
- 5       O    -0.27129  0.00000  
- 6       H    0.07956   0.00000  
-
-CONDENSED FUKUI - MULLIKEN
-----------------------------------------------
- index  atom    f+      f-      f0
-----------------------------------------------
- 0       C    0.43686   0.09908   0.26797  
- 1       C    -0.12756  0.01427   -0.05665 
- 2       H    0.09539   0.07534   0.08537  
- 3       H    0.09967   0.09191   0.09579  
- 4       H    0.09621   0.09169   0.09395  
- 5       O    0.23951   0.42159   0.33055  
- 6       H    0.15992   0.20612   0.18302  
-
-HIRSHFELD ANALYSIS
-----------------------------------------------
- index  atom   charge    spin
-----------------------------------------------
- 0       C    0.15867   0.00000  
- 1       C    -0.07114  0.00000  
- 2       H    0.04496   0.00000  
- 3       H    0.04637   0.00000  
- 4       H    0.04447   0.00000  
- 5       O    -0.25678  0.00000  
- 6       H    0.03345   0.00000  
-
-CONDENSED FUKUI - HIRSHFELD
-----------------------------------------------
- index  atom    f+      f-      f0
-----------------------------------------------
- 0       C    0.31068   0.16128   0.23598  
- 1       C    0.07070   0.09203   0.08137  
- 2       H    0.05364   0.05358   0.05361  
- 3       H    0.08273   0.06865   0.07569  
- 4       H    0.07600   0.06840   0.07220  
- 5       O    0.27091   0.40759   0.33925  
- 6       H    0.13535   0.14846   0.14191
+```{code-cell} python
+:tags: ["remove-input"]
+from compechem.systems import System
+mol = System("../example_files/acetaldehyde.json")
+print(mol)
 ```
 
 The volumetric fukui functions can then be plotted using the built in `vmd` based rendering tool. As an example the following code can be used to render the the $f^+(r)$ Fukui function.

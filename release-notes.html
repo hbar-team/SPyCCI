@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
   
-  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -38,8 +38,8 @@
     <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
@@ -363,6 +363,7 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-3-2">Version <code class="docutils literal notranslate"><span class="pre">0.3.2</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-3-1">Version <code class="docutils literal notranslate"><span class="pre">0.3.1</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-3-0">Version <code class="docutils literal notranslate"><span class="pre">0.3.0</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-3-0-alpha">Version <code class="docutils literal notranslate"><span class="pre">0.3.0</span> <span class="pre">-</span> <span class="pre">alpha</span></code></a></li>
@@ -379,6 +380,34 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="release-notes">
 <span id="changelog"></span><h1>Release notes<a class="headerlink" href="#release-notes" title="Permalink to this heading">#</a></h1>
+<section id="version-0-3-2">
+<h2>Version <code class="docutils literal notranslate"><span class="pre">0.3.2</span></code><a class="headerlink" href="#version-0-3-2" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Refactoring of the <code class="docutils literal notranslate"><span class="pre">orca</span></code> module:</p>
+<ul>
+<li><p>Introduced the <code class="docutils literal notranslate"><span class="pre">OrcaJobInfo</span></code> class to allow for a more easily readable and maintainable code.</p></li>
+<li><p>Modified the <code class="docutils literal notranslate"><span class="pre">write_input</span></code> method of the <code class="docutils literal notranslate"><span class="pre">OrcaInput</span></code> class to allow for more complex input structures.</p></li>
+<li><p>Added option for the user to add custom blocks both during a call of an <code class="docutils literal notranslate"><span class="pre">OrcaInput</span></code> method or during the construction of the engine class instance.</p></li>
+<li><p>Removed the <code class="docutils literal notranslate"><span class="pre">scf_block</span></code> option in favour of the more general <code class="docutils literal notranslate"><span class="pre">blocks</span></code> option.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">opt_ts</span></code> method to perform transition state optimizations.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">scan_ts</span></code> method to perform transition state search based on relaxed surface scan.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">neb_ci</span></code> method to perform climbing image nudged elastic band calculations.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">neb_ts</span></code> method to perform a transition state seach based on a nudged elastic band calculation.</p></li>
+<li><p>Update to the output parser to avoid crash when imaginary modes are detected or the Mulliken analysis is not performed</p></li>
+<li><p>Added integration test for all the new features and update to the one using the <code class="docutils literal notranslate"><span class="pre">scf_block</span></code> option.</p></li>
+</ul>
+</li>
+<li><p>Update to the <code class="docutils literal notranslate"><span class="pre">externalutilities</span></code> module:</p>
+<ul>
+<li><p>Added option to read energies stored in comment of the the orca-formatted multiple <code class="docutils literal notranslate"><span class="pre">.xyz</span></code> files.</p></li>
+<li><p>Added option to remove temporary <code class="docutils literal notranslate"><span class="pre">.xyz</span></code> files used during parsing.</p></li>
+<li><p>Added engine field to properly store computed properies in the output systems.</p></li>
+<li><p>Added unit test to verify new functionalities.</p></li>
+</ul>
+</li>
+<li><p>Update to documentation to include new features and addition of examples to the <code class="docutils literal notranslate"><span class="pre">OrcaInput</span></code> docstrings.</p></li>
+</ul>
+</section>
 <section id="version-0-3-1">
 <h2>Version <code class="docutils literal notranslate"><span class="pre">0.3.1</span></code><a class="headerlink" href="#version-0-3-1" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
@@ -480,7 +509,10 @@ document.write(`
               
               
                 <footer class="bd-footer-article">
-                  <!-- Previous / next buttons -->
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="contributor-guide.html"
@@ -491,7 +523,10 @@ document.write(`
         <p class="prev-next-title">Contributor’s guide</p>
       </div>
     </a>
+</div></div>
+  
 </div>
+
                 </footer>
               
             </div>
@@ -506,6 +541,7 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-3-2">Version <code class="docutils literal notranslate"><span class="pre">0.3.2</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-3-1">Version <code class="docutils literal notranslate"><span class="pre">0.3.1</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-3-0">Version <code class="docutils literal notranslate"><span class="pre">0.3.0</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-3-0-alpha">Version <code class="docutils literal notranslate"><span class="pre">0.3.0</span> <span class="pre">-</span> <span class="pre">alpha</span></code></a></li>
@@ -517,7 +553,7 @@ document.write(`
             
           </div>
           <footer class="bd-footer-content">
-            <div class="bd-footer-content__inner">
+            
 <div class="bd-footer-content__inner container">
   
   <div class="footer-item">
@@ -547,7 +583,7 @@ By Luca Babetto, Pierpaolo Pravatto
     
   </div>
   
-</div></div>
+</div>
           </footer>
         
 
@@ -556,8 +592,8 @@ By Luca Babetto, Pierpaolo Pravatto
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+  <script src="_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
   <footer class="bd-footer">
   </footer>

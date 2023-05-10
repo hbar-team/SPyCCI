@@ -1,3 +1,15 @@
+---
+jupytext:
+  formats: md:myst
+  text_representation:
+    extension: .md
+    format_name: myst
+kernelspec:
+  display_name: Python 3
+  language: python
+  name: python3
+---
+
 (Guide-systems)=
 # Defining molecular systems
 
@@ -25,7 +37,7 @@ A `System` object is defined as a molecular system, containing one or more indiv
 
 ```python
 from compechem.systems import System
-my_mol = System("path/to/xyz/my_mol.xyz")
+my_mol = System("path/to/xyz/water.xyz")
 ```
 
 Optionally, the following parameters can be provided (if not provided, some default values are set):
@@ -38,7 +50,7 @@ Example of a periodic system of side 18.27 Å containing a cation radical:
 ```python
 from compechem.systems import System
 my_mol = System(
-    "path/to/xyz/my_mol.xyz", 
+    "path/to/xyz/water.xyz", 
     charge=1, 
     spin=2,
     box_side=18.27,
@@ -53,37 +65,11 @@ For a quick look at the main properties of a `System`, you can simply ask to pri
 print(my_system)
 ```
 
-```
-=========================================================
-SYSTEM: water
-=========================================================
-
-Number of atoms: 3
-Charge: 0
-Spin multeplicity: 1
-
-********************** GEOMETRY *************************
-
-Total system mass: 18.0153 amu
-
-----------------------------------------------
- index  atom    x (Å)      y (Å)      z (Å)   
-----------------------------------------------
- 0       O    -0.00001   -0.37937    0.00000  
- 1       H     0.77221    0.18968   -0.00000  
- 2       H    -0.77221    0.18969    0.00000  
-----------------------------------------------
-
-********************** PROPERTIES *************************
-
-Electronic level of theory: XtbInput || method: gfn2 | solvent: None
-Vibronic level of theory: XtbInput || method: gfn2 | solvent: None
-
-Electronic energy: -5.070544446446 Eh
-Vibronic energy: 0.002508816182 Eh
-Helmholtz free energy: None Eh
-Gibbs free energy: None Eh
-pKa: None
+```{code-cell} python
+:tags: ["remove-input"]
+from compechem.systems import System
+water = System("../example_files/water.xyz")
+print(water)
 ```
 
 ---
@@ -108,6 +94,36 @@ my_ens = Ensemble(my_list)
 To get a list of all the available properties, please refer to the [API](API-systems).
 
 ---
+
+## Saving/Loading System objects
+
+It is possible to save/load `System` objects to/from `.json` files. To save a `System` object, dumping all the information currently stored in it after the undergone calculations (structure, charge, spin multiplicity, energies, frequencies, etc...) use the `system.save_json()` function and specify the path where you want to store the file:
+
+```python
+from compechem.systems import System
+
+mol = System("water.xyz")
+
+... calculations ...
+
+mol.save_json("water.json")
+```
+
+Then, you can load a previously saved `System` by passing the `.json` file path instead of a `.xyz` file:
+
+```python
+from compechem.systems import System
+
+mol = System("water.json")
+print(mol)
+```
+
+```{code-cell} python
+:tags: ["remove-input"]
+from compechem.systems import System
+water = System("../example_files/water.json")
+print(water)
+```
 
 <!-- ## Molecular Dynamics Trajectories
 

@@ -1,6 +1,29 @@
 (changelog)=
 # Release notes
 
+## Version `0.3.2`
+
+* Refactoring of the `orca` module:
+  * Introduced the `OrcaJobInfo` class to allow for a more easily readable and maintainable code.
+  * Modified the `write_input` method of the `OrcaInput` class to allow for more complex input structures.
+  * Added option for the user to add custom blocks both during a call of an `OrcaInput` method or during the construction of the engine class instance.
+  * Removed the `scf_block` option in favour of the more general `blocks` option.
+  * Added `opt_ts` method to perform transition state optimizations.
+  * Added `scan_ts` method to perform transition state search based on relaxed surface scan.
+  * Added `neb_ci` method to perform climbing image nudged elastic band calculations.
+  * Added `neb_ts` method to perform a transition state seach based on a nudged elastic band calculation.
+  * Update to the output parser to avoid crash when imaginary modes are detected or the Mulliken analysis is not performed
+  * Added integration test for all the new features and update to the one using the `scf_block` option.
+
+* Update to the `externalutilities` module:
+  * Added option to read energies stored in comment of the the orca-formatted multiple `.xyz` files.
+  * Added option to remove temporary `.xyz` files used during parsing.
+  * Added engine field to properly store computed properies in the output systems.
+  * Added unit test to verify new functionalities.
+
+* Update to documentation to include new features and addition of examples to the `OrcaInput` docstrings.
+
+
 ## Version `0.3.1`
 
 * Update of `System` and `JSON` format:
@@ -21,7 +44,6 @@
 * Implemented buried volume calculation from `System` geometry.
 
 * Added `mogli` tools to visualize molecule and use custom coloring (early)
-
 
 
 ## Version `0.3.0`
