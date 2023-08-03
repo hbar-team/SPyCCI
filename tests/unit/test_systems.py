@@ -3,10 +3,10 @@ import pytest, pathlib, json
 from numpy.testing import assert_array_almost_equal
 from os.path import abspath, dirname, join
 
-from compechem.config import __JSON_VERSION__
-from compechem.systems import System
-from compechem.core.base import Engine
-from compechem.core.geometry import MolecularGeometry
+from spycci.config import __JSON_VERSION__
+from spycci.systems import System
+from spycci.core.base import Engine
+from spycci.core.geometry import MolecularGeometry
 
 # Get the path of the tests directory
 TEST_DIR = dirname(abspath(__file__))

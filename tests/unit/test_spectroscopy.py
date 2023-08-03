@@ -3,8 +3,8 @@ import pytest
 from os import remove
 from os.path import dirname, abspath, isfile
 
-from compechem.systems import System
-from compechem.core.spectroscopy import VibrationalData
+from spycci.systems import System
+from spycci.core.spectroscopy import VibrationalData
 
 
 # Get the path of the tests directory

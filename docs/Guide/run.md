@@ -40,8 +40,8 @@ Generic calculations are implemented as class methods in the various `engines`. 
 The only mandatory parameter to be passed is the `System` on which to run the calculation. To run the calculation, simply call the function. The output of a calculation is (usually) a `System` object which can be assigned to a new variable:
 
 ```python
-from compechem.systems import System
-from compechem.engines.xtb import XtbInput
+from spycci.systems import System
+from spycci.engines.xtb import XtbInput
 
 mol = System("water.xyz")
 xtb = XtbInput()
@@ -56,7 +56,7 @@ print(mol_opt)
 
 ```{code-cell} python
 :tags: ["remove-input"]
-from compechem.systems import System
+from spycci.systems import System
 
 mol = System("../example_files/water.xyz")
 mol_opt = System("../example_files/water.json")
@@ -70,8 +70,8 @@ print(mol_opt)
 Alternatively, you can directly update the input `System` with the `inplace` flag:
 
 ```python
-from compechem.systems import System
-from compechem.engines.xtb import XtbInput
+from spycci.systems import System
+from spycci.engines.xtb import XtbInput
 
 mol = System("water.xyz")
 xtb = XtbInput()
@@ -87,8 +87,8 @@ print(mol)
 
 ```{code-cell} python
 :tags: ["remove-input"]
-from compechem.systems import System
-from compechem.engines.xtb import XtbInput
+from spycci.systems import System
+from spycci.engines.xtb import XtbInput
 
 mol1 = System("../example_files/water.xyz")
 mol2 = System("../example_files/water.json")
@@ -122,8 +122,8 @@ These can be imported directly from the corresponding submodule. For more detail
 The CREST tautomer, conformer, deprotonation, and protonation routines all require a `System` object as input, and return a list of tautomer, conformers, deprotomers, and protomers, respectively, ordered by relative energy:
 
 ```python
-from compechem.systems import System
-from compechem.wrappers.crest import conformer_search
+from spycci.systems import System
+from spycci.wrappers.crest import conformer_search
 
 mol = System("mymol.xyz")
 conformers = conformer_search(mol)
@@ -134,8 +134,8 @@ lowest_energy_conformer = conformers[0]
 The QCG routines are used to create an explicitly solvated cluster, surrounding a solute with a certain number of solvent molecules. By default, the program keeps adding solvent molecules until energy convergence is reached with respect to the addition of other molecules. For more details on how to customise this kind of calculation, please refer to the [API](API-wrappers-crest) page.
 
 ```python
-from compechem.systems import System
-from compechem.wrappers.crest import qcg_grow
+from spycci.systems import System
+from spycci.wrappers.crest import qcg_grow
 
 solute = System("solute.xyz")
 solvent = System("solvent.xyz")
@@ -160,8 +160,8 @@ Like the QCG routines, you need to provide a solute and a solvent `System`. The 
 Given two of these parameters, the third will be calculated accordingly. For example, the following code generates a cubic solvation box with 50 solvent molecules and a target density of 997 g/L:
 
 ```python
-from compechem.systems import System
-from compechem.wrappers.packmol import packmol_cube
+from spycci.systems import System
+from spycci.wrappers.packmol import packmol_cube
 
 solute = System("urea.xyz")
 solvent = System("water.xyz")
@@ -172,7 +172,7 @@ print(solvated_cube)
 
 ```{code-cell} python
 :tags: ["remove-input"]
-from compechem.systems import System
+from spycci.systems import System
 
 solvated_cube = System("../example_files/solvated_cube.json")
 print(solvated_cube)

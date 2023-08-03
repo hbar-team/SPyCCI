@@ -3,10 +3,10 @@ from copy import deepcopy
 from typing import List, Dict, Union
 from enum import Enum
 
-from compechem.systems import System
-from compechem.engines.orca import OrcaInput
-from compechem.engines.xtb import XtbInput
-from compechem.tools.cubetools import Cube
+from spycci.systems import System
+from spycci.engines.orca import OrcaInput
+from spycci.engines.xtb import XtbInput
+from spycci.tools.cubetools import Cube
 
 
 FUKUI_CUBE_WARNING = "Fukui function cube file, the atomic charges column contains the localized Mulliken-charge-based fukui values"

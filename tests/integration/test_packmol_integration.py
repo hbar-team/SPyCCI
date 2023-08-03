@@ -1,7 +1,7 @@
 import pytest
 
-from compechem.wrappers import packmol
-from compechem.systems import System
+from spycci.wrappers import packmol
+from spycci.systems import System
 from os.path import dirname, abspath
 from shutil import rmtree
 

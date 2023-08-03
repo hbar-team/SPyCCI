@@ -1,9 +1,9 @@
 (API-wrappers-dftbplus)=
-# `compechem.engines.dftbplus` sub-module
+# `spycci.engines.dftbplus` sub-module
 
 ## `DFTBInput` class
 
 ```{eval-rst}
-.. autoclass:: compechem.engines.dftbplus.DFTBInput
+.. autoclass:: spycci.engines.dftbplus.DFTBInput
     :members:
 ```

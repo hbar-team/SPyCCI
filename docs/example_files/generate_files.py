@@ -1,6 +1,6 @@
 # water opt
-from compechem.systems import System
-from compechem.engines.xtb import XtbInput
+from spycci.systems import System
+from spycci.engines.xtb import XtbInput
 
 # xtb = XtbInput()
 # water = System("./cursed_water.xyz")
@@ -12,7 +12,7 @@ from compechem.engines.xtb import XtbInput
 # water.save_json("water.json")
 
 # solvated cube
-from compechem.wrappers.packmol import packmol_cube
+from spycci.wrappers.packmol import packmol_cube
 
 solute = System("urea.xyz")
 solvent = System("water.xyz")
@@ -23,8 +23,8 @@ print("saving solvated_cube.json")
 solvated_cube.save_json("solvated_cube.json")
 
 # generate acetaldehyde with Fukui functions
-from compechem.engines.orca import OrcaInput
-from compechem.functions.fukui import calculate_fukui
+from spycci.engines.orca import OrcaInput
+from spycci.functions.fukui import calculate_fukui
 
 mol = System("./acetaldehyde.xyz")
 orca = OrcaInput(method="PBE", basis_set="def2-SVP")

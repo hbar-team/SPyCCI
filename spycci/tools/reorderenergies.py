@@ -1,8 +1,8 @@
-from compechem.config import get_ncores
-from compechem.core.base import Engine
-from compechem.systems import System
-from compechem.engines.orca import M06
-from compechem.engines.xtb import XtbInput
+from spycci.config import get_ncores
+from spycci.core.base import Engine
+from spycci.systems import System
+from spycci.engines.orca import M06
+from spycci.engines.xtb import XtbInput
 import logging
 from typing import List
 

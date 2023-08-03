@@ -1,14 +1,13 @@
 import setuptools
 
-
 setuptools.setup(
-    name="GES-comp-echem",
-    version="0.3.2",
-    description="",
-    long_description="",
-    packages=["compechem"],
+    name="SPyCCI",
+    version="0.0.1",
+    description="Simple Python Computational Chemistry Interface",
+    long_description="Simple Python Computational Chemistry Interface",
+    packages=["spycci"],
     package_data={
-        "compechem": ["*", "wrappers/*", "engines/*", "functions/*", "tools/*", "core/*"],
+        "spycci": ["*", "wrappers/*", "engines/*", "functions/*", "tools/*", "core/*"],
     },
     install_requires=[],
 )

@@ -1,6 +1,6 @@
 import pytest
 
-from compechem.engines.orca import OrcaInput
+from spycci.engines.orca import OrcaInput
 
 ORCADIR = "orcadir"
 

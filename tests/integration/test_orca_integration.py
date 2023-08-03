@@ -1,8 +1,8 @@
 import pytest
 
-from compechem.engines.orca import OrcaInput
-from compechem.systems import System, Ensemble
-from compechem.tools.externalutilities import split_multixyz
+from spycci.engines.orca import OrcaInput
+from spycci.systems import System, Ensemble
+from spycci.tools.externalutilities import split_multixyz
 
 from os import listdir
 from os.path import dirname, abspath, isfile

@@ -1,6 +1,6 @@
-from compechem.systems import Ensemble
-from compechem.systems import System
-from compechem.constants import Eh_to_kcalmol
+from spycci.systems import Ensemble
+from spycci.systems import System
+from spycci.constants import Eh_to_kcalmol
 from typing import Tuple
 
 import logging

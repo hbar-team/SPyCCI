@@ -1,6 +1,6 @@
 import pytest
 
-from compechem.core.base import Engine
+from spycci.core.base import Engine
 
 # Test the Engine class constructor
 def test_Engine___init__():

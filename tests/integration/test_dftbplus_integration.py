@@ -1,7 +1,7 @@
 import pytest
 
-from compechem.engines.dftbplus import DFTBInput
-from compechem.systems import System, Ensemble
+from spycci.engines.dftbplus import DFTBInput
+from spycci.systems import System, Ensemble
 
 from os import listdir
 from os.path import dirname, abspath

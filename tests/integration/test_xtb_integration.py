@@ -1,7 +1,7 @@
 import pytest
 
-from compechem.engines.xtb import XtbInput
-from compechem.systems import System
+from spycci.engines.xtb import XtbInput
+from spycci.systems import System
 
 from os import listdir
 from os.path import dirname, abspath

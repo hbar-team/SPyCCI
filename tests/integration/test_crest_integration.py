@@ -1,7 +1,7 @@
 import pytest
 
-from compechem.wrappers import crest
-from compechem.systems import System, Ensemble
+from spycci.wrappers import crest
+from spycci.systems import System, Ensemble
 from os.path import dirname, abspath
 from shutil import rmtree
 

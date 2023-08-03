@@ -1,21 +1,21 @@
 import os, copy, shutil, sh
 
-import compechem.config as cfg
-from compechem.config import get_ncores
+import spycci.config as cfg
+from spycci.config import get_ncores
 from os.path import join
 from tempfile import mkdtemp
-from compechem.core.base import Engine
-from compechem.systems import System, Ensemble
-from compechem.tools import (
+from spycci.core.base import Engine
+from spycci.systems import System, Ensemble
+from spycci.tools import (
     process_output,
     save_dftb_trajectory,
     compress_dftb_trajectory,
     split_multixyz,
 )
-from compechem.tools.internaltools import clean_suffix
+from spycci.tools.internaltools import clean_suffix
 
 from typing import Dict
-from compechem.core.dependency_finder import locate_dftbplus, locate_dftbparamdir
+from spycci.core.dependency_finder import locate_dftbplus, locate_dftbparamdir
 
 import logging
 

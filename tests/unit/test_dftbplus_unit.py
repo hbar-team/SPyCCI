@@ -1,6 +1,6 @@
 import pytest
 
-from compechem.engines.dftbplus import DFTBInput
+from spycci.engines.dftbplus import DFTBInput
 
 DFTBPLUS = "dftbplus"
 DFTBPARAMDIR = "dftbparamdir"

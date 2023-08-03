@@ -1,9 +1,9 @@
 import pytest
 
-from compechem.engines.xtb import XtbInput
-from compechem.engines.orca import OrcaInput
-from compechem.systems import System, Ensemble
-from compechem.functions.fukui import calculate_fukui, CubeGrids
+from spycci.engines.xtb import XtbInput
+from spycci.engines.orca import OrcaInput
+from spycci.systems import System, Ensemble
+from spycci.functions.fukui import calculate_fukui, CubeGrids
 from os.path import dirname, abspath
 from numpy.testing import assert_array_almost_equal
 from shutil import rmtree

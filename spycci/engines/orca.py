@@ -3,15 +3,15 @@ import numpy as np
 from typing import Dict, Optional, Any, Tuple
 from tempfile import mkdtemp
 
-import compechem.config as cfg
-from compechem.config import get_ncores
-from compechem.systems import Ensemble, System
-from compechem.tools import process_output
-from compechem.tools.externalutilities import split_multixyz
-from compechem.core.base import Engine
-from compechem.core.dependency_finder import locate_orca
-from compechem.core.spectroscopy import VibrationalData
-from compechem.tools.internaltools import clean_suffix
+import spycci.config as cfg
+from spycci.config import get_ncores
+from spycci.systems import Ensemble, System
+from spycci.tools import process_output
+from spycci.tools.externalutilities import split_multixyz
+from spycci.core.base import Engine
+from spycci.core.dependency_finder import locate_orca
+from spycci.core.spectroscopy import VibrationalData
+from spycci.tools.internaltools import clean_suffix
 
 
 logger = logging.getLogger(__name__)
