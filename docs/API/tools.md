@@ -1,10 +1,10 @@
 (API-tools)=
-# `compechem.tools` sub-module
+# `spycci.tools` sub-module
 
 ## `split_multixyz` function
 
 ```{eval-rst}
-.. autofunction:: compechem.tools.split_multixyz
+.. autofunction:: spycci.tools.split_multixyz
 ```
 
 ---
@@ -12,7 +12,7 @@
 ## `compress_dftb_trajectory` function
 
 ```{eval-rst}
-.. autofunction:: compechem.tools.compress_dftb_trajectory
+.. autofunction:: spycci.tools.compress_dftb_trajectory
 ```
 
 ---
@@ -20,7 +20,7 @@
 ## `maxdist` function
 
 ```{eval-rst}
-.. autofunction:: compechem.tools.maxdist
+.. autofunction:: spycci.tools.maxdist
 ```
 
 ---
@@ -28,7 +28,7 @@
 ## `cyclization_check` function
 
 ```{eval-rst}
-.. autofunction:: compechem.tools.cyclization_check
+.. autofunction:: spycci.tools.cyclization_check
 ```
 
 ---
@@ -36,7 +36,7 @@
 ## `dissociation_check` function
 
 ```{eval-rst}
-.. autofunction:: compechem.tools.dissociation_check
+.. autofunction:: spycci.tools.dissociation_check
 ```
 
 ---
@@ -44,7 +44,7 @@
 ## `process_output` function
 
 ```{eval-rst}
-.. autofunction:: compechem.tools.process_output
+.. autofunction:: spycci.tools.process_output
 ```
 
 ---
@@ -52,7 +52,7 @@
 ## `save_dftb_trajectory` function
 
 ```{eval-rst}
-.. autofunction:: compechem.tools.save_dftb_trajectory
+.. autofunction:: spycci.tools.save_dftb_trajectory
 ```
 
 ---
@@ -60,19 +60,19 @@
 ## `reorder_energies` function
 
 ```{eval-rst}
-.. autofunction:: compechem.tools.reorder_energies
+.. autofunction:: spycci.tools.reorder_energies
 ```
 
-## `compechem.tools.vmdtools` sub-module 
+## `spycci.tools.vmdtools` sub-module 
 
 ```{eval-rst}
-.. automodule:: compechem.tools.vmdtools
+.. automodule:: spycci.tools.vmdtools
     :members:
 ```
 
-## `compechem.tools.moglitools` sub-module 
+## `spycci.tools.moglitools` sub-module 
 
 ```{eval-rst}
-.. automodule:: compechem.tools.moglitools
+.. automodule:: spycci.tools.moglitools
     :members:
 ```

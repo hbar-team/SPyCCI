@@ -8,10 +8,10 @@ from typing import List
 from enum import Enum
 from copy import deepcopy
 
-from compechem.constants import kB
-from compechem.config import __JSON_VERSION__
-from compechem.core.geometry import MolecularGeometry
-from compechem.core.properties import Properties
+from spycci.constants import kB
+from spycci.config import __JSON_VERSION__
+from spycci.core.geometry import MolecularGeometry
+from spycci.core.properties import Properties
 
 logger = logging.getLogger(__name__)
 

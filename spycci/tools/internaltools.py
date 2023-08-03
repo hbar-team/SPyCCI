@@ -2,7 +2,7 @@ import os
 import shutil
 from rdkit import Chem
 from copy import deepcopy
-from compechem.systems import System
+from spycci.systems import System
 import logging
 
 logger = logging.getLogger(__name__)

@@ -1,12 +1,12 @@
 import os, copy, sh, shutil
 from typing import Dict
 from tempfile import mkdtemp
-from compechem.config import get_ncores
-from compechem.core.base import Engine
-from compechem.systems import System
-from compechem.tools import process_output, dissociation_check, cyclization_check
-from compechem.tools.internaltools import clean_suffix
-from compechem.core.dependency_finder import locate_xtb
+from spycci.config import get_ncores
+from spycci.core.base import Engine
+from spycci.systems import System
+from spycci.tools import process_output, dissociation_check, cyclization_check
+from spycci.tools.internaltools import clean_suffix
+from spycci.core.dependency_finder import locate_xtb
 
 import logging
 

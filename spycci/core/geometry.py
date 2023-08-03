@@ -6,7 +6,7 @@ from os.path import isfile
 from typing import Tuple, List, Union
 from morfeus import BuriedVolume
 
-from compechem.constants import atoms_dict, atomic_masses
+from spycci.constants import atoms_dict, atomic_masses
 
 
 class MolecularGeometry:

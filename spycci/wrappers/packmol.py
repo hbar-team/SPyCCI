@@ -2,9 +2,9 @@ import os, shutil, sh
 import logging
 from tempfile import mkdtemp
 
-from compechem.constants import atomic_masses, avogadro
-from compechem.systems import System
-from compechem.tools import process_output
+from spycci.constants import atomic_masses, avogadro
+from spycci.systems import System
+from spycci.tools import process_output
 
 logger = logging.getLogger(__name__)
 

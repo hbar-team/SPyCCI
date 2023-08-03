@@ -1,10 +1,10 @@
 import pytest
 from numpy.testing import assert_array_almost_equal
 
-import compechem.config as cc
-from compechem.core.base import Engine
-from compechem.core.properties import Properties
-from compechem.engines.xtb import XtbInput
+import spycci.config as cc
+from spycci.core.base import Engine
+from spycci.core.properties import Properties
+from spycci.engines.xtb import XtbInput
 
 # Test the Properties class
 # ------------------------------------------------------------------------------------------

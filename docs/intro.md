@@ -1,8 +1,8 @@
-# GES-comp-echem User Guide
+# SPyCCI User Guide
 
-Version: [`0.3.2`](changelog)
+Version: [`0.0.1`](changelog)
 
-This is the user guide for the `GES-comp-echem` Python library. The philosophy of this software package is to provide a simple interface for carrying out calculations with a number of computational chemistry programs.
+This is the user guide for the `SPyCCI` Python library. The philosophy of this software package is to provide a simple interface for carrying out calculations, workflows and data-analysis with a number of computational chemistry programs.
 
 ::::{grid} 1 1 2 2
 :class-container: text-center

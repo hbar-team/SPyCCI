@@ -1,11 +1,11 @@
-from compechem.systems import Ensemble
-from compechem.systems import System
-from compechem.core.base import Engine
-from compechem.engines.xtb import XtbInput
-from compechem.wrappers.crest import deprotonate
-from compechem.tools.reorderenergies import reorder_energies
+from spycci.systems import Ensemble
+from spycci.systems import System
+from spycci.core.base import Engine
+from spycci.engines.xtb import XtbInput
+from spycci.wrappers.crest import deprotonate
+from spycci.tools.reorderenergies import reorder_energies
 
-from compechem.constants import Eh_to_kcalmol, proton_hydration_free_energy
+from spycci.constants import Eh_to_kcalmol, proton_hydration_free_energy
 
 import logging
 

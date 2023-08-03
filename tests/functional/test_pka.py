@@ -1,9 +1,9 @@
 import pytest
 
-from compechem.engines.xtb import XtbInput
-from compechem.engines.orca import OrcaInput
-from compechem.systems import System, Ensemble
-from compechem.functions.pka import calculate_pka, auto_calculate_pka
+from spycci.engines.xtb import XtbInput
+from spycci.engines.orca import OrcaInput
+from spycci.systems import System, Ensemble
+from spycci.functions.pka import calculate_pka, auto_calculate_pka
 from os.path import dirname, abspath
 from shutil import rmtree
 

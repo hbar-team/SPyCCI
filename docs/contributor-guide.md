@@ -1,26 +1,26 @@
 # Contributor's guide
 
-`GES-comp-echem` is an open source project and, as such, all the contributions are well accepted. If you want to contribute to the library, a simple guide on how to interface with the GitHub repository is provided in what follows.
+`SPyCCI` is an open source project and, as such, all the contributions are well accepted. If you want to contribute to the library, a simple guide on how to interface with the GitHub repository is provided in what follows.
 
 ## General development process
 
 * If you are a first-time contributor:
 
-    * Go to [https://github.com/GES-compchem/GES-comp-echem](https://github.com/GES-compchem/GES-comp-echem) and click the “fork” button to create your own copy of the project repository.
+    * Go to [https://github.com/hbar-team/SPyCCI](https://github.com/hbar-team/SPyCCI) and click the “fork” button to create your own copy of the project repository.
 
     * Clone the project to your local computer using the command (where `<YOUR_USERNAME>` represent your personal GitHub username): 
         ```
-        git clone https://github.com/<YOUR_USERNAME>/GES-comp-echem
+        git clone https://github.com/<YOUR_USERNAME>/SPyCCI
         ```
 
     * Enter the reposiotry directory using the command:
         ```
-        cd GES-comp-echem
+        cd SPyCCI
         ```
 
     * Add the upstream repository using the command:
         ```
-        git remote add upstream https://github.com/GES-compchem/GES-comp-echem.git
+        git remote add upstream https://github.com/hbar-team/SPyCCI.git
         ```
 
     * Now, when running the `git remote -v` command, the following reposiotries shold be visible:

@@ -1,18 +1,18 @@
 (Guide-tools)=
 # Useful tools
 
-The `compechem.tools` submodule contains a series of useful functions, mostly used internally by the library. The user is not expected to interact with this submodule during normal operation, but some functions might come in handy for debugging or for advanced users, and will be reported here. For a comprehensive list of all functions available in the `compechem.tools` submodule, including the ones only meant for internal use, please refer to the [API](API-tools).
+The `spycci.tools` submodule contains a series of useful functions, mostly used internally by the library. The user is not expected to interact with this submodule during normal operation, but some functions might come in handy for debugging or for advanced users, and will be reported here. For a comprehensive list of all functions available in the `spycci.tools` submodule, including the ones only meant for internal use, please refer to the [API](API-tools).
 
-The `compechem.tools` module can be imported via the following syntax:
+The `spycci.tools` module can be imported via the following syntax:
 
 ```python
-from compechem import tools
+from spycci import tools
 ```
 
 while individual functions can be imported as:
 
 ```python
-from compechem.tools import split_multixyz
+from spycci.tools import split_multixyz
 ```
 
 ---

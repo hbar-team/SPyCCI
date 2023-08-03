@@ -1,6 +1,6 @@
 import pytest
 
-from compechem.engines.xtb import XtbInput
+from spycci.engines.xtb import XtbInput
 
 XTBPATH = "xtbpath"
 

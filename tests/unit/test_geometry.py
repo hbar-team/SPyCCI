@@ -5,7 +5,7 @@ from os import listdir
 from os.path import abspath, dirname, join
 from numpy.testing import assert_array_almost_equal, assert_almost_equal
 
-from compechem.core.geometry import MolecularGeometry
+from spycci.core.geometry import MolecularGeometry
 
 # Get the path of the tests directory
 TEST_DIR = dirname(abspath(__file__))

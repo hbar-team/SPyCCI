@@ -1,9 +1,9 @@
 import pytest
 
-from compechem.engines.orca import OrcaInput
-from compechem.engines.xtb import XtbInput
-from compechem.engines.dftbplus import DFTBInput
-from compechem.core.properties import (
+from spycci.engines.orca import OrcaInput
+from spycci.engines.xtb import XtbInput
+from spycci.engines.dftbplus import DFTBInput
+from spycci.core.properties import (
     is_orca_level_of_theory,
     is_xtb_level_of_theory,
     is_dftb_level_of_theory,

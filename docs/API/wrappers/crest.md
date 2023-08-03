@@ -1,10 +1,10 @@
 (API-wrappers-crest)=
-# `compechem.wrappers.crest` sub-module
+# `spycci.wrappers.crest` sub-module
 
 ## `tautomer_search` class
 
 ```{eval-rst}
-.. autofunction:: compechem.wrappers.crest.tautomer_search
+.. autofunction:: spycci.wrappers.crest.tautomer_search
 ```
 
 ---
@@ -12,7 +12,7 @@
 ## `conformer_search` class
 
 ```{eval-rst}
-.. autofunction:: compechem.wrappers.crest.conformer_search
+.. autofunction:: spycci.wrappers.crest.conformer_search
 ```
 
 ---
@@ -20,7 +20,7 @@
 ## `deprotonate` class
 
 ```{eval-rst}
-.. autofunction:: compechem.wrappers.crest.deprotonate
+.. autofunction:: spycci.wrappers.crest.deprotonate
 ```
 
 ---
@@ -28,7 +28,7 @@
 ## `protonate` class
 
 ```{eval-rst}
-.. autofunction:: compechem.wrappers.crest.protonate
+.. autofunction:: spycci.wrappers.crest.protonate
 ```
 
 ---
@@ -36,7 +36,7 @@
 ## `qcg_grow` class
 
 ```{eval-rst}
-.. autofunction:: compechem.wrappers.crest.qcg_grow
+.. autofunction:: spycci.wrappers.crest.qcg_grow
 ```
 
 ---
@@ -44,5 +44,5 @@
 ## `qcg_ensemble` class
 
 ```{eval-rst}
-.. autofunction:: compechem.wrappers.crest.qcg_ensemble
+.. autofunction:: spycci.wrappers.crest.qcg_ensemble
 ```

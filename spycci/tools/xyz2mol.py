@@ -740,7 +740,7 @@ def xyz2mol(atoms, coordinates, charge=0, allow_charged_fragments=True,
 
     return new_mols
 
-from compechem.systems import System
+from spycci.systems import System
 
 def maxdist(
     inputmol: System, 

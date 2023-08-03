@@ -1,11 +1,11 @@
 import os, shutil, sh
 from tempfile import mkdtemp
-from compechem.config import get_ncores
-from compechem.systems import System, Ensemble
-from compechem.tools import split_multixyz
-from compechem.tools import cyclization_check
-from compechem.tools import process_output
-from compechem.core.dependency_finder import locate_crest, locate_executable
+from spycci.config import get_ncores
+from spycci.systems import System, Ensemble
+from spycci.tools import split_multixyz
+from spycci.tools import cyclization_check
+from spycci.tools import process_output
+from spycci.core.dependency_finder import locate_crest, locate_executable
 import logging
 
 logger = logging.getLogger(__name__)

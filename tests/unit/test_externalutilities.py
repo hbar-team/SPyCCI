@@ -2,9 +2,9 @@ import pytest, os
 
 from os.path import abspath, dirname, join, isfile
 
-from compechem.systems import System
-from compechem.core.base import Engine
-from compechem.tools.externalutilities import split_multixyz
+from spycci.systems import System
+from spycci.core.base import Engine
+from spycci.tools.externalutilities import split_multixyz
 
 import numpy as np
 from numpy.testing import assert_array_almost_equal, assert_almost_equal

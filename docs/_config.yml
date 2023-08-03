@@ -1,7 +1,7 @@
 # Book settings
-title                       : GES-compechem User Guide
+title                       : SPyCCI User Guide
 author                      : Luca Babetto, Pierpaolo Pravatto
-copyright                   : "2022"
+copyright                   : "2023"
 #logo                        : logo.png
 
 # Force re-execution of notebooks on each build.
@@ -15,7 +15,7 @@ latex:
 
 # Information about where the book exists on the web
 repository:
-  url: https://github.com/GES-compchem/GES-comp-echem
+  url: https://github.com/hbar-team/SPyCCI
   path_to_book: docs
   branch: main
 
@@ -30,4 +30,5 @@ sphinx:
     - 'sphinx.ext.autodoc'
     - 'sphinx.ext.napoleon'
   config:
+     html_theme: sphinx_rtd_theme
      autodoc_typehints: "description"

@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import logging, warnings
-import compechem.config
+import spycci.config
 import numpy as np
 
 from typing import Dict, List, Union
-from compechem.core.base import Engine
-from compechem.core.spectroscopy import VibrationalData
+from spycci.core.base import Engine
+from spycci.core.spectroscopy import VibrationalData
 
 
 logger = logging.getLogger(__name__)
@@ -172,7 +172,7 @@ class Properties:
             self.__level_of_theory_electronic = level_of_theory
 
         elif self.__level_of_theory_electronic != level_of_theory:
-            if compechem.config.STRICT_MODE == True:
+            if spycci.config.STRICT_MODE == True:
                 msg = "Different electronic levels of theory used for calculating properties. Clearing properties with different electronic level of theory."
                 logger.warning(msg)
                 self.__clear_electronic()
@@ -195,7 +195,7 @@ class Properties:
             self.__level_of_theory_vibronic = level_of_theory
 
             if self.__pka is not None:
-                if compechem.config.STRICT_MODE == True:
+                if spycci.config.STRICT_MODE == True:
                     msg = "Added vibronic energy. Clearing pKa computed with electronic energy only."
                     logger.warning(msg)
                     self.__pka = None
@@ -208,7 +208,7 @@ class Properties:
 
         elif self.__level_of_theory_vibronic != level_of_theory:
 
-            if compechem.config.STRICT_MODE == True:
+            if spycci.config.STRICT_MODE == True:
                 msg = "Different vibronic levels of theory used for calculating properties. Clearing properties with different vibronic level of theory."
                 logger.warning(msg)
                 self.__clear_vibronic()

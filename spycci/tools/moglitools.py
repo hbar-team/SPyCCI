@@ -2,8 +2,8 @@ import mogli
 
 from typing import List, Tuple, Callable, Dict, Any, Optional
 
-from compechem.constants import atoms_dict
-from compechem.systems import System
+from spycci.constants import atoms_dict
+from spycci.systems import System
 
 
 # Set default values of bond radius and gray shade

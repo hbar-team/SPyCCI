@@ -3,8 +3,8 @@ import logging
 
 from typing import List
 
-from compechem.systems import System
-from compechem.core.base import Engine
+from spycci.systems import System
+from spycci.core.base import Engine
 
 logger = logging.getLogger(__name__)
 
