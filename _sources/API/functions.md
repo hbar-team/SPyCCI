@@ -1,15 +1,15 @@
 (API-functions)=
-# `compechem.functions` sub-module
+# `spycci.functions` sub-module
 
 ## `calculate_pka` function
 
 ```{eval-rst}
-.. autofunction:: compechem.functions.calculate_pka
+.. autofunction:: spycci.functions.calculate_pka
 ```
 
 ## `auto_calculate_pka` function
 ```{eval-rst}
-.. autofunction:: compechem.functions.auto_calculate_pka
+.. autofunction:: spycci.functions.auto_calculate_pka
 ```
 
 ---
@@ -17,12 +17,12 @@
 ## `calculate_reduction_potential` function
 
 ```{eval-rst}
-.. autofunction:: compechem.functions.calculate_reduction_potential
+.. autofunction:: spycci.functions.calculate_reduction_potential
 ```
 
 
 ## `calculate_fukui` function
 
 ```{eval-rst}
-.. autofunction:: compechem.functions.calculate_fukui
+.. autofunction:: spycci.functions.calculate_fukui
 ```

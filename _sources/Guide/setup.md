@@ -1,7 +1,7 @@
 (Guide-setup)=
 # Setting up calculations
 
-After creating a `System`, you need to set up the calculation to which you wish to subject it. This is done with the `compechem.engines` and `compechem.wrappers` submodules.
+After creating a `System`, you need to set up the calculation to which you wish to subject it. This is done with the `spycci.engines` and `spycci.wrappers` submodules.
 
 Both `engines` and `wrappers` submodules contains a series of program-specific classes and functions for interfacing with external code and carrying out calculations on `System` objects. The distinction between the two and the philosophy behind them is as follows:
 
@@ -28,9 +28,9 @@ To function with the library, the external programs need to be already installed
 These general-purpose `engines` are implemented as `<Program>Input` classes in the corresponding submodules. To initialise an `engine`, you need to import it from its submodule and then create an instance of it:
 
 ```python
-from compechem.engines.xtb import XtbInput
-from compechem.engines.dftbplus import DFTBInput
-from compechem.engines.orca import OrcaInput
+from spycci.engines.xtb import XtbInput
+from spycci.engines.dftbplus import DFTBInput
+from spycci.engines.orca import OrcaInput
 
 xtb = XtbInput()
 dftb = DFTBInput()
@@ -42,7 +42,7 @@ If you do not specify anything, some default options are chosen automatically fo
 As an example, let us set up a calculation with Orca, using the B3LYP functional, with the def2-TZVP basis set and def2/J auxiliary basis set, using the SMD implicit solvation model for water, and including Grimme's D3BJ dispersion corrections:
 
 ```python
-from compechem.engines.orca import OrcaInput
+from spycci.engines.orca import OrcaInput
 
 b3lyp = OrcaInput(
     method = "B3LYP",
@@ -56,7 +56,7 @@ b3lyp = OrcaInput(
 For `wrappers`, you just need to import the corresponding `wrapper` submodule or any of the specific functions you wish to use:
 
 ```python
-from compechem.wrappers.crest import tautomer_search
+from spycci.wrappers.crest import tautomer_search
 
 mol = System("water.xyz")
 tautomers_list = tautomer_search(mol)

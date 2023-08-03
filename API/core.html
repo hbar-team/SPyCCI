@@ -1,391 +1,116 @@
-
-
 <!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-
-<html lang="en" >
-
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-
-    <title>compechem.core module &#8212; GES-compechem User Guide</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>spycci.core module &mdash; SPyCCI User Guide</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sphinx-thebe.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-  
-  
-  <script data-cfasync="false">
-    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
-  </script>
-  
-  <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
-
-  
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
-  
-  <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
-
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/clipboard.min.js"></script>
-    <script src="../_static/copybutton.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../_static/togglebutton.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="../_static/design-tabs.js"></script>
-    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+        <script>let toggleHintShow = 'Click to show';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script src="../_static/design-tabs.js"></script>
+        <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
 const thebe_selector = ".thebe,.cell"
 const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
-    <script async="async" src="../_static/sphinx-thebe.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'API/core';</script>
+        <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="compechem.systems sub-module" href="systems.html" />
-    <link rel="prev" title="API Documentation" href="../api.html" />
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="docsearch:language" content="en"/>
-  </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+    <link rel="next" title="spycci.systems sub-module" href="systems.html" />
+    <link rel="prev" title="API Documentation" href="../api.html" /> 
+</head>
 
-  
-  
-  <a class="skip-link" href="#main-content">Skip to main content</a>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
-<form class="bd-search d-flex align-items-center"
-      action="../search.html"
-      method="get">
-  <i class="fa-solid fa-magnifying-glass"></i>
-  <input type="search"
-         class="form-control"
-         name="q"
-         id="search-input"
-         placeholder="Search this book..."
-         aria-label="Search this book..."
-         autocomplete="off"
-         autocorrect="off"
-         autocapitalize="off"
-         spellcheck="false"/>
-  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
-  
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
-    </nav>
-  
-  <div class="bd-container">
-    <div class="bd-container__inner bd-page-width">
-      
-      <div class="bd-sidebar-primary bd-sidebar">
-        
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
 
-  
-  <div class="sidebar-header-items sidebar-primary__section">
-    
-    
-    
-    
-  </div>
-  
-    <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item">
-  
-
-<a class="navbar-brand logo" href="../intro.html">
-  
-  
-  
-  
-  
-    <p class="title logo__title">GES-compechem User Guide</p>
-  
-</a></div>
-        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
-    <div class="bd-toc-item navbar-nav active">
-        
-        <ul class="nav bd-sidenav bd-sidenav__home-link">
-            <li class="toctree-l1">
-                <a class="reference internal" href="../intro.html">
-                    GES-comp-echem User Guide
-                </a>
-            </li>
-        </ul>
-        <ul class="current nav bd-sidenav">
+          
+          
+          <a href="../intro.html" class="icon icon-home">
+            Python
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting Started</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../user-guide.html">User guide</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../Guide/systems.html">Defining molecular systems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../Guide/setup.html">Setting up calculations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../Guide/run.html">Running calculations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../Guide/functions.html">Calculating properties</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../Guide/tools.html">Useful tools</a></li>
-</ul>
-</li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="../api.html">API Documentation</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l2 current active"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">compechem.core</span></code> module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="systems.html"><code class="docutils literal notranslate"><span class="pre">compechem.systems</span></code> sub-module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="wrappers.html"><code class="docutils literal notranslate"><span class="pre">compechem.engines</span></code> sub-module</a></li>
-
-<li class="toctree-l2"><a class="reference internal" href="functions.html"><code class="docutils literal notranslate"><span class="pre">compechem.functions</span></code> sub-module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tools.html"><code class="docutils literal notranslate"><span class="pre">compechem.tools</span></code> sub-module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide.html">User guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">spycci.core</span></code> module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="systems.html"><code class="docutils literal notranslate"><span class="pre">spycci.systems</span></code> sub-module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wrappers.html"><code class="docutils literal notranslate"><span class="pre">spycci.engines</span></code> sub-module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wrappers.html#spycci-wrappers-sub-module"><code class="docutils literal notranslate"><span class="pre">spycci.wrappers</span></code> sub-module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="functions.html"><code class="docutils literal notranslate"><span class="pre">spycci.functions</span></code> sub-module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html"><code class="docutils literal notranslate"><span class="pre">spycci.tools</span></code> sub-module</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../contributor-guide.html">Contributor’s guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../release-notes.html">Release notes</a></li>
 </ul>
 
-    </div>
-</nav></div>
-    </div>
-  
-  
-  <div class="sidebar-primary-items__end sidebar-primary__section">
-  </div>
-  
-  <div id="rtd-footer-container"></div>
-
-
-      </div>
-      
-      <main id="main-content" class="bd-main">
-        
-        
-
-<div class="sbt-scroll-pixel-helper"></div>
-
-          <div class="bd-content">
-            <div class="bd-article-container">
-              
-              <div class="bd-header-article">
-<div class="header-article-items header-article__inner">
-  
-    <div class="header-article-items__start">
-      
-        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <span class="fa-solid fa-bars"></span>
-</label></div>
-      
-    </div>
-  
-  
-    <div class="header-article-items__end">
-      
-        <div class="header-article-item">
-
-<div class="article-header-buttons">
-
-
-
-
-
-<div class="dropdown dropdown-source-buttons">
-  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
-    <i class="fab fa-github"></i>
-  </button>
-  <ul class="dropdown-menu">
-      
-      
-      
-      <li><a href="https://github.com/GES-compchem/GES-comp-echem" target="_blank"
-   class="btn btn-sm btn-source-repository-button dropdown-item"
-   title="Source repository"
-   data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fab fa-github"></i>
-  </span>
-<span class="btn__text-container">Repository</span>
-</a>
-</li>
-      
-      
-      
-      
-      <li><a href="https://github.com/GES-compchem/GES-comp-echem/issues/new?title=Issue%20on%20page%20%2FAPI/core.html&body=Your%20issue%20content%20here." target="_blank"
-   class="btn btn-sm btn-source-issues-button dropdown-item"
-   title="Open an issue"
-   data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-lightbulb"></i>
-  </span>
-<span class="btn__text-container">Open issue</span>
-</a>
-</li>
-      
-  </ul>
-</div>
-
-
-
-
-
-
-<div class="dropdown dropdown-download-buttons">
-  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
-    <i class="fas fa-download"></i>
-  </button>
-  <ul class="dropdown-menu">
-      
-      
-      
-      <li><a href="../_sources/API/core.md" target="_blank"
-   class="btn btn-sm btn-download-source-button dropdown-item"
-   title="Download source file"
-   data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-file"></i>
-  </span>
-<span class="btn__text-container">.md</span>
-</a>
-</li>
-      
-      
-      
-      
-      <li>
-<button onclick="window.print()"
-  class="btn btn-sm btn-download-pdf-button dropdown-item"
-  title="Print to PDF"
-  data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-file-pdf"></i>
-  </span>
-<span class="btn__text-container">.pdf</span>
-</button>
-</li>
-      
-  </ul>
-</div>
-
-
-
-
-<button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button"
-  title="Fullscreen mode"
-  data-bs-placement="bottom" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-expand"></i>
-  </span>
-
-</button>
-
-
-<script>
-document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
-  </button>
-`);
-</script>
-
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
-<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="fa-solid fa-list"></span>
-</label>
-</div></div>
-      
-    </div>
-  
-</div>
-</div>
-              
-              
-
-<div id="jb-print-docs-body" class="onlyprint">
-    <h1>compechem.core module</h1>
-    <!-- Table of contents -->
-    <div id="print-main-content">
-        <div id="jb-print-toc">
-            
-            <div>
-                <h2> Contents </h2>
-            </div>
-            <nav aria-label="Page">
-                <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-compechem-core-base-sub-module">The <code class="docutils literal notranslate"><span class="pre">compechem.core.base</span></code> sub-module</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-compechem.core.dependency_finder">The <code class="docutils literal notranslate"><span class="pre">compechem.core.dependency_finder</span></code> sub-module</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-compechem.core.geometry">The <code class="docutils literal notranslate"><span class="pre">compechem.core.geometry</span></code> sub-module</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-compechem-core-properties-sub-module">The <code class="docutils literal notranslate"><span class="pre">compechem.core.properties</span></code> sub-module</a></li>
-</ul>
-            </nav>
         </div>
-    </div>
-</div>
+      </div>
+    </nav>
 
-              
-                
-<div id="searchbox"></div>
-                <article class="bd-article" role="main">
-                  
-  <section class="tex2jax_ignore mathjax_ignore" id="compechem-core-module">
-<span id="api-core"></span><h1><code class="docutils literal notranslate"><span class="pre">compechem.core</span></code> module<a class="headerlink" href="#compechem-core-module" title="Permalink to this heading">#</a></h1>
-<section id="the-compechem-core-base-sub-module">
-<h2>The <code class="docutils literal notranslate"><span class="pre">compechem.core.base</span></code> sub-module<a class="headerlink" href="#the-compechem-core-base-sub-module" title="Permalink to this heading">#</a></h2>
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../intro.html">Python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../intro.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api.html">API Documentation</a></li>
+      <li class="breadcrumb-item active"><code class="docutils literal notranslate"><span class="pre">spycci.core</span></code> module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/API/core.md" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="spycci-core-module">
+<span id="api-core"></span><h1><code class="docutils literal notranslate"><span class="pre">spycci.core</span></code> module<a class="headerlink" href="#spycci-core-module" title="Permalink to this heading"></a></h1>
+<section id="the-spycci-core-base-sub-module">
+<h2>The <code class="docutils literal notranslate"><span class="pre">spycci.core.base</span></code> sub-module<a class="headerlink" href="#the-spycci-core-base-sub-module" title="Permalink to this heading"></a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="compechem.core.base.Engine">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">compechem.core.base.</span></span><span class="sig-name descname"><span class="pre">Engine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.base.Engine" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.base.Engine">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spycci.core.base.</span></span><span class="sig-name descname"><span class="pre">Engine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.core.base.Engine" title="Permalink to this definition"></a></dt>
 <dd><p>Simple base class for the definition of a software engine. The class sets the <cite>level_of_theory</cite>
 and <cite>method</cite> attributes.</p>
 <dl class="field-list simple">
@@ -397,11 +122,11 @@ and <cite>method</cite> attributes.</p>
 
 </section>
 <hr class="docutils" />
-<section id="module-compechem.core.dependency_finder">
-<span id="the-compechem-core-dependency-finder-sub-module"></span><h2>The <code class="docutils literal notranslate"><span class="pre">compechem.core.dependency_finder</span></code> sub-module<a class="headerlink" href="#module-compechem.core.dependency_finder" title="Permalink to this heading">#</a></h2>
+<section id="module-spycci.core.dependency_finder">
+<span id="the-spycci-core-dependency-finder-sub-module"></span><h2>The <code class="docutils literal notranslate"><span class="pre">spycci.core.dependency_finder</span></code> sub-module<a class="headerlink" href="#module-spycci.core.dependency_finder" title="Permalink to this heading"></a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="compechem.core.dependency_finder.locate_crest">
-<span class="sig-prename descclassname"><span class="pre">compechem.core.dependency_finder.</span></span><span class="sig-name descname"><span class="pre">locate_crest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.dependency_finder.locate_crest" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.dependency_finder.locate_crest">
+<span class="sig-prename descclassname"><span class="pre">spycci.core.dependency_finder.</span></span><span class="sig-name descname"><span class="pre">locate_crest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.core.dependency_finder.locate_crest" title="Permalink to this definition"></a></dt>
 <dd><p>Locates the path to the ‘crest’ executable from the system PATH. If specified, checks
 that the correct version of crest is loaded.</p>
 <dl class="field-list simple">
@@ -419,8 +144,8 @@ versions of crest are accepted.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="compechem.core.dependency_finder.locate_dftbparamdir">
-<span class="sig-prename descclassname"><span class="pre">compechem.core.dependency_finder.</span></span><span class="sig-name descname"><span class="pre">locate_dftbparamdir</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.dependency_finder.locate_dftbparamdir" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.dependency_finder.locate_dftbparamdir">
+<span class="sig-prename descclassname"><span class="pre">spycci.core.dependency_finder.</span></span><span class="sig-name descname"><span class="pre">locate_dftbparamdir</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spycci.core.dependency_finder.locate_dftbparamdir" title="Permalink to this definition"></a></dt>
 <dd><p>Locates the path to the DFTBPLUS_PARAM_DIR environment variable.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -433,8 +158,8 @@ versions of crest are accepted.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="compechem.core.dependency_finder.locate_dftbplus">
-<span class="sig-prename descclassname"><span class="pre">compechem.core.dependency_finder.</span></span><span class="sig-name descname"><span class="pre">locate_dftbplus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.dependency_finder.locate_dftbplus" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.dependency_finder.locate_dftbplus">
+<span class="sig-prename descclassname"><span class="pre">spycci.core.dependency_finder.</span></span><span class="sig-name descname"><span class="pre">locate_dftbplus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.core.dependency_finder.locate_dftbplus" title="Permalink to this definition"></a></dt>
 <dd><p>Locates the path to the ‘dftb+’ executable from the system PATH. If specified, checks
 that the correct version of dftb+ is loaded.</p>
 <dl class="field-list simple">
@@ -452,8 +177,8 @@ versions of dftb+ are accepted.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="compechem.core.dependency_finder.locate_executable">
-<span class="sig-prename descclassname"><span class="pre">compechem.core.dependency_finder.</span></span><span class="sig-name descname"><span class="pre">locate_executable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.dependency_finder.locate_executable" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.dependency_finder.locate_executable">
+<span class="sig-prename descclassname"><span class="pre">spycci.core.dependency_finder.</span></span><span class="sig-name descname"><span class="pre">locate_executable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.core.dependency_finder.locate_executable" title="Permalink to this definition"></a></dt>
 <dd><p>Locates a given executable in the system PATH. If the program is found the path is
 returned, else an exception is raised.</p>
 <dl class="field-list simple">
@@ -473,8 +198,8 @@ returned, else an exception is raised.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="compechem.core.dependency_finder.locate_orca">
-<span class="sig-prename descclassname"><span class="pre">compechem.core.dependency_finder.</span></span><span class="sig-name descname"><span class="pre">locate_orca</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.dependency_finder.locate_orca" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.dependency_finder.locate_orca">
+<span class="sig-prename descclassname"><span class="pre">spycci.core.dependency_finder.</span></span><span class="sig-name descname"><span class="pre">locate_orca</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.core.dependency_finder.locate_orca" title="Permalink to this definition"></a></dt>
 <dd><p>Locates the path to the ‘orca’ executable from the system PATH. If the executable is
 located checks that the correct version of OpenMPI is exported (explicit reference to
 the static builds). If specified, checks that the correct version of orca is loaded.</p>
@@ -498,8 +223,8 @@ instead of the default path to the executable itself. Equivalent to applying an
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="compechem.core.dependency_finder.locate_vmd">
-<span class="sig-prename descclassname"><span class="pre">compechem.core.dependency_finder.</span></span><span class="sig-name descname"><span class="pre">locate_vmd</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.dependency_finder.locate_vmd" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.dependency_finder.locate_vmd">
+<span class="sig-prename descclassname"><span class="pre">spycci.core.dependency_finder.</span></span><span class="sig-name descname"><span class="pre">locate_vmd</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spycci.core.dependency_finder.locate_vmd" title="Permalink to this definition"></a></dt>
 <dd><p>Locate the path to the ‘vmd’ folder from the system PATH.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -512,8 +237,8 @@ instead of the default path to the executable itself. Equivalent to applying an
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="compechem.core.dependency_finder.locate_xtb">
-<span class="sig-prename descclassname"><span class="pre">compechem.core.dependency_finder.</span></span><span class="sig-name descname"><span class="pre">locate_xtb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.dependency_finder.locate_xtb" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.dependency_finder.locate_xtb">
+<span class="sig-prename descclassname"><span class="pre">spycci.core.dependency_finder.</span></span><span class="sig-name descname"><span class="pre">locate_xtb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.core.dependency_finder.locate_xtb" title="Permalink to this definition"></a></dt>
 <dd><p>Locates the path to the ‘xtb’ executable from the system PATH. If specified, checks that
 the correct version of xtb is loaded.</p>
 <dl class="field-list simple">
@@ -532,18 +257,18 @@ versions of xtb are accepted.</p>
 
 </section>
 <hr class="docutils" />
-<section id="module-compechem.core.geometry">
-<span id="the-compechem-core-geometry-sub-module"></span><h2>The <code class="docutils literal notranslate"><span class="pre">compechem.core.geometry</span></code> sub-module<a class="headerlink" href="#module-compechem.core.geometry" title="Permalink to this heading">#</a></h2>
+<section id="module-spycci.core.geometry">
+<span id="the-spycci-core-geometry-sub-module"></span><h2>The <code class="docutils literal notranslate"><span class="pre">spycci.core.geometry</span></code> sub-module<a class="headerlink" href="#module-spycci.core.geometry" title="Permalink to this heading"></a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="compechem.core.geometry.MolecularGeometry">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">compechem.core.geometry.</span></span><span class="sig-name descname"><span class="pre">MolecularGeometry</span></span><a class="headerlink" href="#compechem.core.geometry.MolecularGeometry" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.geometry.MolecularGeometry">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spycci.core.geometry.</span></span><span class="sig-name descname"><span class="pre">MolecularGeometry</span></span><a class="headerlink" href="#spycci.core.geometry.MolecularGeometry" title="Permalink to this definition"></a></dt>
 <dd><p>The <cite>MolecularGeometry</cite> class implements all the functions required to operate on the
 geometric properties of a given molecule or molecular aggregate.</p>
 <dl class="field-list simple">
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="compechem.core.geometry.MolecularGeometry.level_of_theory_geometry">
-<span class="sig-name descname"><span class="pre">level_of_theory_geometry</span></span><a class="headerlink" href="#compechem.core.geometry.MolecularGeometry.level_of_theory_geometry" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.geometry.MolecularGeometry.level_of_theory_geometry">
+<span class="sig-name descname"><span class="pre">level_of_theory_geometry</span></span><a class="headerlink" href="#spycci.core.geometry.MolecularGeometry.level_of_theory_geometry" title="Permalink to this definition"></a></dt>
 <dd><p>The level of theory at which the geometry has been obtained.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -553,8 +278,8 @@ geometric properties of a given molecule or molecular aggregate.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="compechem.core.geometry.MolecularGeometry.append">
-<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atom</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coordinates</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.geometry.MolecularGeometry.append" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.geometry.MolecularGeometry.append">
+<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atom</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coordinates</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.core.geometry.MolecularGeometry.append" title="Permalink to this definition"></a></dt>
 <dd><p>The append function allows the user to add the position of a new atom belonging to
 the molecule.</p>
 <dl class="field-list simple">
@@ -576,8 +301,8 @@ position of the atom in the tridimensional space</p></li>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="compechem.core.geometry.MolecularGeometry.atomcount">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">atomcount</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#compechem.core.geometry.MolecularGeometry.atomcount" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.geometry.MolecularGeometry.atomcount">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">atomcount</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#spycci.core.geometry.MolecularGeometry.atomcount" title="Permalink to this definition"></a></dt>
 <dd><p>The number of atoms in the molecule</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -590,8 +315,8 @@ position of the atom in the tridimensional space</p></li>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="compechem.core.geometry.MolecularGeometry.atomic_numbers">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">atomic_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#compechem.core.geometry.MolecularGeometry.atomic_numbers" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.geometry.MolecularGeometry.atomic_numbers">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">atomic_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#spycci.core.geometry.MolecularGeometry.atomic_numbers" title="Permalink to this definition"></a></dt>
 <dd><p>The ordered list of the atomic numbers of each atom in the molecule</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -604,8 +329,8 @@ position of the atom in the tridimensional space</p></li>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="compechem.core.geometry.MolecularGeometry.atoms">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">atoms</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#compechem.core.geometry.MolecularGeometry.atoms" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.geometry.MolecularGeometry.atoms">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">atoms</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#spycci.core.geometry.MolecularGeometry.atoms" title="Permalink to this definition"></a></dt>
 <dd><p>The list of atoms/elements in the molecule</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -618,8 +343,8 @@ position of the atom in the tridimensional space</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="compechem.core.geometry.MolecularGeometry.buried_volume_fraction">
-<span class="sig-name descname"><span class="pre">buried_volume_fraction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">site</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_hydrogens</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excluded_atoms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radii</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radii_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bondi'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radii_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.17</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.geometry.MolecularGeometry.buried_volume_fraction" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.geometry.MolecularGeometry.buried_volume_fraction">
+<span class="sig-name descname"><span class="pre">buried_volume_fraction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">site</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_hydrogens</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excluded_atoms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radii</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radii_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bondi'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radii_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.17</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.core.geometry.MolecularGeometry.buried_volume_fraction" title="Permalink to this definition"></a></dt>
 <dd><p>Computes the buried volume fraction around a given site. The functions adopts the implementation
 provided in the morfeus python package (<a class="reference external" href="https://kjelljorner.github.io/morfeus/buried_volume.html">https://kjelljorner.github.io/morfeus/buried_volume.html</a>).</p>
 <dl class="field-list simple">
@@ -654,8 +379,8 @@ If set to a value different from <cite>None</cite>, will override the <cite>radi
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="compechem.core.geometry.MolecularGeometry.coordinates">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">coordinates</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#compechem.core.geometry.MolecularGeometry.coordinates" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.geometry.MolecularGeometry.coordinates">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">coordinates</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#spycci.core.geometry.MolecularGeometry.coordinates" title="Permalink to this definition"></a></dt>
 <dd><p>The list of coordinates of the atoms in the molecule</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -669,8 +394,8 @@ in the molecule</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="compechem.core.geometry.MolecularGeometry.from_dict">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.geometry.MolecularGeometry.from_dict" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.geometry.MolecularGeometry.from_dict">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.core.geometry.MolecularGeometry.from_dict" title="Permalink to this definition"></a></dt>
 <dd><p>Construct a MolecularGeometry object from the data encoded in a dictionary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -680,14 +405,14 @@ in the molecule</p>
 <dd class="field-even"><p>The fully initialized MolecularGeometry object</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#compechem.core.geometry.MolecularGeometry" title="compechem.core.geometry.MolecularGeometry">MolecularGeometry</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#spycci.core.geometry.MolecularGeometry" title="spycci.core.geometry.MolecularGeometry">MolecularGeometry</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="compechem.core.geometry.MolecularGeometry.from_xyz">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_xyz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.geometry.MolecularGeometry.from_xyz" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.geometry.MolecularGeometry.from_xyz">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_xyz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.core.geometry.MolecularGeometry.from_xyz" title="Permalink to this definition"></a></dt>
 <dd><p>The functions returns a fully initialized <cite>MolecularGeometry</cite> class containing the
 coordinates indicated in the <cite>.xyz</cite> file located in the indicated path.</p>
 <dl class="field-list simple">
@@ -698,14 +423,14 @@ coordinates indicated in the <cite>.xyz</cite> file located in the indicated pat
 <dd class="field-even"><p>The <cite>MolecularGeometry</cite> object containing the coordinates encoded in the <cite>.xyz</cite> file</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#compechem.core.geometry.MolecularGeometry" title="compechem.core.geometry.MolecularGeometry">MolecularGeometry</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#spycci.core.geometry.MolecularGeometry" title="spycci.core.geometry.MolecularGeometry">MolecularGeometry</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="compechem.core.geometry.MolecularGeometry.load_xyz">
-<span class="sig-name descname"><span class="pre">load_xyz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.geometry.MolecularGeometry.load_xyz" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.geometry.MolecularGeometry.load_xyz">
+<span class="sig-name descname"><span class="pre">load_xyz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.core.geometry.MolecularGeometry.load_xyz" title="Permalink to this definition"></a></dt>
 <dd><p>Imports the coordinates of the molecule from a path pointing to a valid <cite>.xyz</cite> file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -724,8 +449,8 @@ coordinates indicated in the <cite>.xyz</cite> file located in the indicated pat
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="compechem.core.geometry.MolecularGeometry.mass">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mass</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#compechem.core.geometry.MolecularGeometry.mass" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.geometry.MolecularGeometry.mass">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mass</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#spycci.core.geometry.MolecularGeometry.mass" title="Permalink to this definition"></a></dt>
 <dd><p>The mass of the molecule in atomic mass units computed using the average atomic weights.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -738,8 +463,8 @@ coordinates indicated in the <cite>.xyz</cite> file located in the indicated pat
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="compechem.core.geometry.MolecularGeometry.to_dict">
-<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.geometry.MolecularGeometry.to_dict" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.geometry.MolecularGeometry.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spycci.core.geometry.MolecularGeometry.to_dict" title="Permalink to this definition"></a></dt>
 <dd><p>Generates a dictionary representation of the class. The obtained dictionary can be
 saved and used to re-load the object using the built-in <cite>from_dict</cite> class method.</p>
 <dl class="field-list simple">
@@ -753,8 +478,8 @@ saved and used to re-load the object using the built-in <cite>from_dict</cite> c
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="compechem.core.geometry.MolecularGeometry.write_xyz">
-<span class="sig-name descname"><span class="pre">write_xyz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.geometry.MolecularGeometry.write_xyz" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.geometry.MolecularGeometry.write_xyz">
+<span class="sig-name descname"><span class="pre">write_xyz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.core.geometry.MolecularGeometry.write_xyz" title="Permalink to this definition"></a></dt>
 <dd><p>Exports the coordinates to a <cite>.xyz</cite> file located at a given path</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -773,11 +498,11 @@ saved and used to re-load the object using the built-in <cite>from_dict</cite> c
 
 </section>
 <hr class="docutils" />
-<section id="the-compechem-core-properties-sub-module">
-<h2>The <code class="docutils literal notranslate"><span class="pre">compechem.core.properties</span></code> sub-module<a class="headerlink" href="#the-compechem-core-properties-sub-module" title="Permalink to this heading">#</a></h2>
+<section id="the-spycci-core-properties-sub-module">
+<h2>The <code class="docutils literal notranslate"><span class="pre">spycci.core.properties</span></code> sub-module<a class="headerlink" href="#the-spycci-core-properties-sub-module" title="Permalink to this heading"></a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="compechem.core.properties.Properties">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">compechem.core.properties.</span></span><span class="sig-name descname"><span class="pre">Properties</span></span><a class="headerlink" href="#compechem.core.properties.Properties" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.properties.Properties">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spycci.core.properties.</span></span><span class="sig-name descname"><span class="pre">Properties</span></span><a class="headerlink" href="#spycci.core.properties.Properties" title="Permalink to this definition"></a></dt>
 <dd><p>Class containing the properties associated to a system when a given electronic and vibronic
 level of theory are considered. The class automatically stores the level of theory associated
 to the coputed properties and checks, whenever a new property is set, that a given input data
@@ -787,8 +512,8 @@ level of theory are cleaned and a warning is raised. If the strict mode is disab
 (by setting compechem.config.STRICT_MODE to False) the level of theory is set to <cite>Undefined</cite>
 and all the properties are kept.</p>
 <dl class="py property">
-<dt class="sig sig-object py" id="compechem.core.properties.Properties.condensed_fukui_hirshfeld">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">condensed_fukui_hirshfeld</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#compechem.core.properties.Properties.condensed_fukui_hirshfeld" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.properties.Properties.condensed_fukui_hirshfeld">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">condensed_fukui_hirshfeld</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#spycci.core.properties.Properties.condensed_fukui_hirshfeld" title="Permalink to this definition"></a></dt>
 <dd><p>The condensed Fukui values computed from the Hirshfeld charges.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -803,8 +528,8 @@ are stored in the dictionary according to the <cite>f+</cite>, <cite>f-</cite> a
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="compechem.core.properties.Properties.condensed_fukui_mulliken">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">condensed_fukui_mulliken</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#compechem.core.properties.Properties.condensed_fukui_mulliken" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.properties.Properties.condensed_fukui_mulliken">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">condensed_fukui_mulliken</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#spycci.core.properties.Properties.condensed_fukui_mulliken" title="Permalink to this definition"></a></dt>
 <dd><p>The condensed Fukui values computed from the Mulliken charges.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -819,8 +544,8 @@ are stored in the dictionary according to the <cite>f+</cite>, <cite>f-</cite> a
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="compechem.core.properties.Properties.electronic_energy">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">electronic_energy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#compechem.core.properties.Properties.electronic_energy" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.properties.Properties.electronic_energy">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">electronic_energy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#spycci.core.properties.Properties.electronic_energy" title="Permalink to this definition"></a></dt>
 <dd><p>The electronic energy of the system in Hartree.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -833,8 +558,8 @@ are stored in the dictionary according to the <cite>f+</cite>, <cite>f-</cite> a
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="compechem.core.properties.Properties.from_dict">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.properties.Properties.from_dict" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.properties.Properties.from_dict">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.core.properties.Properties.from_dict" title="Permalink to this definition"></a></dt>
 <dd><p>Construct a Properties object from the data encoded in a dictionary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -844,14 +569,14 @@ are stored in the dictionary according to the <cite>f+</cite>, <cite>f-</cite> a
 <dd class="field-even"><p>The fully initialized Properties object</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#compechem.core.properties.Properties" title="compechem.core.properties.Properties">Properties</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#spycci.core.properties.Properties" title="spycci.core.properties.Properties">Properties</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="compechem.core.properties.Properties.gibbs_free_energy">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gibbs_free_energy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#compechem.core.properties.Properties.gibbs_free_energy" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.properties.Properties.gibbs_free_energy">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gibbs_free_energy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#spycci.core.properties.Properties.gibbs_free_energy" title="Permalink to this definition"></a></dt>
 <dd><p>The Gibbs free energy of the system in Hartree.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -864,8 +589,8 @@ are stored in the dictionary according to the <cite>f+</cite>, <cite>f-</cite> a
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="compechem.core.properties.Properties.helmholtz_free_energy">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">helmholtz_free_energy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#compechem.core.properties.Properties.helmholtz_free_energy" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.properties.Properties.helmholtz_free_energy">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">helmholtz_free_energy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#spycci.core.properties.Properties.helmholtz_free_energy" title="Permalink to this definition"></a></dt>
 <dd><p>The Helmholtz free energy of the system in Hartree.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -878,8 +603,8 @@ are stored in the dictionary according to the <cite>f+</cite>, <cite>f-</cite> a
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="compechem.core.properties.Properties.hirshfeld_charges">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hirshfeld_charges</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#compechem.core.properties.Properties.hirshfeld_charges" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.properties.Properties.hirshfeld_charges">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hirshfeld_charges</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#spycci.core.properties.Properties.hirshfeld_charges" title="Permalink to this definition"></a></dt>
 <dd><p>The Hirshfeld charges of the system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -892,8 +617,8 @@ are stored in the dictionary according to the <cite>f+</cite>, <cite>f-</cite> a
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="compechem.core.properties.Properties.hirshfeld_spin_populations">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hirshfeld_spin_populations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#compechem.core.properties.Properties.hirshfeld_spin_populations" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.properties.Properties.hirshfeld_spin_populations">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hirshfeld_spin_populations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#spycci.core.properties.Properties.hirshfeld_spin_populations" title="Permalink to this definition"></a></dt>
 <dd><p>The Hirshfeld spin populations of the system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -906,8 +631,8 @@ are stored in the dictionary according to the <cite>f+</cite>, <cite>f-</cite> a
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="compechem.core.properties.Properties.level_of_theory_electronic">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">level_of_theory_electronic</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#compechem.core.properties.Properties.level_of_theory_electronic" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.properties.Properties.level_of_theory_electronic">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">level_of_theory_electronic</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#spycci.core.properties.Properties.level_of_theory_electronic" title="Permalink to this definition"></a></dt>
 <dd><p>The level of theory adopted for the electronic structure calculations</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -920,8 +645,8 @@ are stored in the dictionary according to the <cite>f+</cite>, <cite>f-</cite> a
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="compechem.core.properties.Properties.level_of_theory_vibronic">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">level_of_theory_vibronic</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#compechem.core.properties.Properties.level_of_theory_vibronic" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.properties.Properties.level_of_theory_vibronic">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">level_of_theory_vibronic</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#spycci.core.properties.Properties.level_of_theory_vibronic" title="Permalink to this definition"></a></dt>
 <dd><p>The level of theory adopted for the vibronic calculations</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -934,8 +659,8 @@ are stored in the dictionary according to the <cite>f+</cite>, <cite>f-</cite> a
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="compechem.core.properties.Properties.mulliken_charges">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mulliken_charges</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#compechem.core.properties.Properties.mulliken_charges" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.properties.Properties.mulliken_charges">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mulliken_charges</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#spycci.core.properties.Properties.mulliken_charges" title="Permalink to this definition"></a></dt>
 <dd><p>The Mulliken charges of the system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -948,8 +673,8 @@ are stored in the dictionary according to the <cite>f+</cite>, <cite>f-</cite> a
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="compechem.core.properties.Properties.mulliken_spin_populations">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mulliken_spin_populations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#compechem.core.properties.Properties.mulliken_spin_populations" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.properties.Properties.mulliken_spin_populations">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mulliken_spin_populations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#spycci.core.properties.Properties.mulliken_spin_populations" title="Permalink to this definition"></a></dt>
 <dd><p>The Mulliken spin populations of the system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -962,8 +687,8 @@ are stored in the dictionary according to the <cite>f+</cite>, <cite>f-</cite> a
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="compechem.core.properties.Properties.pka">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pka</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#compechem.core.properties.Properties.pka" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.properties.Properties.pka">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pka</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#spycci.core.properties.Properties.pka" title="Permalink to this definition"></a></dt>
 <dd><p>The pKa of the system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -976,8 +701,8 @@ are stored in the dictionary according to the <cite>f+</cite>, <cite>f-</cite> a
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="compechem.core.properties.Properties.set_condensed_fukui_hirshfeld">
-<span class="sig-name descname"><span class="pre">set_condensed_fukui_hirshfeld</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">electronic_engine</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.properties.Properties.set_condensed_fukui_hirshfeld" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.properties.Properties.set_condensed_fukui_hirshfeld">
+<span class="sig-name descname"><span class="pre">set_condensed_fukui_hirshfeld</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">electronic_engine</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.core.properties.Properties.set_condensed_fukui_hirshfeld" title="Permalink to this definition"></a></dt>
 <dd><p>Sets condensed Fukui values computed from the Hirshfeld charges.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -988,7 +713,7 @@ are stored in the dictionary according to the <cite>f+</cite>, <cite>f-</cite> a
 <li><p><strong>List</strong><strong>[</strong><strong>float</strong><strong>]</strong><strong>]</strong> – The dictionaty containing the list of condensed Fukui values computed for each
 atom in the system starting from the values of the Hirshfeld charges. The functions
 are stored in the dictionary according to the <cite>f+</cite>, <cite>f-</cite> and <cite>f0</cite> keys.</p></li>
-<li><p><strong>electronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#compechem.core.base.Engine" title="compechem.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the electronic calculation.</p></li>
+<li><p><strong>electronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#spycci.core.base.Engine" title="spycci.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the electronic calculation.</p></li>
 <li><p><strong>value</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em>) – </p></li>
 </ul>
 </dd>
@@ -999,8 +724,8 @@ are stored in the dictionary according to the <cite>f+</cite>, <cite>f-</cite> a
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="compechem.core.properties.Properties.set_condensed_fukui_mulliken">
-<span class="sig-name descname"><span class="pre">set_condensed_fukui_mulliken</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">electronic_engine</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.properties.Properties.set_condensed_fukui_mulliken" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.properties.Properties.set_condensed_fukui_mulliken">
+<span class="sig-name descname"><span class="pre">set_condensed_fukui_mulliken</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">electronic_engine</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.core.properties.Properties.set_condensed_fukui_mulliken" title="Permalink to this definition"></a></dt>
 <dd><p>Sets condensed Fukui values computed from the Mulliken charges.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1011,7 +736,7 @@ are stored in the dictionary according to the <cite>f+</cite>, <cite>f-</cite> a
 <li><p><strong>List</strong><strong>[</strong><strong>float</strong><strong>]</strong><strong>]</strong> – The dictionaty containing the list of condensed Fukui values computed for each
 atom in the system starting from the values of the Mulliken charges. The functions
 are stored in the dictionary according to the <cite>f+</cite>, <cite>f-</cite> and <cite>f0</cite> keys.</p></li>
-<li><p><strong>electronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#compechem.core.base.Engine" title="compechem.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the electronic calculation.</p></li>
+<li><p><strong>electronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#spycci.core.base.Engine" title="spycci.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the electronic calculation.</p></li>
 <li><p><strong>value</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em>) – </p></li>
 </ul>
 </dd>
@@ -1022,14 +747,14 @@ are stored in the dictionary according to the <cite>f+</cite>, <cite>f-</cite> a
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="compechem.core.properties.Properties.set_electronic_energy">
-<span class="sig-name descname"><span class="pre">set_electronic_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">electronic_engine</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.properties.Properties.set_electronic_energy" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.properties.Properties.set_electronic_energy">
+<span class="sig-name descname"><span class="pre">set_electronic_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">electronic_engine</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.core.properties.Properties.set_electronic_energy" title="Permalink to this definition"></a></dt>
 <dd><p>Sets the electronic energy of the system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>value</strong> (<em>float</em>) – The electronic energy of the system in Hartree.</p></li>
-<li><p><strong>electronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#compechem.core.base.Engine" title="compechem.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the calculation.</p></li>
+<li><p><strong>electronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#spycci.core.base.Engine" title="spycci.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the calculation.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -1039,15 +764,15 @@ are stored in the dictionary according to the <cite>f+</cite>, <cite>f-</cite> a
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="compechem.core.properties.Properties.set_gibbs_free_energy">
-<span class="sig-name descname"><span class="pre">set_gibbs_free_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">electronic_engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vibronic_engine</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.properties.Properties.set_gibbs_free_energy" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.properties.Properties.set_gibbs_free_energy">
+<span class="sig-name descname"><span class="pre">set_gibbs_free_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">electronic_engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vibronic_engine</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.core.properties.Properties.set_gibbs_free_energy" title="Permalink to this definition"></a></dt>
 <dd><p>Sets the Gibbs free energy of the system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>value</strong> (<em>float</em>) – The Gibbs free energy of the system in Hartree.</p></li>
-<li><p><strong>electronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#compechem.core.base.Engine" title="compechem.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the electronic calculation.</p></li>
-<li><p><strong>vibronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#compechem.core.base.Engine" title="compechem.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the vibronic calculation.</p></li>
+<li><p><strong>electronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#spycci.core.base.Engine" title="spycci.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the electronic calculation.</p></li>
+<li><p><strong>vibronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#spycci.core.base.Engine" title="spycci.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the vibronic calculation.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -1057,15 +782,15 @@ are stored in the dictionary according to the <cite>f+</cite>, <cite>f-</cite> a
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="compechem.core.properties.Properties.set_helmholtz_free_energy">
-<span class="sig-name descname"><span class="pre">set_helmholtz_free_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">electronic_engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vibronic_engine</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.properties.Properties.set_helmholtz_free_energy" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.properties.Properties.set_helmholtz_free_energy">
+<span class="sig-name descname"><span class="pre">set_helmholtz_free_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">electronic_engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vibronic_engine</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.core.properties.Properties.set_helmholtz_free_energy" title="Permalink to this definition"></a></dt>
 <dd><p>Sets the Helmholtz free energy of the system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>value</strong> (<em>float</em>) – The Helmholtz free energy of the system in Hartree.</p></li>
-<li><p><strong>electronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#compechem.core.base.Engine" title="compechem.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the electronic calculation.</p></li>
-<li><p><strong>vibronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#compechem.core.base.Engine" title="compechem.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the vibronic calculation.</p></li>
+<li><p><strong>electronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#spycci.core.base.Engine" title="spycci.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the electronic calculation.</p></li>
+<li><p><strong>vibronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#spycci.core.base.Engine" title="spycci.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the vibronic calculation.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -1075,14 +800,14 @@ are stored in the dictionary according to the <cite>f+</cite>, <cite>f-</cite> a
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="compechem.core.properties.Properties.set_hirshfeld_charges">
-<span class="sig-name descname"><span class="pre">set_hirshfeld_charges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">electronic_engine</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.properties.Properties.set_hirshfeld_charges" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.properties.Properties.set_hirshfeld_charges">
+<span class="sig-name descname"><span class="pre">set_hirshfeld_charges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">electronic_engine</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.core.properties.Properties.set_hirshfeld_charges" title="Permalink to this definition"></a></dt>
 <dd><p>Sets the Hirshfeld charges of the system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>value</strong> (<em>float</em>) – The list of Hirshfeld charges associated to each atom of the system.</p></li>
-<li><p><strong>electronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#compechem.core.base.Engine" title="compechem.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the electronic calculation.</p></li>
+<li><p><strong>electronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#spycci.core.base.Engine" title="spycci.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the electronic calculation.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -1092,14 +817,14 @@ are stored in the dictionary according to the <cite>f+</cite>, <cite>f-</cite> a
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="compechem.core.properties.Properties.set_hirshfeld_spin_populations">
-<span class="sig-name descname"><span class="pre">set_hirshfeld_spin_populations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">electronic_engine</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.properties.Properties.set_hirshfeld_spin_populations" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.properties.Properties.set_hirshfeld_spin_populations">
+<span class="sig-name descname"><span class="pre">set_hirshfeld_spin_populations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">electronic_engine</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.core.properties.Properties.set_hirshfeld_spin_populations" title="Permalink to this definition"></a></dt>
 <dd><p>Sets the Hirshfeld spin populations of the system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>value</strong> (<em>float</em>) – The list of Hirshfeld spin populations associated to each atom of the system.</p></li>
-<li><p><strong>electronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#compechem.core.base.Engine" title="compechem.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the electronic calculation.</p></li>
+<li><p><strong>electronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#spycci.core.base.Engine" title="spycci.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the electronic calculation.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -1109,14 +834,14 @@ are stored in the dictionary according to the <cite>f+</cite>, <cite>f-</cite> a
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="compechem.core.properties.Properties.set_mulliken_charges">
-<span class="sig-name descname"><span class="pre">set_mulliken_charges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">electronic_engine</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.properties.Properties.set_mulliken_charges" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.properties.Properties.set_mulliken_charges">
+<span class="sig-name descname"><span class="pre">set_mulliken_charges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">electronic_engine</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.core.properties.Properties.set_mulliken_charges" title="Permalink to this definition"></a></dt>
 <dd><p>Sets the Mulliken charges of the system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>value</strong> (<em>float</em>) – The list of Mulliken charges associated to each atom of the system.</p></li>
-<li><p><strong>electronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#compechem.core.base.Engine" title="compechem.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the electronic calculation.</p></li>
+<li><p><strong>electronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#spycci.core.base.Engine" title="spycci.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the electronic calculation.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -1126,14 +851,14 @@ are stored in the dictionary according to the <cite>f+</cite>, <cite>f-</cite> a
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="compechem.core.properties.Properties.set_mulliken_spin_populations">
-<span class="sig-name descname"><span class="pre">set_mulliken_spin_populations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">electronic_engine</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.properties.Properties.set_mulliken_spin_populations" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.properties.Properties.set_mulliken_spin_populations">
+<span class="sig-name descname"><span class="pre">set_mulliken_spin_populations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">electronic_engine</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.core.properties.Properties.set_mulliken_spin_populations" title="Permalink to this definition"></a></dt>
 <dd><p>Sets the Mulliken spin populations of the system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>value</strong> (<em>float</em>) – The list of Mulliken spin populations associated to each atom of the system.</p></li>
-<li><p><strong>electronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#compechem.core.base.Engine" title="compechem.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the electronic calculation.</p></li>
+<li><p><strong>electronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#spycci.core.base.Engine" title="spycci.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the electronic calculation.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -1143,15 +868,15 @@ are stored in the dictionary according to the <cite>f+</cite>, <cite>f-</cite> a
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="compechem.core.properties.Properties.set_pka">
-<span class="sig-name descname"><span class="pre">set_pka</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">electronic_engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vibronic_engine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.properties.Properties.set_pka" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.properties.Properties.set_pka">
+<span class="sig-name descname"><span class="pre">set_pka</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">electronic_engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vibronic_engine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.core.properties.Properties.set_pka" title="Permalink to this definition"></a></dt>
 <dd><p>Sets the pKa of the system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>value</strong> (<em>float</em>) – The pKa of the system.</p></li>
-<li><p><strong>electronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#compechem.core.base.Engine" title="compechem.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the electronic calculation.</p></li>
-<li><p><strong>vibronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#compechem.core.base.Engine" title="compechem.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the vibronic calculation. (optional)</p></li>
+<li><p><strong>electronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#spycci.core.base.Engine" title="spycci.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the electronic calculation.</p></li>
+<li><p><strong>vibronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#spycci.core.base.Engine" title="spycci.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the vibronic calculation. (optional)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -1161,14 +886,14 @@ are stored in the dictionary according to the <cite>f+</cite>, <cite>f-</cite> a
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="compechem.core.properties.Properties.set_vibrational_data">
-<span class="sig-name descname"><span class="pre">set_vibrational_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vibronic_engine</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.properties.Properties.set_vibrational_data" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.properties.Properties.set_vibrational_data">
+<span class="sig-name descname"><span class="pre">set_vibrational_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vibronic_engine</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.core.properties.Properties.set_vibrational_data" title="Permalink to this definition"></a></dt>
 <dd><p>Sets condensed Fukui values computed from the Hirshfeld charges.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>value</strong> (<em>VibrationalData</em>) – The class encoding all the vibrational data associated to the molecule</p></li>
-<li><p><strong>vibronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#compechem.core.base.Engine" title="compechem.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the vibronic calculation.</p></li>
+<li><p><strong>vibronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#spycci.core.base.Engine" title="spycci.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the vibronic calculation.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -1178,14 +903,14 @@ are stored in the dictionary according to the <cite>f+</cite>, <cite>f-</cite> a
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="compechem.core.properties.Properties.set_vibronic_energy">
-<span class="sig-name descname"><span class="pre">set_vibronic_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vibronic_engine</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.properties.Properties.set_vibronic_energy" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.properties.Properties.set_vibronic_energy">
+<span class="sig-name descname"><span class="pre">set_vibronic_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vibronic_engine</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.core.properties.Properties.set_vibronic_energy" title="Permalink to this definition"></a></dt>
 <dd><p>Sets the vibronic energy of the system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>value</strong> (<em>float</em>) – The vibronic energy of the system in Hartree.</p></li>
-<li><p><strong>vibronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#compechem.core.base.Engine" title="compechem.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the calculation.</p></li>
+<li><p><strong>vibronic_engine</strong> (<em>Union</em><em>(</em><a class="reference internal" href="#spycci.core.base.Engine" title="spycci.core.base.Engine"><em>Engine</em></a><em>, </em><em>str</em><em>)</em>) – The engine used in the calculation.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -1195,8 +920,8 @@ are stored in the dictionary according to the <cite>f+</cite>, <cite>f-</cite> a
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="compechem.core.properties.Properties.to_dict">
-<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#compechem.core.properties.Properties.to_dict" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.properties.Properties.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spycci.core.properties.Properties.to_dict" title="Permalink to this definition"></a></dt>
 <dd><p>Generates a dictionary representation of the class. The obtained dictionary can be
 saved and used to re-load the object using the built-in <cite>from_dict</cite> class method.</p>
 <dl class="field-list simple">
@@ -1210,8 +935,8 @@ saved and used to re-load the object using the built-in <cite>from_dict</cite> c
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="compechem.core.properties.Properties.vibrational_data">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">vibrational_data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">VibrationalData</span></em><a class="headerlink" href="#compechem.core.properties.Properties.vibrational_data" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.properties.Properties.vibrational_data">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">vibrational_data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">VibrationalData</span></em><a class="headerlink" href="#spycci.core.properties.Properties.vibrational_data" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the class containing all the available vibrational data about the molecule</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1224,8 +949,8 @@ saved and used to re-load the object using the built-in <cite>from_dict</cite> c
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="compechem.core.properties.Properties.vibronic_energy">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">vibronic_energy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#compechem.core.properties.Properties.vibronic_energy" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="spycci.core.properties.Properties.vibronic_energy">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">vibronic_energy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#spycci.core.properties.Properties.vibronic_energy" title="Permalink to this definition"></a></dt>
 <dd><p>The vibronic energy of the system in Hartree.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1262,108 +987,34 @@ saved and used to re-load the object using the built-in <cite>from_dict</cite> c
     </script>
     <script>kernelName = 'python3'</script>
 
-                </article>
-              
-
-              
-              
-                <footer class="bd-footer-article">
-                  
-<div class="footer-article-items footer-article__inner">
-  
-    <div class="footer-article-item"><!-- Previous / next buttons -->
-<div class="prev-next-area">
-    <a class="left-prev"
-       href="../api.html"
-       title="previous page">
-      <i class="fa-solid fa-angle-left"></i>
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">API Documentation</p>
-      </div>
-    </a>
-    <a class="right-next"
-       href="systems.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title"><code class="docutils literal notranslate"><span class="pre">compechem.systems</span></code> sub-module</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
-    </a>
-</div></div>
-  
-</div>
-
-                </footer>
-              
-            </div>
-            
-            
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> Contents
-  </div>
-  <nav class="bd-toc-nav page-toc">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-compechem-core-base-sub-module">The <code class="docutils literal notranslate"><span class="pre">compechem.core.base</span></code> sub-module</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-compechem.core.dependency_finder">The <code class="docutils literal notranslate"><span class="pre">compechem.core.dependency_finder</span></code> sub-module</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-compechem.core.geometry">The <code class="docutils literal notranslate"><span class="pre">compechem.core.geometry</span></code> sub-module</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-compechem-core-properties-sub-module">The <code class="docutils literal notranslate"><span class="pre">compechem.core.properties</span></code> sub-module</a></li>
-</ul>
-  </nav></div>
-
-</div></div>
-              
-            
+           </div>
           </div>
-          <footer class="bd-footer-content">
-            
-<div class="bd-footer-content__inner container">
-  
-  <div class="footer-item">
-    
-<p class="component-author">
-By Luca Babetto, Pierpaolo Pravatto
-</p>
-
-  </div>
-  
-  <div class="footer-item">
-    
-  <p class="copyright">
-    
-      © Copyright 2022.
-      <br/>
-    
-  </p>
-
-  </div>
-  
-  <div class="footer-item">
-    
-  </div>
-  
-  <div class="footer-item">
-    
-  </div>
-  
-</div>
-          </footer>
-        
-
-      </main>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../api.html" class="btn btn-neutral float-left" title="API Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="systems.html" class="btn btn-neutral float-right" title="spycci.systems sub-module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  </div>
-  
-  <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
-  <footer class="bd-footer">
-  </footer>
-  </body>
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
 </html>

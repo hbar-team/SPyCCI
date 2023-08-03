@@ -1,394 +1,115 @@
-
-
 <!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-
-<html lang="en" >
-
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-
-    <title>Calculating properties &#8212; GES-compechem User Guide</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculating properties &mdash; SPyCCI User Guide</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sphinx-thebe.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-  
-  
-  <script data-cfasync="false">
-    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
-  </script>
-  
-  <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
-
-  
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
-  
-  <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
-
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/clipboard.min.js"></script>
-    <script src="../_static/copybutton.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../_static/togglebutton.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="../_static/design-tabs.js"></script>
-    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+        <script>let toggleHintShow = 'Click to show';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script src="../_static/design-tabs.js"></script>
+        <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
 const thebe_selector = ".thebe,.cell"
 const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
-    <script async="async" src="../_static/sphinx-thebe.js"></script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'Guide/functions';</script>
+        <script async="async" src="../_static/sphinx-thebe.js"></script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Useful tools" href="tools.html" />
-    <link rel="prev" title="Running calculations" href="run.html" />
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="docsearch:language" content="en"/>
-  </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+    <link rel="prev" title="Running calculations" href="run.html" /> 
+</head>
 
-  
-  
-  <a class="skip-link" href="#main-content">Skip to main content</a>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
-<form class="bd-search d-flex align-items-center"
-      action="../search.html"
-      method="get">
-  <i class="fa-solid fa-magnifying-glass"></i>
-  <input type="search"
-         class="form-control"
-         name="q"
-         id="search-input"
-         placeholder="Search this book..."
-         aria-label="Search this book..."
-         autocomplete="off"
-         autocorrect="off"
-         autocapitalize="off"
-         spellcheck="false"/>
-  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
-  
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
-    </nav>
-  
-  <div class="bd-container">
-    <div class="bd-container__inner bd-page-width">
-      
-      <div class="bd-sidebar-primary bd-sidebar">
-        
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
 
-  
-  <div class="sidebar-header-items sidebar-primary__section">
-    
-    
-    
-    
-  </div>
-  
-    <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item">
-  
-
-<a class="navbar-brand logo" href="../intro.html">
-  
-  
-  
-  
-  
-    <p class="title logo__title">GES-compechem User Guide</p>
-  
-</a></div>
-        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
-    <div class="bd-toc-item navbar-nav active">
-        
-        <ul class="nav bd-sidenav bd-sidenav__home-link">
-            <li class="toctree-l1">
-                <a class="reference internal" href="../intro.html">
-                    GES-comp-echem User Guide
-                </a>
-            </li>
-        </ul>
-        <ul class="current nav bd-sidenav">
+          
+          
+          <a href="../intro.html" class="icon icon-home">
+            Python
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting Started</a></li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="../user-guide.html">User guide</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../user-guide.html">User guide</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="systems.html">Defining molecular systems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setup.html">Setting up calculations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="run.html">Running calculations</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Calculating properties</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Calculating properties</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools.html">Useful tools</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../api.html">API Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../API/core.html"><code class="docutils literal notranslate"><span class="pre">compechem.core</span></code> module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../API/systems.html"><code class="docutils literal notranslate"><span class="pre">compechem.systems</span></code> sub-module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../API/wrappers.html"><code class="docutils literal notranslate"><span class="pre">compechem.engines</span></code> sub-module</a></li>
-
-<li class="toctree-l2"><a class="reference internal" href="../API/functions.html"><code class="docutils literal notranslate"><span class="pre">compechem.functions</span></code> sub-module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../API/tools.html"><code class="docutils literal notranslate"><span class="pre">compechem.tools</span></code> sub-module</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributor-guide.html">Contributor’s guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../release-notes.html">Release notes</a></li>
 </ul>
 
-    </div>
-</nav></div>
-    </div>
-  
-  
-  <div class="sidebar-primary-items__end sidebar-primary__section">
-  </div>
-  
-  <div id="rtd-footer-container"></div>
-
-
-      </div>
-      
-      <main id="main-content" class="bd-main">
-        
-        
-
-<div class="sbt-scroll-pixel-helper"></div>
-
-          <div class="bd-content">
-            <div class="bd-article-container">
-              
-              <div class="bd-header-article">
-<div class="header-article-items header-article__inner">
-  
-    <div class="header-article-items__start">
-      
-        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <span class="fa-solid fa-bars"></span>
-</label></div>
-      
-    </div>
-  
-  
-    <div class="header-article-items__end">
-      
-        <div class="header-article-item">
-
-<div class="article-header-buttons">
-
-
-
-
-
-<div class="dropdown dropdown-source-buttons">
-  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
-    <i class="fab fa-github"></i>
-  </button>
-  <ul class="dropdown-menu">
-      
-      
-      
-      <li><a href="https://github.com/GES-compchem/GES-comp-echem" target="_blank"
-   class="btn btn-sm btn-source-repository-button dropdown-item"
-   title="Source repository"
-   data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fab fa-github"></i>
-  </span>
-<span class="btn__text-container">Repository</span>
-</a>
-</li>
-      
-      
-      
-      
-      <li><a href="https://github.com/GES-compchem/GES-comp-echem/issues/new?title=Issue%20on%20page%20%2FGuide/functions.html&body=Your%20issue%20content%20here." target="_blank"
-   class="btn btn-sm btn-source-issues-button dropdown-item"
-   title="Open an issue"
-   data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-lightbulb"></i>
-  </span>
-<span class="btn__text-container">Open issue</span>
-</a>
-</li>
-      
-  </ul>
-</div>
-
-
-
-
-
-
-<div class="dropdown dropdown-download-buttons">
-  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
-    <i class="fas fa-download"></i>
-  </button>
-  <ul class="dropdown-menu">
-      
-      
-      
-      <li><a href="../_sources/Guide/functions.md" target="_blank"
-   class="btn btn-sm btn-download-source-button dropdown-item"
-   title="Download source file"
-   data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-file"></i>
-  </span>
-<span class="btn__text-container">.md</span>
-</a>
-</li>
-      
-      
-      
-      
-      <li>
-<button onclick="window.print()"
-  class="btn btn-sm btn-download-pdf-button dropdown-item"
-  title="Print to PDF"
-  data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-file-pdf"></i>
-  </span>
-<span class="btn__text-container">.pdf</span>
-</button>
-</li>
-      
-  </ul>
-</div>
-
-
-
-
-<button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button"
-  title="Fullscreen mode"
-  data-bs-placement="bottom" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-expand"></i>
-  </span>
-
-</button>
-
-
-<script>
-document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
-  </button>
-`);
-</script>
-
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
-<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="fa-solid fa-list"></span>
-</label>
-</div></div>
-      
-    </div>
-  
-</div>
-</div>
-              
-              
-
-<div id="jb-print-docs-body" class="onlyprint">
-    <h1>Calculating properties</h1>
-    <!-- Table of contents -->
-    <div id="print-main-content">
-        <div id="jb-print-toc">
-            
-            <div>
-                <h2> Contents </h2>
-            </div>
-            <nav aria-label="Page">
-                <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pka">pKa</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-calculate-pka-function">The <code class="docutils literal notranslate"><span class="pre">calculate_pka()</span></code> function:</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-auto-calculate-pka-function">The <code class="docutils literal notranslate"><span class="pre">auto_calculate_pka()</span></code> function:</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#el-redox-potential">1-el redox potential</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fukui-functions">Fukui functions</a></li>
-</ul>
-            </nav>
         </div>
-    </div>
-</div>
+      </div>
+    </nav>
 
-              
-                
-<div id="searchbox"></div>
-                <article class="bd-article" role="main">
-                  
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../intro.html">Python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../intro.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../user-guide.html">User guide</a></li>
+      <li class="breadcrumb-item active">Calculating properties</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/Guide/functions.md" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <section class="tex2jax_ignore mathjax_ignore" id="calculating-properties">
-<span id="guide-functions"></span><h1>Calculating properties<a class="headerlink" href="#calculating-properties" title="Permalink to this heading">#</a></h1>
-<p>The <code class="docutils literal notranslate"><span class="pre">compechem.functions</span></code> submodule contains a series of methods to “manually” calculate some physical properties of the system under study. The user is expected to provide the exact intended states for the system(s) under study, as the functions will simply take the inputs and generate the output without carrying out any checks. For example, if the user calculates the pKa of a molecule in an unoptimised geometry, the resulting pKa will be that of the unoptimised geometry.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">compechem.functions</span></code> functions can be imported via the following syntax:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem.functions</span> <span class="kn">import</span> <span class="n">calculate_pka</span>
+<span id="guide-functions"></span><h1>Calculating properties<a class="headerlink" href="#calculating-properties" title="Permalink to this heading"></a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">spycci.functions</span></code> submodule contains a series of methods to “manually” calculate some physical properties of the system under study. The user is expected to provide the exact intended states for the system(s) under study, as the functions will simply take the inputs and generate the output without carrying out any checks. For example, if the user calculates the pKa of a molecule in an unoptimised geometry, the resulting pKa will be that of the unoptimised geometry.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">spycci.functions</span></code> functions can be imported via the following syntax:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">spycci.functions</span> <span class="kn">import</span> <span class="n">calculate_pka</span>
 </pre></div>
 </div>
 <div class="warning admonition">
@@ -401,8 +122,8 @@ document.write(`
 </div>
 <hr class="docutils" />
 <section id="pka">
-<h2>pKa<a class="headerlink" href="#pka" title="Permalink to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">compechem.functions.pka</span></code> submodule provides an interface for the computation of the pKa or a given species. The module is, at this time, composed by two functions:</p>
+<h2>pKa<a class="headerlink" href="#pka" title="Permalink to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">spycci.functions.pka</span></code> submodule provides an interface for the computation of the pKa or a given species. The module is, at this time, composed by two functions:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">calculate_pka</span></code>: Computes the pKa of a molecular system and its deprotomer. The user must provide both streucture in the form of <code class="docutils literal notranslate"><span class="pre">System</span></code> objects with an already defined electronic energy and possibly a vibronic one.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">auto_calculate_pka</span></code>: Computes the pKa of a given molecule by automatically searching the lowest-energy deprotomer using CREST. Once the proper deprotomer has been identified the function take care of the geometry optimization of both structures, the calculation of electronic energies and frequencies.</p></li>
@@ -423,7 +144,7 @@ pK_{a} = \frac{G_{A^{-}} + G_{H^{+}} - G_{HA}}{2.303 \cdot RT}
 \]</div>
 <p>where <span class="math notranslate nohighlight">\(G_{A^{-}}\)</span> and <span class="math notranslate nohighlight">\(G_{HA}\)</span> are calculated summing the electronic + vibronic energies at the selected/provided level of theory, <span class="math notranslate nohighlight">\(G_{H^{+}} = -270.29 kcal/mol\)</span>, <span class="math notranslate nohighlight">\(R = 1.987 \cdot 10^{-3} kcal/(mol \cdot K)\)</span> and <span class="math notranslate nohighlight">\(T = 298.15 K\)</span>.</p>
 <section id="the-calculate-pka-function">
-<h3>The <code class="docutils literal notranslate"><span class="pre">calculate_pka()</span></code> function:<a class="headerlink" href="#the-calculate-pka-function" title="Permalink to this heading">#</a></h3>
+<h3>The <code class="docutils literal notranslate"><span class="pre">calculate_pka()</span></code> function:<a class="headerlink" href="#the-calculate-pka-function" title="Permalink to this heading"></a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">calculate_pka</span></code> function takes as arguments the following elements:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">protonated</span></code> (<code class="docutils literal notranslate"><span class="pre">System</span></code>): molecule in its protonated form</p></li>
@@ -431,9 +152,9 @@ pK_{a} = \frac{G_{A^{-}} + G_{H^{+}} - G_{HA}}{2.303 \cdot RT}
 </ul>
 <p>Please notice how both the <code class="docutils literal notranslate"><span class="pre">protonated</span></code> and <code class="docutils literal notranslate"><span class="pre">deprotonated</span></code> molecules must already be optimized (in water) and must posses a valid electronic energy value. If the vibronic energy is provided, its contribution is taken into account during the calculation.</p>
 <p>An example script that can be used to compute the pKa of a molecule is provided in what follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem.engines.xtb</span> <span class="kn">import</span> <span class="n">XtbInput</span>
-<span class="kn">from</span> <span class="nn">compechem.systems</span> <span class="kn">import</span> <span class="n">System</span>
-<span class="kn">from</span> <span class="nn">compechem.functions.pka</span> <span class="kn">import</span> <span class="n">calculate_pka</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">spycci.engines.xtb</span> <span class="kn">import</span> <span class="n">XtbInput</span>
+<span class="kn">from</span> <span class="nn">spycci.systems</span> <span class="kn">import</span> <span class="n">System</span>
+<span class="kn">from</span> <span class="nn">spycci.functions.pka</span> <span class="kn">import</span> <span class="n">calculate_pka</span>
 
 <span class="n">protonated</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="s2">&quot;protonated.xyz&quot;</span><span class="p">,</span> <span class="n">charge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">deprotonated</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="s2">&quot;deprotonated.xyz&quot;</span><span class="p">,</span> <span class="n">charge</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -447,7 +168,7 @@ pK_{a} = \frac{G_{A^{-}} + G_{H^{+}} - G_{HA}}{2.303 \cdot RT}
 </div>
 </section>
 <section id="the-auto-calculate-pka-function">
-<h3>The <code class="docutils literal notranslate"><span class="pre">auto_calculate_pka()</span></code> function:<a class="headerlink" href="#the-auto-calculate-pka-function" title="Permalink to this heading">#</a></h3>
+<h3>The <code class="docutils literal notranslate"><span class="pre">auto_calculate_pka()</span></code> function:<a class="headerlink" href="#the-auto-calculate-pka-function" title="Permalink to this heading"></a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">auto_calculate_pka</span></code> function takes as main argument the protonated molecule structure (in the form of a <code class="docutils literal notranslate"><span class="pre">System</span></code> object). The molecule is sequentially deprotonated using the CREST deprotomer search routine until the lowest energy deprotomer is identified. Once the deprotomer search has been completed, the structure of both molecules is optimized using the specified level of theory and both electronic and vibronic energies are computed at the user defined level of theory. The routine takes as arguments the following elements:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">protonated</span></code> (<code class="docutils literal notranslate"><span class="pre">System</span></code>): The protonated molecule for which the pKa must be computed.</p></li>
@@ -458,9 +179,9 @@ pK_{a} = \frac{G_{A^{-}} + G_{H^{+}} - G_{HA}}{2.303 \cdot RT}
 <li><p><code class="docutils literal notranslate"><span class="pre">maxcore</span></code> (<code class="docutils literal notranslate"><span class="pre">int</span></code>):  For the engines that supprots it, the memory assigned to each core used in the computation. (optional)</p></li>
 </ul>
 <p>An example script that can be used to compute the pKa of a molecule is provided in what follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem.engines.xtb</span> <span class="kn">import</span> <span class="n">XtbInput</span>
-<span class="kn">from</span> <span class="nn">compechem.systems</span> <span class="kn">import</span> <span class="n">System</span>
-<span class="kn">from</span> <span class="nn">compechem.functions.pka</span> <span class="kn">import</span> <span class="n">calculate_pka</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">spycci.engines.xtb</span> <span class="kn">import</span> <span class="n">XtbInput</span>
+<span class="kn">from</span> <span class="nn">spycci.systems</span> <span class="kn">import</span> <span class="n">System</span>
+<span class="kn">from</span> <span class="nn">spycci.functions.pka</span> <span class="kn">import</span> <span class="n">calculate_pka</span>
 
 <span class="n">protonated</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;protonated.xyz&quot;</span><span class="p">,</span> <span class="n">charge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">xtb</span> <span class="o">=</span> <span class="n">XtbInput</span><span class="p">(</span><span class="n">solvent</span><span class="o">=</span><span class="s2">&quot;water&quot;</span><span class="p">)</span>
@@ -478,7 +199,7 @@ pK_{a} = \frac{G_{A^{-}} + G_{H^{+}} - G_{HA}}{2.303 \cdot RT}
 </section>
 <hr class="docutils" />
 <section id="el-redox-potential">
-<h2>1-el redox potential<a class="headerlink" href="#el-redox-potential" title="Permalink to this heading">#</a></h2>
+<h2>1-el redox potential<a class="headerlink" href="#el-redox-potential" title="Permalink to this heading"></a></h2>
 <p>Calculates the one-electron reduction potential of a molecule <span class="math notranslate nohighlight">\(MH_{n}\)</span>, considering a generic reaction of the type:</p>
 <div class="math notranslate nohighlight">
 \[
@@ -498,8 +219,8 @@ E°_{MH_{n}/M^{\cdot(n-1)-}} = - \frac{G_{M^{\cdot(n-1)-}} - (G_{MH_{n}} + n \cd
 <p>where <span class="math notranslate nohighlight">\(G_{M^{\cdot(n-1)-}}\)</span> and <span class="math notranslate nohighlight">\(G_{MH_{n}}\)</span> are calculated summing the electronic + vibronic energies at the selected level of theory, <span class="math notranslate nohighlight">\(G_{H^{+}} = -270.29 kcal/mol\)</span>, <span class="math notranslate nohighlight">\(F = 23.061 kcal/volt–gram-equivalent\)</span>, and <span class="math notranslate nohighlight">\(E_{SHE} = 4.28 V\)</span>.</p>
 </section>
 <section id="fukui-functions">
-<h2>Fukui functions<a class="headerlink" href="#fukui-functions" title="Permalink to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">compechem.functions.calculate_fukui</span></code> function calculates the Fukui functions <span class="math notranslate nohighlight">\(f^+(r)\)</span>, <span class="math notranslate nohighlight">\(f^-(r)\)</span> and <span class="math notranslate nohighlight">\(f^0(r)\)</span> associated with a given molecular geometry. The Fukui functions are computed according to the definitions:</p>
+<h2>Fukui functions<a class="headerlink" href="#fukui-functions" title="Permalink to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">spycci.functions.calculate_fukui</span></code> function calculates the Fukui functions <span class="math notranslate nohighlight">\(f^+(r)\)</span>, <span class="math notranslate nohighlight">\(f^-(r)\)</span> and <span class="math notranslate nohighlight">\(f^0(r)\)</span> associated with a given molecular geometry. The Fukui functions are computed according to the definitions:</p>
 <div class="math notranslate nohighlight">
 \[
 f^+(r) = \rho_{N+1}(r) - \rho_{N}(r)
@@ -525,9 +246,9 @@ f^0(r) = \frac{1}{2} \left[\rho_{N+1}(r) - \rho_{N-1}(r)\right]
 </ul>
 <p>The function assumes that the molecule supports only singlet and doublet states and switches the spin multeplicity according to the number of electrons. If different spin states needs to be considered the <code class="docutils literal notranslate"><span class="pre">spins_states</span></code> option can be used to provide the spin multeplicity values as a list.</p>
 <p>An example code snippet is provided in what follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem.systems</span> <span class="kn">import</span> <span class="n">System</span>
-<span class="kn">from</span> <span class="nn">compechem.engines.orca</span> <span class="kn">import</span> <span class="n">OrcaInput</span>
-<span class="kn">from</span> <span class="nn">compechem.functions.fukui</span> <span class="kn">import</span> <span class="n">calculate_fukui</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">spycci.systems</span> <span class="kn">import</span> <span class="n">System</span>
+<span class="kn">from</span> <span class="nn">spycci.engines.orca</span> <span class="kn">import</span> <span class="n">OrcaInput</span>
+<span class="kn">from</span> <span class="nn">spycci.functions.fukui</span> <span class="kn">import</span> <span class="n">calculate_fukui</span>
 
 <span class="n">mol</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="s2">&quot;./acetaldehyde.xyz&quot;</span><span class="p">)</span>
 <span class="n">orca</span> <span class="o">=</span> <span class="n">OrcaInput</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;PBE&quot;</span><span class="p">,</span> <span class="n">basis_set</span><span class="o">=</span><span class="s2">&quot;def2-SVP&quot;</span><span class="p">)</span>
@@ -629,7 +350,7 @@ CONDENSED FUKUI - HIRSHFELD
 </div>
 </div>
 <p>The volumetric fukui functions can then be plotted using the built in <code class="docutils literal notranslate"><span class="pre">vmd</span></code> based rendering tool. As an example the following code can be used to render the the <span class="math notranslate nohighlight">\(f^+(r)\)</span> Fukui function.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem.tools.vmdtools</span> <span class="kn">import</span> <span class="n">render_fukui_cube</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">spycci.tools.vmdtools</span> <span class="kn">import</span> <span class="n">render_fukui_cube</span>
 
 <span class="n">render_fukui_cube</span><span class="p">(</span>
     <span class="s2">&quot;./output_densities/acetaldehyde_Fukui_plus.fukui.cube&quot;</span><span class="p">,</span>
@@ -663,111 +384,34 @@ CONDENSED FUKUI - HIRSHFELD
     </script>
     <script>kernelName = 'python3'</script>
 
-                </article>
-              
-
-              
-              
-                <footer class="bd-footer-article">
-                  
-<div class="footer-article-items footer-article__inner">
-  
-    <div class="footer-article-item"><!-- Previous / next buttons -->
-<div class="prev-next-area">
-    <a class="left-prev"
-       href="run.html"
-       title="previous page">
-      <i class="fa-solid fa-angle-left"></i>
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Running calculations</p>
-      </div>
-    </a>
-    <a class="right-next"
-       href="tools.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Useful tools</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
-    </a>
-</div></div>
-  
-</div>
-
-                </footer>
-              
-            </div>
-            
-            
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> Contents
-  </div>
-  <nav class="bd-toc-nav page-toc">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pka">pKa</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-calculate-pka-function">The <code class="docutils literal notranslate"><span class="pre">calculate_pka()</span></code> function:</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-auto-calculate-pka-function">The <code class="docutils literal notranslate"><span class="pre">auto_calculate_pka()</span></code> function:</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#el-redox-potential">1-el redox potential</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fukui-functions">Fukui functions</a></li>
-</ul>
-  </nav></div>
-
-</div></div>
-              
-            
+           </div>
           </div>
-          <footer class="bd-footer-content">
-            
-<div class="bd-footer-content__inner container">
-  
-  <div class="footer-item">
-    
-<p class="component-author">
-By Luca Babetto, Pierpaolo Pravatto
-</p>
-
-  </div>
-  
-  <div class="footer-item">
-    
-  <p class="copyright">
-    
-      © Copyright 2022.
-      <br/>
-    
-  </p>
-
-  </div>
-  
-  <div class="footer-item">
-    
-  </div>
-  
-  <div class="footer-item">
-    
-  </div>
-  
-</div>
-          </footer>
-        
-
-      </main>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="run.html" class="btn btn-neutral float-left" title="Running calculations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tools.html" class="btn btn-neutral float-right" title="Useful tools" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  </div>
-  
-  <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
-  <footer class="bd-footer">
-  </footer>
-  </body>
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
 </html>

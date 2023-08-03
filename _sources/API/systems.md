@@ -1,10 +1,10 @@
 (API-systems)=
-# `compechem.systems` sub-module
+# `spycci.systems` sub-module
 
 ## `System` class
 
 ```{eval-rst}
-.. autoclass:: compechem.systems.System
+.. autoclass:: spycci.systems.System
     :members:
 ```
 ---
@@ -12,6 +12,6 @@
 ## `Ensemble` class
 
 ```{eval-rst}
-.. autoclass:: compechem.systems.Ensemble
+.. autoclass:: spycci.systems.Ensemble
     :members:
 ```

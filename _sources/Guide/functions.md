@@ -13,12 +13,12 @@ kernelspec:
 (Guide-functions)=
 # Calculating properties
 
-The `compechem.functions` submodule contains a series of methods to "manually" calculate some physical properties of the system under study. The user is expected to provide the exact intended states for the system(s) under study, as the functions will simply take the inputs and generate the output without carrying out any checks. For example, if the user calculates the pKa of a molecule in an unoptimised geometry, the resulting pKa will be that of the unoptimised geometry.
+The `spycci.functions` submodule contains a series of methods to "manually" calculate some physical properties of the system under study. The user is expected to provide the exact intended states for the system(s) under study, as the functions will simply take the inputs and generate the output without carrying out any checks. For example, if the user calculates the pKa of a molecule in an unoptimised geometry, the resulting pKa will be that of the unoptimised geometry.
 
-The `compechem.functions` functions can be imported via the following syntax:
+The `spycci.functions` functions can be imported via the following syntax:
 
 ```python
-from compechem.functions import calculate_pka
+from spycci.functions import calculate_pka
 ```
 
 :::{admonition} Empirical corrections
@@ -32,7 +32,7 @@ The functions to calculate pKa and reduction potentials take into account the se
 
 ## pKa
 
-The `compechem.functions.pka` submodule provides an interface for the computation of the pKa or a given species. The module is, at this time, composed by two functions:
+The `spycci.functions.pka` submodule provides an interface for the computation of the pKa or a given species. The module is, at this time, composed by two functions:
 
 * `calculate_pka`: Computes the pKa of a molecular system and its deprotomer. The user must provide both streucture in the form of `System` objects with an already defined electronic energy and possibly a vibronic one.
 * `auto_calculate_pka`: Computes the pKa of a given molecule by automatically searching the lowest-energy deprotomer using CREST. Once the proper deprotomer has been identified the function take care of the geometry optimization of both structures, the calculation of electronic energies and frequencies.
@@ -69,9 +69,9 @@ Please notice how both the `protonated` and `deprotonated` molecules must alread
 An example script that can be used to compute the pKa of a molecule is provided in what follows:
 
 ```python
-from compechem.engines.xtb import XtbInput
-from compechem.systems import System
-from compechem.functions.pka import calculate_pka
+from spycci.engines.xtb import XtbInput
+from spycci.systems import System
+from spycci.functions.pka import calculate_pka
 
 protonated = System("protonated.xyz", charge=0, spin=1)
 deprotonated = System("deprotonated.xyz", charge=-1, spin=1)
@@ -97,9 +97,9 @@ The `auto_calculate_pka` function takes as main argument the protonated molecule
 An example script that can be used to compute the pKa of a molecule is provided in what follows:
 
 ```python
-from compechem.engines.xtb import XtbInput
-from compechem.systems import System
-from compechem.functions.pka import calculate_pka
+from spycci.engines.xtb import XtbInput
+from spycci.systems import System
+from spycci.functions.pka import calculate_pka
 
 protonated = System(f"protonated.xyz", charge=0, spin=1)
 xtb = XtbInput(solvent="water")
@@ -138,7 +138,7 @@ $$
 where $G_{M^{\cdot(n-1)-}}$ and $G_{MH_{n}}$ are calculated summing the electronic + vibronic energies at the selected level of theory, $G_{H^{+}} = -270.29 kcal/mol$, $F = 23.061 kcal/volt–gram-equivalent$, and $E_{SHE} = 4.28 V$.
 
 ## Fukui functions
-The `compechem.functions.calculate_fukui` function calculates the Fukui functions $f^+(r)$, $f^-(r)$ and $f^0(r)$ associated with a given molecular geometry. The Fukui functions are computed according to the definitions:
+The `spycci.functions.calculate_fukui` function calculates the Fukui functions $f^+(r)$, $f^-(r)$ and $f^0(r)$ associated with a given molecular geometry. The Fukui functions are computed according to the definitions:
 
 $$
 f^+(r) = \rho_{N+1}(r) - \rho_{N}(r)
@@ -168,9 +168,9 @@ The function assumes that the molecule supports only singlet and doublet states 
 
 An example code snippet is provided in what follows:
 ```python
-from compechem.systems import System
-from compechem.engines.orca import OrcaInput
-from compechem.functions.fukui import calculate_fukui
+from spycci.systems import System
+from spycci.engines.orca import OrcaInput
+from spycci.functions.fukui import calculate_fukui
 
 mol = System("./acetaldehyde.xyz")
 orca = OrcaInput(method="PBE", basis_set="def2-SVP")
@@ -185,7 +185,7 @@ That for the acetaldehyde molecule returns the following result:
 
 ```{code-cell} python
 :tags: ["remove-input"]
-from compechem.systems import System
+from spycci.systems import System
 mol = System("../example_files/acetaldehyde.json")
 print(mol)
 ```
@@ -193,7 +193,7 @@ print(mol)
 The volumetric fukui functions can then be plotted using the built in `vmd` based rendering tool. As an example the following code can be used to render the the $f^+(r)$ Fukui function.
 
 ```python
-from compechem.tools.vmdtools import render_fukui_cube
+from spycci.tools.vmdtools import render_fukui_cube
 
 render_fukui_cube(
     "./output_densities/acetaldehyde_Fukui_plus.fukui.cube",

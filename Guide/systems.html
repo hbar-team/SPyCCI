@@ -1,402 +1,127 @@
-
-
 <!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-
-<html lang="en" >
-
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-
-    <title>Defining molecular systems &#8212; GES-compechem User Guide</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Defining molecular systems &mdash; SPyCCI User Guide</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sphinx-thebe.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-  
-  
-  <script data-cfasync="false">
-    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
-  </script>
-  
-  <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
-
-  
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
-  
-  <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
-
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/clipboard.min.js"></script>
-    <script src="../_static/copybutton.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../_static/togglebutton.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="../_static/design-tabs.js"></script>
-    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+        <script>let toggleHintShow = 'Click to show';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script src="../_static/design-tabs.js"></script>
+        <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
 const thebe_selector = ".thebe,.cell"
 const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
-    <script async="async" src="../_static/sphinx-thebe.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'Guide/systems';</script>
+        <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Setting up calculations" href="setup.html" />
-    <link rel="prev" title="User guide" href="../user-guide.html" />
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="docsearch:language" content="en"/>
-  </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+    <link rel="prev" title="User guide" href="../user-guide.html" /> 
+</head>
 
-  
-  
-  <a class="skip-link" href="#main-content">Skip to main content</a>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
-<form class="bd-search d-flex align-items-center"
-      action="../search.html"
-      method="get">
-  <i class="fa-solid fa-magnifying-glass"></i>
-  <input type="search"
-         class="form-control"
-         name="q"
-         id="search-input"
-         placeholder="Search this book..."
-         aria-label="Search this book..."
-         autocomplete="off"
-         autocorrect="off"
-         autocapitalize="off"
-         spellcheck="false"/>
-  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
-  
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
-    </nav>
-  
-  <div class="bd-container">
-    <div class="bd-container__inner bd-page-width">
-      
-      <div class="bd-sidebar-primary bd-sidebar">
-        
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
 
-  
-  <div class="sidebar-header-items sidebar-primary__section">
-    
-    
-    
-    
-  </div>
-  
-    <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item">
-  
-
-<a class="navbar-brand logo" href="../intro.html">
-  
-  
-  
-  
-  
-    <p class="title logo__title">GES-compechem User Guide</p>
-  
-</a></div>
-        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
-    <div class="bd-toc-item navbar-nav active">
-        
-        <ul class="nav bd-sidenav bd-sidenav__home-link">
-            <li class="toctree-l1">
-                <a class="reference internal" href="../intro.html">
-                    GES-comp-echem User Guide
-                </a>
-            </li>
-        </ul>
-        <ul class="current nav bd-sidenav">
+          
+          
+          <a href="../intro.html" class="icon icon-home">
+            Python
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting Started</a></li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="../user-guide.html">User guide</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Defining molecular systems</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../user-guide.html">User guide</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Defining molecular systems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setup.html">Setting up calculations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="run.html">Running calculations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="functions.html">Calculating properties</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools.html">Useful tools</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../api.html">API Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../API/core.html"><code class="docutils literal notranslate"><span class="pre">compechem.core</span></code> module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../API/systems.html"><code class="docutils literal notranslate"><span class="pre">compechem.systems</span></code> sub-module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../API/wrappers.html"><code class="docutils literal notranslate"><span class="pre">compechem.engines</span></code> sub-module</a></li>
-
-<li class="toctree-l2"><a class="reference internal" href="../API/functions.html"><code class="docutils literal notranslate"><span class="pre">compechem.functions</span></code> sub-module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../API/tools.html"><code class="docutils literal notranslate"><span class="pre">compechem.tools</span></code> sub-module</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributor-guide.html">Contributor’s guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../release-notes.html">Release notes</a></li>
 </ul>
 
-    </div>
-</nav></div>
-    </div>
-  
-  
-  <div class="sidebar-primary-items__end sidebar-primary__section">
-  </div>
-  
-  <div id="rtd-footer-container"></div>
-
-
-      </div>
-      
-      <main id="main-content" class="bd-main">
-        
-        
-
-<div class="sbt-scroll-pixel-helper"></div>
-
-          <div class="bd-content">
-            <div class="bd-article-container">
-              
-              <div class="bd-header-article">
-<div class="header-article-items header-article__inner">
-  
-    <div class="header-article-items__start">
-      
-        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <span class="fa-solid fa-bars"></span>
-</label></div>
-      
-    </div>
-  
-  
-    <div class="header-article-items__end">
-      
-        <div class="header-article-item">
-
-<div class="article-header-buttons">
-
-
-
-
-
-<div class="dropdown dropdown-source-buttons">
-  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
-    <i class="fab fa-github"></i>
-  </button>
-  <ul class="dropdown-menu">
-      
-      
-      
-      <li><a href="https://github.com/GES-compchem/GES-comp-echem" target="_blank"
-   class="btn btn-sm btn-source-repository-button dropdown-item"
-   title="Source repository"
-   data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fab fa-github"></i>
-  </span>
-<span class="btn__text-container">Repository</span>
-</a>
-</li>
-      
-      
-      
-      
-      <li><a href="https://github.com/GES-compchem/GES-comp-echem/issues/new?title=Issue%20on%20page%20%2FGuide/systems.html&body=Your%20issue%20content%20here." target="_blank"
-   class="btn btn-sm btn-source-issues-button dropdown-item"
-   title="Open an issue"
-   data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-lightbulb"></i>
-  </span>
-<span class="btn__text-container">Open issue</span>
-</a>
-</li>
-      
-  </ul>
-</div>
-
-
-
-
-
-
-<div class="dropdown dropdown-download-buttons">
-  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
-    <i class="fas fa-download"></i>
-  </button>
-  <ul class="dropdown-menu">
-      
-      
-      
-      <li><a href="../_sources/Guide/systems.md" target="_blank"
-   class="btn btn-sm btn-download-source-button dropdown-item"
-   title="Download source file"
-   data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-file"></i>
-  </span>
-<span class="btn__text-container">.md</span>
-</a>
-</li>
-      
-      
-      
-      
-      <li>
-<button onclick="window.print()"
-  class="btn btn-sm btn-download-pdf-button dropdown-item"
-  title="Print to PDF"
-  data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-file-pdf"></i>
-  </span>
-<span class="btn__text-container">.pdf</span>
-</button>
-</li>
-      
-  </ul>
-</div>
-
-
-
-
-<button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button"
-  title="Fullscreen mode"
-  data-bs-placement="bottom" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-expand"></i>
-  </span>
-
-</button>
-
-
-<script>
-document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
-  </button>
-`);
-</script>
-
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
-<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="fa-solid fa-list"></span>
-</label>
-</div></div>
-      
-    </div>
-  
-</div>
-</div>
-              
-              
-
-<div id="jb-print-docs-body" class="onlyprint">
-    <h1>Defining molecular systems</h1>
-    <!-- Table of contents -->
-    <div id="print-main-content">
-        <div id="jb-print-toc">
-            
-            <div>
-                <h2> Contents </h2>
-            </div>
-            <nav aria-label="Page">
-                <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#single-systems">Single systems</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ensembles">Ensembles</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#saving-loading-system-objects">Saving/Loading System objects</a></li>
-</ul>
-            </nav>
         </div>
-    </div>
-</div>
+      </div>
+    </nav>
 
-              
-                
-<div id="searchbox"></div>
-                <article class="bd-article" role="main">
-                  
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../intro.html">Python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../intro.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../user-guide.html">User guide</a></li>
+      <li class="breadcrumb-item active">Defining molecular systems</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/Guide/systems.md" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <section class="tex2jax_ignore mathjax_ignore" id="defining-molecular-systems">
-<span id="guide-systems"></span><h1>Defining molecular systems<a class="headerlink" href="#defining-molecular-systems" title="Permalink to this heading">#</a></h1>
-<p>When running computational chemistry numerical simulations, you need to define two things: the system under study, and the type of calculation to run on it. For the former, you can use the <code class="docutils literal notranslate"><span class="pre">compechem.systems</span></code> submodule.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">compechem.systems</span></code> submodule contains the following classes, used to collect and store information about the system of interest:</p>
+<span id="guide-systems"></span><h1>Defining molecular systems<a class="headerlink" href="#defining-molecular-systems" title="Permalink to this heading"></a></h1>
+<p>When running computational chemistry numerical simulations, you need to define two things: the system under study, and the type of calculation to run on it. For the former, you can use the <code class="docutils literal notranslate"><span class="pre">spycci.systems</span></code> submodule.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">spycci.systems</span></code> submodule contains the following classes, used to collect and store information about the system of interest:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">System</span></code>: generic system object, such as a single molecule.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Ensemble</span></code>: ensemble object, intended as a collection of closely related <code class="docutils literal notranslate"><span class="pre">System</span></code> objects. For example, the ensemble of conformers generated by the corresponding <strong>CREST</strong> routine.</p></li>
 </ul>
 <p>The individual classes can be imported as follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem.systems</span> <span class="kn">import</span> <span class="n">System</span>
-<span class="kn">from</span> <span class="nn">compechem.systems</span> <span class="kn">import</span> <span class="n">Ensemble</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">spycci.systems</span> <span class="kn">import</span> <span class="n">System</span>
+<span class="kn">from</span> <span class="nn">spycci.systems</span> <span class="kn">import</span> <span class="n">Ensemble</span>
 </pre></div>
 </div>
 <p>In this section of the user guide, we will show you how to define molecular systems using the aforementioned classes.</p>
 <hr class="docutils" />
 <section id="single-systems">
-<h2>Single systems<a class="headerlink" href="#single-systems" title="Permalink to this heading">#</a></h2>
+<h2>Single systems<a class="headerlink" href="#single-systems" title="Permalink to this heading"></a></h2>
 <p>A <code class="docutils literal notranslate"><span class="pre">System</span></code> object is defined as a molecular system, containing one or more individual molecules, and is initialized by providing a molecular structure via a <code class="docutils literal notranslate"><span class="pre">.xyz</span></code> file:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem.systems</span> <span class="kn">import</span> <span class="n">System</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">spycci.systems</span> <span class="kn">import</span> <span class="n">System</span>
 <span class="n">my_mol</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="s2">&quot;path/to/xyz/water.xyz&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -407,7 +132,7 @@ document.write(`
 <li><p><code class="docutils literal notranslate"><span class="pre">box_side</span></code>: (for periodic systems only), length of the simulation box (in Å)</p></li>
 </ul>
 <p>Example of a periodic system of side 18.27 Å containing a cation radical:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem.systems</span> <span class="kn">import</span> <span class="n">System</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">spycci.systems</span> <span class="kn">import</span> <span class="n">System</span>
 <span class="n">my_mol</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span>
     <span class="s2">&quot;path/to/xyz/water.xyz&quot;</span><span class="p">,</span> 
     <span class="n">charge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> 
@@ -461,10 +186,10 @@ pKa: None
 </section>
 <hr class="docutils" />
 <section id="ensembles">
-<h2>Ensembles<a class="headerlink" href="#ensembles" title="Permalink to this heading">#</a></h2>
+<h2>Ensembles<a class="headerlink" href="#ensembles" title="Permalink to this heading"></a></h2>
 <p>An <code class="docutils literal notranslate"><span class="pre">Ensemble</span></code> object is defined as a collection of related <code class="docutils literal notranslate"><span class="pre">Systems</span></code>, for example the collection of lowest-energy conformers generated by <a class="reference internal" href="../API/wrappers/crest.html#api-wrappers-crest"><span class="std std-ref">CREST</span></a>. To initialise an <code class="docutils literal notranslate"><span class="pre">Ensemble</span></code> object you need to provide an <code class="docutils literal notranslate"><span class="pre">iterable</span></code> (such as a list) yielding <code class="docutils literal notranslate"><span class="pre">System</span></code> objects:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem.systems</span> <span class="kn">import</span> <span class="n">System</span>
-<span class="kn">from</span> <span class="nn">compechem.systems</span> <span class="kn">import</span> <span class="n">Ensemble</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">spycci.systems</span> <span class="kn">import</span> <span class="n">System</span>
+<span class="kn">from</span> <span class="nn">spycci.systems</span> <span class="kn">import</span> <span class="n">Ensemble</span>
 
 <span class="n">my_mol1</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="s2">&quot;path/to/xyz/my_mol1.xyz&quot;</span><span class="p">)</span>
 <span class="n">my_mol2</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="s2">&quot;path/to/xyz/my_mol2.xyz&quot;</span><span class="p">)</span>
@@ -479,9 +204,9 @@ pKa: None
 </section>
 <hr class="docutils" />
 <section id="saving-loading-system-objects">
-<h2>Saving/Loading System objects<a class="headerlink" href="#saving-loading-system-objects" title="Permalink to this heading">#</a></h2>
+<h2>Saving/Loading System objects<a class="headerlink" href="#saving-loading-system-objects" title="Permalink to this heading"></a></h2>
 <p>It is possible to save/load <code class="docutils literal notranslate"><span class="pre">System</span></code> objects to/from <code class="docutils literal notranslate"><span class="pre">.json</span></code> files. To save a <code class="docutils literal notranslate"><span class="pre">System</span></code> object, dumping all the information currently stored in it after the undergone calculations (structure, charge, spin multiplicity, energies, frequencies, etc…) use the <code class="docutils literal notranslate"><span class="pre">system.save_json()</span></code> function and specify the path where you want to store the file:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem.systems</span> <span class="kn">import</span> <span class="n">System</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">spycci.systems</span> <span class="kn">import</span> <span class="n">System</span>
 
 <span class="n">mol</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="s2">&quot;water.xyz&quot;</span><span class="p">)</span>
 
@@ -491,7 +216,7 @@ pKa: None
 </pre></div>
 </div>
 <p>Then, you can load a previously saved <code class="docutils literal notranslate"><span class="pre">System</span></code> by passing the <code class="docutils literal notranslate"><span class="pre">.json</span></code> file path instead of a <code class="docutils literal notranslate"><span class="pre">.xyz</span></code> file:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compechem.systems</span> <span class="kn">import</span> <span class="n">System</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">spycci.systems</span> <span class="kn">import</span> <span class="n">System</span>
 
 <span class="n">mol</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="s2">&quot;water.json&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
@@ -552,7 +277,7 @@ This is still very much WIP! Expect the following content to possibly be changed
 An `MDTrajectory` object is conceptually an `Ensemble` generated by a Molecular Dynamics (MD) trajectory. Currently, only [DFTB+](API-wrappers-dftbplus) MD are supported. `MDTrajectory` objects are initialised by providing the path `prefix` to the `<prefix>_md.out` file storing the energy information and `<prefix>_geo_end.xyz` file storing the coordinate information, and the level of theory at which the DFTB+ simulation was ran:
 
 ```python
-from compechem.systems import MDTrajectory
+from spycci.systems import MDTrajectory
 
 # note, the following files must exist:
 # path/to/xyz/my_traj_md.out
@@ -597,107 +322,34 @@ Note: individual "frames" are automatically internally renamed according to the 
     </script>
     <script>kernelName = 'python3'</script>
 
-                </article>
-              
-
-              
-              
-                <footer class="bd-footer-article">
-                  
-<div class="footer-article-items footer-article__inner">
-  
-    <div class="footer-article-item"><!-- Previous / next buttons -->
-<div class="prev-next-area">
-    <a class="left-prev"
-       href="../user-guide.html"
-       title="previous page">
-      <i class="fa-solid fa-angle-left"></i>
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">User guide</p>
-      </div>
-    </a>
-    <a class="right-next"
-       href="setup.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Setting up calculations</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
-    </a>
-</div></div>
-  
-</div>
-
-                </footer>
-              
-            </div>
-            
-            
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> Contents
-  </div>
-  <nav class="bd-toc-nav page-toc">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#single-systems">Single systems</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ensembles">Ensembles</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#saving-loading-system-objects">Saving/Loading System objects</a></li>
-</ul>
-  </nav></div>
-
-</div></div>
-              
-            
+           </div>
           </div>
-          <footer class="bd-footer-content">
-            
-<div class="bd-footer-content__inner container">
-  
-  <div class="footer-item">
-    
-<p class="component-author">
-By Luca Babetto, Pierpaolo Pravatto
-</p>
-
-  </div>
-  
-  <div class="footer-item">
-    
-  <p class="copyright">
-    
-      © Copyright 2022.
-      <br/>
-    
-  </p>
-
-  </div>
-  
-  <div class="footer-item">
-    
-  </div>
-  
-  <div class="footer-item">
-    
-  </div>
-  
-</div>
-          </footer>
-        
-
-      </main>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../user-guide.html" class="btn btn-neutral float-left" title="User guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="setup.html" class="btn btn-neutral float-right" title="Setting up calculations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  </div>
-  
-  <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
-  <footer class="bd-footer">
-  </footer>
-  </body>
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
 </html>
