@@ -30,5 +30,8 @@ sphinx:
     - 'sphinx.ext.autodoc'
     - 'sphinx.ext.napoleon'
   config:
-     html_theme: sphinx_rtd_theme
-     autodoc_typehints: "description"
+    html_theme: sphinx_rtd_theme
+    html_theme_options:
+      logo_only: true
+      prev_next_buttons_location: top
+    autodoc_typehints: "description"
