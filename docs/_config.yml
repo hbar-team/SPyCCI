@@ -2,7 +2,7 @@
 title                       : SPyCCI User Guide
 author                      : Luca Babetto, Pierpaolo Pravatto
 copyright                   : "2023"
-logo                        : logo.png
+logo                        : SPyCCI_logo_tr-01.png
 
 # Force re-execution of notebooks on each build.
 execute:
@@ -30,5 +30,8 @@ sphinx:
     - 'sphinx.ext.autodoc'
     - 'sphinx.ext.napoleon'
   config:
-     html_theme: sphinx_rtd_theme
-     autodoc_typehints: "description"
+    html_theme: sphinx_rtd_theme
+    html_theme_options:
+      logo_only: true
+      prev_next_buttons_location: top
+    autodoc_typehints: "description"
