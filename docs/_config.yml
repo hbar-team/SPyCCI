@@ -2,7 +2,7 @@
 title                       : SPyCCI User Guide
 author                      : Luca Babetto, Pierpaolo Pravatto
 copyright                   : "2023"
-logo                        : logo.png
+logo                        : SPyCCI_logo_tr-01.png
 
 # Force re-execution of notebooks on each build.
 execute:
