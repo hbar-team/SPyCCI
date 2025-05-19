@@ -1441,7 +1441,7 @@ class OrcaInput(Engine):
                             else:
                                 break
 
-                mol_list = []
+                indexed_mol_list = []
                 for xyz in xyz_list:
                     if xyz.endswith(".refined.xyz"):
                         continue
@@ -1450,9 +1450,10 @@ class OrcaInput(Engine):
                     shutil.copy(f"input.{index}.xyz", f"{mol.name}.{index}.xyz")
                     system = System(f"{mol.name}.{index}.xyz", charge=mol.charge, spin=mol.spin)
                     system.properties.set_electronic_energy(energies[int(index) - 1], self)
-                    mol_list.append(system)
+                    indexed_mol_list.append([index, system])
 
-                ensemble = Ensemble(mol_list)
+                indexed_mol_list.sort(key = lambda v: v[0])
+                ensemble = Ensemble([x[1] for x in indexed_mol_list])
 
                 shutil.move("input.xyz", f"{mol.name}_TS.xyz")
                 newmol = System(f"{mol.name}_TS.xyz", charge=mol.charge, spin=mol.spin)
