@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 
 from os.path import isfile
-from typing import Tuple, List, Union
+from typing import Tuple, List, Union, Generator
 from morfeus import BuriedVolume
 
 from spycci.constants import atoms_dict, atomic_masses
@@ -33,7 +33,7 @@ class MolecularGeometry:
             )
         return self.__atoms[index], self.__coordinates[index]
 
-    def __iter__(self) -> Tuple[str, np.ndarray]:
+    def __iter__(self) -> Generator[str, np.ndarray]:
         for atom, coordinates in zip(self.__atoms, self.__coordinates):
             yield atom, coordinates
 
