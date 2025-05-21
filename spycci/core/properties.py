@@ -139,7 +139,7 @@ class Properties:
         self.__pka = None
         self.__vibrational_data = None
 
-    def __check_engine(self, engine: Union(Engine, str)) -> None:
+    def __check_engine(self, engine: Union[Engine, str]) -> None:
 
         logger.debug(f"Engine type: {type(engine)}")
 
@@ -161,7 +161,7 @@ class Properties:
         else:
             raise TypeError("The engine argument must be derived from `Engine`")
 
-    def __validate_electronic(self, engine: Union(Engine, str)) -> None:
+    def __validate_electronic(self, engine: Union[Engine, str]) -> None:
 
         level_of_theory = self.__check_engine(engine)
 
@@ -325,7 +325,7 @@ class Properties:
         """
         return self.__electronic_energy
 
-    def set_electronic_energy(self, value: float, electronic_engine: Union(Engine, str)) -> None:
+    def set_electronic_energy(self, value: float, electronic_engine: Union[Engine, str]) -> None:
         """
         Sets the electronic energy of the system.
 
@@ -333,7 +333,7 @@ class Properties:
         ---------
         value: float
             The electronic energy of the system in Hartree.
-        electronic_engine: Union(Engine, str)
+        electronic_engine: Union[Engine, str]
             The engine used in the calculation.
         """
         logger.debug("Setting electronic energy")
@@ -352,7 +352,7 @@ class Properties:
         """
         return self.__vibronic_energy
 
-    def set_vibronic_energy(self, value: float, vibronic_engine: Union(Engine, str)) -> None:
+    def set_vibronic_energy(self, value: float, vibronic_engine: Union[Engine, str]) -> None:
         """
         Sets the vibronic energy of the system.
 
@@ -360,7 +360,7 @@ class Properties:
         ---------
         value: float
             The vibronic energy of the system in Hartree.
-        vibronic_engine: Union(Engine, str)
+        vibronic_engine: Union[Engine, str]
             The engine used in the calculation.
         """
         logger.debug("Setting vibronic energy")
@@ -382,8 +382,8 @@ class Properties:
     def set_helmholtz_free_energy(
         self,
         value: float,
-        electronic_engine: Union(Engine, str),
-        vibronic_engine: Union(Engine, str),
+        electronic_engine: Union[Engine, str],
+        vibronic_engine: Union[Engine, str],
     ) -> float:
         """
         Sets the Helmholtz free energy of the system.
@@ -392,9 +392,9 @@ class Properties:
         ---------
         value: float
             The Helmholtz free energy of the system in Hartree.
-        electronic_engine: Union(Engine, str)
+        electronic_engine: Union[Engine, str]
             The engine used in the electronic calculation.
-        vibronic_engine: Union(Engine, str)
+        vibronic_engine: Union[Engine, str]
             The engine used in the vibronic calculation.
         """
         logger.debug("Setting Helmholtz free energy")
@@ -417,8 +417,8 @@ class Properties:
     def set_gibbs_free_energy(
         self,
         value: float,
-        electronic_engine: Union(Engine, str),
-        vibronic_engine: Union(Engine, str),
+        electronic_engine: Union[Engine, str],
+        vibronic_engine: Union[Engine, str],
     ) -> float:
         """
         Sets the Gibbs free energy of the system.
@@ -427,9 +427,9 @@ class Properties:
         ---------
         value: float
             The Gibbs free energy of the system in Hartree.
-        electronic_engine: Union(Engine, str)
+        electronic_engine: Union[Engine, str]
             The engine used in the electronic calculation.
-        vibronic_engine: Union(Engine, str)
+        vibronic_engine: Union[Engine, str]
             The engine used in the vibronic calculation.
         """
         logger.debug("setting Gibbs free energy")
@@ -452,8 +452,8 @@ class Properties:
     def set_pka(
         self,
         value: float,
-        electronic_engine: Union(Engine, str),
-        vibronic_engine: Union(Engine, str) = None,
+        electronic_engine: Union[Engine, str],
+        vibronic_engine: Union[Engine, str] = None,
     ) -> float:
         """
         Sets the pKa of the system.
@@ -462,9 +462,9 @@ class Properties:
         ---------
         value: float
             The pKa of the system.
-        electronic_engine: Union(Engine, str)
+        electronic_engine: Union[Engine, str]
             The engine used in the electronic calculation.
-        vibronic_engine: Union(Engine, str)
+        vibronic_engine: Union[Engine, str]
             The engine used in the vibronic calculation. (optional)
         """
         logger.debug("Setting pKa")
@@ -485,7 +485,7 @@ class Properties:
         """
         return self.__mulliken_charges
 
-    def set_mulliken_charges(self, value: List[float], electronic_engine: Union(Engine, str)) -> None:
+    def set_mulliken_charges(self, value: List[float], electronic_engine: Union[Engine, str]) -> None:
         """
         Sets the Mulliken charges of the system.
 
@@ -493,7 +493,7 @@ class Properties:
         ---------
         value: float
             The list of Mulliken charges associated to each atom of the system.
-        electronic_engine: Union(Engine, str)
+        electronic_engine: Union[Engine, str]
             The engine used in the electronic calculation.
         """
         logger.debug("Setting Mulliken charges")
@@ -512,7 +512,7 @@ class Properties:
         """
         return self.__mulliken_spin_populations
 
-    def set_mulliken_spin_populations(self, value: List[float], electronic_engine: Union(Engine, str)) -> None:
+    def set_mulliken_spin_populations(self, value: List[float], electronic_engine: Union[Engine, str]) -> None:
         """
         Sets the Mulliken spin populations of the system.
 
@@ -520,7 +520,7 @@ class Properties:
         ---------
         value: float
             The list of Mulliken spin populations associated to each atom of the system.
-        electronic_engine: Union(Engine, str)
+        electronic_engine: Union[Engine, str]
             The engine used in the electronic calculation.
         """
         logger.debug("Setting Mulliken Spin populations")
@@ -542,7 +542,7 @@ class Properties:
         return self.__condensed_fukui_mulliken
 
     def set_condensed_fukui_mulliken(
-        self, value: Dict[str, List[float]], electronic_engine: Union(Engine, str)
+        self, value: Dict[str, List[float]], electronic_engine: Union[Engine, str]
     ) -> None:
         """
         Sets condensed Fukui values computed from the Mulliken charges.
@@ -553,7 +553,7 @@ class Properties:
             The dictionaty containing the list of condensed Fukui values computed for each
             atom in the system starting from the values of the Mulliken charges. The functions
             are stored in the dictionary according to the `f+`, `f-` and `f0` keys.
-        electronic_engine: Union(Engine, str)
+        electronic_engine: Union[Engine, str]
             The engine used in the electronic calculation.
         """
         logger.debug("Setting condensed Fukui functions (Mulliken)")
@@ -572,7 +572,7 @@ class Properties:
         """
         return self.__hirshfeld_charges
 
-    def set_hirshfeld_charges(self, value: List[float], electronic_engine: Union(Engine, str)) -> None:
+    def set_hirshfeld_charges(self, value: List[float], electronic_engine: Union[Engine, str]) -> None:
         """
         Sets the Hirshfeld charges of the system.
 
@@ -580,7 +580,7 @@ class Properties:
         ---------
         value: float
             The list of Hirshfeld charges associated to each atom of the system.
-        electronic_engine: Union(Engine, str)
+        electronic_engine: Union[Engine, str]
             The engine used in the electronic calculation.
         """
         logger.debug("Setting Hirshfeld charges")
@@ -599,7 +599,7 @@ class Properties:
         """
         return self.__hirshfeld_spin_populations
 
-    def set_hirshfeld_spin_populations(self, value: List[float], electronic_engine: Union(Engine, str)) -> None:
+    def set_hirshfeld_spin_populations(self, value: List[float], electronic_engine: Union[Engine, str]) -> None:
         """
         Sets the Hirshfeld spin populations of the system.
 
@@ -607,7 +607,7 @@ class Properties:
         ---------
         value: float
             The list of Hirshfeld spin populations associated to each atom of the system.
-        electronic_engine: Union(Engine, str)
+        electronic_engine: Union[Engine, str]
             The engine used in the electronic calculation.
         """
         logger.debug("Setting Hirshfeld Spin populations")
@@ -629,7 +629,7 @@ class Properties:
         return self.__condensed_fukui_hirshfeld
 
     def set_condensed_fukui_hirshfeld(
-        self, value: Dict[str, List[float]], electronic_engine: Union(Engine, str)
+        self, value: Dict[str, List[float]], electronic_engine: Union[Engine, str]
     ) -> None:
         """
         Sets condensed Fukui values computed from the Hirshfeld charges.
@@ -640,7 +640,7 @@ class Properties:
             The dictionaty containing the list of condensed Fukui values computed for each
             atom in the system starting from the values of the Hirshfeld charges. The functions
             are stored in the dictionary according to the `f+`, `f-` and `f0` keys.
-        electronic_engine: Union(Engine, str)
+        electronic_engine: Union[Engine, str]
             The engine used in the electronic calculation.
         """
         logger.debug("Setting condensed Fukui functions (Hirshfeld)")
@@ -662,7 +662,7 @@ class Properties:
     def set_vibrational_data(
         self,
         value: VibrationalData,
-        vibronic_engine: Union(Engine, str),
+        vibronic_engine: Union[Engine, str],
     ) -> None:
         """
         Sets condensed Fukui values computed from the Hirshfeld charges.
@@ -671,7 +671,7 @@ class Properties:
         ---------
         value: VibrationalData
             The class encoding all the vibrational data associated to the molecule
-        vibronic_engine: Union(Engine, str)
+        vibronic_engine: Union[Engine, str]
             The engine used in the vibronic calculation.
         """
         logger.debug("Setting vibrational data")
