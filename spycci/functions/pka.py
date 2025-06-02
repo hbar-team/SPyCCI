@@ -12,6 +12,120 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+def _check_structure_acid_base_pair(protonated: System, deprotonated: System) -> None:
+    """
+    Checks if the provided `protonated` and `deprotonated` objects are compatible with each other and
+    with a pKa calculation. If validation fails an exception is raised.
+
+    Parameters
+    ----------
+    protonated : System object
+        The molecule in the protonated form
+    deprotonated : System object
+        The molecule in the deprotonated form
+
+    Raises
+    ------
+    TypeError
+        Exception raised if either of the objects type is different from `System`
+    RuntimeError
+        Excpetion raised if the atom count and charge variation are not compatible.
+    """
+    # Check if the objects are instances of `System`
+    if type(protonated) == Ensemble or type(deprotonated) == Ensemble:
+        msg = "The calculation of pKa for Ensemble objects is currently not supported."
+        logger.error(msg)
+        raise TypeError(msg)
+    elif type(protonated) != System or type(deprotonated) != System:
+        msg = "The calculation of pKa requires System type arguments."
+        logger.error(msg)
+        raise TypeError(msg)
+
+    # Check that the atomcount of the two molecules matches
+    if protonated.geometry.atomcount - deprotonated.geometry.atomcount != 1:
+        msg = f"{protonated.name} deprotomer differs for more than 1 atom."
+        logger.error(msg)
+        raise RuntimeError(msg)
+
+    # Check that the molecular charge of the deprotomer is 1 unit less than the protonated one
+    if deprotonated.charge - protonated.charge != -1:
+        msg = f"{protonated.name} deprotomer differs for more than 1 unit of charge."
+        logger.error(msg)
+        raise RuntimeError(msg)
+
+
+def _validate_acid_base_pair(protonated: System, deprotonated: System) -> bool:
+    """
+    Checks if the provided `protonated` and `deprotonated` objects are compatible with each other and
+    with a pKa calculation and verify the matching between levels of theory used in the computation.
+    If validation fails an exception is raised. The function returns a bool value correspondent to the
+    availability of vibronic calculations.
+
+    Parameters
+    ----------
+    protonated : System object
+        The molecule in the protonated form
+    deprotonated : System object
+        The molecule in the deprotonated form
+
+    Raises
+    ------
+    TypeError
+        Exception raised if either of the objects type is different from `System`
+    RuntimeError
+        Excpetion raised if the electronic level of theory is not found
+
+    Returns
+    -------
+    bool
+        True if the two system have appropriate and matching vibronic levels of theory. False otherwise.
+    """
+    # Check the provided structures for type, atomcount and charge
+    _check_structure_acid_base_pair(protonated, deprotonated)
+
+    # Check that both the speces have an electronic energy value associated
+    if protonated.properties.electronic_energy is None:
+        msg = "Electronic energy not found for protonated molecule."
+        logger.error(msg)
+        raise RuntimeError(msg)
+
+    if deprotonated.properties.electronic_energy is None:
+        msg = "Electronic energy not found for deprotonated molecule."
+        logger.error(msg)
+        raise RuntimeError(msg)
+
+    # Check if the electronic level of theory for both molecules match
+    elot_protonated = protonated.properties.level_of_theory_electronic
+    elot_deprotonated = deprotonated.properties.level_of_theory_electronic
+    if elot_protonated != elot_deprotonated:
+        print(elot_protonated)
+        print(elot_deprotonated)
+        msg = "Mismatch found between electronic levels of theory."
+        logger.error(msg)
+        raise RuntimeError(msg)
+
+    # Check if both speces have matching vibronic energy values associated
+    if (
+        protonated.properties.vibronic_energy is not None
+        and protonated.properties.level_of_theory_vibronic
+        == deprotonated.properties.level_of_theory_vibronic
+    ):
+
+        if elot_protonated != protonated.properties.level_of_theory_vibronic:
+            logger.warning(
+                f"Vibronic level of theory ({protonated.properties.level_of_theory_vibronic}) is different form the electronic one ({elot_protonated}). The pKa calculation will be executed anyway."
+            )
+
+        return True
+
+    else:
+        logger.warning(
+            "Vibronic energies not found. The pKa calculation will be executed with only electronic energies"
+        )
+
+        return False
+
+
 def calculate_pka(protonated: System, deprotonated: System):
     """
     Calculates the pKa of a molecule, given the protonated and deprotonated forms assuming
@@ -24,71 +138,30 @@ def calculate_pka(protonated: System, deprotonated: System):
     deprotonated : System object
         molecule in the deprotonated form
 
-    Raises
-    ------
-    TypeError
-        Exception raised if either protonated or deprotonated molecules are Ensembles
-    RuntimeError
-        Exception raised if the difference in number of atoms between protonated and
-        deprotonated species is different from 1 or if a mismatch is detected between electronic
-        levels of theory.
-
     Returns
     -------
     pKa : float
         pKa of the molecule.
     """
 
-    if type(protonated) == Ensemble or type(deprotonated) == Ensemble:
-        logger.error(
-            "Calculating pKa for Ensemble instead of System. Currently not supported."
-        )
-        raise TypeError(
-            "Calculating pKa for Ensemble instead of System. Currently not supported."
-        )
+    # Validate systems and check if vibronic energies are available
+    with_vibronic = _validate_acid_base_pair(protonated, deprotonated)
 
-    if protonated.geometry.atomcount - deprotonated.geometry.atomcount != 1:
-        logger.error(f"{protonated.name} deprotomer differs for more than 1 atom.")
-        raise RuntimeError(f"{protonated.name} deprotomer differs for more than 1 atom.")
-
-    if deprotonated.charge - protonated.charge != -1:
-        logger.error(
-            f"{protonated.name} deprotomer differs for more than 1 unit of charge."
-        )
-        raise RuntimeError(
-            f"{protonated.name} deprotomer differs for more than 1 unit of charge."
-        )
-
-    if (
-        protonated.properties.electronic_energy is None
-        or deprotonated.properties.electronic_energy is None
-    ):
-        raise RuntimeError("Electronic energies not found. Cannot calculate pKa.")
-
-    if (
-        protonated.properties.level_of_theory_electronic
-        != deprotonated.properties.level_of_theory_electronic
-    ):
-        raise RuntimeError(
-            "Mismatch found between electronic levels of theory. Cannot calculate pKa."
-        )
-
+    # Extract electronic energies
     protonated_energy = protonated.properties.electronic_energy * Eh_to_kcalmol
     deprotonated_energy = deprotonated.properties.electronic_energy * Eh_to_kcalmol
 
-    if (
-        protonated.properties.level_of_theory_vibronic is not None
-        and protonated.properties.level_of_theory_vibronic
-        == deprotonated.properties.level_of_theory_vibronic
-    ):
+    # If available consider vibronic energies
+    if with_vibronic:
         protonated_energy += protonated.properties.vibronic_energy * Eh_to_kcalmol
         deprotonated_energy += deprotonated.properties.vibronic_energy * Eh_to_kcalmol
 
+    # If gfn2 from xTB is used consider an additional correction factor for the proton self energy
     proton_self_energy = 0
-
     if "gfn2" in protonated.properties.level_of_theory_electronic:
         proton_self_energy = 164.22  # kcal/mol
 
+    # Compute the pKa and set it as a property of the protonated molecule
     pka = (
         (
             deprotonated_energy
@@ -163,7 +236,9 @@ def auto_calculate_pka(
                 dummy.properties.vibronic_energy, method_vib
             )
 
-    deprotomers = deprotonate(protonated, ncores=ncores, maxcore=maxcore, solvent="water")
+    deprotomers = deprotonate(
+        protonated, ncores=ncores, maxcore=maxcore, solvent="water"
+    )
     ordered_deprotomers = reorder_energies(
         deprotomers.systems,
         ncores=ncores,
