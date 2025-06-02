@@ -1853,6 +1853,7 @@ class OrcaInput(Engine):
             logger.debug(f"Running Orca with command: {cmd}")
             os.system(cmd)
 
+            solvation_free_energy = None
             with open("output.out", "r") as outfile:
                 for line in outfile:
                     if "Free energy of solvation (dGsolv)" in line:
