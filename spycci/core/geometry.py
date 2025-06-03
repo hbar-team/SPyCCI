@@ -244,7 +244,7 @@ class MolecularGeometry:
             for atom, position in zip(self.__atoms, self.__coordinates):
                 file.write(atom)
                 for xi in position:
-                    file.write(f"\t{xi:.10f}")
+                    file.write(f"    {xi:.10f}")
                 file.write("\n")
 
     @property

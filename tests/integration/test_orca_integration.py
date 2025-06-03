@@ -877,3 +877,54 @@ def test_OrcaInput_neb_ts_with_guess():
     assert_almost_equal(transition_state.properties.electronic_energy, -153.434522931481, decimal=6)
 
     rmtree("output_files")
+
+
+# Test the OrcaInput COSMO-RS function using default settings using built-in water solvent model
+def test_cosmors_simple():
+    
+    acetone = System(f"{TEST_DIR}/utils/xyz_files/acetone.xyz", charge=0, spin=1)
+    orca = OrcaInput(method="PBE", basis_set="def2-TZVP", solvent="water")
+
+    try:
+        G_solvation = orca.cosmors(acetone, solvent="water", ncores=4)
+
+    except:
+        assert False, "Unexpected exception raised during COSMO-RS calculation"
+
+    assert_almost_equal(G_solvation, -0.006613993346, decimal=6)
+
+    rmtree("output_files")
+
+
+# Test the OrcaInput COSMO-RS function using engine level of theory and  built-in water solvent model
+def test_cosmors_engine_settings():
+
+    acetone = System(f"{TEST_DIR}/utils/xyz_files/acetone.xyz", charge=0, spin=1)
+    orca = OrcaInput(method="PBE", basis_set="def2-TZVP", solvent="water")
+
+    try:
+        G_solvation = orca.cosmors(acetone, solvent="water", use_engine_settings=True, ncores=4)
+
+    except:
+        assert False, "Unexpected exception raised during COSMO-RS calculation"
+
+    assert_almost_equal(G_solvation, -0.005607684396, decimal=6)
+    rmtree("output_files")
+
+
+# Test the OrcaInput COSMO-RS function using default settings using external solvent file
+def test_cosmors_solventfile():
+
+    acetone = System(f"{TEST_DIR}/utils/xyz_files/acetone.xyz", charge=0, spin=1)
+    orca = OrcaInput()
+
+    try:
+        solventfile = f"{TEST_DIR}/utils/xyz_files/water.cosmorsxyz"
+        G_solvation = orca.cosmors(acetone, solventfile=solventfile, ncores=4)
+
+    except:
+        assert False, "Unexpected exception raised during COSMO-RS calculation"
+
+    assert_almost_equal(G_solvation, -0.006626234385, decimal=6)
+
+    rmtree("output_files")
