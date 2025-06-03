@@ -507,7 +507,7 @@ class OrcaInput(Engine):
         SMD solvent, by default None
     optionals : str, optional
         optional keywords, by default ""
-    blocks : Dict[str, Dict[str, Any]]
+    blocks: Optional[Dict[str, Dict[str, Any]]]
         The dictionary of dictionaries encoding a series of custom blocks defined by the user
     ORCADIR: str, optional
         the path or environment variable containing the path to the ORCA folder. If set
@@ -529,7 +529,7 @@ class OrcaInput(Engine):
         aux_basis: str = "def2/J",
         solvent: str = None,
         optionals: str = "",
-        blocks: Dict[str, Dict[str, Any]] = {},
+        blocks: Optional[Dict[str, Dict[str, Any]]] = None,
         ORCADIR: str = None,
     ) -> None:
         super().__init__(method)
@@ -538,7 +538,7 @@ class OrcaInput(Engine):
         self.aux_basis = aux_basis if aux_basis else ""
         self.solvent = solvent
         self.optionals = optionals
-        self.blocks = blocks
+        self.blocks = blocks if blocks else {}
         self.__ORCADIR = ORCADIR if ORCADIR else locate_orca(get_folder=True)
 
         self.level_of_theory += f""" | basis: {basis_set} | solvent: {solvent}"""
@@ -667,7 +667,7 @@ class OrcaInput(Engine):
         hirshfeld: bool = False,
         inplace: bool = False,
         remove_tdir: bool = True,
-        blocks: Dict[str, Dict[str, Any]] = {},
+        blocks: Optional[Dict[str, Dict[str, Any]]] = None,
     ):
         """
         Single point energy calculation.
@@ -692,7 +692,7 @@ class OrcaInput(Engine):
             by default False
         remove_tdir : bool, optional
             temporary work directory will be removed, by default True
-        blocks : Dict[str, Dict[str, Any]]
+        blocks : Optional[Dict[str, Dict[str, Any]]]
             The dictionary of dictionaries encoding a series of custom blocks defined by the user. If set to a non-empty
             value, will overvrite the block option eventually set on the `OrcaInput` class construction
 
@@ -717,7 +717,6 @@ class OrcaInput(Engine):
 
         In doing so, the molecule ``mol`` will be updated with the computed energy without returning anything.
         """
-
         logger.info(f"{mol.name}, charge {mol.charge} spin {mol.spin} - {self.method} SPE")
 
         tdir = mkdtemp(
@@ -734,7 +733,7 @@ class OrcaInput(Engine):
             job_info.solvent = self.solvent
             job_info.cube_dim = None if save_cubes is False else cube_dim
             job_info.hirshfeld = hirshfeld
-            job_info.user_blocks = blocks if blocks != {} else self.blocks
+            job_info.user_blocks = blocks if blocks else self.blocks
 
             self.write_input(mol=mol, job_info=job_info)
 
@@ -770,7 +769,7 @@ class OrcaInput(Engine):
         remove_tdir: bool = True,
         optimization_level: Optional[str] = None,
         frequency_analysis: bool = True,
-        blocks: Dict[str, Dict[str, Any]] = {},
+        blocks: Optional[Dict[str, Dict[str, Any]]] = None,
     ):
         """
         Geometry optimization + frequency analysis.
@@ -800,7 +799,7 @@ class OrcaInput(Engine):
         frequency_analysis: bool
             If set to True (default) will also compute the vibration modes of the molecule and the frequencies. If the
             optimization is run in solvent, it will automatically switch to numerical frequencies.
-        blocks : Dict[str, Dict[str, Any]]
+        blocks : Optional[Dict[str, Dict[str, Any]]]
             The dictionary of dictionaries encoding a series of custom blocks defined by the user. If set to a non-empty
             value, will overvrite the block option eventually set on the `OrcaInput` class construction
 
@@ -849,7 +848,7 @@ class OrcaInput(Engine):
             job_info.cube_dim = None if save_cubes is False else cube_dim
             job_info.hirshfeld = hirshfeld
             job_info.optimization_level = optimization_level
-            job_info.user_blocks = blocks if blocks != {} else self.blocks
+            job_info.user_blocks = blocks if blocks else self.blocks
 
             self.write_input(mol=mol, job_info=job_info)
 
@@ -890,7 +889,7 @@ class OrcaInput(Engine):
         convergence_strategy: Optional[str] = "SLOWCONV",
         calculate_hessian: bool = True,
         frequency_analysis: bool = True,
-        blocks: Dict[str, Dict[str, Any]] = {},
+        blocks: Optional[Dict[str, Dict[str, Any]]] = None,
     ):
         """
         Transition state optimization + frequency analysis.
@@ -924,7 +923,7 @@ class OrcaInput(Engine):
         frequency_analysis: bool
             If set to True (default) will also compute the vibration modes of the molecule and the frequencies. If the
             optimization is run in solvent, it will automatically switch to numerical frequencies.
-        blocks : Dict[str, Dict[str, Any]]
+        blocks : Optional[Dict[str, Dict[str, Any]]]
             The dictionary of dictionaries encoding a series of custom blocks defined by the user. If set to a non-empty
             value, will overvrite the block option eventually set on the `OrcaInput` class construction
 
@@ -979,7 +978,7 @@ class OrcaInput(Engine):
             job_info.hirshfeld = hirshfeld
             job_info.scf_convergence_level = scf_convergence_level
             job_info.scf_convergence_strategy = convergence_strategy
-            job_info.user_blocks = blocks if blocks != {} else self.blocks
+            job_info.user_blocks = blocks if blocks else self.blocks
 
             self.write_input(mol=mol, job_info=job_info)
 
@@ -1015,7 +1014,7 @@ class OrcaInput(Engine):
         remove_tdir: bool = True,
         raman: bool = False,
         overtones: bool = False,
-        blocks: Dict[str, Dict[str, Any]] = {},
+        blocks: Optional[Dict[str, Dict[str, Any]]] = None,
     ):
         """
         Frequency analysis (analytical frequencies).
@@ -1041,7 +1040,7 @@ class OrcaInput(Engine):
         overtones: bool
             If set to True will enable the computation of infrared overtones and combination
             bands. (default: False)
-        blocks : Dict[str, Dict[str, Any]]
+        blocks : Optional[Dict[str, Dict[str, Any]]]
             The dictionary of dictionaries encoding a series of custom blocks defined by the user. If set to a non-empty
             value, will overvrite the block option eventually set on the `OrcaInput` class construction
 
@@ -1085,7 +1084,7 @@ class OrcaInput(Engine):
             job_info.freq = True
             job_info.raman = raman
             job_info.nearir = overtones
-            job_info.user_blocks = blocks if blocks != {} else self.blocks
+            job_info.user_blocks = blocks if blocks else self.blocks
 
             self.write_input(mol=mol, job_info=job_info)
 
@@ -1118,7 +1117,7 @@ class OrcaInput(Engine):
         remove_tdir: bool = True,
         raman: bool = False,
         overtones: bool = False,
-        blocks: Dict[str, Dict[str, Any]] = {},
+        blocks: Optional[Dict[str, Dict[str, Any]]] = None,
     ):
         """
         Frequency analysis (numerical frequencies).
@@ -1141,7 +1140,7 @@ class OrcaInput(Engine):
         overtones: bool
             Is set to True will enable the computation of infrared overtones and combination
             bands.
-        blocks : Dict[str, Dict[str, Any]]
+        blocks : Optional[Dict[str, Dict[str, Any]]]
             The dictionary of dictionaries encoding a series of custom blocks defined by the user. If set to a non-empty
             value, will overvrite the block option eventually set on the `OrcaInput` class construction
 
@@ -1183,7 +1182,7 @@ class OrcaInput(Engine):
             job_info.nfreq = True
             job_info.raman = raman
             job_info.nearir = overtones
-            job_info.user_blocks = blocks if blocks != {} else self.blocks
+            job_info.user_blocks = blocks if blocks else self.blocks
 
             self.write_input(mol=mol, job_info=job_info)
 
@@ -1215,7 +1214,7 @@ class OrcaInput(Engine):
         ncores: int = None,
         maxcore: int = 750,
         remove_tdir: bool = True,
-        blocks: Dict[str, Dict[str, Any]] = {},
+        blocks: Optional[Dict[str, Dict[str, Any]]] = None,
     ):
         """
         Relaxed surface scan.
@@ -1236,7 +1235,7 @@ class OrcaInput(Engine):
             memory per core, in MB, by default 750
         remove_tdir : bool, optional
             temporary work directory will be removed, by default True
-        blocks : Dict[str, Dict[str, Any]]
+        blocks : Optional[Dict[str, Dict[str, Any]]]
             The dictionary of dictionaries encoding a series of custom blocks defined by the user. If set to a non-empty
             value, will overvrite the block option eventually set on the `OrcaInput` class construction
 
@@ -1276,7 +1275,7 @@ class OrcaInput(Engine):
             job_info.scan = scan
             job_info.constraints = constraints
             job_info.invert_constraints = invertconstraints
-            job_info.user_blocks = blocks if blocks != {} else self.blocks
+            job_info.user_blocks = blocks if blocks else self.blocks
 
             self.write_input(mol=mol, job_info=job_info)
 
@@ -1339,7 +1338,7 @@ class OrcaInput(Engine):
         maxcore: int = 750,
         inplace: bool = False,
         remove_tdir: bool = True,
-        blocks: Dict[str, Dict[str, Any]] = {},
+        blocks: Optional[Dict[str, Dict[str, Any]]] = None,
     ):
         """
         Relaxed surface scan based transition state search.
@@ -1373,7 +1372,7 @@ class OrcaInput(Engine):
             an Ensemble object encoding the explored scan steps.
         remove_tdir : bool, optional
             temporary work directory will be removed, by default True
-        blocks : Dict[str, Dict[str, Any]]
+        blocks : Optional[Dict[str, Dict[str, Any]]]
             The dictionary of dictionaries encoding a series of custom blocks defined by the user. If set to a non-empty
             value, will overvrite the block option eventually set on the `OrcaInput` class construction
 
@@ -1421,7 +1420,7 @@ class OrcaInput(Engine):
             job_info.invert_constraints = invertconstraints
             job_info.scf_convergence_level = scf_convergence_level
             job_info.scf_convergence_strategy = convergence_strategy
-            job_info.user_blocks = blocks if blocks != {} else self.blocks
+            job_info.user_blocks = blocks if blocks else self.blocks
 
             self.write_input(mol=mol, job_info=job_info)
 
@@ -1494,7 +1493,7 @@ class OrcaInput(Engine):
         ncores: int = None,
         maxcore: int = 750,
         remove_tdir: bool = True,
-        blocks: Dict[str, Dict[str, Any]] = {},
+        blocks: Optional[Dict[str, Dict[str, Any]]] = None,
     ) -> Ensemble:
         """
         Run a climbing image nudged elastic band calculation (NEB-CI) and output the ensemble encoding the optimized
@@ -1516,7 +1515,7 @@ class OrcaInput(Engine):
             memory per core, in MB, by default 750
         remove_tdir : bool, optional
             temporary work directory will be removed, by default True
-        blocks : Dict[str, Dict[str, Any]]
+        blocks : Optional[Dict[str, Dict[str, Any]]]
             The dictionary of dictionaries encoding a series of custom blocks defined by the user. If set to a non-empty
             value, will overvrite the block option eventually set on the `OrcaInput` class construction
         
@@ -1579,7 +1578,7 @@ class OrcaInput(Engine):
             job_info.neb_images = nimages
             job_info.neb_preopt = preoptimize
             
-            job_info.user_blocks = blocks if blocks != {} else self.blocks
+            job_info.user_blocks = blocks if blocks else self.blocks
 
             self.write_input(mol=reactant, job_info=job_info)
 
@@ -1606,7 +1605,7 @@ class OrcaInput(Engine):
         ncores: int = None,
         maxcore: int = 750,
         remove_tdir: bool = True,
-        blocks: Dict[str, Dict[str, Any]] = {},
+        blocks: Optional[Dict[str, Dict[str, Any]]] = None,
     ) -> Tuple[System, Ensemble]:
         """
         Run a climbing image nudged elastic band calculation (NEB-CI) followed by a transition state optimization
@@ -1631,7 +1630,7 @@ class OrcaInput(Engine):
             memory per core, in MB, by default 750.
         remove_tdir : bool, optional
             temporary work directory will be removed, by default True.
-        blocks : Dict[str, Dict[str, Any]]
+        blocks : Optional[Dict[str, Dict[str, Any]]]
             The dictionary of dictionaries encoding a series of custom blocks defined by the user. If set to a non-empty
             value, will overvrite the block option eventually set on the `OrcaInput` class construction.
         
@@ -1726,7 +1725,7 @@ class OrcaInput(Engine):
             job_info.neb_images = nimages
             job_info.neb_preopt = preoptimize
             
-            job_info.user_blocks = blocks if blocks != {} else self.blocks
+            job_info.user_blocks = blocks if blocks else self.blocks
 
             self.write_input(mol=reactant, job_info=job_info)
 
@@ -1752,14 +1751,14 @@ class OrcaInput(Engine):
     def cosmors(
         self, 
         mol: System,
-        solvent: Union[str, None],
+        solvent: Optional[str] = None,
         solventfile: Optional[str] = None,
         use_engine_settings: bool = False,
         ncores: int = None,
         maxcore: int = 750,
         remove_tdir: bool = True,
-        blocks: Dict[str, Dict[str, Any]] = {}
-        ):
+        blocks: Optional[Dict[str, Dict[str, Any]]] = None,
+        ) -> float:
 
         """
         COSMO-RS calculation using OpenCOSMO-RS. (Requires orca 6.0.0 or above)
@@ -1768,9 +1767,8 @@ class OrcaInput(Engine):
         ----------
         mol : System
             input molecule to use in the calculation
-        solvent: Union[str, None]
+        solvent: Optional[str]
             The name of the solvent to be used in the calculation (if internal model is available). 
-            If not used the user must manually set the variable to `None`.
         solventfile: Optional[str]
             The `.cosmorsxyz` file containing the structure of the solvent (only required if solvent is `None`)
         use_engine_settings: bool
@@ -1782,7 +1780,7 @@ class OrcaInput(Engine):
             memory per core, in MB, by default 750
         remove_tdir : bool, optional
             temporary work directory will be removed, by default True
-        blocks : Dict[str, Dict[str, Any]]
+        blocks : Optional[Dict[str, Dict[str, Any]]]
             The dictionary of dictionaries encoding a series of custom blocks defined by the user. If set to a non-empty
             value, will overvrite the block option eventually set on the `OrcaInput` class construction
 
@@ -1796,6 +1794,9 @@ class OrcaInput(Engine):
             logger.warning("OpenCOSMO-RS has been parametrized using BP86/def2-TZVPD, running calculations with other levels of theory is not advisable.")
         else:
             logger.info(f"{mol.name}, charge {mol.charge} spin {mol.spin} - BP86/def2-TZVPD COSMO-RS")
+        
+        if blocks is None:
+            blocks = {}
 
         # Check if the available version of orca is >= 6.0.0
         orca_version = None
@@ -1829,14 +1830,14 @@ class OrcaInput(Engine):
             # Copy the solvent file to the teporary directory
             solventname = basename(solventfile).split(".")[0]
             shutil.copy(solventfile, join(tdir, f"{solventname}.cosmorsxyz"))
-            cosmors_block["solventfilename"] = f"{solventname}.cosmorsxyz"
+            cosmors_block["solventfilename"] = f'"{solventname}"'
 
         else:
             raise ValueError("Cannot run COSMO-RS calculation with neither solvent name or structure file.")
         
         if use_engine_settings:
-            cosmors_block["dftfunc"] = self.method
-            cosmors_block["dftbas"] = self.basis_set
+            cosmors_block["dftfunc"] = f'"{self.method}"'
+            cosmors_block["dftbas"] = f'"{self.basis_set}"'
 
         blocks["cosmors"] = cosmors_block
 
@@ -1845,7 +1846,7 @@ class OrcaInput(Engine):
             job_info.ncores = ncores
             job_info.maxcore = maxcore
             job_info.is_singlet = True if mol.spin == 1 else False
-            job_info.user_blocks = blocks if blocks != {} else self.blocks
+            job_info.user_blocks = blocks if blocks else self.blocks
 
             self.write_input(mol=mol, job_info=job_info)
 
