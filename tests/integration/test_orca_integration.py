@@ -3,6 +3,7 @@ import pytest
 from spycci.engines.orca import OrcaInput
 from spycci.systems import System, Ensemble
 from spycci.tools.externalutilities import split_multixyz
+from spycci.core.dependency_finder import find_orca_version
 
 from os import listdir
 from os.path import dirname, abspath, isfile
@@ -15,6 +16,9 @@ from numpy.testing import assert_array_almost_equal, assert_almost_equal
 # Get the path of the tests directory
 TEST_DIR = dirname(abspath(__file__))
 
+# Define an helper function to mark the tests to skip based on orca version
+def find_orca_major_version():
+    return int(find_orca_version().split(".")[0])
 
 # Test the OrcaInput class constructor
 def test_OrcaInput___init__():
@@ -875,5 +879,59 @@ def test_OrcaInput_neb_ts_with_guess():
 
     assert_array_almost_equal(transition_state.geometry.coordinates, expected_TS_geometry, decimal=6)
     assert_almost_equal(transition_state.properties.electronic_energy, -153.434522931481, decimal=6)
+
+    rmtree("output_files")
+
+
+# Test the OrcaInput COSMO-RS function using default settings using built-in water solvent model
+@pytest.mark.skipif(find_orca_major_version() < 6, reason="Requires orca>=6.0.0")
+def test_cosmors_simple():
+    
+    acetone = System(f"{TEST_DIR}/utils/xyz_files/acetone.xyz", charge=0, spin=1)
+    orca = OrcaInput(method="PBE", basis_set="def2-TZVP", solvent="water")
+
+    try:
+        G_solvation = orca.cosmors(acetone, solvent="water", ncores=4)
+
+    except:
+        assert False, "Unexpected exception raised during COSMO-RS calculation"
+
+    assert_almost_equal(G_solvation, -0.006613993346, decimal=6)
+
+    rmtree("output_files")
+
+
+# Test the OrcaInput COSMO-RS function using engine level of theory and  built-in water solvent model
+@pytest.mark.skipif(find_orca_major_version() < 6, reason="Requires orca>=6.0.0")
+def test_cosmors_engine_settings():
+
+    acetone = System(f"{TEST_DIR}/utils/xyz_files/acetone.xyz", charge=0, spin=1)
+    orca = OrcaInput(method="PBE", basis_set="def2-TZVP", solvent="water")
+
+    try:
+        G_solvation = orca.cosmors(acetone, solvent="water", use_engine_settings=True, ncores=4)
+
+    except:
+        assert False, "Unexpected exception raised during COSMO-RS calculation"
+
+    assert_almost_equal(G_solvation, -0.005607684396, decimal=6)
+    rmtree("output_files")
+
+
+# Test the OrcaInput COSMO-RS function using default settings using external solvent file
+@pytest.mark.skipif(find_orca_major_version() < 6, reason="Requires orca>=6.0.0")
+def test_cosmors_solventfile():
+
+    acetone = System(f"{TEST_DIR}/utils/xyz_files/acetone.xyz", charge=0, spin=1)
+    orca = OrcaInput()
+
+    try:
+        solventfile = f"{TEST_DIR}/utils/xyz_files/water.cosmorsxyz"
+        G_solvation = orca.cosmors(acetone, solventfile=solventfile, ncores=4)
+
+    except:
+        assert False, "Unexpected exception raised during COSMO-RS calculation"
+
+    assert_almost_equal(G_solvation, -0.006626234385, decimal=6)
 
     rmtree("output_files")
