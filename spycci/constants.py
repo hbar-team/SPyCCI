@@ -231,9 +231,11 @@ atomic_masses = {
 
 ## Tabulated constants
 kB = 3.167e-6  # Boltzmann constant in Eh/K
+R = 8.31446261815324 # Universal gas constant in J/(kg*mol)
 avogadro = 6.0221408e23 # Avogadro's number
 
 proton_hydration_free_energy = -270.29 # Proton solvation free energy in water (kcal/mol)
 
 ## Collection of conversion factors
 Eh_to_kcalmol = 627.5
+kcal_to_J = 4184.
