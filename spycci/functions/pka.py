@@ -1,4 +1,8 @@
-from typing import Union, Optional
+import logging, sh, shutil, os
+from tempfile import mkdtemp
+from copy import deepcopy
+from typing import Union, Optional, Dict, Tuple
+
 from spycci.systems import Ensemble
 from spycci.systems import System
 from spycci.core.base import Engine
@@ -8,10 +12,6 @@ from spycci.wrappers.crest import deprotonate
 from spycci.tools.reorderenergies import reorder_energies
 
 import spycci.constants as scon
-
-import logging, sh, shutil, os
-from tempfile import mkdtemp
-
 import numpy as np
 
 logger = logging.getLogger(__name__)
@@ -306,9 +306,47 @@ def run_pKa_workflow(
     deprotonated: System,
     method_geometry: Union[XtbInput, OrcaInput],
     method_energy: Union[XtbInput, OrcaInput],
-    ncores: int = None,
+    use_cosmors: bool = False,
+    ncores: Optional[int] = None,
     maxcore: int = 350,
-) -> dict:
+) -> Tuple[Dict[str, float], Dict[str, float]]:
+    """
+    The function runs a complete pKa workflow and retuns the pKa computed with different schemes and
+    all the computed free energies. The method runs a geometry optimization of both the protonated and
+    deprotonated species in solvent (water). On the obtained geometries a frequecy calculation is carried
+    out to compute the Gibbs free energies for all the species. Water and Oxonium ion are automatically
+    generated and optimized. The function then computes the pKa using the direct scheme and the oxonium 
+    scheme. If the `use_cosmors` option is used, the function also computes frequencies in vacuum and
+    solvation free energies using OpenCOSMO-RS interface (requires orca>=6.0.0). The COSMO-RS calculation
+    are then used to obtain the corresponding pKa using the oxonium method.
+
+    Arguments
+    ---------
+    protonated : System
+        The protonated system for which the pKa must be computed
+    deprotonated : System
+        The deprotomer generated during the dissociation reaction
+    method_geometry : Union[XtbInput, OrcaInput]
+        The engine to be used to run the geometry optimizations
+    method_energy : Union[XtbInput, OrcaInput]
+        The engine to be used to run the energy/frequency calculations
+    use_cosmors : bool
+        If set to `True` will use OpenCOSMO-RS to compute solvation energies
+    ncores : Optional[int]
+        The number of cores to be used in the calculations. If set to `None` (default) will use
+        the maximun number of available cores.
+    maxcore: int (optional)
+        For the engines that supprots it, the memory assigned to each core used in the
+        computation.
+
+    Retruns
+    -------
+    Dict[str, float]
+        The dictionary containing all the computed pKa labelled by the name of the scheme employed.
+        The possible labels are: 'direct', 'oxonium' and 'oxonium COSMO-RS'.
+    Dict[str, float]
+        The dictionary containing all the Gibbs Free energies used in the computations.
+    """
     # Check if the given structures are compatible with a pKa calculation
     _check_structure_acid_base_pair(protonated, deprotonated)
 
@@ -354,30 +392,91 @@ def run_pKa_workflow(
 
     shutil.rmtree(tdir)
 
+    # Create an empty dictionary to store the computed pKas and Gibbs free energies
+    computed_pka, free_energies = {}, {}
+
     # Run geometry optimization for all structures in solvent
-    protonated_opt = method_geometry.opt(protonated, ncores=ncores, maxcore=maxcore)
-    deprotonated_opt = method_geometry.opt(deprotonated, ncores=ncores, maxcore=maxcore)
-    water_opt = method_geometry.opt(water, ncores=ncores, maxcore=maxcore)
-    oxonium_opt = method_geometry.opt(oxonium, ncores=ncores, maxcore=maxcore)
+    protonated_sol = method_geometry.opt(protonated, ncores=ncores, maxcore=maxcore)
+    deprotonated_sol = method_geometry.opt(deprotonated, ncores=ncores, maxcore=maxcore)
+    water_sol = method_geometry.opt(water, ncores=ncores, maxcore=maxcore)
+    oxonium_sol = method_geometry.opt(oxonium, ncores=ncores, maxcore=maxcore)
 
     # Run frequency calculation for all structures in solvent
     if method_energy != method_geometry:
-        method_energy.freq(protonated_opt, ncores=ncores, maxcore=maxcore, inplace=True)
-        method_energy.freq(
-            deprotonated_opt, ncores=ncores, maxcore=maxcore, inplace=True
-        )
-        method_energy.freq(water_opt, ncores=ncores, maxcore=maxcore, inplace=True)
-        method_energy.freq(oxonium_opt, ncores=ncores, maxcore=maxcore, inplace=True)
+        method_energy.freq(protonated_sol, ncores=ncores, maxcore=maxcore, inplace=True)
+        method_energy.freq(deprotonated_sol, ncores=ncores, maxcore=maxcore, inplace=True)
+        method_energy.freq(water_sol, ncores=ncores, maxcore=maxcore, inplace=True)
+        method_energy.freq(oxonium_sol, ncores=ncores, maxcore=maxcore, inplace=True)
+    
+    # Extract the Gibbs Free Energies from the obtained systems
+    G_protonated_sol = protonated_sol.properties.gibbs_free_energy
+    G_deprotonated_sol = deprotonated_sol.properties.gibbs_free_energy
+    G_water_sol = water_sol.properties.gibbs_free_energy
+    G_oxonium_sol = oxonium_sol.properties.gibbs_free_energy
 
-    # Calculate the pKa using the direct method
-    pKa_direct = calculate_pka(protonated_opt, deprotonated_opt)
+    # Store the computed Gibbs Free Energies for the calculations in solvent
+    free_energies["G(solv) Protonated"] = G_protonated_sol
+    free_energies["G(solv) Deprotonated"] = G_deprotonated_sol
+    free_energies["G(solv) Water"] = G_water_sol
+    free_energies["G(solv) Oxonium"] = G_oxonium_sol
 
-    # Run geometry optimizazion of water an oxonium ion
-    pKa_oxonium = calculate_pka_oxonium_scheme(
-        protonated_opt, deprotonated_opt, water_opt, oxonium_opt
-    )
+    # Calculate the pKa using the direct scheme
+    pKa_direct = calculate_pka(protonated_sol, deprotonated_sol)
+    computed_pka["direct"] = pKa_direct
 
-    return pKa_direct, pKa_oxonium
+    # Calculate the pKa using the oxonium scheme
+    pKa_oxonium = calculate_pka_oxonium_scheme(protonated_sol, deprotonated_sol, water_sol, oxonium_sol)
+    computed_pka["oxonium"] = pKa_oxonium
+
+    # If required run the cosmors based schemes
+    if use_cosmors:
+
+        # Run COSMO-RS calculation for all molecules
+        dG_solv_prot = method_energy.cosmors(protonated_sol, ncores=ncores, maxcore=maxcore)
+        dG_solv_deprot = method_energy.cosmors(deprotonated_sol, ncores=ncores, maxcore=maxcore)
+        dG_solv_water = method_energy.cosmors(water_sol, ncores=ncores, maxcore=maxcore)
+        dG_solv_oxonium = method_energy.cosmors(oxonium_sol, ncores=ncores, maxcore=maxcore)
+
+        # Store the solvation free energies computed with OpenCOSMO-RS
+        free_energies["dG(COSMO-RS) Protonated"] = dG_solv_prot
+        free_energies["dG(COSMO-RS) Deprotonated"] = dG_solv_deprot
+        free_energies["dG(COSMO-RS) Water"] = dG_solv_water
+        free_energies["dG(COSMO-RS) Oxonium"] = dG_solv_oxonium
+
+        # Create an engine for the calculations in vacuum
+        method_energy_vac = deepcopy(method_energy)
+        method_energy_vac.solvent = None
+
+        # Run frequency calculation for all structures in vacuum
+        protonated_vac = method_energy_vac.freq(protonated_sol, ncores=ncores, maxcore=maxcore)
+        deprotonated_vac = method_energy_vac.freq(deprotonated_sol, ncores=ncores, maxcore=maxcore)
+        water_vac = method_energy_vac.freq(water_sol, ncores=ncores, maxcore=maxcore)
+        oxonium_vac = method_energy_vac.freq(oxonium_sol, ncores=ncores, maxcore=maxcore)
+
+        # Extract the Gibbs Free Energies from the obtained systems
+        G_protonated_vac = protonated_vac.properties.gibbs_free_energy
+        G_deprotonated_vac = deprotonated_vac.properties.gibbs_free_energy
+        G_water_vac = water_vac.properties.gibbs_free_energy
+        G_oxonium_vac = oxonium_vac.properties.gibbs_free_energy
+
+        # Store the Gibbs free energies computed in vacuum
+        free_energies["G(vac) Protonated"] = protonated_vac.properties.gibbs_free_energy
+        free_energies["G(vac) Deprotonated"] = deprotonated_vac.properties.gibbs_free_energy
+        free_energies["G(vac) Water"] = water_vac.properties.gibbs_free_energy
+        free_energies["G(vac) Oxonium"] = oxonium_vac.properties.gibbs_free_energy
+
+        # Compute the reaction free energy in vacuum
+        dG_vac = G_deprotonated_vac + G_oxonium_vac - G_protonated_vac - G_water_vac
+
+        # Compute the difference in solvation free energy from OpenCOSMO-RS
+        ddG_solv = dG_solv_deprot + dG_solv_oxonium - dG_solv_prot - dG_solv_water
+        
+        # Compute the corrected free energy in solvent and the corresponding pKa
+        dG_cosmors = (dG_vac + ddG_solv) * scon.Eh_to_kcalmol
+        pKa_cosmo = (dG_cosmors  / (np.log(10.0) * scon.R * 298.15 / scon.kcal_to_J)) - np.log10(997.0 / 18.01528)
+        computed_pka["oxonium COSMO-RS"] = pKa_cosmo        
+
+    return computed_pka, free_energies
 
 
 def auto_calculate_pka(
