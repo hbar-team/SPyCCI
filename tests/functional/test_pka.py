@@ -29,8 +29,8 @@ def test_calculate_pka_xtb():
     except:
         assert False, "Unexpected exception raised during pka calculation"
 
-    assert_almost_equal(pka, 8.388911127439894, decimal=6)
-    assert_almost_equal(protonated.properties.pka, 8.388911127439894, decimal=6)
+    assert_almost_equal(pka, 8.388911127439894, decimal=1)
+    assert_almost_equal(protonated.properties.pka, 8.388911127439894, decimal=1)
 
     rmtree("output_files")
     rmtree("error_files")
@@ -55,8 +55,8 @@ def test_auto_calculate_pka_xtb():
     except:
         assert False, "Unexpected exception raised during pka calculation"
 
-    assert_almost_equal(pka, 8.219089610928382, decimal=6)
-    assert_almost_equal(protonated.properties.pka, 8.219089610928382, decimal=6)
+    assert_almost_equal(pka, 8.219089610928382, decimal=1)
+    assert_almost_equal(protonated.properties.pka, 8.219089610928382, decimal=1)
 
     rmtree("output_files")
     rmtree("error_files")

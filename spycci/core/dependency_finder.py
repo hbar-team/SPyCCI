@@ -47,6 +47,28 @@ def locate_vmd() -> str:
     return path.rstrip("/bin/vmd")
 
 
+def find_orca_version() -> str:
+    """
+    If available, returns the currently available version of orca.
+    
+    Returns
+    -------
+    str
+        The orca version ad a dot separated string (e.g. '6.0.1')
+    """
+    orca_version = None
+    output = subprocess.run(["orca", "--version"], capture_output=True, text=True).stdout
+    for line in output.split("\n"):
+        if "Program Version" in line:
+            orca_version: str = line.split()[2]
+            break
+    
+    if orca_version is None:
+        raise RuntimeError("Failed to read the version of the orca software.")
+    
+    return orca_version
+
+
 def locate_orca(version: str = None, get_folder: bool = False) -> str:
     """
     Locates the path to the 'orca' executable from the system PATH. If the executable is
@@ -71,18 +93,9 @@ def locate_orca(version: str = None, get_folder: bool = False) -> str:
     path = locate_executable("orca")
 
     # Check if the available version of orca matches the requirements
-    orca_version = None
-    output = subprocess.run(["orca", "--version"], capture_output=True, text=True).stdout
-    for line in output.split("\n"):
+    orca_version = find_orca_version()
 
-        if "Program Version" in line:
-            orca_version: str = line.split()[2]
-            break
-
-    if orca_version is None:
-        raise RuntimeError("Failed to read the version of the orca software.")
-
-    elif version is not None and orca_version != version:
+    if version is not None and orca_version != version:
         raise RuntimeError(
             f"The required orca version is not available. Version {orca_version} found instead."
         )
@@ -104,7 +117,7 @@ def locate_orca(version: str = None, get_folder: bool = False) -> str:
         raise RuntimeError("OpenMPI is either not available or the version cannot be found")
 
     # Check if the available version meets the requirements
-    openmpi_required = {"5.0.*": ["4.1.1"], "4.2.*": ["3.1.4"], "4.1.*": ["3.1.3", "2.1.5"]}
+    openmpi_required = {"6.0.*": ["4.1.6"], "5.0.*": ["4.1.1"], "4.2.*": ["3.1.4"], "4.1.*": ["3.1.3", "2.1.5"]}
 
     key = ".".join(orca_version.split(".")[0:-1] + ["*"])
     if openmpi_version not in openmpi_required[key]:
