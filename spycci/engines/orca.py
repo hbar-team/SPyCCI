@@ -1,6 +1,6 @@
-import os, copy, shutil, sh, logging, subprocess
+import os, copy, shutil, sh, logging
 import numpy as np
-from typing import Dict, Optional, Any, Tuple, Union
+from typing import Dict, Optional, Any, Tuple
 from tempfile import mkdtemp
 from os.path import basename, isfile, join
 
@@ -10,7 +10,7 @@ from spycci.systems import Ensemble, System
 from spycci.tools import process_output
 from spycci.tools.externalutilities import split_multixyz
 from spycci.core.base import Engine
-from spycci.core.dependency_finder import locate_orca
+from spycci.core.dependency_finder import locate_orca, find_orca_version
 from spycci.core.spectroscopy import VibrationalData
 from spycci.tools.internaltools import clean_suffix
 
@@ -1799,13 +1799,7 @@ class OrcaInput(Engine):
             blocks = {}
 
         # Check if the available version of orca is >= 6.0.0
-        orca_version = None
-        output = subprocess.run(["orca", "--version"], capture_output=True, text=True).stdout
-        for line in output.split("\n"):
-            if "Program Version" in line:
-                orca_version: str = line.split()[2]
-                break
-        
+        orca_version = find_orca_version()
         if int(orca_version.split(".")[0]) < 6:
             msg = f"COSMO-RS is supported only by version of ORCA >= 6.0.0 - Version {orca_version} was found."
             logger.error(msg)
@@ -1833,7 +1827,12 @@ class OrcaInput(Engine):
             cosmors_block["solventfilename"] = f'"{solventname}"'
 
         else:
-            raise ValueError("Cannot run COSMO-RS calculation with neither solvent name or structure file.")
+            if self.solvent is not None:
+                cosmors_block["solvent"] = f'"{self.solvent}"'
+                msg = f"Solvent not explicitly indicated in COSMO-RS call. The calculation will be run using the engine solvent ({self.solvent})."
+                logger.info(msg)
+            else:
+                raise ValueError("Cannot run COSMO-RS calculation with neither solvent name nor structure file.")
         
         if use_engine_settings:
             cosmors_block["dftfunc"] = f'"{self.method}"'
