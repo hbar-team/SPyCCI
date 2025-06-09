@@ -106,7 +106,7 @@ def _validate_acid_base_pair(
     # Check the provided structures for type, atomcount and charge
     _check_structure_acid_base_pair(protonated, deprotonated)
 
-    # Check that both the speces have an electronic energy value associated
+    # Check that both the species have an electronic energy value associated
     if protonated.properties.electronic_energy is None:
         msg = "Electronic energy not found for protonated molecule."
         logger.error(msg)
@@ -131,7 +131,7 @@ def _validate_acid_base_pair(
         # Check the provided structures for type, atomcount and charge
         _check_structure_acid_base_pair(oxonium, water)
 
-        # Check that both the speces have an electronic energy value associated
+        # Check that both the species have an electronic energy value associated
         if water.properties.electronic_energy is None:
             msg = "Electronic energy not found for water molecule."
             logger.error(msg)
@@ -150,7 +150,7 @@ def _validate_acid_base_pair(
             logger.error(msg)
             raise RuntimeError(msg)
 
-    # Check if the speces have vibronic energy values associated
+    # Check if the species have vibronic energy values associated
     if (
         protonated.properties.vibronic_energy is None
         or deprotonated.properties.vibronic_energy is None
