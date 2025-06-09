@@ -4,8 +4,7 @@ import os, json
 import numpy as np
 import logging
 
-from typing import List
-from enum import Enum
+from typing import List, Generator, Optional
 from copy import deepcopy
 
 from spycci.constants import kB
@@ -24,14 +23,17 @@ class System:
 
     Parameters
     ----------
-    filepath : str
-        The path to the file containing the system geometry or data
+    molecule : str
+        Either the path to the `.xyz` or `.json` file containing the system geometry/data or
+        the name to be assigned to the sctructure provided as the `geometry` argument.
     charge : int, optional
         The total charge of the system. (Default: 0 neutral)
     spin : int, optional
         The total spin multiplicity of the system. (Default: 1 singlet)
-    box_side : float, optional
+    box_side : Optional[float] = None,
         For periodic systems, defines the length (in Å) of the box side
+    geometry : Optional[MolecularGeometry]
+        The `MolecularGeometry` object from which the System can be constructred.
 
     Raises
     ------
@@ -41,27 +43,32 @@ class System:
 
     def __init__(
         self,
-        filepath: str,
+        molecule: str,
         charge: int = 0,
         spin: int = 1,
-        box_side: float = None,
+        box_side: Optional[float] = None,
+        geometry: Optional[MolecularGeometry] = None
     ) -> None:
+        
+        if molecule.endswith(".xyz"):
+            
+            if not os.path.isfile(molecule):
+                raise ValueError(f"The specified XYZ file `{molecule}` does not exist.")
 
-        if not os.path.isfile(filepath):
-            raise ValueError(f"The specified file `{filepath}` does not exist.")
-
-        if filepath.endswith(".xyz"):
-            self.name = os.path.basename(filepath).strip(".xyz")
+            self.name = os.path.basename(molecule).strip(".xyz")
             self.__charge: int = charge
             self.__spin: int = spin
             self.__box_side = box_side
-            self.__geometry: MolecularGeometry = MolecularGeometry.from_xyz(filepath)
+            self.__geometry: MolecularGeometry = MolecularGeometry.from_xyz(molecule)
             self.properties: Properties = Properties()
             self.flags: list = []
 
-        elif filepath.endswith(".json"):
+        elif molecule.endswith(".json"):
 
-            with open(filepath, "r") as jsonfile:
+            if not os.path.isfile(molecule):
+                raise ValueError(f"The specified JSON file `{molecule}` does not exist.")
+
+            with open(molecule, "r") as jsonfile:
                 data = json.load(jsonfile)
 
             data = json_parser(data)
@@ -73,6 +80,19 @@ class System:
             self.__geometry = MolecularGeometry().from_dict(data["Geometry"])
             self.properties = Properties().from_dict(data["Properties"])
             self.flags = data["Flags"]
+
+        elif geometry is not None:
+            
+            if type(geometry) != MolecularGeometry:
+                raise TypeError("The `geometry` argument must be of type `MolecularGeometry`.")
+            
+            self.name = str(molecule)
+            self.__charge: int = charge
+            self.__spin: int = spin
+            self.__box_side = box_side
+            self.__geometry: MolecularGeometry = deepcopy(geometry)
+            self.properties: Properties = Properties()
+            self.flags: list = []
 
         else:
             raise RuntimeError("The specified format is not supported")
@@ -415,7 +435,7 @@ class Ensemble:
         self.systems: List[System] = systems
         self.helmholtz_free_energy: float = None
 
-    def __iter__(self) -> System:
+    def __iter__(self) -> Generator[System]:
         for item in self.systems:
             yield item
 
