@@ -131,10 +131,10 @@ def test_MolecularGeometry_write_xyz(tmp_path_factory):
     assert len(lines) == 6
     assert lines[0] == "4\n"
     assert lines[1] == "This is a new xyz file\n"
-    assert lines[2] == "O\t-3.2103500000\t-0.5850400000\t-0.0139500000\n"
-    assert lines[3] == "H\t-2.2424700000\t-0.6182700000\t0.0184800000\n"
-    assert lines[4] == "H\t-3.4892000000\t-1.2491100000\t0.6342900000\n"
-    assert lines[5] == "N\t0.0000000000\t0.0000000000\t0.0000000000\n"
+    assert lines[2] == "O    -3.2103500000    -0.5850400000    -0.0139500000\n"
+    assert lines[3] == "H    -2.2424700000    -0.6182700000    0.0184800000\n"
+    assert lines[4] == "H    -3.4892000000    -1.2491100000    0.6342900000\n"
+    assert lines[5] == "N    0.0000000000    0.0000000000    0.0000000000\n"
 
 
 # Test the remaining MolecularGeometry class properties

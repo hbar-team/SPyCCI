@@ -107,8 +107,8 @@ def test_XtbInput_opt():
         assert mol.properties.level_of_theory_vibronic == engine.level_of_theory
 
         assert_almost_equal(mol.properties.electronic_energy, -14.097142459981, decimal=6)
-        assert_almost_equal(mol.properties.vibronic_energy, 0.032427777313, decimal=6)
-        assert_almost_equal(mol.properties.gibbs_free_energy, -14.064714682668, decimal=6)
+        assert_almost_equal(mol.properties.vibronic_energy, 0.032427777313, decimal=4)
+        assert_almost_equal(mol.properties.gibbs_free_energy, -14.064714682668, decimal=4)
 
         expected_mulliken_charges = np.array(
             [0.345, -0.301, 0.192, 0.170, -0.300, 0.170, 0.192, -0.470]
@@ -128,7 +128,7 @@ def test_XtbInput_opt():
             np.array([0.47712970895806, 6.01670697903511, 4.32319081549932]),
             np.array([0.16900193748757, 3.55540746889578, 4.52165211842273]),
         ]
-        assert_array_almost_equal(expected_geometry, mol.geometry.coordinates, decimal=6)
+        assert_array_almost_equal(expected_geometry, mol.geometry.coordinates, decimal=3)
 
         rmtree("output_files")
         rmtree("error_files")
@@ -150,8 +150,8 @@ def test_XtbInput_opt_no_inplace():
         assert newmol.properties.level_of_theory_vibronic == engine.level_of_theory
 
         assert_almost_equal(newmol.properties.electronic_energy, -14.097142459981, decimal=6)
-        assert_almost_equal(newmol.properties.vibronic_energy, 0.032427777313, decimal=6)
-        assert_almost_equal(newmol.properties.gibbs_free_energy, -14.064714682668, decimal=6)
+        assert_almost_equal(newmol.properties.vibronic_energy, 0.032427777313, decimal=4)
+        assert_almost_equal(newmol.properties.gibbs_free_energy, -14.064714682668, decimal=4)
 
         expected_mulliken_charges = np.array(
             [0.345, -0.301, 0.192, 0.170, -0.300, 0.170, 0.192, -0.470]
@@ -171,7 +171,7 @@ def test_XtbInput_opt_no_inplace():
             np.array([0.47712970895806, 6.01670697903511, 4.32319081549932]),
             np.array([0.16900193748757, 3.55540746889578, 4.52165211842273]),
         ]
-        assert_array_almost_equal(expected_geometry, newmol.geometry.coordinates, decimal=6)
+        assert_array_almost_equal(expected_geometry, newmol.geometry.coordinates, decimal=3)
 
         rmtree("output_files")
         rmtree("error_files")

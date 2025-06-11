@@ -68,6 +68,36 @@ def test_System_json___init__():
         assert_array_almost_equal(mol.geometry.coordinates[i], coord, decimal=6)
 
 
+# Test the System class constructor when loading data from a MolecularGeometry object
+def test_System_geometry___init__():
+
+    WATER = [
+        ["O", -5.02534, 1.26595, 0.01097],
+        ["H", -4.05210, 1.22164, -0.01263],
+        ["H", -5.30240, 0.44124, -0.42809],
+    ]
+    
+    water = MolecularGeometry()
+    for l in WATER:
+        water.append(l[0], l[1::])
+    
+    try:
+        mol = System("water", geometry=water)
+
+    except:
+        assert False, "Exception raised during `System` class constructor"
+
+    assert mol.name == "water"
+    assert mol.geometry.atomcount == 3
+    assert mol.charge == 0
+    assert mol.spin == 1
+    assert mol.box_side == None
+    assert mol.is_periodic == False
+
+    for i, coord in enumerate(WATER):
+        assert_array_almost_equal(mol.geometry.coordinates[i], coord[1::], decimal=6)
+
+
 # Test the System class method to save all the system data to a JSON file
 def test_System_save_json(tmp_path_factory):
 

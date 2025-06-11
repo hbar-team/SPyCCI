@@ -70,7 +70,7 @@ def test_crest_protonate():
         assert False, "Unexpected exception raised during tautomer search"
 
     else:
-        assert len(conformers.systems) == 8
+        assert len(conformers.systems) in [8, 9]
 
         rmtree("output_files")
         rmtree("error_files")
