@@ -1,4 +1,4 @@
-! PBE def2-TZVP D3BJ RIJCOSX def2/J ScanTS TIGHTSCF SLOWCONV Freq
+! PBE def2-SVP RIJCOSX def2/J ScanTS TIGHTSCF SLOWCONV Freq
 
 %pal
     nprocs 4
