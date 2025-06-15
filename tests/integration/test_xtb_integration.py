@@ -10,6 +10,10 @@ from shutil import rmtree
 import numpy as np
 from numpy.testing import assert_array_almost_equal, assert_almost_equal
 
+# =================================================================
+#      The following test has been developed for XTB 6.7.1
+# =================================================================
+
 # Get the path of the tests directory
 TEST_DIR = dirname(abspath(__file__))
 

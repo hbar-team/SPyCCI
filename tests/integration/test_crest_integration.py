@@ -5,6 +5,10 @@ from spycci.systems import System, Ensemble
 from os.path import dirname, abspath
 from shutil import rmtree
 
+# =================================================================
+#     The following test has been developed for CREST 3.0.2
+# =================================================================
+
 # Get the path of the tests directory
 TEST_DIR = dirname(abspath(__file__))
 
@@ -70,7 +74,7 @@ def test_crest_protonate():
         assert False, "Unexpected exception raised during tautomer search"
 
     else:
-        assert len(conformers.systems) in [8, 9]
+        assert len(conformers.systems) == 9
 
         rmtree("output_files")
         rmtree("error_files")

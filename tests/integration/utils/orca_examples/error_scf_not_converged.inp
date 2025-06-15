@@ -1,11 +1,11 @@
 ! PBE def2-SVP RIJCOSX def2/J
 
 %pal
-	nprocs 64
+	nprocs 8
 end
 
 %scf
-	maxiter 10
+	maxiter 2
 end
 
 %maxcore 1000
