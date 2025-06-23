@@ -91,7 +91,7 @@ def is_dftb_level_of_theory(string: str) -> bool:
 
 class Properties:
     """
-    Class containing the properties associated to a system when a given electronic and vibronic
+    Class containing the properties associated to a system when a given electronic and vibrational
     level of theory are considered. The class automatically stores the level of theory associated
     to the coputed properties and checks, whenever a new property is set, that a given input data
     is compatible with the current used level of theory. In normal conditions (strict mode)
@@ -103,12 +103,11 @@ class Properties:
 
     def __init__(self):
         self.__level_of_theory_electronic: str = None
-        self.__level_of_theory_vibronic: str = None
+        self.__level_of_theory_vibrational: str = None
 
         self.__electronic_energy: float = None
-        self.__vibronic_energy: float = None
+        self.__free_energy_correction: float = None
         self.__helmholtz_free_energy: float = None
-        self.__gibbs_free_energy: float = None
         self.__pka: float = None
         self.__mulliken_charges: List[float] = []
         self.__mulliken_spin_populations: List[float] = []
@@ -122,7 +121,6 @@ class Properties:
         self.__level_of_theory_electronic = None
         self.__electronic_energy = None
         self.__helmholtz_free_energy = None
-        self.__gibbs_free_energy = None
         self.__pka = None
         self.__mulliken_charges = []
         self.__mulliken_spin_populations = []
@@ -131,11 +129,10 @@ class Properties:
         self.__hirshfeld_spin_populations = []
         self.__condensed_fukui_hirshfeld = {}
 
-    def __clear_vibronic(self):
-        self.__level_of_theory_vibronic = None
-        self.__vibronic_energy = None
+    def __clear_vibrational(self):
+        self.__level_of_theory_vibrational = None
+        self.__free_energy_correction = None
         self.__helmholtz_free_energy = None
-        self.__gibbs_free_energy = None
         self.__pka = None
         self.__vibrational_data = None
 
@@ -184,41 +181,41 @@ class Properties:
                 warnings.warn(msg)
                 self.__level_of_theory_electronic = "Undefined"
 
-    def __validate_vibronic(self, engine: Engine) -> None:
+    def __validate_vibrational(self, engine: Engine) -> None:
 
         level_of_theory = self.__check_engine(engine)
 
-        logger.debug("Validating vibronic energy")
-        logger.debug(f"current: {self.__level_of_theory_vibronic}, requested: {level_of_theory}")
+        logger.debug("Validating vibrational contribution")
+        logger.debug(f"current: {self.__level_of_theory_vibrational}, requested: {level_of_theory}")
 
-        if self.__level_of_theory_vibronic is None:
-            self.__level_of_theory_vibronic = level_of_theory
+        if self.__level_of_theory_vibrational is None:
+            self.__level_of_theory_vibrational = level_of_theory
 
             if self.__pka is not None:
                 if spycci.config.STRICT_MODE == True:
-                    msg = "Added vibronic energy. Clearing pKa computed with electronic energy only."
+                    msg = "Added vibrational contribution. Clearing pKa computed with electronic energy only."
                     logger.warning(msg)
                     self.__pka = None
                 else:
                     msg = (
-                        "Added vibronic energy to Properties with pKa previously computed with electronic energy only."
+                        "Added vibrational contribution to Properties with pKa previously computed with electronic energy only."
                     )
                     logger.warning(msg)
                     warnings.warn(msg)
 
-        elif self.__level_of_theory_vibronic != level_of_theory:
+        elif self.__level_of_theory_vibrational != level_of_theory:
 
             if spycci.config.STRICT_MODE == True:
-                msg = "Different vibronic levels of theory used for calculating properties. Clearing properties with different vibronic level of theory."
+                msg = "Different vibrational levels of theory used for calculating properties. Clearing properties with different vibrational level of theory."
                 logger.warning(msg)
-                self.__clear_vibronic()
-                self.__level_of_theory_vibronic = level_of_theory
+                self.__clear_vibrational()
+                self.__level_of_theory_vibrational = level_of_theory
 
             else:
-                msg = "Different vibronic levels of theory used for calculating properties. Setting level of theory to undefined."
+                msg = "Different vibrational levels of theory used for calculating properties. Setting level of theory to undefined."
                 logger.warning(msg)
                 warnings.warn(msg)
-                self.__level_of_theory_vibronic = "Undefined"
+                self.__level_of_theory_vibrational = "Undefined"
 
     def to_dict(self) -> dict:
         """
@@ -232,11 +229,10 @@ class Properties:
         """
         data = {}
         data["Level of theory electronic"] = self.__level_of_theory_electronic
-        data["Level of theory vibronic"] = self.__level_of_theory_vibronic
+        data["Level of theory vibrational"] = self.__level_of_theory_vibrational
         data["Electronic energy (Eh)"] = self.__electronic_energy
-        data["Vibronic energy (Eh)"] = self.__vibronic_energy
+        data["Free energy correction G-E(el) (Eh)"] = self.__free_energy_correction
         data["Helmholtz energy (Eh)"] = self.__helmholtz_free_energy
-        data["Gibbs energy (Eh)"] = self.__gibbs_free_energy
         data["pKa"] = self.__pka
         data["Mulliken charges"] = self.__mulliken_charges
         data["Mulliken spin populations"] = self.__mulliken_spin_populations
@@ -269,11 +265,10 @@ class Properties:
         """
         obj = cls()
         obj.__level_of_theory_electronic = data["Level of theory electronic"]
-        obj.__level_of_theory_vibronic = data["Level of theory vibronic"]
+        obj.__level_of_theory_vibrational = data["Level of theory vibrational"]
         obj.__electronic_energy = data["Electronic energy (Eh)"]
-        obj.__vibronic_energy = data["Vibronic energy (Eh)"]
+        obj.__free_energy_correction = data["Free energy correction G-E(el) (Eh)"]
         obj.__helmholtz_free_energy = data["Helmholtz energy (Eh)"]
-        obj.__gibbs_free_energy = data["Gibbs energy (Eh)"]
         obj.__pka = data["pKa"]
         obj.__mulliken_charges = data["Mulliken charges"]
         obj.__mulliken_spin_populations = data["Mulliken spin populations"]
@@ -302,16 +297,16 @@ class Properties:
         return self.__level_of_theory_electronic
 
     @property
-    def level_of_theory_vibronic(self) -> str:
+    def level_of_theory_vibrational(self) -> str:
         """
-        The level of theory adopted for the vibronic calculations
+        The level of theory adopted for the vibrational calculations
 
         Returns
         -------
         str
-            The string encoding the vibronic level of theory
+            The string encoding the vibrational level of theory
         """
-        return self.__level_of_theory_vibronic
+        return self.__level_of_theory_vibrational
 
     @property
     def electronic_energy(self) -> float:
@@ -341,31 +336,32 @@ class Properties:
         self.__electronic_energy = value
 
     @property
-    def vibronic_energy(self) -> float:
+    def free_energy_correction(self) -> float:
         """
-        The vibronic energy of the system in Hartree.
+        The free energy correction G-E(el) as the difference between the Gibbs free energy
+        and the electronic energy (in Hartree).
 
         Returns
         -------
         float
-            The vibronic energy of the system in Hartree.
+            The free energy correction in Hartree.
         """
-        return self.__vibronic_energy
+        return self.__free_energy_correction
 
-    def set_vibronic_energy(self, value: float, vibronic_engine: Union[Engine, str]) -> None:
+    def set_free_energy_correction(self, value: float, vibrational_engine: Union[Engine, str]) -> None:
         """
-        Sets the vibronic energy of the system.
+        Sets the free energy correction G-E(el) of the system.
 
         Arguments
         ---------
         value: float
-            The vibronic energy of the system in Hartree.
-        vibronic_engine: Union[Engine, str]
+            The free energy correction of the system in Hartree.
+        vibrational_engine: Union[Engine, str]
             The engine used in the calculation.
         """
-        logger.debug("Setting vibronic energy")
-        self.__validate_vibronic(vibronic_engine)
-        self.__vibronic_energy = value
+        logger.debug("Setting Gibbs free energy correction")
+        self.__validate_vibrational(vibrational_engine)
+        self.__free_energy_correction = value
 
     @property
     def helmholtz_free_energy(self) -> float:
@@ -383,7 +379,7 @@ class Properties:
         self,
         value: float,
         electronic_engine: Union[Engine, str],
-        vibronic_engine: Union[Engine, str],
+        vibrational_engine: Union[Engine, str],
     ) -> float:
         """
         Sets the Helmholtz free energy of the system.
@@ -394,48 +390,29 @@ class Properties:
             The Helmholtz free energy of the system in Hartree.
         electronic_engine: Union[Engine, str]
             The engine used in the electronic calculation.
-        vibronic_engine: Union[Engine, str]
-            The engine used in the vibronic calculation.
+        vibrational_engine: Union[Engine, str]
+            The engine used in the vibrational calculation.
         """
         logger.debug("Setting Helmholtz free energy")
         self.__validate_electronic(electronic_engine)
-        self.__validate_vibronic(vibronic_engine)
+        self.__validate_vibrational(vibrational_engine)
         self.__helmholtz_free_energy = value
 
     @property
     def gibbs_free_energy(self) -> float:
         """
-        The Gibbs free energy of the system in Hartree.
+        The Gibbs free energy of the system in Hartree as the
+        sum of Electronic energy and free energy correction
 
         Returns
         -------
         float
             The Gibbs free energy of the system in Hartree.
         """
-        return self.__gibbs_free_energy
-
-    def set_gibbs_free_energy(
-        self,
-        value: float,
-        electronic_engine: Union[Engine, str],
-        vibronic_engine: Union[Engine, str],
-    ) -> float:
-        """
-        Sets the Gibbs free energy of the system.
-
-        Arguments
-        ---------
-        value: float
-            The Gibbs free energy of the system in Hartree.
-        electronic_engine: Union[Engine, str]
-            The engine used in the electronic calculation.
-        vibronic_engine: Union[Engine, str]
-            The engine used in the vibronic calculation.
-        """
-        logger.debug("setting Gibbs free energy")
-        self.__validate_electronic(electronic_engine)
-        self.__validate_vibronic(vibronic_engine)
-        self.__gibbs_free_energy = value
+        if self.__electronic_energy and self.__free_energy_correction:
+            return self.__electronic_energy + self.__free_energy_correction
+        else:
+            return None
 
     @property
     def pka(self) -> float:
@@ -453,7 +430,7 @@ class Properties:
         self,
         value: float,
         electronic_engine: Union[Engine, str],
-        vibronic_engine: Union[Engine, str] = None,
+        vibrational_engine: Union[Engine, str] = None,
     ) -> float:
         """
         Sets the pKa of the system.
@@ -464,13 +441,13 @@ class Properties:
             The pKa of the system.
         electronic_engine: Union[Engine, str]
             The engine used in the electronic calculation.
-        vibronic_engine: Union[Engine, str]
-            The engine used in the vibronic calculation. (optional)
+        vibrational_engine: Union[Engine, str]
+            The engine used in the vibrational calculation. (optional)
         """
         logger.debug("Setting pKa")
         self.__validate_electronic(electronic_engine)
-        if vibronic_engine is not None:
-            self.__validate_vibronic(vibronic_engine)
+        if vibrational_engine is not None:
+            self.__validate_vibrational(vibrational_engine)
         self.__pka = value
 
     @property
@@ -662,7 +639,7 @@ class Properties:
     def set_vibrational_data(
         self,
         value: VibrationalData,
-        vibronic_engine: Union[Engine, str],
+        vibrational_engine: Union[Engine, str],
     ) -> None:
         """
         Sets condensed Fukui values computed from the Hirshfeld charges.
@@ -671,9 +648,9 @@ class Properties:
         ---------
         value: VibrationalData
             The class encoding all the vibrational data associated to the molecule
-        vibronic_engine: Union[Engine, str]
-            The engine used in the vibronic calculation.
+        vibrational_engine: Union[Engine, str]
+            The engine used in the vibrational calculation.
         """
         logger.debug("Setting vibrational data")
-        self.__validate_vibronic(vibronic_engine)
+        self.__validate_vibrational(vibrational_engine)
         self.__vibrational_data = value

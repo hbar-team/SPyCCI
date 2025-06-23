@@ -33,7 +33,7 @@ def reorder_energies(
     method_el : XtbInput/OrcaInput, optional
         level of theory for the electronic part of the energy. By default converted to M06-2X
     method_vib : XtbInput/OrcaInput, optional
-        level of theory for the vibronic contribution to the energy. By default converted to gfn2
+        level of theory for the vibrational contribution to the energy. By default converted to gfn2
 
     Returns
     -------
@@ -52,7 +52,7 @@ def reorder_energies(
         method_vib = XtbInput()
 
     def get_total_energy(molecule: System):
-        return molecule.properties.electronic_energy + molecule.properties.vibronic_energy
+        return molecule.properties.electronic_energy + molecule.properties.free_energy_correction
 
     for system in system_list:
 
@@ -61,9 +61,9 @@ def reorder_energies(
         if method_el.level_of_theory != system.properties.level_of_theory_electronic:
             method_el.spe(system, ncores=ncores, maxcore=maxcore, inplace=True)
 
-        if method_vib.level_of_theory != system.properties.level_of_theory_vibronic:
+        if method_vib.level_of_theory != system.properties.level_of_theory_vibrational:
             dummy = method_vib.freq(system, ncores=ncores, maxcore=maxcore)
-            system.properties.set_vibronic_energy(dummy.properties.vibronic_energy, method_vib)
+            system.properties.set_free_energy_correction(dummy.properties.free_energy_correction, method_vib)
 
     system_list.sort(key=get_total_energy)
 

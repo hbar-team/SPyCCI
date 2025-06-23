@@ -208,11 +208,11 @@ class System:
         info += (
             f"Electronic level of theory: {self.properties.level_of_theory_electronic}\n"
         )
-        info += f"Vibronic level of theory: {self.properties.level_of_theory_vibronic}\n\n"
+        info += f"Vibronic level of theory: {self.properties.level_of_theory_vibrational}\n\n"
         info += f"Electronic energy: {self.properties.electronic_energy} Eh\n"
-        info += f"Vibronic energy: {self.properties.vibronic_energy} Eh\n"
-        info += f"Helmholtz free energy: {self.properties.helmholtz_free_energy} Eh\n"
+        info += f"Gibbs free energy correction G-E(el): {self.properties.free_energy_correction} Eh\n"
         info += f"Gibbs free energy: {self.properties.gibbs_free_energy} Eh\n"
+        info += f"Helmholtz free energy: {self.properties.helmholtz_free_energy} Eh\n"
         info += f"pKa: {self.properties.pka}\n\n"
 
         if self.properties.mulliken_charges != []:
@@ -493,18 +493,18 @@ class Ensemble:
         float
             The total Helmholtz free energy of the ensemble.
 
-        NOTE: the vibronic contributions are included in the electronic component, which
+        NOTE: the vibrational contributions are included in the electronic component, which
         actually contains the TOTAL energy of the system. Maybe in the future I'll think of
         how to separate the two contributions - LB
         """
         energies = []
 
         for system in self.systems:
-            if system.properties.vibronic_energy is None:
+            if system.properties.free_energy_correction is None:
                 energies.append(system.properties.electronic_energy)
             else:
                 energies.append(
-                    system.properties.electronic_energy + system.properties.vibronic_energy
+                    system.properties.electronic_energy + system.properties.free_energy_correction
                 )
 
         # Compute the relative energy of each system in respect to the minimum to avoid overflows
