@@ -129,7 +129,6 @@ def test_System_save_json(tmp_path_factory):
         "Name": "with_comment",
         "Properties": {
             "Electronic energy (Eh)": None,
-            "Helmholtz energy (Eh)": None,
             "Hirshfeld Fukui": {},
             "Hirshfeld charges": [],
             "Hirshfeld spin populations": [],

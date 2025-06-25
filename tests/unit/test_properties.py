@@ -29,7 +29,6 @@ def test_Properties_properties():
     assert p.level_of_theory_vibrational == None
     assert p.electronic_energy == None
     assert p.free_energy_correction == None
-    assert p.helmholtz_free_energy == None
     assert p.gibbs_free_energy == None
     assert p.pka == None
     assert p.mulliken_charges == []
@@ -45,7 +44,6 @@ def test_Properties_properties():
     # Set all properties
     p.set_electronic_energy(1, el_engine)
     p.set_free_energy_correction(0.2, vib_engine)
-    p.set_helmholtz_free_energy(3, el_engine, vib_engine)
     p.set_pka(5, el_engine, vib_engine)
     p.set_mulliken_charges([6, 7, 8], el_engine)
     p.set_mulliken_spin_populations([9, 10, 11], el_engine)
@@ -57,7 +55,6 @@ def test_Properties_properties():
     assert p.level_of_theory_electronic == el_engine.level_of_theory
     assert p.level_of_theory_vibrational == vib_engine.level_of_theory
     assert p.electronic_energy == 1
-    assert p.helmholtz_free_energy == 3
     assert p.pka == 5
     assert_almost_equal(p.free_energy_correction, 0.2, decimal=6)
     assert_almost_equal(p.gibbs_free_energy, 1.2, decimal=6)

@@ -212,7 +212,6 @@ class System:
         info += f"Electronic energy: {self.properties.electronic_energy} Eh\n"
         info += f"Gibbs free energy correction G-E(el): {self.properties.free_energy_correction} Eh\n"
         info += f"Gibbs free energy: {self.properties.gibbs_free_energy} Eh\n"
-        info += f"Helmholtz free energy: {self.properties.helmholtz_free_energy} Eh\n"
         info += f"pKa: {self.properties.pka}\n\n"
 
         if self.properties.mulliken_charges != []:

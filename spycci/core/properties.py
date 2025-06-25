@@ -107,7 +107,6 @@ class Properties:
 
         self.__electronic_energy: float = None
         self.__free_energy_correction: float = None
-        self.__helmholtz_free_energy: float = None
         self.__pka: float = None
         self.__mulliken_charges: List[float] = []
         self.__mulliken_spin_populations: List[float] = []
@@ -120,7 +119,6 @@ class Properties:
     def __clear_electronic(self):
         self.__level_of_theory_electronic = None
         self.__electronic_energy = None
-        self.__helmholtz_free_energy = None
         self.__pka = None
         self.__mulliken_charges = []
         self.__mulliken_spin_populations = []
@@ -132,7 +130,6 @@ class Properties:
     def __clear_vibrational(self):
         self.__level_of_theory_vibrational = None
         self.__free_energy_correction = None
-        self.__helmholtz_free_energy = None
         self.__pka = None
         self.__vibrational_data = None
 
@@ -232,7 +229,6 @@ class Properties:
         data["Level of theory vibrational"] = self.__level_of_theory_vibrational
         data["Electronic energy (Eh)"] = self.__electronic_energy
         data["Free energy correction G-E(el) (Eh)"] = self.__free_energy_correction
-        data["Helmholtz energy (Eh)"] = self.__helmholtz_free_energy
         data["pKa"] = self.__pka
         data["Mulliken charges"] = self.__mulliken_charges
         data["Mulliken spin populations"] = self.__mulliken_spin_populations
@@ -268,7 +264,6 @@ class Properties:
         obj.__level_of_theory_vibrational = data["Level of theory vibrational"]
         obj.__electronic_energy = data["Electronic energy (Eh)"]
         obj.__free_energy_correction = data["Free energy correction G-E(el) (Eh)"]
-        obj.__helmholtz_free_energy = data["Helmholtz energy (Eh)"]
         obj.__pka = data["pKa"]
         obj.__mulliken_charges = data["Mulliken charges"]
         obj.__mulliken_spin_populations = data["Mulliken spin populations"]
@@ -363,40 +358,6 @@ class Properties:
         self.__validate_vibrational(vibrational_engine)
         self.__free_energy_correction = value
 
-    @property
-    def helmholtz_free_energy(self) -> float:
-        """
-        The Helmholtz free energy of the system in Hartree.
-
-        Returns
-        -------
-        float
-            The Helmholtz free energy of the system in Hartree.
-        """
-        return self.__helmholtz_free_energy
-
-    def set_helmholtz_free_energy(
-        self,
-        value: float,
-        electronic_engine: Union[Engine, str],
-        vibrational_engine: Union[Engine, str],
-    ) -> float:
-        """
-        Sets the Helmholtz free energy of the system.
-
-        Arguments
-        ---------
-        value: float
-            The Helmholtz free energy of the system in Hartree.
-        electronic_engine: Union[Engine, str]
-            The engine used in the electronic calculation.
-        vibrational_engine: Union[Engine, str]
-            The engine used in the vibrational calculation.
-        """
-        logger.debug("Setting Helmholtz free energy")
-        self.__validate_electronic(electronic_engine)
-        self.__validate_vibrational(vibrational_engine)
-        self.__helmholtz_free_energy = value
 
     @property
     def gibbs_free_energy(self) -> float:
