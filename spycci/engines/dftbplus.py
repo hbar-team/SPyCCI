@@ -727,7 +727,7 @@ class DFTBInput(Engine):
                     logger.error("Error occurred during DFTB+ calculation.")
                     raise RuntimeError("Error occurred during DFTB+ calculation")
 
-        # Parse the final single point energy and the vibronic energy
+        # Parse the final single point energy and the free energy correction
         # ----------------------------------------------------------------------------------
         with open("output.out", "r") as out:
             for line in out:

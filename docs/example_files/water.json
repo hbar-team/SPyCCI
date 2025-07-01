@@ -32,11 +32,9 @@
     },
     "Properties": {
         "Level of theory electronic": "XtbInput || method: gfn2 | solvent: None",
-        "Level of theory vibronic": "XtbInput || method: gfn2 | solvent: None",
+        "Level of theory vibrational": "XtbInput || method: gfn2 | solvent: None",
         "Electronic energy (Eh)": -5.070544446692,
-        "Vibronic energy (Eh)": 0.002508973529,
-        "Helmholtz energy (Eh)": null,
-        "Gibbs energy (Eh)": -5.068035473164,
+        "Free energy correction G-E(el) (Eh)": 0.002508973529,
         "pKa": null,
         "Mulliken charges": [
             -0.565,

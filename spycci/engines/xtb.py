@@ -1,4 +1,5 @@
 import os, copy, sh, shutil
+import numpy as np
 from typing import Dict
 from tempfile import mkdtemp
 from spycci.config import get_ncores
@@ -368,7 +369,7 @@ class XtbInput(Engine):
                     logger.error("Error occurred during xTB calculation.")
                     raise RuntimeError("Error occurred during xTB calculation")
 
-        # Parse the final single point energy and the vibronic energy
+        # Parse the final single point energy and the Gibbs free energy correction
         # ----------------------------------------------------------------------------------
         with open("output.out", "r") as out:
             for line in out:
@@ -376,11 +377,12 @@ class XtbInput(Engine):
                     electronic_energy = float(line.split()[-3])
                     mol.properties.set_electronic_energy(electronic_energy, self)
                 if "G(RRHO) contrib." in line:
-                    vibronic_energy = float(line.split()[-3])
-                    mol.properties.set_vibronic_energy(vibronic_energy, self)
+                    free_energy_correction = float(line.split()[-3])
+                    mol.properties.set_free_energy_correction(free_energy_correction, self)
                 if "TOTAL FREE ENERGY" in line:
                     gibbs_free_energy = float(line.split()[-3])
-                    mol.properties.set_gibbs_free_energy(gibbs_free_energy, self, self)
+                    if not np.isclose(gibbs_free_energy, mol.properties.gibbs_free_energy, rtol=1e-9):
+                        raise RuntimeError("Computed Gibbs Free Energy differs from parsed one. This is unexpected.")
 
         # Parse the Mulliken atomic charges and spin populations
         # ----------------------------------------------------------------------------------

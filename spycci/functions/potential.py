@@ -108,12 +108,12 @@ def calculate_reduction_potential(
     reduced_energy = reduced.properties.electronic_energy * Eh_to_kcalmol
 
     if (
-        oxidised.properties.level_of_theory_vibronic is not None
-        and oxidised.properties.level_of_theory_vibronic
-        == reduced.properties.level_of_theory_vibronic
+        oxidised.properties.level_of_theory_vibrational is not None
+        and oxidised.properties.level_of_theory_vibrational
+        == reduced.properties.level_of_theory_vibrational
     ):
-        oxidised_energy += oxidised.properties.vibronic_energy * Eh_to_kcalmol
-        reduced_energy += reduced.properties.vibronic_energy * Eh_to_kcalmol
+        oxidised_energy += oxidised.properties.free_energy_correction * Eh_to_kcalmol
+        reduced_energy += reduced.properties.free_energy_correction * Eh_to_kcalmol
 
     reference_potential = 4.28  # V, SHE reference
 
