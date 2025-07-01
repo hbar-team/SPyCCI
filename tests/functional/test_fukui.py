@@ -7,11 +7,18 @@ from spycci.functions.fukui import calculate_fukui, CubeGrids
 from os.path import dirname, abspath
 from numpy.testing import assert_array_almost_equal
 from shutil import rmtree
+from spycci.core.dependency_finder import find_orca_version
 
 # Get the path of the tests directory
 TEST_DIR = dirname(abspath(__file__))
 
 
+# =================================================================
+#     The following tests have been developed for ORCA 6.0.1
+# =================================================================
+
+
+@pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_calculate_fukui():
 
     mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz", charge=0, spin=1)
@@ -24,37 +31,37 @@ def test_calculate_fukui():
 
     assert_array_almost_equal(
         mol.properties.condensed_fukui_mulliken["f0"],
-        [0.315185, 0.3419, 0.342916],
+        [0.3151970, 0.3419340, 0.3428690],
         decimal=6,
     )
 
     assert_array_almost_equal(
         mol.properties.condensed_fukui_mulliken["f+"],
-        [-0.123065, 0.560517, 0.562548],
+        [-0.1230240, 0.5605780, 0.5624460],
         decimal=6,
     )
 
     assert_array_almost_equal(
         mol.properties.condensed_fukui_mulliken["f-"],
-        [0.753435, 0.123282, 0.123284],
+        [0.7534180, 0.1232900, 0.1232920],
         decimal=6,
     )
 
     assert_array_almost_equal(
         mol.properties.condensed_fukui_hirshfeld["f0"],
-        [0.473557, 0.262937, 0.263497],
+        [0.4735585, 0.2629585, 0.2634750],
         decimal=6,
     )
 
     assert_array_almost_equal(
         mol.properties.condensed_fukui_hirshfeld["f+"],
-        [0.259586, 0.369647, 0.370749],
+        [0.2595910, 0.3696890, 0.3707040],
         decimal=6,
     )
 
     assert_array_almost_equal(
         mol.properties.condensed_fukui_hirshfeld["f-"],
-        [0.687529, 0.156227, 0.156244],
+        [0.6875260, 0.1562280, 0.1562460],
         decimal=6,
     )
 
@@ -63,6 +70,7 @@ def test_calculate_fukui():
     rmtree("error_files", ignore_errors=True)
 
 
+@pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_calculate_fukui_no_cube():
 
     mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz", charge=0, spin=1)
@@ -75,37 +83,37 @@ def test_calculate_fukui_no_cube():
 
     assert_array_almost_equal(
         mol.properties.condensed_fukui_mulliken["f0"],
-        [0.315185, 0.3419, 0.342916],
+        [0.3151970, 0.3419340, 0.3428690],
         decimal=6,
     )
 
     assert_array_almost_equal(
         mol.properties.condensed_fukui_mulliken["f+"],
-        [-0.123065, 0.560517, 0.562548],
+        [-0.1230240, 0.5605780, 0.5624460],
         decimal=6,
     )
 
     assert_array_almost_equal(
         mol.properties.condensed_fukui_mulliken["f-"],
-        [0.753435, 0.123282, 0.123284],
+        [0.7534180, 0.1232900, 0.1232920],
         decimal=6,
     )
 
     assert_array_almost_equal(
         mol.properties.condensed_fukui_hirshfeld["f0"],
-        [0.473557, 0.262937, 0.263497],
+        [0.4735585, 0.2629585, 0.2634750],
         decimal=6,
     )
 
     assert_array_almost_equal(
         mol.properties.condensed_fukui_hirshfeld["f+"],
-        [0.259586, 0.369647, 0.370749],
+        [0.2595910, 0.3696890, 0.3707040],
         decimal=6,
     )
 
     assert_array_almost_equal(
         mol.properties.condensed_fukui_hirshfeld["f-"],
-        [0.687529, 0.156227, 0.156244],
+        [0.6875260, 0.1562280, 0.1562460],
         decimal=6,
     )
 

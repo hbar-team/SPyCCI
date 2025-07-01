@@ -5,6 +5,9 @@ from spycci.systems import System
 from os.path import dirname, abspath
 from shutil import rmtree
 
+# =================================================================
+#    The following test has been developed for PACKMOL 20.14.2
+# =================================================================
 
 # Get the path of the tests directory
 TEST_DIR = dirname(abspath(__file__))

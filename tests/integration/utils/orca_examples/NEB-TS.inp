@@ -7,9 +7,9 @@ end
 %maxcore 750
 
 %neb
-    neb_end_xyzfile "product.xyz"
+    neb_end_xyzfile "NEB_product.xyz"
     NImages 5
 end
 
-*xyzfile 0 1 reactant.xyz
+*xyzfile 0 1 NEB_reactant.xyz
 
