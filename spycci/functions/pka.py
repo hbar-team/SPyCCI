@@ -70,7 +70,7 @@ def _validate_acid_base_pair(
     with a pKa calculation and verify the matching between levels of theory used in the computation.
     The function also accepts a `water` and `oxonium` object as optionals to verify the compatibility
     of the levels of theory in case of the oxonium scheme. If validation fails an exception is raised.
-    The function returns a bool value correspondent to the availability of vibronic calculations.
+    The function returns a bool value correspondent to the availability of vibrational calculations.
 
     Parameters
     ----------
@@ -93,7 +93,7 @@ def _validate_acid_base_pair(
     Returns
     -------
     bool
-        True if the two system have appropriate and matching vibronic levels of theory. False otherwise.
+        True if the two system have appropriate and matching vibrational levels of theory. False otherwise.
     """
     # Check if the user provided both water and oxonium and check the structures
     if oxonium is None and water is None:
@@ -150,10 +150,10 @@ def _validate_acid_base_pair(
             logger.error(msg)
             raise RuntimeError(msg)
 
-    # Check if the species have vibronic energy values associated
+    # Check if the species have gibbs free energy correction values associated
     if (
-        protonated.properties.vibronic_energy is None
-        or deprotonated.properties.vibronic_energy is None
+        protonated.properties.free_energy_correction is None
+        or deprotonated.properties.free_energy_correction is None
     ):
         msg = "Vibronic energies not found. The pKa calculation will be executed with only electronic energies"
         logger.warning(msg)
@@ -162,21 +162,21 @@ def _validate_acid_base_pair(
     if oxonium and water:
 
         if (
-            water.properties.vibronic_energy is None
-            or oxonium.properties.vibronic_energy is None
+            water.properties.free_energy_correction is None
+            or oxonium.properties.free_energy_correction is None
         ):
             msg = "Vibronic energies not found. The pKa calculation will be executed with only electronic energies"
             logger.warning(msg)
             return False
 
     # Check if the level
-    vlot_protonated = protonated.properties.level_of_theory_vibronic
-    vlot_deprotonated = deprotonated.properties.level_of_theory_vibronic
+    vlot_protonated = protonated.properties.level_of_theory_vibrational
+    vlot_deprotonated = deprotonated.properties.level_of_theory_vibrational
     if vlot_protonated == vlot_deprotonated:
 
         if oxonium and water:
-            vlot_water = water.properties.level_of_theory_vibronic
-            vlot_oxonium = oxonium.properties.level_of_theory_vibronic
+            vlot_water = water.properties.level_of_theory_vibrational
+            vlot_oxonium = oxonium.properties.level_of_theory_vibrational
             if vlot_protonated != vlot_water or vlot_protonated != vlot_oxonium:
                 msg = "Vibronic energies not found. The pKa calculation will be executed with only electronic energies"
                 logger.warning(msg)
@@ -212,18 +212,18 @@ def calculate_pka(protonated: System, deprotonated: System):
     pKa : float
         pKa of the molecule.
     """
-    # Validate systems and check if vibronic energies are available
-    with_vibronic = _validate_acid_base_pair(protonated, deprotonated)
+    # Validate systems and check if vibrational energies are available
+    with_vibrations = _validate_acid_base_pair(protonated, deprotonated)
 
     # Extract electronic energies
     protonated_energy = protonated.properties.electronic_energy * scon.Eh_to_kcalmol
     deprotonated_energy = deprotonated.properties.electronic_energy * scon.Eh_to_kcalmol
 
-    # If available consider vibronic energies
-    if with_vibronic:
-        protonated_energy += protonated.properties.vibronic_energy * scon.Eh_to_kcalmol
+    # If available consider free energy correction factors from vibrational analysis
+    if with_vibrations:
+        protonated_energy += protonated.properties.free_energy_correction * scon.Eh_to_kcalmol
         deprotonated_energy += (
-            deprotonated.properties.vibronic_energy * scon.Eh_to_kcalmol
+            deprotonated.properties.free_energy_correction * scon.Eh_to_kcalmol
         )
 
     # If gfn2 from xTB is used consider an additional correction factor for the proton self energy
@@ -243,7 +243,7 @@ def calculate_pka(protonated: System, deprotonated: System):
     protonated.properties.set_pka(
         value=pka,
         electronic_engine=protonated.properties.level_of_theory_electronic,
-        vibronic_engine=protonated.properties.level_of_theory_vibronic,
+        vibrational_engine=protonated.properties.level_of_theory_vibrational,
     )
 
     return pka
@@ -269,8 +269,8 @@ def calculate_pka_oxonium_scheme(
     pKa : float
         pKa of the molecule.
     """
-    # Validate systems and check if vibronic energies are available
-    with_vibronic = _validate_acid_base_pair(protonated, deprotonated)
+    # Validate systems and check if free energy corrections are available
+    with_vibrations = _validate_acid_base_pair(protonated, deprotonated)
 
     # Extract electronic energies
     protonated_energy = protonated.properties.electronic_energy * scon.Eh_to_kcalmol
@@ -278,14 +278,14 @@ def calculate_pka_oxonium_scheme(
     water_energy = water.properties.electronic_energy * scon.Eh_to_kcalmol
     oxonium_energy = oxonium.properties.electronic_energy * scon.Eh_to_kcalmol
 
-    # If available consider vibronic energies
-    if with_vibronic:
-        protonated_energy += protonated.properties.vibronic_energy * scon.Eh_to_kcalmol
+    # If available consider free energy correction factors from vibrational calculations
+    if with_vibrations:
+        protonated_energy += protonated.properties.free_energy_correction * scon.Eh_to_kcalmol
         deprotonated_energy += (
-            deprotonated.properties.vibronic_energy * scon.Eh_to_kcalmol
+            deprotonated.properties.free_energy_correction * scon.Eh_to_kcalmol
         )
-        water_energy += water.properties.vibronic_energy * scon.Eh_to_kcalmol
-        oxonium_energy += oxonium.properties.vibronic_energy * scon.Eh_to_kcalmol
+        water_energy += water.properties.free_energy_correction * scon.Eh_to_kcalmol
+        oxonium_energy += oxonium.properties.free_energy_correction * scon.Eh_to_kcalmol
 
     # Compute the pKa and set it as a property of the protonated molecule
     pka = (
@@ -295,7 +295,7 @@ def calculate_pka_oxonium_scheme(
     protonated.properties.set_pka(
         value=pka,
         electronic_engine=protonated.properties.level_of_theory_electronic,
-        vibronic_engine=protonated.properties.level_of_theory_vibronic,
+        vibrational_engine=protonated.properties.level_of_theory_vibrational,
     )
 
     return pka
@@ -499,8 +499,8 @@ def auto_calculate_pka(
     method_el: Engine
         The computational engine to be used in the electronic level of theory calculations
     method_vib: Engine (optional)
-        The computational engine to be used in the vibronic level of theory calculations. If
-        set to None (default) the pKa will be computed without the vibronic contributions.
+        The computational engine to be used in the vibrational level of theory calculations. If
+        set to None (default) the pKa will be computed without the free energy corrections (only electronic energy).
     method_opt: Engine (optional)
         The computational engine to be used in the geometry optimization of the protonated
         molecule and its deprotomers. If set to None (default) will use xTB gfn2 and the
@@ -531,9 +531,9 @@ def auto_calculate_pka(
         method_el.spe(protonated, inplace=True, ncores=ncores, maxcore=maxcore)
 
         if method_vib is not None and method_vib != method_opt:
-            dummy = method_vib.freq(protonated, ncores=ncores, maxcore=maxcore)
-            protonated.properties.set_vibronic_energy(
-                dummy.properties.vibronic_energy, method_vib
+            dummy: System = method_vib.freq(protonated, ncores=ncores, maxcore=maxcore)
+            protonated.properties.set_free_energy_correction(
+                dummy.properties.free_energy_correction, method_vib
             )
 
     deprotomers = deprotonate(
