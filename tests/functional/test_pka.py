@@ -159,7 +159,7 @@ def test_run_pka_workflow_different_electronic():
         pka, free_energies = run_pka_workflow(
             protonated,
             deprotonated,
-            method_vibronic=xtb,
+            method_vibrational=xtb,
             method_electonic=orca,
             method_geometry=xtb,
             use_cosmors=True,

@@ -35,7 +35,7 @@ def calculate_pka(protonated: System, deprotonated: System):
     pKa : float
         pKa of the molecule.
     """
-    # Validate systems and check if vibronic energies are available
+    # Validate systems and check if vibrational free energy corrections are available
     with_vibrations = validate_acid_base_pair(protonated, deprotonated)
 
     # Extract electronic energies
@@ -92,7 +92,7 @@ def calculate_pka_oxonium_scheme(
     pKa : float
         pKa of the molecule.
     """
-    # Validate systems and check if vibronic energies are available
+    # Validate systems and check if vibrational free energy corrections are available
     with_vibrations = validate_acid_base_pair(protonated, deprotonated)
 
     # Extract electronic energies
@@ -127,7 +127,7 @@ def calculate_pka_oxonium_scheme(
 def run_pka_workflow(
     protonated: System,
     deprotonated: System,
-    method_vibronic: Union[XtbInput, OrcaInput],
+    method_vibrational: Union[XtbInput, OrcaInput],
     method_electonic: Optional[Union[XtbInput, OrcaInput]] = None,
     method_geometry: Optional[Union[XtbInput, OrcaInput]] = None,
     use_cosmors: bool = False,
@@ -151,12 +151,12 @@ def run_pka_workflow(
         The protonated system for which the pKa must be computed
     deprotonated : System
         The deprotomer generated during the dissociation reaction
-    method_vibronic: Union[XtbInput, OrcaInput]
+    method_vibrational: Union[XtbInput, OrcaInput]
         The engine to be used to run the frequency calculations.
     method_electonic : Optional[Union[XtbInput, OrcaInput]]
         The engine to be used to run the electronic calculations. If set to `None` (default) will use electronic 
-        energy computed by the `method_vibronic` engine. Please notice that, if the electronic method is different
-        from the vibronic one, the computed Gibbs Free energy will be a mix of two different levels of theory (not
+        energy computed by the `method_vibrational` engine. Please notice that, if the electronic method is different
+        from the vibrational one, the computed Gibbs Free energy will be a mix of two different levels of theory (not
         advaisable)
     method_geometry : Optional[Union[XtbInput, OrcaInput]]
         The engine to be used to run the geometry optimizations. If set to `None` the user-provided geometries will be
@@ -186,7 +186,7 @@ def run_pka_workflow(
     check_structure_acid_base_pair(protonated, deprotonated)
 
     # Check if the method to be used for frequency calculations is xtb or orca
-    if type(method_vibronic) not in [XtbInput, OrcaInput]:
+    if type(method_vibrational) not in [XtbInput, OrcaInput]:
         raise TypeError("The frequency calculation method must be xTB or orca.")
     
     # Check if the method to be used for energy calculations is xtb or orca
@@ -228,14 +228,14 @@ def run_pka_workflow(
         oxonium_sol = method_geometry.opt(oxonium, ncores=ncores, maxcore=maxcore)
 
     # Run frequency calculation for all structures in solvent
-    if method_vibronic != method_geometry:
-        method_vibronic.freq(protonated_sol, ncores=ncores, maxcore=maxcore, inplace=True)
-        method_vibronic.freq(deprotonated_sol, ncores=ncores, maxcore=maxcore, inplace=True)
-        method_vibronic.freq(water_sol, ncores=ncores, maxcore=maxcore, inplace=True)
-        method_vibronic.freq(oxonium_sol, ncores=ncores, maxcore=maxcore, inplace=True)
+    if method_vibrational != method_geometry:
+        method_vibrational.freq(protonated_sol, ncores=ncores, maxcore=maxcore, inplace=True)
+        method_vibrational.freq(deprotonated_sol, ncores=ncores, maxcore=maxcore, inplace=True)
+        method_vibrational.freq(water_sol, ncores=ncores, maxcore=maxcore, inplace=True)
+        method_vibrational.freq(oxonium_sol, ncores=ncores, maxcore=maxcore, inplace=True)
     
     # If required run a single point calculation in solvent
-    if method_electonic is not None and method_electonic != method_vibronic:
+    if method_electonic is not None and method_electonic != method_vibrational:
         method_electonic.spe(protonated_sol, ncores=ncores, maxcore=maxcore, inplace=True)
         method_electonic.spe(deprotonated_sol, ncores=ncores, maxcore=maxcore, inplace=True)
         method_electonic.spe(water_sol, ncores=ncores, maxcore=maxcore, inplace=True)
@@ -247,10 +247,10 @@ def run_pka_workflow(
     G_water_sol = water_sol.properties.electronic_energy
     G_oxonium_sol = oxonium_sol.properties.electronic_energy
 
-    G_protonated_sol += protonated_sol.properties.vibronic_energy
-    G_deprotonated_sol += deprotonated_sol.properties.vibronic_energy
-    G_water_sol += water_sol.properties.vibronic_energy
-    G_oxonium_sol += oxonium_sol.properties.vibronic_energy
+    G_protonated_sol += protonated_sol.properties.free_energy_correction
+    G_deprotonated_sol += deprotonated_sol.properties.free_energy_correction
+    G_water_sol += water_sol.properties.free_energy_correction
+    G_oxonium_sol += oxonium_sol.properties.free_energy_correction
 
     # Store the computed Gibbs Free Energies for the calculations in solvent
     free_energies["G(solv) Protonated"] = G_protonated_sol
@@ -267,7 +267,7 @@ def run_pka_workflow(
     computed_pka["oxonium"] = pKa_oxonium
 
     # If required run the cosmors based schemes
-    method_cosmors = method_electonic if method_electonic else method_vibronic
+    method_cosmors = method_electonic if method_electonic else method_vibrational
     if use_cosmors and type(method_cosmors)==OrcaInput:
 
         # Run COSMO-RS calculation for all molecules
@@ -283,17 +283,17 @@ def run_pka_workflow(
         free_energies["dG(COSMO-RS) Oxonium"] = dG_solv_oxonium
 
         # Create an engine for the frequency calculations in vacuum
-        method_vibronic_vac = deepcopy(method_vibronic)
-        method_vibronic_vac.solvent = None
+        method_vibrational_vac = deepcopy(method_vibrational)
+        method_vibrational_vac.solvent = None
 
         # Run frequency calculation for all structures in vacuum
-        protonated_vac = method_vibronic_vac.freq(protonated_sol, ncores=ncores, maxcore=maxcore)
-        deprotonated_vac = method_vibronic_vac.freq(deprotonated_sol, ncores=ncores, maxcore=maxcore)
-        water_vac = method_vibronic_vac.freq(water_sol, ncores=ncores, maxcore=maxcore)
-        oxonium_vac = method_vibronic_vac.freq(oxonium_sol, ncores=ncores, maxcore=maxcore)
+        protonated_vac = method_vibrational_vac.freq(protonated_sol, ncores=ncores, maxcore=maxcore)
+        deprotonated_vac = method_vibrational_vac.freq(deprotonated_sol, ncores=ncores, maxcore=maxcore)
+        water_vac = method_vibrational_vac.freq(water_sol, ncores=ncores, maxcore=maxcore)
+        oxonium_vac = method_vibrational_vac.freq(oxonium_sol, ncores=ncores, maxcore=maxcore)
 
         # If required perform a single point calculation in vacuum
-        if method_electonic is not None and method_electonic != method_vibronic:
+        if method_electonic is not None and method_electonic != method_vibrational:
 
             # Create an engine for the electronic calculations in vacuum
             method_electonic_vac = deepcopy(method_electonic)
@@ -311,10 +311,10 @@ def run_pka_workflow(
         G_water_vac = water_vac.properties.electronic_energy
         G_oxonium_vac = oxonium_vac.properties.electronic_energy
 
-        G_protonated_vac += protonated_vac.properties.vibronic_energy
-        G_deprotonated_vac += deprotonated_vac.properties.vibronic_energy
-        G_water_vac += water_vac.properties.vibronic_energy
-        G_oxonium_vac += oxonium_vac.properties.vibronic_energy
+        G_protonated_vac += protonated_vac.properties.free_energy_correction
+        G_deprotonated_vac += deprotonated_vac.properties.free_energy_correction
+        G_water_vac += water_vac.properties.free_energy_correction
+        G_oxonium_vac += oxonium_vac.properties.free_energy_correction
 
         # Store the Gibbs free energies computed in vacuum
         free_energies["G(vac) Protonated"] = G_protonated_vac

@@ -115,7 +115,7 @@ def validate_acid_base_pair(
     with a pKa calculation and verify the matching between levels of theory used in the computation.
     The function also accepts a `water` and `oxonium` object as optionals to verify the compatibility
     of the levels of theory in case of the oxonium scheme. If validation fails an exception is raised.
-    The function returns a bool value correspondent to the availability of vibronic calculations.
+    The function returns a bool value correspondent to the availability of vibrational calculations.
 
     Parameters
     ----------
@@ -138,7 +138,7 @@ def validate_acid_base_pair(
     Returns
     -------
     bool
-        True if the two system have appropriate and matching vibronic levels of theory. False otherwise.
+        True if the two system have appropriate and matching vibrational levels of theory. False otherwise.
     """
     # Check if the user provided both water and oxonium and check the structures
     if oxonium is None and water is None:
@@ -195,45 +195,45 @@ def validate_acid_base_pair(
             logger.error(msg)
             raise RuntimeError(msg)
 
-    # Check if the species have vibronic energy values associated
+    # Check if the species have free energy correction values associated
     if (
-        protonated.properties.vibronic_energy is None
-        or deprotonated.properties.vibronic_energy is None
+        protonated.properties.free_energy_correction is None
+        or deprotonated.properties.free_energy_correction is None
     ):
-        msg = "Vibronic energies not found. The pKa calculation will be executed with only electronic energies"
+        msg = "Vibrational free energy correction not found. The pKa calculation will be executed with only electronic energies"
         logger.warning(msg)
         return False
 
     if oxonium and water:
 
         if (
-            water.properties.vibronic_energy is None
-            or oxonium.properties.vibronic_energy is None
+            water.properties.free_energy_correction is None
+            or oxonium.properties.free_energy_correction is None
         ):
-            msg = "Vibronic energies not found. The pKa calculation will be executed with only electronic energies"
+            msg = "Vibrational free energy correction not found. The pKa calculation will be executed with only electronic energies"
             logger.warning(msg)
             return False
 
-    # Check if the level of theory for vibronic calculation is the same
-    vlot_protonated = protonated.properties.level_of_theory_vibronic
-    vlot_deprotonated = deprotonated.properties.level_of_theory_vibronic
+    # Check if the level of theory for vibrational calculation is the same
+    vlot_protonated = protonated.properties.level_of_theory_vibrational
+    vlot_deprotonated = deprotonated.properties.level_of_theory_vibrational
     if vlot_protonated == vlot_deprotonated:
 
         if oxonium and water:
-            vlot_water = water.properties.level_of_theory_vibronic
-            vlot_oxonium = oxonium.properties.level_of_theory_vibronic
+            vlot_water = water.properties.level_of_theory_vibrational
+            vlot_oxonium = oxonium.properties.level_of_theory_vibrational
             if vlot_protonated != vlot_water or vlot_protonated != vlot_oxonium:
-                msg = "Vibronic energies not found. The pKa calculation will be executed with only electronic energies"
+                msg = "Vibrational free energy correction not found. The pKa calculation will be executed with only electronic energies"
                 logger.warning(msg)
                 return False
 
         if elot_protonated != vlot_protonated:
-            msg = f"Vibronic level of theory ({vlot_protonated}) is different form the electronic one ({elot_protonated}). The pKa calculation will be executed anyway."
+            msg = f"Vibrational level of theory ({vlot_protonated}) is different form the electronic one ({elot_protonated}). The pKa calculation will be executed anyway."
             logger.warning(msg)
 
         return True
 
     else:
-        msg = "Vibronic energies not found. The pKa calculation will be executed with only electronic energies"
+        msg = "Vibrational free energy correction not found. The pKa calculation will be executed with only electronic energies"
         logger.warning(msg)
         return False
