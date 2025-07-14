@@ -1906,19 +1906,26 @@ class OrcaInput(Engine):
             logger.error("Error occurred during orca calculation.")
             raise RuntimeError("Error occurred during orca calculation")
 
-        # Parse the final single point energy and the vibronic energy
+        # Parse the final single point energy and the Gibbs free energy correction
         # -----------------------------------------------------------------------------------
+        gibbs_free_energy = None
         with open("output.out", "r") as out:
             for line in out:
                 if "FINAL SINGLE POINT ENERGY" in line:
                     electronic_energy = float(line.split()[-1])
                     mol.properties.set_electronic_energy(electronic_energy, self)
                 if "G-E(el)" in line:
-                    vibronic_energy = float(line.split()[-4])
-                    mol.properties.set_vibronic_energy(vibronic_energy, self)
+                    free_energy_correction = float(line.split()[-4])
+                    mol.properties.set_free_energy_correction(free_energy_correction, self)
                 if "Final Gibbs free energy" in line:
                     gibbs_free_energy = float(line.split()[-2])
-                    mol.properties.set_gibbs_free_energy(gibbs_free_energy, self, self)
+            
+            # Run a sanity check on the parsed data
+            if gibbs_free_energy is not None:
+                if mol.properties.free_energy_correction is None:
+                    raise RuntimeError("Gibbs free energy has been found but G-E(el) has not. This is unexpected.")
+                elif not np.isclose(gibbs_free_energy, mol.properties.gibbs_free_energy, rtol=1e-9):
+                    raise RuntimeError("Computed Gibbs Free Energy differs from parsed one. This is unexpected.")
 
         # Parse the Mulliken atomic charges and spin populations
         # -----------------------------------------------------------------------------------

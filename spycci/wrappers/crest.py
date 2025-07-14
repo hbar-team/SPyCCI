@@ -549,7 +549,7 @@ def qcg_ensemble(
     -------
     ensemble : Ensemble
         Ensemble object containing the explicitly solvated input molecule, with updated energy
-        coming from enseble generation (electronic contribution only). The vibronic contribution
+        coming from enseble generation (electronic contribution only). The vibrational contribution
         is taken from the input solute molecule (if present), while the electronic contribution
         is taken as the weighted average of all generated ensembles.
     """

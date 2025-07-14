@@ -108,10 +108,10 @@ def test_XtbInput_opt():
 
     else:
         assert mol.properties.level_of_theory_electronic == engine.level_of_theory
-        assert mol.properties.level_of_theory_vibronic == engine.level_of_theory
+        assert mol.properties.level_of_theory_vibrational == engine.level_of_theory
 
         assert_almost_equal(mol.properties.electronic_energy, -14.097142459981, decimal=6)
-        assert_almost_equal(mol.properties.vibronic_energy, 0.032427777313, decimal=4)
+        assert_almost_equal(mol.properties.free_energy_correction, 0.032427777313, decimal=4)
         assert_almost_equal(mol.properties.gibbs_free_energy, -14.064714682668, decimal=4)
 
         expected_mulliken_charges = np.array(
@@ -151,10 +151,10 @@ def test_XtbInput_opt_no_inplace():
 
     else:
         assert newmol.properties.level_of_theory_electronic == engine.level_of_theory
-        assert newmol.properties.level_of_theory_vibronic == engine.level_of_theory
+        assert newmol.properties.level_of_theory_vibrational == engine.level_of_theory
 
         assert_almost_equal(newmol.properties.electronic_energy, -14.097142459981, decimal=6)
-        assert_almost_equal(newmol.properties.vibronic_energy, 0.032427777313, decimal=4)
+        assert_almost_equal(newmol.properties.free_energy_correction, 0.032427777313, decimal=4)
         assert_almost_equal(newmol.properties.gibbs_free_energy, -14.064714682668, decimal=4)
 
         expected_mulliken_charges = np.array(
@@ -194,10 +194,10 @@ def test_XtbInput_freq():
 
     else:
         assert mol.properties.level_of_theory_electronic == engine.level_of_theory
-        assert mol.properties.level_of_theory_vibronic == engine.level_of_theory
+        assert mol.properties.level_of_theory_vibrational == engine.level_of_theory
 
         assert_almost_equal(mol.properties.electronic_energy, -14.093063923335, decimal=6)
-        assert_almost_equal(mol.properties.vibronic_energy, 0.033817193430, decimal=6)
+        assert_almost_equal(mol.properties.free_energy_correction, 0.033817193430, decimal=6)
         assert_almost_equal(mol.properties.gibbs_free_energy, -14.059246729905, decimal=6)
 
         expected_mulliken_charges = np.array(
@@ -224,10 +224,10 @@ def test_XtbInput_freq_no_inplace():
 
     else:
         assert newmol.properties.level_of_theory_electronic == engine.level_of_theory
-        assert newmol.properties.level_of_theory_vibronic == engine.level_of_theory
+        assert newmol.properties.level_of_theory_vibrational == engine.level_of_theory
 
         assert_almost_equal(newmol.properties.electronic_energy, -14.093063923335, decimal=6)
-        assert_almost_equal(newmol.properties.vibronic_energy, 0.033817193430, decimal=6)
+        assert_almost_equal(newmol.properties.free_energy_correction, 0.033817193430, decimal=6)
         assert_almost_equal(newmol.properties.gibbs_free_energy, -14.059246729905, decimal=6)
 
         expected_mulliken_charges = np.array(

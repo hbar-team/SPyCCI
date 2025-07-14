@@ -263,10 +263,10 @@ def test_OrcaInput_opt():
 
     else:
         assert mol.properties.level_of_theory_electronic == engine.level_of_theory
-        assert mol.properties.level_of_theory_vibronic == engine.level_of_theory
+        assert mol.properties.level_of_theory_vibrational == engine.level_of_theory
 
         assert_almost_equal(mol.properties.electronic_energy, -76.272686996006, decimal=6)
-        assert_almost_equal(mol.properties.vibronic_energy, 0.00301258, decimal=6)
+        assert_almost_equal(mol.properties.free_energy_correction, 0.00301258, decimal=6)
         assert_almost_equal(mol.properties.gibbs_free_energy, -76.26967441, decimal=6)
 
         expected_mulliken_charges = np.array([-0.285541, 0.142770, 0.142771])
@@ -295,10 +295,10 @@ def test_OrcaInput_opt_no_inplace():
 
     else:
         assert newmol.properties.level_of_theory_electronic == engine.level_of_theory
-        assert newmol.properties.level_of_theory_vibronic == engine.level_of_theory
+        assert newmol.properties.level_of_theory_vibrational == engine.level_of_theory
 
         assert_almost_equal(newmol.properties.electronic_energy, -76.272686996006, decimal=6)
-        assert_almost_equal(newmol.properties.vibronic_energy, 0.00301258, decimal=6)
+        assert_almost_equal(newmol.properties.free_energy_correction, 0.00301258, decimal=6)
         assert_almost_equal(newmol.properties.gibbs_free_energy, -76.26967441, decimal=6)
 
         expected_mulliken_charges = np.array([-0.285541, 0.142770, 0.142771])
@@ -327,10 +327,10 @@ def test_OrcaInput_opt_ts():
 
     else:
         assert mol.properties.level_of_theory_electronic == engine.level_of_theory
-        assert mol.properties.level_of_theory_vibronic == engine.level_of_theory
+        assert mol.properties.level_of_theory_vibrational == engine.level_of_theory
 
         assert_almost_equal(mol.properties.electronic_energy, -3073.197345839629, decimal=6)
-        assert_almost_equal(mol.properties.vibronic_energy, 0.00556142, decimal=6)
+        assert_almost_equal(mol.properties.free_energy_correction, 0.00556142, decimal=6)
         assert_almost_equal(mol.properties.gibbs_free_energy, -3073.19178442, decimal=6)
 
         assert mol.geometry.atoms == ["C", "Br", "H", "H", "H", "Cl"]
@@ -362,10 +362,10 @@ def test_OrcaInput_opt_ts_no_inplace():
 
     else:
         assert newmol.properties.level_of_theory_electronic == engine.level_of_theory
-        assert newmol.properties.level_of_theory_vibronic == engine.level_of_theory
+        assert newmol.properties.level_of_theory_vibrational == engine.level_of_theory
 
         assert_almost_equal(newmol.properties.electronic_energy, -3073.197345839629, decimal=6)
-        assert_almost_equal(newmol.properties.vibronic_energy, 0.00556142, decimal=6)
+        assert_almost_equal(newmol.properties.free_energy_correction, 0.00556142, decimal=6)
         assert_almost_equal(newmol.properties.gibbs_free_energy, -3073.19178442, decimal=6)
 
         assert newmol.geometry.atoms == ["C", "Br", "H", "H", "H", "Cl"]
@@ -397,10 +397,10 @@ def test_OrcaInput_freq():
 
     else:
         assert mol.properties.level_of_theory_electronic == engine.level_of_theory
-        assert mol.properties.level_of_theory_vibronic == engine.level_of_theory
+        assert mol.properties.level_of_theory_vibrational == engine.level_of_theory
 
         assert_almost_equal(mol.properties.electronic_energy, -76.272562168542, decimal=6)
-        assert_almost_equal(mol.properties.vibronic_energy, 0.00327779, decimal=6)
+        assert_almost_equal(mol.properties.free_energy_correction, 0.00327779, decimal=6)
         assert_almost_equal(mol.properties.gibbs_free_energy, -76.26928438, decimal=6)
 
         expected_mulliken_charges = np.array([-0.285707, 0.142852, 0.142855])
@@ -453,10 +453,10 @@ def test_OrcaInput_freq_no_inplace():
 
     else:
         assert newmol.properties.level_of_theory_electronic == engine.level_of_theory
-        assert newmol.properties.level_of_theory_vibronic == engine.level_of_theory
+        assert newmol.properties.level_of_theory_vibrational == engine.level_of_theory
 
         assert_almost_equal(newmol.properties.electronic_energy, -76.272562168542, decimal=6)
-        assert_almost_equal(newmol.properties.vibronic_energy, 0.00327779, decimal=6)
+        assert_almost_equal(newmol.properties.free_energy_correction, 0.00327779, decimal=6)
         assert_almost_equal(newmol.properties.gibbs_free_energy, -76.26928438, decimal=6)
 
         expected_mulliken_charges = np.array([-0.285707, 0.142852, 0.142855])
@@ -478,10 +478,10 @@ def test_OrcaInput_nfreq():
 
     else:
         assert mol.properties.level_of_theory_electronic == engine.level_of_theory
-        assert mol.properties.level_of_theory_vibronic == engine.level_of_theory
+        assert mol.properties.level_of_theory_vibrational == engine.level_of_theory
 
         assert_almost_equal(mol.properties.electronic_energy, -76.283375159531, decimal=6)
-        assert_almost_equal(mol.properties.vibronic_energy, 0.00321166, decimal=6)
+        assert_almost_equal(mol.properties.free_energy_correction, 0.00321166, decimal=6)
         assert_almost_equal(mol.properties.gibbs_free_energy, -76.28016350, decimal=6)
 
         expected_mulliken_charges = np.array([-0.363793, 0.181925, 0.181868])
@@ -534,10 +534,10 @@ def test_OrcaInput_nfreq_no_inplace():
 
     else:
         assert newmol.properties.level_of_theory_electronic == engine.level_of_theory
-        assert newmol.properties.level_of_theory_vibronic == engine.level_of_theory
+        assert newmol.properties.level_of_theory_vibrational == engine.level_of_theory
 
         assert_almost_equal(newmol.properties.electronic_energy, -76.283375159531, decimal=6)
-        assert_almost_equal(newmol.properties.vibronic_energy, 0.00321166, decimal=6)
+        assert_almost_equal(newmol.properties.free_energy_correction, 0.00321166, decimal=6)
         assert_almost_equal(newmol.properties.gibbs_free_energy, -76.28016350, decimal=6)
 
         expected_mulliken_charges = np.array([-0.363793, 0.181925, 0.181868])
@@ -706,7 +706,7 @@ def test_OrcaInput_scan_ts():
         assert_array_almost_equal(calculated_energies, expected_energies, decimal=6)
 
         assert_almost_equal(newmol.properties.electronic_energy, -3073.193425489058, decimal=6)
-        assert_almost_equal(newmol.properties.vibronic_energy, 0.00551917, decimal=6)
+        assert_almost_equal(newmol.properties.free_energy_correction, 0.00551917, decimal=6)
         assert_almost_equal(newmol.properties.gibbs_free_energy, -3073.18790631, decimal=6)
 
         assert newmol.geometry.atoms == ["C", "Br", "H", "H", "H", "Cl"]
@@ -738,7 +738,7 @@ def test_OrcaInput_scan_ts_inplace():
 
     else:
         assert_almost_equal(mol.properties.electronic_energy, -3073.193425489058, decimal=6)
-        assert_almost_equal(mol.properties.vibronic_energy, 0.00551917, decimal=6)
+        assert_almost_equal(mol.properties.free_energy_correction, 0.00551917, decimal=6)
         assert_almost_equal(mol.properties.gibbs_free_energy, -3073.18790631, decimal=6)
 
         assert mol.geometry.atoms == ["C", "Br", "H", "H", "H", "Cl"]
