@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging, warnings
-import spycci.config
 import numpy as np
 
 from typing import Dict, List, Union
@@ -94,11 +93,9 @@ class Properties:
     Class containing the properties associated to a system when a given electronic and vibrational
     level of theory are considered. The class automatically stores the level of theory associated
     to the coputed properties and checks, whenever a new property is set, that a given input data
-    is compatible with the current used level of theory. In normal conditions (strict mode)
-    if a mismatch between levels of theory is detected all the properties related to the old
-    level of theory are cleaned and a warning is raised. If the strict mode is disables
-    (by setting compechem.config.STRICT_MODE to False) the level of theory is set to `Undefined`
-    and all the properties are kept.
+    is compatible with the current used level of theory. If a mismatch between levels of theory is
+    detected all the properties related to the old level of theory are cleaned and a warning is
+    raised.
     """
 
     def __init__(self):
@@ -166,17 +163,11 @@ class Properties:
             self.__level_of_theory_electronic = level_of_theory
 
         elif self.__level_of_theory_electronic != level_of_theory:
-            if spycci.config.STRICT_MODE == True:
-                msg = "Different electronic levels of theory used for calculating properties. Clearing properties with different electronic level of theory."
-                logger.warning(msg)
-                self.__clear_electronic()
-                self.__level_of_theory_electronic = level_of_theory
+            msg = "Different electronic levels of theory used for calculating properties. Clearing properties with different electronic level of theory."
+            logger.warning(msg)
+            self.__clear_electronic()
+            self.__level_of_theory_electronic = level_of_theory
 
-            else:
-                msg = "Different electronic levels of theory used for calculating properties. Setting level of theory to undefined."
-                logger.warning(msg)
-                warnings.warn(msg)
-                self.__level_of_theory_electronic = "Undefined"
 
     def __validate_vibrational(self, engine: Engine) -> None:
 
@@ -186,33 +177,19 @@ class Properties:
         logger.debug(f"current: {self.__level_of_theory_vibrational}, requested: {level_of_theory}")
 
         if self.__level_of_theory_vibrational is None:
+            if self.__pka is not None:
+                msg = "Added vibrational contribution. Clearing pKa computed with electronic energy only."
+                logger.warning(msg)
+                self.__pka = None
+            
             self.__level_of_theory_vibrational = level_of_theory
 
-            if self.__pka is not None:
-                if spycci.config.STRICT_MODE == True:
-                    msg = "Added vibrational contribution. Clearing pKa computed with electronic energy only."
-                    logger.warning(msg)
-                    self.__pka = None
-                else:
-                    msg = (
-                        "Added vibrational contribution to Properties with pKa previously computed with electronic energy only."
-                    )
-                    logger.warning(msg)
-                    warnings.warn(msg)
-
         elif self.__level_of_theory_vibrational != level_of_theory:
-
-            if spycci.config.STRICT_MODE == True:
-                msg = "Different vibrational levels of theory used for calculating properties. Clearing properties with different vibrational level of theory."
-                logger.warning(msg)
-                self.__clear_vibrational()
-                self.__level_of_theory_vibrational = level_of_theory
-
-            else:
-                msg = "Different vibrational levels of theory used for calculating properties. Setting level of theory to undefined."
-                logger.warning(msg)
-                warnings.warn(msg)
-                self.__level_of_theory_vibrational = "Undefined"
+            msg = "Different vibrational levels of theory used for calculating properties. Clearing properties with different vibrational level of theory."
+            logger.warning(msg)
+            self.__clear_vibrational()
+            
+            self.__level_of_theory_vibrational = level_of_theory
 
     def to_dict(self) -> dict:
         """
