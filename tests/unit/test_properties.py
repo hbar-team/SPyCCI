@@ -65,9 +65,7 @@ def test_Properties_properties():
     assert_array_almost_equal(p.hirshfeld_spin_populations, [15, 16, 17], decimal=6)
 
 
-def test_strict_mode_conflict_electronic():
-
-    cc.STRICT_MODE = True
+def test_conflict_electronic():
 
     p = Properties()
     first = Engine("FirstMethod")
@@ -84,29 +82,7 @@ def test_strict_mode_conflict_electronic():
     assert_array_almost_equal(p.mulliken_charges, [1, 2, 3], decimal=6)
 
 
-@pytest.mark.filterwarnings("ignore")
-def test_not_strict_mode_conflict_electronic():
-
-    cc.STRICT_MODE = False
-
-    p = Properties()
-    first = Engine("FirstMethod")
-    second = Engine("SecondMethod")
-
-    assert first.level_of_theory != second.level_of_theory
-
-    p.set_electronic_energy(0.1, first)
-    p.set_mulliken_charges([1, 2, 3], second)
-
-    assert p.electronic_energy == 0.1
-    assert p.level_of_theory_electronic == "Undefined"
-    assert p.level_of_theory_vibrational == None
-    assert_array_almost_equal(p.mulliken_charges, [1, 2, 3], decimal=6)
-
-
-def test_strict_mode_conflict_vibrational():
-
-    cc.STRICT_MODE = True
+def test_conflict_vibrational():
 
     p = Properties()
     first = Engine("FirstMethod")
@@ -123,29 +99,8 @@ def test_strict_mode_conflict_vibrational():
     assert p.pka == 0.6
 
 
-@pytest.mark.filterwarnings("ignore")
-def test_not_strict_mode_conflict_vibrational():
 
-    cc.STRICT_MODE = False
-
-    p = Properties()
-    first = Engine("FirstMethod")
-    second = Engine("SecondMethod")
-
-    assert first.level_of_theory != second.level_of_theory
-
-    p.set_free_energy_correction(0.1, first)
-    p.set_pka(0.6, first, second)
-
-    assert p.free_energy_correction == 0.1
-    assert p.level_of_theory_electronic == first.level_of_theory
-    assert p.level_of_theory_vibrational == "Undefined"
-    assert p.pka == 0.6
-
-
-def test_pka_vibrational_addition_strict():
-
-    cc.STRICT_MODE = True
+def test_pka_vibrational_addition():
 
     p = Properties()
     first = Engine("FirstMethod")
@@ -163,32 +118,6 @@ def test_pka_vibrational_addition_strict():
     p.set_free_energy_correction(1.0, second)
 
     assert p.pka == None
-    assert p.level_of_theory_electronic == first.level_of_theory
-    assert p.level_of_theory_vibrational == second.level_of_theory
-    assert p.free_energy_correction == 1.0
-
-
-@pytest.mark.filterwarnings("ignore")
-def test_pka_vibrational_addition_not_strict():
-
-    cc.STRICT_MODE = False
-
-    p = Properties()
-    first = Engine("FirstMethod")
-    second = Engine("SecondMethod")
-
-    assert first.level_of_theory != second.level_of_theory
-
-    p.set_pka(0.0012, first)
-
-    assert p.pka == 0.0012
-    assert p.level_of_theory_electronic == first.level_of_theory
-    assert p.level_of_theory_vibrational == None
-    assert p.free_energy_correction == None
-
-    p.set_free_energy_correction(1.0, second)
-
-    assert p.pka == 0.0012
     assert p.level_of_theory_electronic == first.level_of_theory
     assert p.level_of_theory_vibrational == second.level_of_theory
     assert p.free_energy_correction == 1.0
