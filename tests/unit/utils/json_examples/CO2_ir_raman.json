@@ -35,7 +35,13 @@
         "Level of theory vibrational": "OrcaInput || method: PBE | basis: def2-SVP | solvent: None",
         "Electronic energy (Eh)": -188.256599296842,
         "Free energy correction G-E(el) (Eh)": -0.00931974,
-        "pKa": null,
+        "pKa": {
+            "direct": null,
+            "oxonium": null,
+            "oxonium COSMO-RS": null,
+            "free energies": null,
+            "level of theory cosmors": null
+        },
         "Mulliken charges": [
             0.217578,
             -0.108793,

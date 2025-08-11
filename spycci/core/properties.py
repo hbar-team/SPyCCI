@@ -104,7 +104,7 @@ class Properties:
 
         self.__electronic_energy: float = None
         self.__free_energy_correction: float = None
-        self.__pka: float = None
+        self.__pka: pKa = pKa()
         self.__mulliken_charges: List[float] = []
         self.__mulliken_spin_populations: List[float] = []
         self.__condensed_fukui_mulliken: Dict[str, List[float]] = {}
@@ -116,7 +116,7 @@ class Properties:
     def __clear_electronic(self):
         self.__level_of_theory_electronic = None
         self.__electronic_energy = None
-        self.__pka = None
+        self.__pka = pKa()
         self.__mulliken_charges = []
         self.__mulliken_spin_populations = []
         self.__condensed_fukui_mulliken = {}
@@ -127,7 +127,7 @@ class Properties:
     def __clear_vibrational(self):
         self.__level_of_theory_vibrational = None
         self.__free_energy_correction = None
-        self.__pka = None
+        self.__pka = pKa()
         self.__vibrational_data = None
 
     def __check_engine(self, engine: Union[Engine, str]) -> None:
@@ -142,7 +142,9 @@ class Properties:
                     is_dftb_level_of_theory(engine),
                 ]
             ):
-                raise TypeError("The engine argument string does not match any valid level of theory")
+                raise TypeError(
+                    "The engine argument string does not match any valid level of theory"
+                )
             else:
                 return engine
 
@@ -157,7 +159,9 @@ class Properties:
         level_of_theory = self.__check_engine(engine)
 
         logger.debug("Validating electronic energy")
-        logger.debug(f"current: {self.__level_of_theory_electronic}, requested: {level_of_theory}")
+        logger.debug(
+            f"current: {self.__level_of_theory_electronic}, requested: {level_of_theory}"
+        )
 
         if self.__level_of_theory_electronic is None:
             self.__level_of_theory_electronic = level_of_theory
@@ -168,27 +172,27 @@ class Properties:
             self.__clear_electronic()
             self.__level_of_theory_electronic = level_of_theory
 
-
     def __validate_vibrational(self, engine: Engine) -> None:
 
         level_of_theory = self.__check_engine(engine)
 
         logger.debug("Validating vibrational contribution")
-        logger.debug(f"current: {self.__level_of_theory_vibrational}, requested: {level_of_theory}")
+        logger.debug(
+            f"current: {self.__level_of_theory_vibrational}, requested: {level_of_theory}"
+        )
 
         if self.__level_of_theory_vibrational is None:
-            if self.__pka is not None:
+            if self.__pka.is_set() is True:
                 msg = "Added vibrational contribution. Clearing pKa computed with electronic energy only."
                 logger.warning(msg)
-                self.__pka = None
-            
+                self.__pka = pKa()
+
             self.__level_of_theory_vibrational = level_of_theory
 
         elif self.__level_of_theory_vibrational != level_of_theory:
             msg = "Different vibrational levels of theory used for calculating properties. Clearing properties with different vibrational level of theory."
             logger.warning(msg)
             self.__clear_vibrational()
-            
             self.__level_of_theory_vibrational = level_of_theory
 
     def to_dict(self) -> dict:
@@ -206,7 +210,7 @@ class Properties:
         data["Level of theory vibrational"] = self.__level_of_theory_vibrational
         data["Electronic energy (Eh)"] = self.__electronic_energy
         data["Free energy correction G-E(el) (Eh)"] = self.__free_energy_correction
-        data["pKa"] = self.__pka
+        data["pKa"] = self.__pka.to_dict()
         data["Mulliken charges"] = self.__mulliken_charges
         data["Mulliken spin populations"] = self.__mulliken_spin_populations
         data["Mulliken Fukui"] = self.__condensed_fukui_mulliken
@@ -241,7 +245,7 @@ class Properties:
         obj.__level_of_theory_vibrational = data["Level of theory vibrational"]
         obj.__electronic_energy = data["Electronic energy (Eh)"]
         obj.__free_energy_correction = data["Free energy correction G-E(el) (Eh)"]
-        obj.__pka = data["pKa"]
+        obj.__pka.from_dict(data["pKa"])
         obj.__mulliken_charges = data["Mulliken charges"]
         obj.__mulliken_spin_populations = data["Mulliken spin populations"]
         obj.__condensed_fukui_mulliken = data["Mulliken Fukui"]
@@ -335,7 +339,6 @@ class Properties:
         self.__validate_vibrational(vibrational_engine)
         self.__free_energy_correction = value
 
-
     @property
     def gibbs_free_energy(self) -> float:
         """
@@ -353,7 +356,7 @@ class Properties:
             return None
 
     @property
-    def pka(self) -> float:
+    def pka(self) -> pKa:
         """
         The pKa of the system.
 
@@ -366,10 +369,10 @@ class Properties:
 
     def set_pka(
         self,
-        value: float,
+        value: pKa,
         electronic_engine: Union[Engine, str],
         vibrational_engine: Union[Engine, str] = None,
-    ) -> float:
+    ) -> None:
         """
         Sets the pKa of the system.
 
@@ -383,9 +386,13 @@ class Properties:
             The engine used in the vibrational calculation. (optional)
         """
         logger.debug("Setting pKa")
+
         self.__validate_electronic(electronic_engine)
         if vibrational_engine is not None:
             self.__validate_vibrational(vibrational_engine)
+
+        if type(value) != pKa:
+            raise TypeError("The pka value must be of pKa class object type.")
         self.__pka = value
 
     @property
@@ -592,3 +599,192 @@ class Properties:
         logger.debug("Setting vibrational data")
         self.__validate_vibrational(vibrational_engine)
         self.__vibrational_data = value
+
+
+# Define the pKa property class to store multiple pKa values computed with different schemes
+class pKa:
+    """
+    The pKa class organizes all the pKa values computed for a given System using different schemes.
+    All the stored data are accessible as read-only properties (no setter is provided). To set the
+    pKa values, dedicated set function are provided (e.g. `set_direct`). The class also exposes the
+    `free_energies` attribute where all the free energy values used in the calculations are stored.
+
+    Properties
+    ----------
+    direct: float
+        The pKa value computed using the direct scheme.
+    oxonium: float
+        The pKa value computed using the oxonium scheme.
+    oxonium_cosmors: float
+        The pKa value computed using the COSMO-RS model to compute the solvation energies in the
+        oxonium scheme
+    level_of_theory_cosmors: str
+        The level of theory used to run the COSMO-RS calculations
+    """
+
+    def __init__(self):
+        self.__direct: float = None
+        self.__oxonium: float = None
+        self.__oxonium_cosmors: float = None
+
+        self.free_energies: Dict[str, float] = None
+        self.__level_of_theory_cosmors: str = None
+
+    def __getitem__(self, key: str) -> Union[float, None]:
+        if key.upper() == "DIRECT":
+            return self.direct
+        elif key.upper() == "OXONIUM":
+            return self.oxonium
+        elif key.upper() == "OXONIUM COSMO-RS":
+            return self.oxonium_cosmors
+        else:
+            raise ValueError(f"The key {key} is not a valid pka scheme.")
+
+    def is_set(self) -> bool:
+        """
+        Returns `True` if at least one value of the class has been set, `False` otherwise.
+
+        Returns
+        -------
+        bool
+            The set status of the pKa class object.
+        """
+        checklist = [
+            self.__direct,
+            self.__oxonium,
+            self.__oxonium_cosmors,
+            self.free_energies,
+            self.__level_of_theory_cosmors,
+        ]
+        if any(x is not None for x in checklist):
+            return True
+        else:
+            return False
+
+    def to_dict(self) -> dict:
+        """
+        Generates a dictionary representation of the class. The obtained dictionary can be
+        saved and used to re-load the object using the built-in `from_dict` class method.
+
+        Returns
+        -------
+        dict
+            The dictionary listing, with human friendly names, the attributes of the class
+        """
+        data = {}
+        data["direct"] = self.__direct
+        data["oxonium"] = self.__oxonium
+        data["oxonium COSMO-RS"] = self.__oxonium_cosmors
+        data["free energies"] = self.free_energies
+        data["level of theory cosmors"] = self.__level_of_theory_cosmors
+        return data
+
+    @classmethod
+    def from_dict(cls, data: dict) -> pKa:
+        """
+        Construct a pKa object from the data encoded in a dictionary.
+
+        Arguments
+        ---------
+        data: dict
+            The dictionary containing the class attributes
+
+        Returns
+        -------
+        pKa
+            The fully initialized pKa object
+        """
+        obj = cls()
+        obj.__direct = data["direct"]
+        obj.__oxonium = data["oxonium"]
+        obj.__oxonium_cosmors = data["oxonium COSMO-RS"]
+        obj.free_energies = data["free energies"]
+        obj.__level_of_theory_cosmors = data["level of theory cosmors"]
+        return obj
+
+    @property
+    def direct(self) -> Union[float, None]:
+        """
+        The pKa value computed using the direct scheme.
+
+        Returns
+        -------
+        Union[float, None]
+            The pKa value.
+        """
+        return self.__direct
+
+    def set_direct(self, pka: float) -> None:
+        """
+        Sets the pKa computed using the direct scheme.
+
+        Arguments
+        ---------
+        pka: float
+            The computed pKa value.
+        """
+        self.__direct = pka
+
+    @property
+    def oxonium(self) -> Union[float, None]:
+        """
+        The pKa value computed using the oxonium scheme.
+
+        Returns
+        -------
+        Union[float, None]
+            The pKa value.
+        """
+        return self.__oxonium
+
+    def set_oxonium(self, pka: float) -> None:
+        """
+        Sets the pKa computed using the oxonium scheme.
+
+        Arguments
+        ---------
+        pka: float
+            The computed pKa value.
+        """
+        self.__oxonium = pka
+
+    @property
+    def oxonium_cosmors(self) -> Union[float, None]:
+        """
+        The pKa value computed using the oxonium scheme and the COSMO-RS solvation energies.
+
+        Returns
+        -------
+        Union[float, None]
+            The pKa value.
+        """
+        return self.__oxonium_cosmors
+
+    @property
+    def level_of_theory_cosmors(self) -> Union[str, None]:
+        """
+        The level of theory used in the COSMO-RS calculations.
+
+        Returns
+        -------
+        Union[str, None]
+            The string encoding the level of theory.
+        """
+        return self.__level_of_theory_cosmors
+
+    def set_oxonium_cormors(self, pka: float, engine: Engine) -> None:
+        """
+        Sets the pKa computed using the oxonium scheme using the solvation energies
+        computing the COSMO-RS method.
+
+        Arguments
+        ---------
+        pka: float
+            The computed pKa value.
+        engine: Engine
+            The engine used in the COSMO-RS calculations.
+        """
+        if isinstance(engine, Engine) is False:
+            raise TypeError("COSMO-RS level of theory must be of type engine")
+        self.__oxonium_cosmors = pka
+        self.__level_of_theory_cosmors = engine.level_of_theory

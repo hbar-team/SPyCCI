@@ -138,7 +138,13 @@ def test_System_save_json(tmp_path_factory):
             "Mulliken charges": [],
             "Mulliken spin populations": [],
             "Free energy correction G-E(el) (Eh)": None,
-            "pKa": None,
+            "pKa": {
+                "direct": None,
+                "oxonium": None,
+                "oxonium COSMO-RS": None,
+                "free energies": None,
+                "level of theory cosmors": None
+            },
             "Vibrational data": None,
         },
         "Spin": 2,
