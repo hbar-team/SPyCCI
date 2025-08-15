@@ -6,6 +6,7 @@ from spycci.core.properties import Properties, pKa
 
 from spycci.engines.xtb import XtbInput
 
+XTBPATH = "xtbpath"
 
 # Test the Properties class
 # ------------------------------------------------------------------------------------------
