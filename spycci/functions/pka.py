@@ -4,6 +4,7 @@ from typing import Union, Optional, Dict, Tuple
 
 from spycci.systems import System
 from spycci.core.base import Engine
+from spycci.core.properties import pKa
 from spycci.engines.xtb import XtbInput
 from spycci.engines.orca import OrcaInput
 from spycci.wrappers.crest import deprotonate
@@ -17,37 +18,50 @@ logger = logging.getLogger(__name__)
 
 
 
-def calculate_pka(protonated: System, deprotonated: System):
+def calculate_pka(protonated: System, deprotonated: System, only_return: bool = False) -> pKa:
     """
     Calculates the pKa of a molecule using the direct method. The function expects as arguments
     the protonated and deprotonated forms of the molecule as a `System` objects for which the
-    energies must have already been computed.
+    energies must have already been computed. The function returns the computed pKa and sets (if
+    not otherwise indicated by the user) the pka property of the `protonated` system.
 
     Parameters
     ----------
-    protonated : System object
+    protonated : System
         molecule in the protonated form
-    deprotonated : System object
+    deprotonated : System
         molecule in the deprotonated form
-
+    only_return: bool
+        If set to True will not set the computed pKa value in the properties of the `protonated`
+        object. Else (default) the pKa property will be initialized using the `DIRECT` method.
     Returns
     -------
-    pKa : float
-        pKa of the molecule.
+    pKa : pKa
+        the pKa object encoding the pka of the molecule computed using the direct method.
     """
     # Validate systems and check if vibrational free energy corrections are available
     with_vibrations = validate_acid_base_pair(protonated, deprotonated)
 
     # Extract electronic energies
-    protonated_energy = protonated.properties.electronic_energy * scon.Eh_to_kcalmol
-    deprotonated_energy = deprotonated.properties.electronic_energy * scon.Eh_to_kcalmol
+    protonated_energy = protonated.properties.electronic_energy
+    deprotonated_energy = deprotonated.properties.electronic_energy
 
     # If available consider free energy correction factors from vibrational analysis
+    free_energies = {}
     if with_vibrations:
-        protonated_energy += protonated.properties.free_energy_correction * scon.Eh_to_kcalmol
-        deprotonated_energy += (
-            deprotonated.properties.free_energy_correction * scon.Eh_to_kcalmol
-        )
+        protonated_energy += protonated.properties.free_energy_correction
+        deprotonated_energy += deprotonated.properties.free_energy_correction
+
+        free_energies["G(solv) Protonated"] = protonated_energy
+        free_energies["G(solv) Deprotonated"] = deprotonated_energy
+    
+    else:
+        free_energies["Eel(solv) Protonated"] = protonated_energy
+        free_energies["Eel(solv) Deprotonated"] = deprotonated_energy
+    
+    # Convert free energies (or electroni energies) from Hartree to kcal/mol
+    protonated_energy *= scon.Eh_to_kcalmol
+    deprotonated_energy *= scon.Eh_to_kcalmol
 
     # If gfn2 from xTB is used consider an additional correction factor for the proton self energy
     proton_self_energy = 0
@@ -55,7 +69,7 @@ def calculate_pka(protonated: System, deprotonated: System):
         proton_self_energy = 164.22  # kcal/mol
 
     # Compute the pKa and set it as a property of the protonated molecule
-    pka = (
+    direct = (
         (
             deprotonated_energy
             + (scon.proton_hydration_free_energy + proton_self_energy)
@@ -63,63 +77,98 @@ def calculate_pka(protonated: System, deprotonated: System):
         )
     ) / (np.log(10.0) * scon.R * 298.15 / scon.kcal_to_J)
 
-    protonated.properties.set_pka(
-        value=pka,
-        electronic_engine=protonated.properties.level_of_theory_electronic,
-        vibrational_engine=protonated.properties.level_of_theory_vibrational,
-    )
+    pka = pKa()
+    pka.set_direct(direct)
+    pka.free_energies = free_energies
+    
+    if only_return is False:
+        protonated.properties.set_pka(
+            value=pka,
+            electronic_engine=protonated.properties.level_of_theory_electronic,
+            vibrational_engine=protonated.properties.level_of_theory_vibrational,
+        )
 
     return pka
 
 
 def calculate_pka_oxonium_scheme(
-    protonated: System, deprotonated: System, water: System, oxonium: System
-):
+    protonated: System, deprotonated: System, water: System, oxonium: System, only_return: bool = False
+) -> pKa:
     """
     Calculates the pKa of a molecule using the oxonium method. The function expects as arguments
-    the protonated and deprotonated forms of the molecule as a `System` objects for which the
-    energies must have already been computed.
+    the protonated and deprotonated forms of the molecule and the water and oconium ion structures
+    as a `System` objects for which the energies must have already been computed. The function 
+    returns the computed pKa and sets (if not otherwise indicated by the user) the pka property of
+    the `protonated` system.
 
     Parameters
     ----------
-    protonated : System object
+    protonated : System
         molecule in the protonated form
-    deprotonated : System object
+    deprotonated : System
         molecule in the deprotonated form
+    water : System
+        the water molecule
+    oxonium: System
+        the oxonium ion
+    only_return: bool
+        If set to True will not set the computed pKa value in the properties of the `protonated`
+        object. Else (default) the pKa property will be initialized using the `DIRECT` method.
 
     Returns
     -------
-    pKa : float
-        pKa of the molecule.
+    pKa : pKa
+        the pKa object encoding the pka of the molecule computed using the direct method.
     """
     # Validate systems and check if vibrational free energy corrections are available
     with_vibrations = validate_acid_base_pair(protonated, deprotonated)
 
     # Extract electronic energies
-    protonated_energy = protonated.properties.electronic_energy * scon.Eh_to_kcalmol
-    deprotonated_energy = deprotonated.properties.electronic_energy * scon.Eh_to_kcalmol
-    water_energy = water.properties.electronic_energy * scon.Eh_to_kcalmol
-    oxonium_energy = oxonium.properties.electronic_energy * scon.Eh_to_kcalmol
+    protonated_energy = protonated.properties.electronic_energy
+    deprotonated_energy = deprotonated.properties.electronic_energy
+    water_energy = water.properties.electronic_energy
+    oxonium_energy = oxonium.properties.electronic_energy
 
     # If available consider free energy correction factors from vibrational calculations
+    free_energies = {}
     if with_vibrations:
-        protonated_energy += protonated.properties.free_energy_correction * scon.Eh_to_kcalmol
-        deprotonated_energy += (
-            deprotonated.properties.free_energy_correction * scon.Eh_to_kcalmol
-        )
-        water_energy += water.properties.free_energy_correction * scon.Eh_to_kcalmol
-        oxonium_energy += oxonium.properties.free_energy_correction * scon.Eh_to_kcalmol
+        protonated_energy += protonated.properties.free_energy_correction
+        deprotonated_energy +=deprotonated.properties.free_energy_correction
+        water_energy += water.properties.free_energy_correction
+        oxonium_energy += oxonium.properties.free_energy_correction
+
+        free_energies["G(solv) Protonated"] = protonated_energy
+        free_energies["G(solv) Deprotonated"] = deprotonated_energy
+        free_energies["G(solv) Water"] = water_energy
+        free_energies["G(solv) Oxonium"] = oxonium_energy
+    
+    else:
+        free_energies["Eel(solv) Protonated"] = protonated_energy
+        free_energies["Eel(solv) Deprotonated"] = deprotonated_energy
+        free_energies["Eel(solv) Water"] = water_energy
+        free_energies["Eel(solv) Oxonium"] = oxonium_energy
+
+    # Convert free energies (or electroni energies) from Hartree to kcal/mol
+    protonated_energy *= scon.Eh_to_kcalmol
+    deprotonated_energy *= scon.Eh_to_kcalmol
+    water_energy *= scon.Eh_to_kcalmol
+    oxonium_energy *= scon.Eh_to_kcalmol
 
     # Compute the pKa and set it as a property of the protonated molecule
-    pka = (
+    oxonium = (
         (deprotonated_energy + oxonium_energy - protonated_energy - water_energy)
     ) / (np.log(10.0) * scon.R * 298.15 / scon.kcal_to_J) - np.log10(997.0 / 18.01528)
 
-    protonated.properties.set_pka(
-        value=pka,
-        electronic_engine=protonated.properties.level_of_theory_electronic,
-        vibrational_engine=protonated.properties.level_of_theory_vibrational,
-    )
+    pka = pKa()
+    pka.set_oxonium(oxonium)
+    pka.free_energies = free_energies
+
+    if only_return is False:
+        protonated.properties.set_pka(
+            value=pka,
+            electronic_engine=protonated.properties.level_of_theory_electronic,
+            vibrational_engine=protonated.properties.level_of_theory_vibrational,
+        )
 
     return pka
 
@@ -134,7 +183,7 @@ def run_pka_workflow(
     use_engine_settings: bool = False,
     ncores: Optional[int] = None,
     maxcore: int = 350,
-) -> Tuple[Dict[str, float], Dict[str, float]]:
+) -> pKa:
     """
     The function runs a complete pKa workflow and retuns the pKa values, computed with different schemes, 
     and all the computed Gibbs free energies. The method runs a geometry optimization of both the protonated and
@@ -176,11 +225,8 @@ def run_pka_workflow(
 
     Retruns
     -------
-    Dict[str, float]
-        The dictionary containing all the computed pKa labelled by the name of the scheme employed.
-        The possible labels are: 'direct', 'oxonium' and 'oxonium COSMO-RS'.
-    Dict[str, float]
-        The dictionary containing all the Gibbs Free energies used in the computations.
+    pKa
+        The pKa object containing all the computed pKa values and the Gibbs Free energies used in the computations.
     """
     # Check if the given structures are compatible with a pKa calculation
     check_structure_acid_base_pair(protonated, deprotonated)
@@ -194,7 +240,10 @@ def run_pka_workflow(
         raise TypeError("The energy calculation method must be xTB or orca.")
     
     # Create an empty dictionary to store the computed pKas and Gibbs free energies
-    computed_pka, free_energies = {}, {}
+    free_energies = {}
+
+    # Create a pKa class object to store all calculation results
+    pka = pKa()
     
     # Define structures of water and oxonium ion
     water_xyz = retrieve_structure("water")
@@ -259,12 +308,12 @@ def run_pka_workflow(
     free_energies["G(solv) Oxonium"] = G_oxonium_sol
 
     # Calculate the pKa using the direct scheme
-    pKa_direct = calculate_pka(protonated_sol, deprotonated_sol)
-    computed_pka["direct"] = pKa_direct
+    pKa_direct = calculate_pka(protonated_sol, deprotonated_sol, only_return=True).direct
+    pka.set_direct(pKa_direct)
 
     # Calculate the pKa using the oxonium scheme
-    pKa_oxonium = calculate_pka_oxonium_scheme(protonated_sol, deprotonated_sol, water_sol, oxonium_sol)
-    computed_pka["oxonium"] = pKa_oxonium
+    pKa_oxonium = calculate_pka_oxonium_scheme(protonated_sol, deprotonated_sol, water_sol, oxonium_sol, only_return=True).oxonium
+    pka.set_oxonium(pKa_oxonium)
 
     # If required run the cosmors based schemes
     method_cosmors = method_electonic if method_electonic else method_vibrational
@@ -331,12 +380,14 @@ def run_pka_workflow(
         # Compute the corrected free energy in solvent and the corresponding pKa
         dG_cosmors = (dG_vac + ddG_solv) * scon.Eh_to_kcalmol
         pKa_cosmo = (dG_cosmors  / (np.log(10.0) * scon.R * 298.15 / scon.kcal_to_J)) - np.log10(997.0 / 18.01528)
-        computed_pka["oxonium COSMO-RS"] = pKa_cosmo
+        pka.set_oxonium_cormors(pKa_cosmo, method_cosmors)
 
     elif use_cosmors:
             logger.warning("COSMO-RS calculations can be run only by OrcaInput engine as electronic method.")    
 
-    return computed_pka, free_energies
+    pka.free_energies = free_energies
+
+    return pka
 
 
 def auto_calculate_pka(
@@ -346,7 +397,7 @@ def auto_calculate_pka(
     method_opt: Engine = None,
     ncores: int = None,
     maxcore: int = 350,
-):
+) -> Tuple[pKa, System]:
     """
     Automatically calculates the pKa of a given `protonated` molecule. The routine computes
     all the deprotomers of the molecule using CREST, orders the deprotomers according to
@@ -374,8 +425,8 @@ def auto_calculate_pka(
 
     Returns
     -------
-    float
-        pKa of the molecule.
+    pKa
+        pKa object computed for the molecule.
     System
         the structure of the considered deprotomer.
     """
@@ -411,5 +462,5 @@ def auto_calculate_pka(
     lowest_deprotomer = ordered_deprotomers[0]
 
     pka = calculate_pka(protonated, lowest_deprotomer)
-
+    
     return pka, lowest_deprotomer
