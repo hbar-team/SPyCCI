@@ -110,16 +110,139 @@
 <span id="api-functions"></span><h1><code class="docutils literal notranslate"><span class="pre">spycci.functions</span></code> sub-module<a class="headerlink" href="#spycci-functions-sub-module" title="Link to this heading"></a></h1>
 <section id="calculate-pka-function">
 <h2><code class="docutils literal notranslate"><span class="pre">calculate_pka</span></code> function<a class="headerlink" href="#calculate-pka-function" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="spycci.functions.calculate_pka">
+<span class="sig-prename descclassname"><span class="pre">spycci.functions.</span></span><span class="sig-name descname"><span class="pre">calculate_pka</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">protonated</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deprotonated</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.functions.calculate_pka" title="Link to this definition"></a></dt>
+<dd><p>Calculates the pKa of a molecule using the direct method. The function expects as arguments
+the protonated and deprotonated forms of the molecule as a <cite>System</cite> objects for which the
+energies must have already been computed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>protonated</strong> (<em>System object</em>) – molecule in the protonated form</p></li>
+<li><p><strong>deprotonated</strong> (<em>System object</em>) – molecule in the deprotonated form</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>pKa</strong> – pKa of the molecule.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="auto-calculate-pka-function">
 <h2><code class="docutils literal notranslate"><span class="pre">auto_calculate_pka</span></code> function<a class="headerlink" href="#auto-calculate-pka-function" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="spycci.functions.auto_calculate_pka">
+<span class="sig-prename descclassname"><span class="pre">spycci.functions.</span></span><span class="sig-name descname"><span class="pre">auto_calculate_pka</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">protonated</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method_el</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method_vib</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method_opt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxcore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">350</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.functions.auto_calculate_pka" title="Link to this definition"></a></dt>
+<dd><p>Automatically calculates the pKa of a given <cite>protonated</cite> molecule. The routine computes
+all the deprotomers of the molecule using CREST, orders the deprotomers according to
+their energy computed with a user-defined level of theory and calculates the pKa.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>protonated</strong> (<a class="reference internal" href="systems.html#spycci.systems.System" title="spycci.systems.System"><em>System</em></a>) – The protonated molecule for which the pKa must be computed</p></li>
+<li><p><strong>method_el</strong> (<a class="reference internal" href="core.html#spycci.core.base.Engine" title="spycci.core.base.Engine"><em>Engine</em></a>) – The computational engine to be used in the electronic level of theory calculations</p></li>
+<li><p><strong>method_vib</strong> (<a class="reference internal" href="core.html#spycci.core.base.Engine" title="spycci.core.base.Engine"><em>Engine</em></a><em> (</em><em>optional</em><em>)</em>) – The computational engine to be used in the vibrational level of theory calculations. If
+set to None (default) the pKa will be computed without the free energy corrections (only electronic energy).</p></li>
+<li><p><strong>method_opt</strong> (<a class="reference internal" href="core.html#spycci.core.base.Engine" title="spycci.core.base.Engine"><em>Engine</em></a><em> (</em><em>optional</em><em>)</em>) – The computational engine to be used in the geometry optimization of the protonated
+molecule and its deprotomers. If set to None (default) will use xTB gfn2 and the
+alpb solvent model for water.</p></li>
+<li><p><strong>ncores</strong> (<em>int</em><em> (</em><em>optional</em><em>)</em>) – The number of cores to be used in the calculations. If set to None (default) will use
+the maximun number of available cores.</p></li>
+<li><p><strong>maxcore</strong> (<em>int</em><em> (</em><em>optional</em><em>)</em>) – For the engines that supprots it, the memory assigned to each core used in the
+computation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>float</em> – pKa of the molecule.</p></li>
+<li><p><em>System</em> – the structure of the considered deprotomer.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <hr class="docutils" />
 <section id="calculate-reduction-potential-function">
 <h2><code class="docutils literal notranslate"><span class="pre">calculate_reduction_potential</span></code> function<a class="headerlink" href="#calculate-reduction-potential-function" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="spycci.functions.calculate_reduction_potential">
+<span class="sig-prename descclassname"><span class="pre">spycci.functions.</span></span><span class="sig-name descname"><span class="pre">calculate_reduction_potential</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">oxidised</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduced</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pH</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.functions.calculate_reduction_potential" title="Link to this definition"></a></dt>
+<dd><p>Calculates the reduction potential of a molecule, given the oxidized and reduced forms
+assuming that energies have already been computed. The number of electrons exchanged in
+the process is automatically computed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>oxidised</strong> (<em>System object</em>) – molecule in the oxidised state</p></li>
+<li><p><strong>reduced</strong> (<em>System object</em>) – molecule in the reduced state</p></li>
+<li><p><strong>pH</strong> (<em>float</em>) – pH at which the redox potential is evaluated, by default pH=7. This is important in
+case of a proton-coupled electron transfer (PCET) redox process</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Exception raised if either oxidised or reduced molecules are Ensembles</p></li>
+<li><p><strong>RuntimeError</strong> – Exception raised if a mismatch is detected between electronic levels of theory.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>float</em> – reduction potential of the molecule.</p></li>
+<li><p><em>int</em> – number of exchanged electrons</p></li>
+<li><p><em>int</em> – number of exchanged protons</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Tuple</em>[float, int, int]</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="calculate-fukui-function">
 <h2><code class="docutils literal notranslate"><span class="pre">calculate_fukui</span></code> function<a class="headerlink" href="#calculate-fukui-function" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="spycci.functions.calculate_fukui">
+<span class="sig-prename descclassname"><span class="pre">spycci.functions.</span></span><span class="sig-name descname"><span class="pre">calculate_fukui</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">molecule</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spins_states</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cube_grid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">CubeGrids.NORMAL</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxcore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.functions.calculate_fukui" title="Link to this definition"></a></dt>
+<dd><p>Computes the Fukui f+, f- and f0 functions starting from a given input molecule. The
+functions are saved in Gaussian cube compatible format and stored in the
+<cite>output_densities</cite> folder. Localized Fukui functions are also computed from the Mulliken
+and Hirshfeld charges and saved in the molecule properties. Please notice that the charges
+in the <cite>.fukui.cube</cite> produced are replaced by the Mulliken condensed fukui functions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>molecule</strong> (<a class="reference internal" href="systems.html#spycci.systems.System" title="spycci.systems.System"><em>System</em></a>) – The System object containing the geometry of the selected molecule (if the geometry
+has not been optimized, please enable the optimize option)</p></li>
+<li><p><strong>orca</strong> (<a class="reference internal" href="core.html#spycci.core.base.Engine" title="spycci.core.base.Engine"><em>Engine</em></a>) – The engine object that defines the protocol to be used in the calculation.</p></li>
+<li><p><strong>spin_states</strong> (<em>Union</em><em>[</em><em>None</em><em>, </em><em>List</em><em>[</em><em>int</em><em>]</em><em>]</em>) – If set to None, when adding or subtracting electrons will automatically switch the
+spin state from singlet to doublet and vice versa (Maximum one unpaired electrons).
+If manually set to <cite>List[int]</cite> will force the spin multeplicities according to the
+user specified values. The order of the spin multiplicity values is: molecule with
+one electron added (-1), the molecule as it is (0) and the molecule  with one of its
+electrons removed (+1).</p></li>
+<li><p><strong>cube_grid</strong> (<em>Union</em><em>[</em><em>CubeGrids</em><em>, </em><em>None</em><em>]</em>) – Resolution for the cube files (default Normal). If set to None the function will avoid
+the generation of cube files and will only compute condensed fukui values.</p></li>
+<li><p><strong>ncores</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of cores, by default all available cores (None)</p></li>
+<li><p><strong>maxcore</strong> (<em>int</em>) – The maximum amount of memory in MB to be allocated for each core.</p></li>
+<li><p><strong>engine</strong> (<a class="reference internal" href="wrappers/orca.html#spycci.engines.orca.OrcaInput" title="spycci.engines.orca.OrcaInput"><em>OrcaInput</em></a><em> | </em><a class="reference internal" href="wrappers/xtb.html#spycci.engines.xtb.XtbInput" title="spycci.engines.xtb.XtbInput"><em>XtbInput</em></a>)</p></li>
+<li><p><strong>spins_states</strong> (<em>None</em><em> | </em><em>List</em><em>[</em><em>int</em><em>]</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 

@@ -118,6 +118,139 @@
 <span id="api-wrappers-xtb"></span><h1><code class="docutils literal notranslate"><span class="pre">spycci.engines.xtb</span></code> sub-module<a class="headerlink" href="#spycci-engines-xtb-sub-module" title="Link to this heading"></a></h1>
 <section id="xtbinput-class">
 <h2><code class="docutils literal notranslate"><span class="pre">XtbInput</span></code> class<a class="headerlink" href="#xtbinput-class" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="spycci.engines.xtb.XtbInput">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spycci.engines.xtb.</span></span><span class="sig-name descname"><span class="pre">XtbInput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gfn2'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optionals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">XTBPATH</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.engines.xtb.XtbInput" title="Link to this definition"></a></dt>
+<dd><p>Interface for running xTB calculations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – level of theory, by default “gfn2”</p></li>
+<li><p><strong>solvent</strong> (<em>str</em><em>, </em><em>optional</em>) – ALPB solvent, by default no solvent (vacuum)</p></li>
+<li><p><strong>optionals</strong> (<em>str</em><em>, </em><em>optional</em>) – optional keywords/flags, by default “”</p></li>
+<li><p><strong>XTBPATH</strong> (<em>str</em><em>, </em><em>optional</em>) – the path to the xtb executable. If set to None (default) the xtb executable will
+be loaded automatically.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="spycci.engines.xtb.XtbInput.freq">
+<span class="sig-name descname"><span class="pre">freq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxcore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_cubes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cube_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_tdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.engines.xtb.XtbInput.freq" title="Link to this definition"></a></dt>
+<dd><p>Frequency analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol</strong> (<em>System object</em>) – input system to use in the calculation</p></li>
+<li><p><strong>ncores</strong> (<em>int</em><em>, </em><em>optional</em>) – number of cores, by default all available cores</p></li>
+<li><p><strong>maxcore</strong> (<em>dummy variable</em>) – dummy variable used for compatibility with Orca calculations</p></li>
+<li><p><strong>save_cubes</strong> (<em>bool</em><em>, </em><em>optional</em>) – if set to True, will save a cube file containing electronic and spin densities,
+by default False.</p></li>
+<li><p><strong>cube_step</strong> (<em>int</em><em>, </em><em>optional</em>) – grid spacing for cube files, in Bohrs (default 0.4)</p></li>
+<li><p><strong>inplace</strong> (<em>bool</em><em>, </em><em>optional</em>) – updates info for the input system instead of outputting a new system object,
+by default False</p></li>
+<li><p><strong>remove_tdir</strong> (<em>bool</em><em>, </em><em>optional</em>) – temporary work directory will be removed, by default True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>newmol</strong> – Output system containing the new energies.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>System object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spycci.engines.xtb.XtbInput.opt">
+<span class="sig-name descname"><span class="pre">opt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxcore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_cubes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cube_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_tdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.engines.xtb.XtbInput.opt" title="Link to this definition"></a></dt>
+<dd><p>Geometry optimization + frequency analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol</strong> (<em>System object</em>) – Input system to use in the calculation</p></li>
+<li><p><strong>ncores</strong> (<em>int</em><em>, </em><em>optional</em>) – number of cores, by default all available cores</p></li>
+<li><p><strong>maxcore</strong> (<em>dummy variable</em>) – dummy variable used for compatibility with Orca calculations</p></li>
+<li><p><strong>save_cubes</strong> (<em>bool</em><em>, </em><em>optional</em>) – if set to True, will save a cube file containing electronic and spin densities,
+by default False.</p></li>
+<li><p><strong>cube_step</strong> (<em>int</em><em>, </em><em>optional</em>) – grid spacing for cube files, in Bohrs (default 0.4)</p></li>
+<li><p><strong>inplace</strong> (<em>bool</em><em>, </em><em>optional</em>) – updates info for the input system instead of outputting a new system object,
+by default False</p></li>
+<li><p><strong>remove_tdir</strong> (<em>bool</em><em>, </em><em>optional</em>) – Temporary work directory will be removed, by default True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>newmol</strong> (<em>System object</em>) – Output system containing the new geometry and energies.</p></li>
+<li><p><em>If a dissociation or a cyclization is observed, ignore the calculation and return the</em></p></li>
+<li><p><em>original “mol” system.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="spycci.engines.xtb.XtbInput.output_suffix">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">output_suffix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#spycci.engines.xtb.XtbInput.output_suffix" title="Link to this definition"></a></dt>
+<dd><p>Suffix used to compose the name of calculation output files</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The output suffix string</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spycci.engines.xtb.XtbInput.parse_output">
+<span class="sig-name descname"><span class="pre">parse_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.engines.xtb.XtbInput.parse_output" title="Link to this definition"></a></dt>
+<dd><p>The function will parse an xTB output file automatically looking for all the
+relevant numerical properties derived form a calculation. All the properties of the
+given molecule will be set or updated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mol</strong> (<a class="reference internal" href="../systems.html#spycci.systems.System" title="spycci.systems.System"><em>System</em></a>) – The System to which the properties must be written to.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – Exception raised if the given path to the output file is not valid.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spycci.engines.xtb.XtbInput.spe">
+<span class="sig-name descname"><span class="pre">spe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxcore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_cubes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cube_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_tdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spycci.engines.xtb.XtbInput.spe" title="Link to this definition"></a></dt>
+<dd><p>Single point energy calculation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol</strong> (<em>System object</em>) – Input system to use in the calculation.</p></li>
+<li><p><strong>ncores</strong> (<em>int</em><em>, </em><em>optional</em>) – number of cores, by default all available cores</p></li>
+<li><p><strong>maxcore</strong> (<em>dummy variable</em>) – dummy variable used for compatibility with Orca calculations</p></li>
+<li><p><strong>save_cubes</strong> (<em>bool</em><em>, </em><em>optional</em>) – if set to True, will save a cube file containing electronic and spin densities,
+by default False.</p></li>
+<li><p><strong>cube_step</strong> (<em>int</em><em>, </em><em>optional</em>) – grid spacing for cube files, in Bohrs (default 0.4)</p></li>
+<li><p><strong>inplace</strong> (<em>bool</em><em>, </em><em>optional</em>) – updates info for the input system instead of outputting a new system object,
+by default False</p></li>
+<li><p><strong>remove_tdir</strong> (<em>bool</em><em>, </em><em>optional</em>) – Temporary work directory will be removed, by default True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>newmol</strong> – Output system containing the new energies.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>System object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 

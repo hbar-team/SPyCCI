@@ -264,19 +264,88 @@ f^0(r) = \frac{1}{2} \left[\rho_{N+1}(r) - \rho_{N-1}(r)\right]
 <p>That for the acetaldehyde molecule returns the following result:</p>
 <div class="cell tag_remove-input docutils container">
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">from</span><span class="w"> </span><span class="nn">spycci.systems</span><span class="w"> </span><span class="kn">import</span> <span class="n">System</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">mol</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="s2">&quot;../example_files/acetaldehyde.json&quot;</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="nb">print</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=========================================================
+SYSTEM: acetaldehyde
+=========================================================
 
-<span class="n">File</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">hostedtoolcache</span><span class="o">/</span><span class="n">Python</span><span class="o">/</span><span class="mf">3.10.18</span><span class="o">/</span><span class="n">x64</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="mf">.10</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">spycci</span><span class="o">/</span><span class="fm">__init__</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">1</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">from</span><span class="w"> </span><span class="nn">spycci.engines.dftbplus</span><span class="w"> </span><span class="kn">import</span> <span class="n">DFTBInput</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">from</span><span class="w"> </span><span class="nn">spycci.engines.orca</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrcaInput</span><span class="p">,</span> <span class="n">M06</span><span class="p">,</span> <span class="n">CCSD</span><span class="p">,</span> <span class="n">r2SCAN</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="kn">from</span><span class="w"> </span><span class="nn">spycci.engines.xtb</span><span class="w"> </span><span class="kn">import</span> <span class="n">XtbInput</span>
+Number of atoms: 7
+Charge: 0
+Spin multiplicity: 1
 
-<span class="ne">ModuleNotFoundError</span>: No module named &#39;spycci.engines&#39;
+********************** GEOMETRY *************************
+
+Total system mass: 44.0526 amu
+
+----------------------------------------------
+ index  atom    x (Å)      y (Å)      z (Å)   
+----------------------------------------------
+ 0       C    -3.00790    0.17495    0.13810  
+ 1       C    -3.66800    1.53034    0.11359  
+ 2       H    -3.22195    2.19896    0.87341  
+ 3       H    -4.75895    1.41874    0.29379  
+ 4       H    -3.56793    1.97830   -0.89850  
+ 5       O    -2.11052   -0.15105    0.88722  
+ 6       H    -3.42225   -0.55833   -0.62459  
+----------------------------------------------
+
+********************** PROPERTIES *************************
+
+Geometry level of theory: OrcaInput || method: PBE | basis: def2-SVP | solvent: None
+Electronic level of theory: OrcaInput || method: PBE | basis: def2-SVP | solvent: None
+Vibronic level of theory: OrcaInput || method: PBE | basis: def2-SVP | solvent: None
+
+Electronic energy: -153.528266323306 Eh
+Gibbs free energy correction G-E(el): 0.02861407 Eh
+Gibbs free energy: -153.499652253306 Eh
+pKa: None
+
+MULLIKEN ANALYSIS
+----------------------------------------------
+ index  atom   charge    spin
+----------------------------------------------
+ 0       C    0.05436   0.00000  
+ 1       C    -0.04823  0.00000  
+ 2       H    0.05176   0.00000  
+ 3       H    0.05695   0.00000  
+ 4       H    0.05677   0.00000  
+ 5       O    -0.17156  0.00000  
+ 6       H    -0.00005  0.00000  
+
+CONDENSED FUKUI - MULLIKEN
+----------------------------------------------
+ index  atom    f+      f-      f0
+----------------------------------------------
+ 0       C    0.23610   0.08077   0.15843  
+ 1       C    -0.11416  -0.02731  -0.07074 
+ 2       H    0.12882   0.11125   0.12003  
+ 3       H    0.15563   0.12121   0.13842  
+ 4       H    0.15492   0.12121   0.13806  
+ 5       O    0.22073   0.35571   0.28822  
+ 6       H    0.21797   0.23717   0.22757  
+
+HIRSHFELD ANALYSIS
+----------------------------------------------
+ index  atom   charge    spin
+----------------------------------------------
+ 0       C    0.14702   0.00000  
+ 1       C    -0.07279  0.00000  
+ 2       H    0.04088   0.00000  
+ 3       H    0.04575   0.00000  
+ 4       H    0.04567   0.00000  
+ 5       O    -0.22623  0.00000  
+ 6       H    0.01970   0.00000  
+
+CONDENSED FUKUI - HIRSHFELD
+----------------------------------------------
+ index  atom    f+      f-      f0
+----------------------------------------------
+ 0       C    0.28818   0.15946   0.22382  
+ 1       C    0.07190   0.09734   0.08462  
+ 2       H    0.05820   0.06063   0.05941  
+ 3       H    0.09907   0.07355   0.08631  
+ 4       H    0.09850   0.07352   0.08601  
+ 5       O    0.25823   0.37205   0.31514  
+ 6       H    0.12592   0.16345   0.14468  
 </pre></div>
 </div>
 </div>
