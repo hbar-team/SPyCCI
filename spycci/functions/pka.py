@@ -219,7 +219,7 @@ def run_pka_workflow(
     ncores : Optional[int]
         The number of cores to be used in the calculations. If set to `None` (default) will use
         the maximun number of available cores.
-    maxcore: int (optional)
+    maxcore: Optional[int]
         For the engines that supprots it, the memory assigned to each core used in the
         computation.
 
