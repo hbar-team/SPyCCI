@@ -32,4 +32,4 @@ max-line-length = 160
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["spycci"]
+include = ["spycci", "spycci.*"]
