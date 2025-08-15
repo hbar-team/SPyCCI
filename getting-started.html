@@ -174,36 +174,19 @@
 </div>
 <div class="cell tag_remove-input docutils container">
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=========================================================
-SYSTEM: water
-=========================================================
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">from</span><span class="w"> </span><span class="nn">spycci.systems</span><span class="w"> </span><span class="kn">import</span> <span class="n">System</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">water</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="s2">&quot;./example_files/water.xyz&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="nb">print</span><span class="p">(</span><span class="n">water</span><span class="p">)</span>
 
-Number of atoms: 3
-Charge: 0
-Spin multiplicity: 1
+<span class="n">File</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">hostedtoolcache</span><span class="o">/</span><span class="n">Python</span><span class="o">/</span><span class="mf">3.10.18</span><span class="o">/</span><span class="n">x64</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="mf">.10</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">spycci</span><span class="o">/</span><span class="fm">__init__</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">from</span><span class="w"> </span><span class="nn">spycci.engines.dftbplus</span><span class="w"> </span><span class="kn">import</span> <span class="n">DFTBInput</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">from</span><span class="w"> </span><span class="nn">spycci.engines.orca</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrcaInput</span><span class="p">,</span> <span class="n">M06</span><span class="p">,</span> <span class="n">CCSD</span><span class="p">,</span> <span class="n">r2SCAN</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="kn">from</span><span class="w"> </span><span class="nn">spycci.engines.xtb</span><span class="w"> </span><span class="kn">import</span> <span class="n">XtbInput</span>
 
-********************** GEOMETRY *************************
-
-Total system mass: 18.0153 amu
-
-----------------------------------------------
- index  atom    x (Å)      y (Å)      z (Å)   
-----------------------------------------------
- 0       O     0.03595    2.78898    0.00000  
- 1       H     1.00595    2.78898    0.00000  
- 2       H    -0.28738    2.19789    0.69783  
-----------------------------------------------
-
-********************** PROPERTIES *************************
-
-Geometry level of theory: None
-Electronic level of theory: None
-Vibronic level of theory: None
-
-Electronic energy: None Eh
-Gibbs free energy correction G-E(el): None Eh
-Gibbs free energy: None Eh
-pKa: None
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;spycci.engines&#39;
 </pre></div>
 </div>
 </div>
