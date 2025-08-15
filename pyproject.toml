@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "spycci-toolkit"
-version = "0.0.1"
+version = "0.0.2"
 description = "Simple Python Computational Chemistry Interface"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -33,3 +33,4 @@ max-line-length = 160
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["spycci", "spycci.*"]
+
