@@ -639,6 +639,23 @@ class pKa:
             return self.oxonium_cosmors
         else:
             raise ValueError(f"The key {key} is not a valid pka scheme.")
+    
+    def __str__(self) -> str:
+
+        if self.is_set() is False:
+            return "pKa object status is NOT SET\n"
+
+        string = ""
+        
+        if self.direct is not None:
+            string += f"pKa direct: {self.direct}\n"
+        if self.oxonium is not None:
+            string += f"pKa oxonium: {self.oxonium}\n"
+        if self.oxonium_cosmors is not None:
+            string += f"pKa oxonium COSMO-RS: {self.oxonium_cosmors}\n"
+            string += f"COSMO-RS level of theory: {self.level_of_theory_cosmors}\n"
+
+        return string
 
     def is_set(self) -> bool:
         """
