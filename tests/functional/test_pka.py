@@ -105,7 +105,7 @@ def test_run_pka_workflow_different_geometry():
     orca = OrcaInput(method="BP86", basis_set="def2-TZVPD", solvent="water")
 
     try:
-        pka = run_pka_workflow(
+        pka, opt_system = run_pka_workflow(
             protonated,
             deprotonated,
             orca,
@@ -140,9 +140,11 @@ def test_run_pka_workflow_different_geometry():
 
     for key, value in expected_pka.items():
         assert_almost_equal(value, pka[key], decimal=3)
+        assert_almost_equal(value, opt_system.properties.pka[key], decimal=3)
 
     for key, value in expected_free_energies.items():
         assert_almost_equal(value, pka.free_energies[key], decimal=3)
+        assert_almost_equal(value, opt_system.properties.pka.free_energies[key], decimal=3)
     
     # for key in pka.keys():
     #     if key not in expected_pka.keys():
@@ -165,7 +167,7 @@ def test_run_pka_workflow_different_electronic():
     orca = OrcaInput(method="BP86", basis_set="def2-TZVPD", solvent="water")
 
     try:
-        pka = run_pka_workflow(
+        pka, opt_system = run_pka_workflow(
             protonated,
             deprotonated,
             method_vibrational=xtb,
@@ -201,9 +203,11 @@ def test_run_pka_workflow_different_electronic():
 
     for key, value in expected_pka.items():
         assert_almost_equal(value, pka[key], decimal=3)
+        assert_almost_equal(value, opt_system.properties.pka[key], decimal=3)
 
     for key, value in expected_free_energies.items():
         assert_almost_equal(value, pka.free_energies[key], decimal=3)
+        assert_almost_equal(value, opt_system.properties.pka.free_energies[key], decimal=3)
     
     # for key in pka.keys():
     #     if key not in expected_pka.keys():

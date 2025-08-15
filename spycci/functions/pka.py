@@ -183,7 +183,7 @@ def run_pka_workflow(
     use_engine_settings: bool = False,
     ncores: Optional[int] = None,
     maxcore: int = 350,
-) -> pKa:
+) -> Tuple[pKa, System]:
     """
     The function runs a complete pKa workflow and retuns the pKa values, computed with different schemes, 
     and all the computed Gibbs free energies. The method runs a geometry optimization of both the protonated and
@@ -227,6 +227,8 @@ def run_pka_workflow(
     -------
     pKa
         The pKa object containing all the computed pKa values and the Gibbs Free energies used in the computations.
+    System
+        The protonated system optimized in solvent in which the pKa property has been set.
     """
     # Check if the given structures are compatible with a pKa calculation
     check_structure_acid_base_pair(protonated, deprotonated)
@@ -387,7 +389,15 @@ def run_pka_workflow(
 
     pka.free_energies = free_energies
 
-    return pka
+
+
+    protonated_sol.properties.set_pka(
+        pka,
+        electronic_engine=method_electonic if method_electonic else method_vibrational,
+        vibrational_engine=method_vibrational,
+    )
+
+    return pka, protonated_sol
 
 
 def auto_calculate_pka(

@@ -140,6 +140,8 @@ xtb.opt(deprotonated, inplace=True)
 pka = calculate_pka(protonated, deprotonated)
 ```
 
+The computed pka value is returned as a `pKa` object (with only the `direct` property set). The function automatically sets the `pka` property of the `protonated` system accordingly. If this is not desired, the feature can be decativated using the keyword `only_return=True`.
+
 ### The `calculate_pka_oxonium_scheme()` function:
 
 The `calculate_pka_oxonium_scheme` function takes as arguments the following elements:
@@ -197,6 +199,7 @@ xtb.opt(oxonium, inplace=True)
 
 pka = calculate_pka_oxonium_scheme(protonated, deprotonated, water, oxonium)
 ```
+The computed pka value is returned as a `pKa` object (with only the `oxonium` property set). The function automatically sets the `pka` property of the `protonated` system accordingly. If this is not desired, the feature can be decativated using the keyword `only_return=True`.
 
 ### The `run_pka_workflow()` function:
 
@@ -227,7 +230,7 @@ deprotonated = System("deprotonated.xyz", charge=-1, spin=1)
 xtb = XtbInput(solvent="water")
 orca = OrcaInput(method="BP86", basis_set="def2-TZVPD", solvent="water")
 
-pka = run_pka_workflow(
+pka, optimized_protonated = run_pka_workflow(
   protonated,
   deprotonated,
   method_vibrational = xtb,
@@ -236,9 +239,7 @@ pka = run_pka_workflow(
   use_cosmors = True,
   )
 ```
-
-Please notice how the pka object in this case is not set in the `protonated` object properties since it is referred to the optimized molecular structure that can differ from the input one.
-
+The computed pka value is returned as a `pKa` object together with the structure of the protonated molecule optimized in solvent (`optimized_protonated`). Please notice how the pka object in this case is NOT set in the `protonated` object properties but rather in the `optimized_protonated` system since it is referred to the optimized molecular structure that can differ from the input one. **BEWARE that this behavior is conserved also in the `method_geometry = None` use case.**
 
 ### The `auto_calculate_pka()` function:
 
