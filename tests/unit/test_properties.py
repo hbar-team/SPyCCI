@@ -186,7 +186,7 @@ def test_pKa_is_set():
 def test_pKa_set_values():
 
     pka = pKa()
-    xtb = XtbInput()
+    xtb = XtbInput(XTBPATH=XTBPATH)
 
     try:
         pka.set_direct(1.0)
@@ -237,7 +237,7 @@ def test_pKa_wrong_key():
 def test_pKa___str___set():
 
     pka = pKa()
-    xtb = XtbInput()
+    xtb = XtbInput(XTBPATH=XTBPATH)
 
     pka.set_direct(1.0)
     pka.set_oxonium(2.0)
@@ -265,7 +265,7 @@ def test_pKa___str___not_set():
 def test_pKa_to_dict():
 
     pka = pKa()
-    xtb = XtbInput()
+    xtb = XtbInput(XTBPATH=XTBPATH)
 
     pka.set_direct(1.0)
     pka.set_oxonium(2.0)
