@@ -16,10 +16,10 @@ TEST_DIR = dirname(abspath(__file__))
 
 def test_calculate_potential_xtb():
 
-    reduced = System(
+    reduced = System.from_xyz(
         f"{TEST_DIR}/utils/xyz_files/1,4-dimethoxybenzene.xyz", charge=0, spin=1
     )
-    oxidised = System(
+    oxidised = System.from_xyz(
         f"{TEST_DIR}/utils/xyz_files/1,4-dimethoxybenzene.xyz", charge=1, spin=2
     )
 
@@ -44,10 +44,10 @@ def test_calculate_potential_xtb():
 
 
 def test_calculate_potential_xtb_pcet():
-    reduced = System(
+    reduced = System.from_xyz(
         f"{TEST_DIR}/utils/xyz_files/2-methoxyphenol_prot.xyz", charge=0, spin=1
     )
-    oxidised = System(
+    oxidised = System.from_xyz(
         f"{TEST_DIR}/utils/xyz_files/2-methoxyphenol_deprot.xyz", charge=0, spin=2
     )
 

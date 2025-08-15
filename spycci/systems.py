@@ -19,83 +19,111 @@ class System:
     """
     The System object describes a generic molecular system described at a given level of
     theory. A system is defined based on a molecular geometry, a charge, a spin multiplicity
-    and, one a level of theory is selected, by a set of computed properties.
+    and, once a level of theory is selected, by a set of computed properties.
 
-    Parameters
+    Arguments
     ----------
-    molecule : str
-        Either the path to the `.xyz` or `.json` file containing the system geometry/data or
-        the name to be assigned to the sctructure provided as the `geometry` argument.
-    charge : int, optional
+    name : str
+        The name of the system.
+    geometry : MolecularGeometry
+        The `MolecularGeometry` object from which the `System` can be constructred.
+    charge : Optional[int]
         The total charge of the system. (Default: 0 neutral)
-    spin : int, optional
+    spin : Optional[int]
         The total spin multiplicity of the system. (Default: 1 singlet)
-    box_side : Optional[float] = None,
-        For periodic systems, defines the length (in Å) of the box side
-    geometry : Optional[MolecularGeometry]
-        The `MolecularGeometry` object from which the System can be constructred.
+    box_side : Optional[float]
+        For periodic systems, defines the length (in Å) of the box side.
 
     Raises
     ------
-    ValueError
-        Exception raised when the `.xyz` file path is invalid
+    TypeError
+        Exception raised if the geometry argument is not of the `MolecularGeometry` type.
     """
-
     def __init__(
         self,
-        molecule: str,
-        charge: int = 0,
-        spin: int = 1,
+        name: str,
+        geometry: MolecularGeometry,
+        charge: Optional[int] = 0,
+        spin: Optional[int] = 1,
         box_side: Optional[float] = None,
-        geometry: Optional[MolecularGeometry] = None
     ) -> None:
         
-        if molecule.endswith(".xyz"):
-            
-            if not os.path.isfile(molecule):
-                raise ValueError(f"The specified XYZ file `{molecule}` does not exist.")
-
-            self.name = os.path.basename(molecule).strip(".xyz")
-            self.__charge: int = charge
-            self.__spin: int = spin
-            self.__box_side = box_side
-            self.__geometry: MolecularGeometry = MolecularGeometry.from_xyz(molecule)
-            self.properties: Properties = Properties()
-            self.flags: list = []
-
-        elif molecule.endswith(".json"):
-
-            if not os.path.isfile(molecule):
-                raise ValueError(f"The specified JSON file `{molecule}` does not exist.")
-
-            with open(molecule, "r") as jsonfile:
-                data = json.load(jsonfile)
-
-            data = json_parser(data)
-
-            self.name = data["Name"]
-            self.__charge = data["Charge"]
-            self.__spin = data["Spin"]
-            self.__box_side = data["Box Side"]
-            self.__geometry = MolecularGeometry().from_dict(data["Geometry"])
-            self.properties = Properties().from_dict(data["Properties"])
-            self.flags = data["Flags"]
-
-        elif geometry is not None:
-            
-            if type(geometry) != MolecularGeometry:
+        if type(geometry) != MolecularGeometry:
                 raise TypeError("The `geometry` argument must be of type `MolecularGeometry`.")
             
-            self.name = str(molecule)
-            self.__charge: int = charge
-            self.__spin: int = spin
-            self.__box_side = box_side
-            self.__geometry: MolecularGeometry = deepcopy(geometry)
-            self.properties: Properties = Properties()
-            self.flags: list = []
+        self.name = str(name)
+        self.__geometry: MolecularGeometry = deepcopy(geometry)
+        self.__charge: int = charge
+        self.__spin: int = spin
+        self.__box_side = box_side
+        self.properties: Properties = Properties()
+        self.flags: list = []
+    
+    @classmethod
+    def from_xyz(
+        cls, 
+        path: str, 
+        charge: Optional[int] = 0,
+        spin: Optional[int] = 1,
+        box_side: Optional[float] = None,
+    ) -> System:
+        """
+        Construct a `System` object from the geometry encoded in a `.xyz` file.
 
-        else:
-            raise RuntimeError("The specified format is not supported")
+        Arguments
+        ----------
+        path : str
+            The path of the `.xyz` file.
+        charge : Optional[int]
+            The total charge of the system. (Default: 0 neutral)
+        spin : Optional[int]
+            The total spin multiplicity of the system. (Default: 1 singlet)
+        box_side : Optional[float]
+            For periodic systems, defines the length (in Å) of the box side.
+
+        Raises
+        ------
+        FileExistsError
+            Exception raised if the specified `.xyz` file cannot be found.
+        """         
+        if not os.path.isfile(path):
+            raise FileExistsError(f"The specified XYZ file `{path}` does not exist.")
+
+        name = os.path.basename(path).strip(".xyz")
+        geometry = MolecularGeometry.from_xyz(path)
+
+        obj = System(name, geometry, charge=charge, spin=spin, box_side=box_side)
+        return obj
+        
+    @classmethod
+    def from_json(cls, path: str) -> System:
+        """
+        Construct a `System` object from the data encoded in a SPyCCI `.json` file.
+
+        Arguments
+        ----------
+        path : str
+            The path of the `.json` file.
+        """
+        if not os.path.isfile(path):
+            raise ValueError(f"The specified JSON file `{path}` does not exist.")
+
+        with open(path, "r") as jsonfile:
+            data = json.load(jsonfile)
+
+        data = json_parser(data)
+
+        name = data["Name"]
+        geometry = MolecularGeometry().from_dict(data["Geometry"])
+        charge = data["Charge"]
+        spin = data["Spin"]
+        box_side = data["Box Side"]
+
+        obj = System(name, geometry, charge=charge, spin=spin, box_side=box_side)
+        obj.properties = Properties().from_dict(data["Properties"])
+        obj.flags = data["Flags"]
+
+        return obj
 
     def save_json(self, path: str) -> None:
         """

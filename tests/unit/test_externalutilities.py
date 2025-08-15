@@ -17,7 +17,7 @@ TEST_DIR = dirname(abspath(__file__))
 def test_split_multixyz_default():
 
     jsonfile = join(TEST_DIR, "utils/json_examples/water.json")
-    mol = System(jsonfile)
+    mol = System.from_json(jsonfile)
 
     multixyz = join(TEST_DIR, "utils/xyz_examples/multiple.xyz")
 
@@ -45,7 +45,7 @@ def test_split_multixyz_default():
 def test_split_multixyz_with_suffix():
 
     jsonfile = join(TEST_DIR, "utils/json_examples/water.json")
-    mol = System(jsonfile)
+    mol = System.from_json(jsonfile)
 
     multixyz = join(TEST_DIR, "utils/xyz_examples/multiple.xyz")
 
@@ -73,7 +73,7 @@ def test_split_multixyz_with_suffix():
 def test_split_multixyz_with_remove():
 
     jsonfile = join(TEST_DIR, "utils/json_examples/water.json")
-    mol = System(jsonfile)
+    mol = System.from_json(jsonfile)
 
     multixyz = join(TEST_DIR, "utils/xyz_examples/multiple.xyz")
 
@@ -100,7 +100,7 @@ def test_split_multixyz_with_remove():
 def test_split_multixyz_with_parsing_NEB_CI():
 
     jsonfile = join(TEST_DIR, "utils/json_examples/water.json")
-    mol = System(jsonfile)
+    mol = System.from_json(jsonfile)
 
     dummy_engine = Engine("dummy")
 

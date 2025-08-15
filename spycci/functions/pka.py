@@ -387,8 +387,8 @@ def run_pKa_workflow(
             for line in OXONIUM:
                 xyzfile.write("    ".join(str(x) for x in line) + "\n")
 
-        water = System("water.xyz", charge=0, spin=1)
-        oxonium = System("oxonium.xyz", charge=1, spin=1)
+        water = System.from_xyz("water.xyz", charge=0, spin=1)
+        oxonium = System.from_xyz("oxonium.xyz", charge=1, spin=1)
 
     shutil.rmtree(tdir)
 

@@ -12,62 +12,6 @@ from spycci.core.geometry import MolecularGeometry
 TEST_DIR = dirname(abspath(__file__))
 
 
-# Test the System class constructor when loading data from an XYZ file
-def test_System_xyz___init__():
-
-    xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
-
-    expected_coordinates = [
-        [-3.21035, -0.58504, -0.01395],
-        [-2.24247, -0.61827, 0.01848],
-        [-3.4892, -1.24911, 0.63429],
-    ]
-
-    try:
-        mol = System(xyzfile)
-
-    except:
-        assert False, "Exception raised during `System` class constructor"
-
-    assert mol.name == "with_comment"
-    assert mol.geometry.atomcount == 3
-    assert mol.charge == 0
-    assert mol.spin == 1
-    assert mol.box_side == None
-    assert mol.is_periodic == False
-
-    for i, coord in enumerate(expected_coordinates):
-        assert_array_almost_equal(mol.geometry.coordinates[i], coord, decimal=6)
-
-
-# Test the System class constructor when loading data from a JSON file
-def test_System_json___init__():
-
-    jsonfile = join(TEST_DIR, "utils/json_examples/water.json")
-
-    expected_coordinates = [
-        [-3.21035, -0.58504, -0.01395],
-        [-2.24247, -0.61827, 0.01848],
-        [-3.4892, -1.24911, 0.63429],
-    ]
-
-    try:
-        mol = System(jsonfile)
-
-    except:
-        assert False, "Exception raised during `System` class constructor"
-
-    assert mol.name == "test_water"
-    assert mol.geometry.atomcount == 3
-    assert mol.charge == 0
-    assert mol.spin == 1
-    assert mol.box_side == None
-    assert mol.is_periodic == False
-
-    for i, coord in enumerate(expected_coordinates):
-        assert_array_almost_equal(mol.geometry.coordinates[i], coord, decimal=6)
-
-
 # Test the System class constructor when loading data from a MolecularGeometry object
 def test_System_geometry___init__():
 
@@ -98,6 +42,62 @@ def test_System_geometry___init__():
         assert_array_almost_equal(mol.geometry.coordinates[i], coord[1::], decimal=6)
 
 
+# Test the System class constructor when loading data from an XYZ file
+def test_System_from_xyz():
+
+    xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
+
+    expected_coordinates = [
+        [-3.21035, -0.58504, -0.01395],
+        [-2.24247, -0.61827, 0.01848],
+        [-3.4892, -1.24911, 0.63429],
+    ]
+
+    try:
+        mol = System.from_xyz(xyzfile)
+
+    except:
+        assert False, "Exception raised during `System` class constructor"
+
+    assert mol.name == "with_comment"
+    assert mol.geometry.atomcount == 3
+    assert mol.charge == 0
+    assert mol.spin == 1
+    assert mol.box_side == None
+    assert mol.is_periodic == False
+
+    for i, coord in enumerate(expected_coordinates):
+        assert_array_almost_equal(mol.geometry.coordinates[i], coord, decimal=6)
+
+
+# Test the System class constructor when loading data from a JSON file
+def test_System_from_json():
+
+    jsonfile = join(TEST_DIR, "utils/json_examples/water.json")
+
+    expected_coordinates = [
+        [-3.21035, -0.58504, -0.01395],
+        [-2.24247, -0.61827, 0.01848],
+        [-3.4892, -1.24911, 0.63429],
+    ]
+
+    try:
+        mol = System.from_json(jsonfile)
+
+    except:
+        assert False, "Exception raised during `System` class constructor"
+
+    assert mol.name == "test_water"
+    assert mol.geometry.atomcount == 3
+    assert mol.charge == 0
+    assert mol.spin == 1
+    assert mol.box_side == None
+    assert mol.is_periodic == False
+
+    for i, coord in enumerate(expected_coordinates):
+        assert_array_almost_equal(mol.geometry.coordinates[i], coord, decimal=6)
+
+
 # Test the System class method to save all the system data to a JSON file
 def test_System_save_json(tmp_path_factory):
 
@@ -105,7 +105,7 @@ def test_System_save_json(tmp_path_factory):
     folder = tmp_path_factory.mktemp("random_text_files")
     path = join(folder, "water.json")
 
-    mol = System(xyzfile, charge=1, spin=2)
+    mol = System.from_xyz(xyzfile, charge=1, spin=2)
     mol.save_json(path)
 
     with open(path, "r") as jsonfile:
@@ -151,7 +151,7 @@ def test_System_save_json(tmp_path_factory):
 def test_System_geometry_property():
 
     xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
-    mol = System(xyzfile)
+    mol = System.from_xyz(xyzfile)
 
     expected_coordinates = [
         [-3.21035, -0.58504, -0.01395],
@@ -172,7 +172,7 @@ def test_System_geometry_property():
 def test_System_geometry_property_none_rejection():
 
     xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
-    mol = System(xyzfile)
+    mol = System.from_xyz(xyzfile)
 
     try:
         mol.geometry = None
@@ -197,7 +197,7 @@ def test_System_geometry_property_none_rejection():
 def test_System_charge_property():
 
     xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
-    mol = System(xyzfile)
+    mol = System.from_xyz(xyzfile)
 
     mol.properties.set_electronic_energy(1.5, Engine("Dummy"))
 
@@ -213,7 +213,7 @@ def test_System_charge_property():
 def test_System_spin_property():
 
     xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
-    mol = System(xyzfile)
+    mol = System.from_xyz(xyzfile)
 
     mol.properties.set_electronic_energy(1.5, Engine("Dummy"))
 
@@ -229,7 +229,7 @@ def test_System_spin_property():
 def test_System_box_side_property():
 
     xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
-    mol = System(xyzfile)
+    mol = System.from_xyz(xyzfile)
 
     mol.properties.set_electronic_energy(1.5, Engine("Dummy"))
 
