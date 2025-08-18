@@ -98,6 +98,44 @@ def test_System_from_json():
         assert_array_almost_equal(mol.geometry.coordinates[i], coord, decimal=6)
 
 
+# Test the System class from_smiles classmethod using a valid SMILES input
+def test_System_from_smiles():
+
+    try:
+        system = System.from_smiles("ethanol", "CCO", random_seed=1234)
+    
+    except:
+        assert False, "Exception raised during `System` class constructor"
+
+    # Check basic system attributes
+    assert system.name == "ethanol"
+    assert system.charge == 0
+    assert system.spin == 1
+    assert system.box_side is None
+    assert system.is_periodic is False
+
+    # Check molecular geometry
+    geom = system.geometry
+    assert geom.atomcount == 9, "Expected 9 atoms for the ethanol molecule"
+    assert geom.atoms == ["C", "C", "O", "H", "H", "H", "H", "H", "H"]
+
+    # Check geometry coordinates (with fixed seed)
+    expected = [
+        [-0.88340023, -0.17904132, -0.07267199],
+        [0.4497649 , 0.51104444, 0.12851809],
+        [ 1.48578755, -0.2490953 , -0.47625408],
+        [-1.08989689, -0.31470631, -1.13937946],
+        [-1.69482305,  0.40270109,  0.37346764],
+        [-0.87511854, -1.17633172,  0.37932949],
+        [ 0.44081839,  1.50296775, -0.33251669],
+        [0.6749398 , 0.62724095, 1.19298181],
+        [ 1.49192808, -1.12477959, -0.05347481],
+    ]
+
+    for i in range(9):
+        assert_array_almost_equal(geom.coordinates[i], expected[i], decimal=6)
+
+
 # Test the System class method to save all the system data to a JSON file
 def test_System_save_json(tmp_path_factory):
 

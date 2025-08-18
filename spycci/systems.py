@@ -43,8 +43,8 @@ class System:
         self,
         name: str,
         geometry: MolecularGeometry,
-        charge: Optional[int] = 0,
-        spin: Optional[int] = 1,
+        charge: int = 0,
+        spin: int = 1,
         box_side: Optional[float] = None,
     ) -> None:
         
@@ -63,8 +63,8 @@ class System:
     def from_xyz(
         cls, 
         path: str, 
-        charge: Optional[int] = 0,
-        spin: Optional[int] = 1,
+        charge: int = 0,
+        spin: int = 1,
         box_side: Optional[float] = None,
     ) -> System:
         """
@@ -85,7 +85,7 @@ class System:
         ------
         FileExistsError
             Exception raised if the specified `.xyz` file cannot be found.
-        """         
+        """
         if not os.path.isfile(path):
             raise FileExistsError(f"The specified XYZ file `{path}` does not exist.")
 
@@ -124,6 +124,75 @@ class System:
         obj.flags = data["Flags"]
 
         return obj
+
+
+    @classmethod
+    def from_smiles(
+        cls,
+        name: str,
+        smiles: str, 
+        charge: int = 0,
+        spin: int = 1,
+        box_side: Optional[float] = None,
+        force_uff: bool = False,
+        default_mmffvariant: str = "MMFF94",
+        use_small_ring_torsions: bool = False,
+        use_macrocycle_torsions: bool = False,
+        maxiter: int = 500,
+        random_seed: int = -1,
+    ) -> System:
+        """
+        The function returns a fully initialized `System` object from the given SMILES string.
+        The geometry of the molecule is generated in 3D using the ETKDGv3 algorithm, followed by force field
+        optimization using either MMFF or UFF, depending on availability and user preference.
+        The resulting system includes molecular geometry, total charge, spin multiplicity, and optional
+        periodic boundary conditions. All operations are carried out using the tools defined in the RDKit package.
+
+        Arguments
+        ---------
+        name: str
+            The name assigned to the molecular system.
+        smiles: str
+            A valid SMILES string representing the molecular structure to be converted into a full system.
+        charge: int
+            The net formal charge of the system. (Default: 0)
+        spin: int
+            The total spin multiplicity of the system. (Default: 1 singlet)
+        box_side: Optional[float]
+            The length of the side of the simulation box (in Å) used to define periodic boundary conditions.
+            If set to `None`, the system is treated as non-periodic. (default: None)
+        force_uff: bool
+            If True, the geometry optimization will use the UFF force field even when MMFF parameters are available.
+            This can be useful when consistency across a dataset using UFF is desired. (default: False)
+        default_mmffvariant: str
+            Specifies the MMFF variant to use when MMFF is selected. Valid options are "MMFF94" or "MMFF94s".
+            "MMFF94s" is generally recommended for more accurate static geometries. (default: "MMFF94")
+        use_small_ring_torsions: bool
+            If True, enables special torsional sampling for small rings during 3D embedding.
+            Recommended when working with strained ring systems (e.g., cyclopropanes, aziridines). (default: False)
+        use_macrocycle_torsions: bool
+            If True, enables special torsional treatment of macrocycles during embedding.
+            Recommended for cyclic peptides or large ring systems (≥12 atoms). (default: False)
+        maxiter: int
+            The maximum number of iterations allowed for the force field optimization step. (default: 500)
+        random_seed: int
+            If set to a positive integer, this value is used to seed the random number generator for
+            the 3D embedding algorithm. This will ensure reproducible conformations for the same input SMILES.
+            This keyword is mainly used for testing. (default: -1)
+        """
+        geometry = MolecularGeometry.from_smiles(
+            smiles,
+            force_uff=force_uff,
+            default_mmffvariant = default_mmffvariant,
+            use_small_ring_torsions = use_small_ring_torsions,
+            use_macrocycle_torsions = use_macrocycle_torsions,
+            maxiter = maxiter,
+            random_seed = random_seed,
+        )
+
+        obj = System(name, geometry, charge=charge, spin=spin, box_side=box_side)
+        return obj
+               
 
     def save_json(self, path: str) -> None:
         """
