@@ -965,7 +965,13 @@
         "Level of theory vibrational": null,
         "Electronic energy (Eh)": null,
         "Free energy correction G-E(el) (Eh)": null,
-        "pKa": null,
+        "pKa": {
+            "direct": null,
+            "oxonium": null,
+            "oxonium COSMO-RS": null,
+            "free energies": null,
+            "level of theory cosmors": null
+        },
         "Mulliken charges": [],
         "Mulliken spin populations": [],
         "Mulliken Fukui": {},

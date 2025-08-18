@@ -351,6 +351,8 @@ class Properties:
             The Gibbs free energy of the system in Hartree.
         """
         if self.__electronic_energy and self.__free_energy_correction:
+            if self.level_of_theory_electronic != self.level_of_theory_vibrational:
+                logger.warning("Gibbs free energy has been computed mixing different levels of theory")
             return self.__electronic_energy + self.__free_energy_correction
         else:
             return None
@@ -721,13 +723,20 @@ class pKa:
 
     @property
     def direct(self) -> Union[float, None]:
-        """
-        The pKa value computed using the direct scheme.
+        r"""
+        The pKa value computed using the direct scheme. According to the direct scheme,
+        the pKa is computed from the standard thermodynamic dissociation reaction:
+
+        
+
+        The scheme is semi-empiric: the Gibbs free energies of HA and A⁻ are computed in 
+        acqueous solvent while the proton free energy, together with the RTln(24.46), is
+        assumed to be -270.29 kcal/mol at 298.15K.
 
         Returns
         -------
         Union[float, None]
-            The pKa value.
+            The pKa value as a float value, if available, else `None`.
         """
         return self.__direct
 
@@ -744,8 +753,15 @@ class pKa:
 
     @property
     def oxonium(self) -> Union[float, None]:
-        """
-        The pKa value computed using the oxonium scheme.
+        r"""
+        The pKa value computed using the oxonium scheme. According to the oxonium scheme,
+        the pKa is computed from the standard thermodynamic dissociation reaction:
+
+        :math:`HA + H_2O \rightarrow H_3O^{+} + A^{-}`
+
+        The scheme is fully computational: all species involved (HA, A⁻, H₂O, H₃O⁺)
+        must have their free energies computed in aqueous solvent. The water concentration
+        is taken as 55.34 mol/L (i.e., 997 g/L at 25°C / 18.01528 g/mol).
 
         Returns
         -------
@@ -767,8 +783,19 @@ class pKa:
 
     @property
     def oxonium_cosmors(self) -> Union[float, None]:
-        """
+        r"""
         The pKa value computed using the oxonium scheme and the COSMO-RS solvation energies.
+        This variant of the oxonium scheme uses solvation free energies from a COSMO-RS
+        calculation instead of implicit solvent methods. The thermodynamic cycle remains:
+
+        :math:`HA + H_2O \rightarrow H_3O^{+} + A^{-}`
+
+        The scheme is fully computational: all species involved (HA, A⁻, H₂O, H₃O⁺)
+        must have their free energies computed according to an hybrid scheme. Firstly
+        the free energy in vacumm is computed for all species (using the solvent equilibium
+        geometyr). Then, the solvation correction for the water solvent is then taken from
+        the OpenCOSMO-RS model. The water concentration is taken as 55.34 mol/L (i.e., 997 g/L
+        at 25°C / 18.01528 g/mol).
 
         Returns
         -------
