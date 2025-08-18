@@ -39,6 +39,8 @@ def calculate_pka(protonated: System, deprotonated: System, only_return: bool = 
     pKa : pKa
         the pKa object encoding the pka of the molecule computed using the direct method.
     """
+    logger.info("calculating pKa with direct scheme: HA -> A- + H+")
+
     # Validate systems and check if vibrational free energy corrections are available
     with_vibrations = validate_acid_base_pair(protonated, deprotonated)
 
@@ -120,6 +122,8 @@ def calculate_pka_oxonium_scheme(
     pKa : pKa
         the pKa object encoding the pka of the molecule computed using the direct method.
     """
+    logger.info("calculating pKa with oxonium scheme: HA + H2O -> A- + H3O+")
+    
     # Validate systems and check if vibrational free energy corrections are available
     with_vibrations = validate_acid_base_pair(protonated, deprotonated)
 
@@ -230,6 +234,8 @@ def run_pka_workflow(
     System
         The protonated system optimized in solvent in which the pKa property has been set.
     """
+    logger.info("Running pKa workflow")
+
     # Check if the given structures are compatible with a pKa calculation
     check_structure_acid_base_pair(protonated, deprotonated)
 
@@ -320,6 +326,7 @@ def run_pka_workflow(
     # If required run the cosmors based schemes
     method_cosmors = method_electonic if method_electonic else method_vibrational
     if use_cosmors and type(method_cosmors)==OrcaInput:
+        logger.info("Calculating pKa with COSMO-RS oxonium scheme: HA + H2O -> A- + H3O+")
 
         # Run COSMO-RS calculation for all molecules
         dG_solv_prot = method_cosmors.cosmors(protonated_sol,solvent="water", use_engine_settings=use_engine_settings, ncores=ncores, maxcore=maxcore)
@@ -440,7 +447,8 @@ def auto_calculate_pka(
     System
         the structure of the considered deprotomer.
     """
-
+    logger.info("Running auto-calculate pKa")
+    
     if method_opt is None:
         method_opt = XtbInput(solvent="water")
 
