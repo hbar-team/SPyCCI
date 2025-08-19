@@ -74,7 +74,7 @@ def split_multixyz(
                     out.write(line)
                     line = f.readline()
 
-            system = System(f"{mol.name}_{suffix}{num}.xyz", charge=charge, spin=spin)
+            system = System.from_xyz(f"{mol.name}_{suffix}{num}.xyz", charge=charge, spin=spin)
 
             if engine is not None and energy is not None:
                 system.properties.set_electronic_energy(energy, engine)

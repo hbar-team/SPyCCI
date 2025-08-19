@@ -471,7 +471,7 @@ def qcg_grow(
             os.system(cmd)
 
         solute.geometry.write_xyz(f"{solute.name}.xyz")
-        cluster = System(f"{solute.name}.xyz", charge=charge, spin=spin)
+        cluster = System.from_xyz(f"{solute.name}.xyz", charge=charge, spin=spin)
 
         try:
             cluster.geometry.load_xyz("grow/cluster.xyz")

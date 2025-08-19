@@ -144,7 +144,7 @@ def packmol_cube(
             f"obabel {solute.name}_{nsolv}{solvent.name}s.pdb -xyz -O {solute.name}_{nsolv}{solvent.name}s.xyz"
         )
 
-        solvated_molecule = System(
+        solvated_molecule = System.from_xyz(
             f"{solute.name}_{nsolv}{solvent.name}s.xyz", box_side=cube_side,
         )
 

@@ -31,6 +31,65 @@ def test_MolecularGeometry_from_xyz():
     else:
         assert True
 
+
+# Test the MolecularGeometry class from_smiles classmethod
+def test_MolecularGeometry_from_smiles():
+    smiles = "CCO"  # Ethanol
+
+    try:
+        geom = MolecularGeometry.from_smiles(smiles, random_seed=1234)
+    except Exception as e:
+        assert False, "Exception raised during MolecularGeometry object construction"
+
+    assert geom.atomcount == 9, "9 atoms expected for the ethanol molecule"
+
+    assert geom.atoms == ["C", "C", "O", "H", "H", "H", "H", "H", "H"]
+    
+    expected = [
+        np.array([-0.88340023, -0.17904132, -0.07267199]),
+        np.array([0.4497649 , 0.51104444, 0.12851809]),
+        np.array([ 1.48578755, -0.2490953 , -0.47625408]),
+        np.array([-1.08989689, -0.31470631, -1.13937946]),
+        np.array([-1.69482305,  0.40270109,  0.37346764]),
+        np.array([-0.87511854, -1.17633172,  0.37932949]),
+        np.array([ 0.44081839,  1.50296775, -0.33251669]),
+        np.array([0.6749398 , 0.62724095, 1.19298181]),
+        np.array([ 1.49192808, -1.12477959, -0.05347481])
+    ]
+    
+    assert_array_almost_equal(expected, geom.coordinates, decimal=6)
+
+
+# Test the MolecularGeometry class from_smiles classmethod with ring torsions
+def test_from_smiles_small_ring_torsions_enabled():
+    smiles = "C1CC1"  
+
+    try:
+        mol = MolecularGeometry.from_smiles(
+            smiles,
+            use_small_ring_torsions=True,
+        )
+    except Exception as e:
+        assert False, "Exception raised during MolecularGeometry object construction"
+
+    assert mol.atomcount == 9
+
+
+# Test the MolecularGeometry class from_smiles classmethod with macrocycle torsions
+def test_from_smiles_macrocycle_torsions_enabled():
+    smiles = "C1CCCCCCCCCCC1"  # anello a 12 atomi
+
+    try:
+        mol = MolecularGeometry.from_smiles(
+            smiles,
+            use_macrocycle_torsions=True,
+        )
+    except Exception as e:
+        assert False, "Exception raised during MolecularGeometry object construction"
+
+    assert mol.atomcount >= 36
+
+
 # Test the MolecularGeometry load_xyz method
 def test_MolecularGeometry_load_xyz():
 

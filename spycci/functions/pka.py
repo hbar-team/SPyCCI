@@ -256,7 +256,6 @@ def run_pka_workflow(
     # Define structures of water and oxonium ion
     water_xyz = retrieve_structure("water")
     water = System("water", charge=0, spin=1, geometry=water_xyz)
-
     oxonium_xyz = retrieve_structure("oxonium")
     oxonium = System("oxonium", charge=1, spin=1, geometry=oxonium_xyz)
 

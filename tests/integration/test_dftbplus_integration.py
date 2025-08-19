@@ -38,7 +38,7 @@ def test_DFTBInput___init__():
 def test_DFTBInput_spe():
 
     engine = DFTBInput(parallel="mpi")
-    mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
         engine.spe(mol, ncores=1, inplace=True)
@@ -59,7 +59,7 @@ def test_DFTBInput_spe():
 def test_DFTBInput_spe_no_inplace():
 
     engine = DFTBInput(parallel="mpi")
-    mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
         newmol = engine.spe(mol, ncores=1)
@@ -80,7 +80,7 @@ def test_DFTBInput_spe_no_inplace():
 def test_DFTBInput_opt():
 
     engine = DFTBInput(parallel="mpi")
-    mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
         engine.opt(mol, ncores=1, inplace=True)
@@ -109,7 +109,7 @@ def test_DFTBInput_opt():
 def test_DFTBInput_opt_no_inplace():
 
     engine = DFTBInput(parallel="mpi")
-    mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
         newmol = engine.opt(mol, ncores=1)
@@ -138,7 +138,7 @@ def test_DFTBInput_opt_no_inplace():
 def test_DFTBInput_md_nvt():
 
     engine = DFTBInput(parallel="mpi")
-    mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
         ensemble: Ensemble = engine.md_nvt(mol, ncores=1, steps=100, mdrestartfreq=10)
@@ -158,7 +158,7 @@ def test_DFTBInput_md_nvt():
 def test_DFTBInput_simulated_annealing():
 
     engine = DFTBInput(parallel="mpi")
-    mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
         engine.simulated_annealing(
@@ -194,7 +194,7 @@ def test_DFTBInput_simulated_annealing():
 def test_DFTBInput_simulated_annealing_no_inplace():
 
     engine = DFTBInput(parallel="mpi")
-    mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
         newmol = engine.simulated_annealing(
@@ -230,7 +230,7 @@ def test_DFTBInput_simulated_annealing_no_inplace():
 def test_DFTBInput_runtime_error_input():
 
     engine = DFTBInput()
-    mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
         engine.spe(mol, ncores=4, charge="castoro")
