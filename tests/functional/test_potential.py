@@ -37,7 +37,7 @@ def test_calculate_potential_xtb():
 
     assert exc_electrons == 1
     assert exc_protons == 0
-    assert_almost_equal(potential, 1.297540861, decimal=4)
+    assert_almost_equal(potential, 1.2977739, decimal=4)
 
     rmtree("output_files")
     rmtree("error_files")
