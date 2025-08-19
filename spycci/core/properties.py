@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging, warnings
-import spycci.config
 import numpy as np
 
 from typing import Dict, List, Union
@@ -94,11 +93,9 @@ class Properties:
     Class containing the properties associated to a system when a given electronic and vibrational
     level of theory are considered. The class automatically stores the level of theory associated
     to the coputed properties and checks, whenever a new property is set, that a given input data
-    is compatible with the current used level of theory. In normal conditions (strict mode)
-    if a mismatch between levels of theory is detected all the properties related to the old
-    level of theory are cleaned and a warning is raised. If the strict mode is disables
-    (by setting compechem.config.STRICT_MODE to False) the level of theory is set to `Undefined`
-    and all the properties are kept.
+    is compatible with the current used level of theory. If a mismatch between levels of theory is
+    detected all the properties related to the old level of theory are cleaned and a warning is
+    raised.
     """
 
     def __init__(self):
@@ -107,7 +104,7 @@ class Properties:
 
         self.__electronic_energy: float = None
         self.__free_energy_correction: float = None
-        self.__pka: float = None
+        self.__pka: pKa = pKa()
         self.__mulliken_charges: List[float] = []
         self.__mulliken_spin_populations: List[float] = []
         self.__condensed_fukui_mulliken: Dict[str, List[float]] = {}
@@ -119,7 +116,7 @@ class Properties:
     def __clear_electronic(self):
         self.__level_of_theory_electronic = None
         self.__electronic_energy = None
-        self.__pka = None
+        self.__pka = pKa()
         self.__mulliken_charges = []
         self.__mulliken_spin_populations = []
         self.__condensed_fukui_mulliken = {}
@@ -130,7 +127,7 @@ class Properties:
     def __clear_vibrational(self):
         self.__level_of_theory_vibrational = None
         self.__free_energy_correction = None
-        self.__pka = None
+        self.__pka = pKa()
         self.__vibrational_data = None
 
     def __check_engine(self, engine: Union[Engine, str]) -> None:
@@ -145,7 +142,9 @@ class Properties:
                     is_dftb_level_of_theory(engine),
                 ]
             ):
-                raise TypeError("The engine argument string does not match any valid level of theory")
+                raise TypeError(
+                    "The engine argument string does not match any valid level of theory"
+                )
             else:
                 return engine
 
@@ -160,59 +159,41 @@ class Properties:
         level_of_theory = self.__check_engine(engine)
 
         logger.debug("Validating electronic energy")
-        logger.debug(f"current: {self.__level_of_theory_electronic}, requested: {level_of_theory}")
+        logger.debug(
+            f"current: {self.__level_of_theory_electronic}, requested: {level_of_theory}"
+        )
 
         if self.__level_of_theory_electronic is None:
             self.__level_of_theory_electronic = level_of_theory
 
         elif self.__level_of_theory_electronic != level_of_theory:
-            if spycci.config.STRICT_MODE == True:
-                msg = "Different electronic levels of theory used for calculating properties. Clearing properties with different electronic level of theory."
-                logger.warning(msg)
-                self.__clear_electronic()
-                self.__level_of_theory_electronic = level_of_theory
-
-            else:
-                msg = "Different electronic levels of theory used for calculating properties. Setting level of theory to undefined."
-                logger.warning(msg)
-                warnings.warn(msg)
-                self.__level_of_theory_electronic = "Undefined"
+            msg = "Different electronic levels of theory used for calculating properties. Clearing properties with different electronic level of theory."
+            logger.warning(msg)
+            self.__clear_electronic()
+            self.__level_of_theory_electronic = level_of_theory
 
     def __validate_vibrational(self, engine: Engine) -> None:
 
         level_of_theory = self.__check_engine(engine)
 
         logger.debug("Validating vibrational contribution")
-        logger.debug(f"current: {self.__level_of_theory_vibrational}, requested: {level_of_theory}")
+        logger.debug(
+            f"current: {self.__level_of_theory_vibrational}, requested: {level_of_theory}"
+        )
 
         if self.__level_of_theory_vibrational is None:
+            if self.__pka.is_set() is True:
+                msg = "Added vibrational contribution. Clearing pKa computed with electronic energy only."
+                logger.warning(msg)
+                self.__pka = pKa()
+
             self.__level_of_theory_vibrational = level_of_theory
 
-            if self.__pka is not None:
-                if spycci.config.STRICT_MODE == True:
-                    msg = "Added vibrational contribution. Clearing pKa computed with electronic energy only."
-                    logger.warning(msg)
-                    self.__pka = None
-                else:
-                    msg = (
-                        "Added vibrational contribution to Properties with pKa previously computed with electronic energy only."
-                    )
-                    logger.warning(msg)
-                    warnings.warn(msg)
-
         elif self.__level_of_theory_vibrational != level_of_theory:
-
-            if spycci.config.STRICT_MODE == True:
-                msg = "Different vibrational levels of theory used for calculating properties. Clearing properties with different vibrational level of theory."
-                logger.warning(msg)
-                self.__clear_vibrational()
-                self.__level_of_theory_vibrational = level_of_theory
-
-            else:
-                msg = "Different vibrational levels of theory used for calculating properties. Setting level of theory to undefined."
-                logger.warning(msg)
-                warnings.warn(msg)
-                self.__level_of_theory_vibrational = "Undefined"
+            msg = "Different vibrational levels of theory used for calculating properties. Clearing properties with different vibrational level of theory."
+            logger.warning(msg)
+            self.__clear_vibrational()
+            self.__level_of_theory_vibrational = level_of_theory
 
     def to_dict(self) -> dict:
         """
@@ -229,7 +210,7 @@ class Properties:
         data["Level of theory vibrational"] = self.__level_of_theory_vibrational
         data["Electronic energy (Eh)"] = self.__electronic_energy
         data["Free energy correction G-E(el) (Eh)"] = self.__free_energy_correction
-        data["pKa"] = self.__pka
+        data["pKa"] = self.__pka.to_dict()
         data["Mulliken charges"] = self.__mulliken_charges
         data["Mulliken spin populations"] = self.__mulliken_spin_populations
         data["Mulliken Fukui"] = self.__condensed_fukui_mulliken
@@ -264,7 +245,7 @@ class Properties:
         obj.__level_of_theory_vibrational = data["Level of theory vibrational"]
         obj.__electronic_energy = data["Electronic energy (Eh)"]
         obj.__free_energy_correction = data["Free energy correction G-E(el) (Eh)"]
-        obj.__pka = data["pKa"]
+        obj.__pka.from_dict(data["pKa"])
         obj.__mulliken_charges = data["Mulliken charges"]
         obj.__mulliken_spin_populations = data["Mulliken spin populations"]
         obj.__condensed_fukui_mulliken = data["Mulliken Fukui"]
@@ -358,7 +339,6 @@ class Properties:
         self.__validate_vibrational(vibrational_engine)
         self.__free_energy_correction = value
 
-
     @property
     def gibbs_free_energy(self) -> float:
         """
@@ -371,12 +351,14 @@ class Properties:
             The Gibbs free energy of the system in Hartree.
         """
         if self.__electronic_energy and self.__free_energy_correction:
+            if self.level_of_theory_electronic != self.level_of_theory_vibrational:
+                logger.warning("Gibbs free energy has been computed mixing different levels of theory")
             return self.__electronic_energy + self.__free_energy_correction
         else:
             return None
 
     @property
-    def pka(self) -> float:
+    def pka(self) -> pKa:
         """
         The pKa of the system.
 
@@ -389,10 +371,10 @@ class Properties:
 
     def set_pka(
         self,
-        value: float,
+        value: pKa,
         electronic_engine: Union[Engine, str],
         vibrational_engine: Union[Engine, str] = None,
-    ) -> float:
+    ) -> None:
         """
         Sets the pKa of the system.
 
@@ -406,9 +388,13 @@ class Properties:
             The engine used in the vibrational calculation. (optional)
         """
         logger.debug("Setting pKa")
+
         self.__validate_electronic(electronic_engine)
         if vibrational_engine is not None:
             self.__validate_vibrational(vibrational_engine)
+
+        if type(value) != pKa:
+            raise TypeError("The pka value must be of pKa class object type.")
         self.__pka = value
 
     @property
@@ -615,3 +601,234 @@ class Properties:
         logger.debug("Setting vibrational data")
         self.__validate_vibrational(vibrational_engine)
         self.__vibrational_data = value
+
+
+# Define the pKa property class to store multiple pKa values computed with different schemes
+class pKa:
+    """
+    The pKa class organizes all the pKa values computed for a given System using different schemes.
+    All the stored data are accessible as read-only properties (no setter is provided). To set the
+    pKa values, dedicated set function are provided (e.g. `set_direct`). The class also exposes the
+    `free_energies` attribute where all the free energy values used in the calculations are stored.
+
+    Properties
+    ----------
+    direct: float
+        The pKa value computed using the direct scheme.
+    oxonium: float
+        The pKa value computed using the oxonium scheme.
+    oxonium_cosmors: float
+        The pKa value computed using the COSMO-RS model to compute the solvation energies in the
+        oxonium scheme
+    level_of_theory_cosmors: str
+        The level of theory used to run the COSMO-RS calculations
+    """
+
+    def __init__(self):
+        self.__direct: float = None
+        self.__oxonium: float = None
+        self.__oxonium_cosmors: float = None
+
+        self.free_energies: Dict[str, float] = None
+        self.__level_of_theory_cosmors: str = None
+
+    def __getitem__(self, key: str) -> Union[float, None]:
+        if key.upper() == "DIRECT":
+            return self.direct
+        elif key.upper() == "OXONIUM":
+            return self.oxonium
+        elif key.upper() == "OXONIUM COSMO-RS":
+            return self.oxonium_cosmors
+        else:
+            raise ValueError(f"The key {key} is not a valid pka scheme.")
+    
+    def __str__(self) -> str:
+
+        if self.is_set() is False:
+            return "pKa object status is NOT SET\n"
+
+        string = ""
+        
+        if self.direct is not None:
+            string += f"pKa direct: {self.direct}\n"
+        if self.oxonium is not None:
+            string += f"pKa oxonium: {self.oxonium}\n"
+        if self.oxonium_cosmors is not None:
+            string += f"pKa oxonium COSMO-RS: {self.oxonium_cosmors}\n"
+            string += f"COSMO-RS level of theory: {self.level_of_theory_cosmors}\n"
+
+        return string
+
+    def is_set(self) -> bool:
+        """
+        Returns `True` if at least one value of the class has been set, `False` otherwise.
+
+        Returns
+        -------
+        bool
+            The set status of the pKa class object.
+        """
+        checklist = [
+            self.__direct,
+            self.__oxonium,
+            self.__oxonium_cosmors,
+            self.free_energies,
+            self.__level_of_theory_cosmors,
+        ]
+        if any(x is not None for x in checklist):
+            return True
+        else:
+            return False
+
+    def to_dict(self) -> dict:
+        """
+        Generates a dictionary representation of the class. The obtained dictionary can be
+        saved and used to re-load the object using the built-in `from_dict` class method.
+
+        Returns
+        -------
+        dict
+            The dictionary listing, with human friendly names, the attributes of the class
+        """
+        data = {}
+        data["direct"] = self.__direct
+        data["oxonium"] = self.__oxonium
+        data["oxonium COSMO-RS"] = self.__oxonium_cosmors
+        data["free energies"] = self.free_energies
+        data["level of theory cosmors"] = self.__level_of_theory_cosmors
+        return data
+
+    @classmethod
+    def from_dict(cls, data: dict) -> pKa:
+        """
+        Construct a pKa object from the data encoded in a dictionary.
+
+        Arguments
+        ---------
+        data: dict
+            The dictionary containing the class attributes
+
+        Returns
+        -------
+        pKa
+            The fully initialized pKa object
+        """
+        obj = cls()
+        obj.__direct = data["direct"]
+        obj.__oxonium = data["oxonium"]
+        obj.__oxonium_cosmors = data["oxonium COSMO-RS"]
+        obj.free_energies = data["free energies"]
+        obj.__level_of_theory_cosmors = data["level of theory cosmors"]
+        return obj
+
+    @property
+    def direct(self) -> Union[float, None]:
+        r"""
+        The pKa value computed using the direct scheme. According to the direct scheme,
+        the pKa is computed from the standard thermodynamic dissociation reaction:
+
+        
+
+        The scheme is semi-empiric: the Gibbs free energies of HA and A⁻ are computed in 
+        acqueous solvent while the proton free energy, together with the RTln(24.46), is
+        assumed to be -270.29 kcal/mol at 298.15K.
+
+        Returns
+        -------
+        Union[float, None]
+            The pKa value as a float value, if available, else `None`.
+        """
+        return self.__direct
+
+    def set_direct(self, pka: float) -> None:
+        """
+        Sets the pKa computed using the direct scheme.
+
+        Arguments
+        ---------
+        pka: float
+            The computed pKa value.
+        """
+        self.__direct = pka
+
+    @property
+    def oxonium(self) -> Union[float, None]:
+        r"""
+        The pKa value computed using the oxonium scheme. According to the oxonium scheme,
+        the pKa is computed from the standard thermodynamic dissociation reaction:
+
+        :math:`HA + H_2O \rightarrow H_3O^{+} + A^{-}`
+
+        The scheme is fully computational: all species involved (HA, A⁻, H₂O, H₃O⁺)
+        must have their free energies computed in aqueous solvent. The water concentration
+        is taken as 55.34 mol/L (i.e., 997 g/L at 25°C / 18.01528 g/mol).
+
+        Returns
+        -------
+        Union[float, None]
+            The pKa value.
+        """
+        return self.__oxonium
+
+    def set_oxonium(self, pka: float) -> None:
+        """
+        Sets the pKa computed using the oxonium scheme.
+
+        Arguments
+        ---------
+        pka: float
+            The computed pKa value.
+        """
+        self.__oxonium = pka
+
+    @property
+    def oxonium_cosmors(self) -> Union[float, None]:
+        r"""
+        The pKa value computed using the oxonium scheme and the COSMO-RS solvation energies.
+        This variant of the oxonium scheme uses solvation free energies from a COSMO-RS
+        calculation instead of implicit solvent methods. The thermodynamic cycle remains:
+
+        :math:`HA + H_2O \rightarrow H_3O^{+} + A^{-}`
+
+        The scheme is fully computational: all species involved (HA, A⁻, H₂O, H₃O⁺)
+        must have their free energies computed according to an hybrid scheme. Firstly
+        the free energy in vacumm is computed for all species (using the solvent equilibium
+        geometyr). Then, the solvation correction for the water solvent is then taken from
+        the OpenCOSMO-RS model. The water concentration is taken as 55.34 mol/L (i.e., 997 g/L
+        at 25°C / 18.01528 g/mol).
+
+        Returns
+        -------
+        Union[float, None]
+            The pKa value.
+        """
+        return self.__oxonium_cosmors
+
+    @property
+    def level_of_theory_cosmors(self) -> Union[str, None]:
+        """
+        The level of theory used in the COSMO-RS calculations.
+
+        Returns
+        -------
+        Union[str, None]
+            The string encoding the level of theory.
+        """
+        return self.__level_of_theory_cosmors
+
+    def set_oxonium_cormors(self, pka: float, engine: Engine) -> None:
+        """
+        Sets the pKa computed using the oxonium scheme using the solvation energies
+        computing the COSMO-RS method.
+
+        Arguments
+        ---------
+        pka: float
+            The computed pKa value.
+        engine: Engine
+            The engine used in the COSMO-RS calculations.
+        """
+        if isinstance(engine, Engine) is False:
+            raise TypeError("COSMO-RS level of theory must be of type engine")
+        self.__oxonium_cosmors = pka
+        self.__level_of_theory_cosmors = engine.level_of_theory

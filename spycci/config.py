@@ -5,9 +5,6 @@ logger = logging.getLogger(__name__)
 
 __JSON_VERSION__ = 1
 
-global STRICT_MODE
-STRICT_MODE = True
-
 global MPI_FLAGS
 MPI_FLAGS = "--bind-to none"
 
