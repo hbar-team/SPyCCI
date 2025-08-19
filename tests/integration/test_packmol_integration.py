@@ -15,8 +15,8 @@ TEST_DIR = dirname(abspath(__file__))
 # Test the packmol_cube() function on a urea molecule in water
 def test_packmol_cube():
 
-    solute = System(f"{TEST_DIR}/utils/xyz_files/urea.xyz")
-    solvent = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
+    solute = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/urea.xyz")
+    solvent = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
         solvated: System = packmol.packmol_cube(

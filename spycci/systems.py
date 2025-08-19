@@ -19,83 +19,180 @@ class System:
     """
     The System object describes a generic molecular system described at a given level of
     theory. A system is defined based on a molecular geometry, a charge, a spin multiplicity
-    and, one a level of theory is selected, by a set of computed properties.
+    and, once a level of theory is selected, by a set of computed properties.
 
-    Parameters
+    Arguments
     ----------
-    molecule : str
-        Either the path to the `.xyz` or `.json` file containing the system geometry/data or
-        the name to be assigned to the sctructure provided as the `geometry` argument.
-    charge : int, optional
+    name : str
+        The name of the system.
+    geometry : MolecularGeometry
+        The `MolecularGeometry` object from which the `System` can be constructred.
+    charge : Optional[int]
         The total charge of the system. (Default: 0 neutral)
-    spin : int, optional
+    spin : Optional[int]
         The total spin multiplicity of the system. (Default: 1 singlet)
-    box_side : Optional[float] = None,
-        For periodic systems, defines the length (in Å) of the box side
-    geometry : Optional[MolecularGeometry]
-        The `MolecularGeometry` object from which the System can be constructred.
+    box_side : Optional[float]
+        For periodic systems, defines the length (in Å) of the box side.
 
     Raises
     ------
-    ValueError
-        Exception raised when the `.xyz` file path is invalid
+    TypeError
+        Exception raised if the geometry argument is not of the `MolecularGeometry` type.
     """
-
     def __init__(
         self,
-        molecule: str,
+        name: str,
+        geometry: MolecularGeometry,
         charge: int = 0,
         spin: int = 1,
         box_side: Optional[float] = None,
-        geometry: Optional[MolecularGeometry] = None
     ) -> None:
         
-        if molecule.endswith(".xyz"):
-            
-            if not os.path.isfile(molecule):
-                raise ValueError(f"The specified XYZ file `{molecule}` does not exist.")
-
-            self.name = os.path.basename(molecule).strip(".xyz")
-            self.__charge: int = charge
-            self.__spin: int = spin
-            self.__box_side = box_side
-            self.__geometry: MolecularGeometry = MolecularGeometry.from_xyz(molecule)
-            self.properties: Properties = Properties()
-            self.flags: list = []
-
-        elif molecule.endswith(".json"):
-
-            if not os.path.isfile(molecule):
-                raise ValueError(f"The specified JSON file `{molecule}` does not exist.")
-
-            with open(molecule, "r") as jsonfile:
-                data = json.load(jsonfile)
-
-            data = json_parser(data)
-
-            self.name = data["Name"]
-            self.__charge = data["Charge"]
-            self.__spin = data["Spin"]
-            self.__box_side = data["Box Side"]
-            self.__geometry = MolecularGeometry().from_dict(data["Geometry"])
-            self.properties = Properties().from_dict(data["Properties"])
-            self.flags = data["Flags"]
-
-        elif geometry is not None:
-            
-            if type(geometry) != MolecularGeometry:
+        if type(geometry) != MolecularGeometry:
                 raise TypeError("The `geometry` argument must be of type `MolecularGeometry`.")
             
-            self.name = str(molecule)
-            self.__charge: int = charge
-            self.__spin: int = spin
-            self.__box_side = box_side
-            self.__geometry: MolecularGeometry = deepcopy(geometry)
-            self.properties: Properties = Properties()
-            self.flags: list = []
+        self.name = str(name)
+        self.__geometry: MolecularGeometry = deepcopy(geometry)
+        self.__charge: int = charge
+        self.__spin: int = spin
+        self.__box_side = box_side
+        self.properties: Properties = Properties()
+        self.flags: list = []
+    
+    @classmethod
+    def from_xyz(
+        cls, 
+        path: str, 
+        charge: int = 0,
+        spin: int = 1,
+        box_side: Optional[float] = None,
+    ) -> System:
+        """
+        Construct a `System` object from the geometry encoded in a `.xyz` file.
 
-        else:
-            raise RuntimeError("The specified format is not supported")
+        Arguments
+        ----------
+        path : str
+            The path of the `.xyz` file.
+        charge : Optional[int]
+            The total charge of the system. (Default: 0 neutral)
+        spin : Optional[int]
+            The total spin multiplicity of the system. (Default: 1 singlet)
+        box_side : Optional[float]
+            For periodic systems, defines the length (in Å) of the box side.
+
+        Raises
+        ------
+        FileExistsError
+            Exception raised if the specified `.xyz` file cannot be found.
+        """
+        if not os.path.isfile(path):
+            raise FileExistsError(f"The specified XYZ file `{path}` does not exist.")
+
+        name = os.path.basename(path).strip(".xyz")
+        geometry = MolecularGeometry.from_xyz(path)
+
+        obj = System(name, geometry, charge=charge, spin=spin, box_side=box_side)
+        return obj
+        
+    @classmethod
+    def from_json(cls, path: str) -> System:
+        """
+        Construct a `System` object from the data encoded in a SPyCCI `.json` file.
+
+        Arguments
+        ----------
+        path : str
+            The path of the `.json` file.
+        """
+        if not os.path.isfile(path):
+            raise ValueError(f"The specified JSON file `{path}` does not exist.")
+
+        with open(path, "r") as jsonfile:
+            data = json.load(jsonfile)
+
+        data = json_parser(data)
+
+        name = data["Name"]
+        geometry = MolecularGeometry().from_dict(data["Geometry"])
+        charge = data["Charge"]
+        spin = data["Spin"]
+        box_side = data["Box Side"]
+
+        obj = System(name, geometry, charge=charge, spin=spin, box_side=box_side)
+        obj.properties = Properties().from_dict(data["Properties"])
+        obj.flags = data["Flags"]
+
+        return obj
+
+
+    @classmethod
+    def from_smiles(
+        cls,
+        name: str,
+        smiles: str, 
+        charge: int = 0,
+        spin: int = 1,
+        box_side: Optional[float] = None,
+        force_uff: bool = False,
+        default_mmffvariant: str = "MMFF94",
+        use_small_ring_torsions: bool = False,
+        use_macrocycle_torsions: bool = False,
+        maxiter: int = 500,
+        random_seed: int = -1,
+    ) -> System:
+        """
+        The function returns a fully initialized `System` object from the given SMILES string.
+        The geometry of the molecule is generated in 3D using the ETKDGv3 algorithm, followed by force field
+        optimization using either MMFF or UFF, depending on availability and user preference.
+        The resulting system includes molecular geometry, total charge, spin multiplicity, and optional
+        periodic boundary conditions. All operations are carried out using the tools defined in the RDKit package.
+
+        Arguments
+        ---------
+        name: str
+            The name assigned to the molecular system.
+        smiles: str
+            A valid SMILES string representing the molecular structure to be converted into a full system.
+        charge: int
+            The net formal charge of the system. (Default: 0)
+        spin: int
+            The total spin multiplicity of the system. (Default: 1 singlet)
+        box_side: Optional[float]
+            The length of the side of the simulation box (in Å) used to define periodic boundary conditions.
+            If set to `None`, the system is treated as non-periodic. (default: None)
+        force_uff: bool
+            If True, the geometry optimization will use the UFF force field even when MMFF parameters are available.
+            This can be useful when consistency across a dataset using UFF is desired. (default: False)
+        default_mmffvariant: str
+            Specifies the MMFF variant to use when MMFF is selected. Valid options are "MMFF94" or "MMFF94s".
+            "MMFF94s" is generally recommended for more accurate static geometries. (default: "MMFF94")
+        use_small_ring_torsions: bool
+            If True, enables special torsional sampling for small rings during 3D embedding.
+            Recommended when working with strained ring systems (e.g., cyclopropanes, aziridines). (default: False)
+        use_macrocycle_torsions: bool
+            If True, enables special torsional treatment of macrocycles during embedding.
+            Recommended for cyclic peptides or large ring systems (≥12 atoms). (default: False)
+        maxiter: int
+            The maximum number of iterations allowed for the force field optimization step. (default: 500)
+        random_seed: int
+            If set to a positive integer, this value is used to seed the random number generator for
+            the 3D embedding algorithm. This will ensure reproducible conformations for the same input SMILES.
+            This keyword is mainly used for testing. (default: -1)
+        """
+        geometry = MolecularGeometry.from_smiles(
+            smiles,
+            force_uff=force_uff,
+            default_mmffvariant = default_mmffvariant,
+            use_small_ring_torsions = use_small_ring_torsions,
+            use_macrocycle_torsions = use_macrocycle_torsions,
+            maxiter = maxiter,
+            random_seed = random_seed,
+        )
+
+        obj = System(name, geometry, charge=charge, spin=spin, box_side=box_side)
+        return obj
+               
 
     def save_json(self, path: str) -> None:
         """

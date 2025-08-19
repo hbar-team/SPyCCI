@@ -35,7 +35,7 @@ def test_XtbInput___init__():
 def test_XtbInput_spe():
 
     engine = XtbInput(solvent="DMSO")
-    mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz", charge=1, spin=2)
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz", charge=1, spin=2)
 
     try:
         engine.spe(mol, ncores=4, inplace=True)
@@ -67,7 +67,7 @@ def test_XtbInput_spe():
 def test_XtbInput_spe_no_inplace():
 
     engine = XtbInput(solvent="DMSO")
-    mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz", charge=1, spin=2)
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz", charge=1, spin=2)
 
     try:
         newmol = engine.spe(mol, ncores=4)
@@ -99,7 +99,7 @@ def test_XtbInput_spe_no_inplace():
 def test_XtbInput_opt():
 
     engine = XtbInput(solvent=None)
-    mol = System(f"{TEST_DIR}/utils/xyz_files/urea.xyz")
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/urea.xyz")
 
     try:
         engine.opt(mol, ncores=4, inplace=True)
@@ -142,7 +142,7 @@ def test_XtbInput_opt():
 def test_XtbInput_opt_no_inplace():
 
     engine = XtbInput(solvent=None)
-    mol = System(f"{TEST_DIR}/utils/xyz_files/urea.xyz")
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/urea.xyz")
 
     try:
         newmol = engine.opt(mol, ncores=4)
@@ -185,7 +185,7 @@ def test_XtbInput_opt_no_inplace():
 def test_XtbInput_freq():
 
     engine = XtbInput(solvent=None)
-    mol = System(f"{TEST_DIR}/utils/xyz_files/urea.xyz")
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/urea.xyz")
 
     try:
         engine.freq(mol, ncores=4, inplace=True)
@@ -215,7 +215,7 @@ def test_XtbInput_freq():
 def test_XtbInput_freq_no_inplace():
 
     engine = XtbInput(solvent=None)
-    mol = System(f"{TEST_DIR}/utils/xyz_files/urea.xyz")
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/urea.xyz")
 
     try:
         newmol = engine.freq(mol, ncores=4)
@@ -245,7 +245,7 @@ def test_XtbInput_freq_no_inplace():
 def test_XtbInput_runtime_error_input():
 
     engine = XtbInput(solvent="watr")
-    mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
         engine.spe(mol, ncores=4)
@@ -261,7 +261,7 @@ def test_XtbInput_runtime_error_input():
 def test_XtbInput_runtime_error_scf_not_converged():
 
     engine = XtbInput(solvent="water")
-    mol = System(f"{TEST_DIR}/utils/xyz_files/cursed_water.xyz")
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/cursed_water.xyz")
 
     try:
         engine.spe(mol, ncores=4)
