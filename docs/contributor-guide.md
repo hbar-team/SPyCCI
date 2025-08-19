@@ -54,13 +54,29 @@
 
     * Ask for review from the development team.
 
+## Basics of local development
+
+If you are new to developing python software we strongly advise you to create a local virtual environemnt using Conda or similar tools. Once you have done so, you can install the library in your environment entering, once inside the main `SPyCCI` folder, the command:
+
+```
+pip install -e .
+```
+
+This will install the python pacakge in editable mode making all the changes you have made immediately effective. To test the functionality of the library you can use the existing tests that can be run using `pytest`. To do so, you can install the development requirements using the provided `requirements_dev.txt`. To do so you can use the command:
+
+```
+pip install -r requirements_dev.txt
+```
+
+All the tests can be run using the command `pytest --cov` as explained above.
+
 (testing-info)=
-## More info about testing
+### More info about testing
 Testing in the SPyCCI library has been divided into three categories:
 
 * `unit`: All the tests related to the inner workings of the library, the object definitions and all the sanity checks concerning data integrity and interactions between class objects.
 * `integration`: All the tests related to the interaction between `SPyCCI` and the calculation softwares. These test are intended to verify the correctness of the submitted calculations and the results obtained from the parsing routines.
-*`functional`: All the rest related to the operation of composite functions involving one or more calculation software and further data processing by `SPyCCI` itself.
+* `functional`: All the rest related to the operation of composite functions involving one or more calculation software and further data processing by `SPyCCI` itself.
 
 As such, `unit` test can be run without any third party software while `integration` and `functional` tests require the computational softwares to be available. For the current version of `SPyCCI` the following version of third party software are required for testing:
 
