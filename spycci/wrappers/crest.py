@@ -61,12 +61,12 @@ def tautomer_search(
         mol.geometry.write_xyz("geom.xyz")
 
         if solvent:
-            cmd = f"{CRESTPATH} geom.xyz --alpb {solvent} --chrg {mol.charge} --uhf {mol.spin-1} --mquick --fstrict --tautomerize {optionals} -T {ncores} > output.out 2>> output.err"
+            cmd = f"{CRESTPATH} geom.xyz --alpb {solvent} --chrg {mol.charge} --uhf {mol.spin-1} --fstrict --tautomerize {optionals} -T {ncores} > output.out 2>> output.err"
             logger.debug(f"Running CREST with command: {cmd}")
             os.system(cmd)
 
         else:
-            cmd = f"{CRESTPATH} geom.xyz --chrg {mol.charge} --uhf {mol.spin-1} --mquick --fstrict --tautomerize {optionals} -T {ncores} > output.out 2>> output.err"
+            cmd = f"{CRESTPATH} geom.xyz --chrg {mol.charge} --uhf {mol.spin-1} --fstrict --tautomerize {optionals} -T {ncores} > output.out 2>> output.err"
             logger.debug(f"Running CREST with command: {cmd}")
             os.system(cmd)
 
@@ -154,12 +154,12 @@ def conformer_search(
         mol.geometry.write_xyz("geom.xyz")
 
         if solvent:
-            cmd = f"{CRESTPATH} geom.xyz --alpb {solvent} --chrg {mol.charge} --uhf {mol.spin-1} --mquick {optionals} -T {ncores} > output.out 2>> output.err"
+            cmd = f"{CRESTPATH} geom.xyz --alpb {solvent} --chrg {mol.charge} --uhf {mol.spin-1} {optionals} -T {ncores} > output.out 2>> output.err"
             logger.debug(f"Running CREST with command: {cmd}")
             os.system(cmd)
 
         else:
-            cmd = f"{CRESTPATH} geom.xyz --chrg {mol.charge} --uhf {mol.spin-1} --mquick {optionals} -T {ncores} > output.out 2>> output.err"
+            cmd = f"{CRESTPATH} geom.xyz --chrg {mol.charge} --uhf {mol.spin-1} {optionals} -T {ncores} > output.out 2>> output.err"
             logger.debug(f"Running CREST with command: {cmd}")
             os.system(cmd)
 
