@@ -12,13 +12,14 @@ from shutil import rmtree
 # Get the path of the tests directory
 TEST_DIR = dirname(abspath(__file__))
 
+
 # Test the tautomer_search() function on a urea molecule in water
 def test_crest_tautomer_search():
 
     mol = System(f"{TEST_DIR}/utils/xyz_files/urea.xyz")
 
     try:
-        tautomers: Ensemble = crest.tautomer_search(mol, ncores=4, solvent="water")
+        tautomers: Ensemble = crest.tautomer_search(mol, ncores=4, solvent="water", optionals="--mquick")
     except:
         assert False, "Unexpected exception raised during tautomer search"
 
@@ -35,7 +36,7 @@ def test_crest_conformer_search():
     mol = System(f"{TEST_DIR}/utils/xyz_files/propan-1-ol.xyz")
 
     try:
-        conformers: Ensemble = crest.conformer_search(mol, ncores=4, solvent="water")
+        conformers: Ensemble = crest.conformer_search(mol, ncores=4, solvent="water", optionals="--mquick")
     except:
         assert False, "Unexpected exception raised during tautomer search"
 
@@ -52,7 +53,7 @@ def test_crest_deprotonate():
     mol = System(f"{TEST_DIR}/utils/xyz_files/3-amino-L-tyrosine.xyz")
 
     try:
-        conformers: Ensemble = crest.deprotonate(mol, ncores=4, solvent="water")
+        conformers: Ensemble = crest.deprotonate(mol, ncores=4, solvent="water", optionals="--mquick")
     except:
         assert False, "Unexpected exception raised during tautomer search"
 
@@ -69,7 +70,7 @@ def test_crest_protonate():
     mol = System(f"{TEST_DIR}/utils/xyz_files/3-amino-L-tyrosine.xyz")
 
     try:
-        conformers: Ensemble = crest.protonate(mol, ncores=4, solvent="water")
+        conformers: Ensemble = crest.protonate(mol, ncores=4, solvent="water", optionals="--mquick")
     except:
         assert False, "Unexpected exception raised during tautomer search"
 
@@ -92,7 +93,7 @@ def test_crest_protonate():
 
 #     try:
 #         cluster: System = crest.qcg_grow(
-#             solute=solute, solvent=solvent, ncores=4, alpb_solvent="water"
+#             solute=solute, solvent=solvent, ncores=4, alpb_solvent="water", optionals="--mquick"
 #         )
 #     except:
 #         assert False, "Unexpected exception raised during QCG run"
@@ -112,7 +113,7 @@ def test_crest_protonate():
 
 #     try:
 #         ensemble: Ensemble = crest.qcg_ensemble(
-#             solute=solute, solvent=solvent, ncores=4, alpb_solvent="water"
+#             solute=solute, solvent=solvent, ncores=4, alpb_solvent="water", optionals="--mquick"
 #         )
 #     except:
 #         assert False, "Unexpected exception raised during tautomer search"
