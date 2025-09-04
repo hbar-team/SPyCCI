@@ -186,13 +186,11 @@ my_ens = Ensemble(my_list)
 
 To get a list of all the available properties, please refer to the [API](API-systems).
 
+
+<!-- 
 ---
 
-## Saving/Loading System objects
-
-
-
-<!-- ## Molecular Dynamics Trajectories
+## Molecular Dynamics Trajectories
 
 :::{admonition} Note
 :class: info
