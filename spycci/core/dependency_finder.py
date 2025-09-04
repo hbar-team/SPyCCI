@@ -1,9 +1,10 @@
-import subprocess, logging
+import subprocess, logging, re
 
 from os.path import abspath
 from os import environ
 
-logger = logging.getLogger(__name__) 
+logger = logging.getLogger(__name__)
+
 
 def locate_executable(name: str) -> str:
     """
@@ -47,25 +48,30 @@ def locate_vmd() -> str:
     return path.rstrip("/bin/vmd")
 
 
-def find_orca_version() -> str:
+def find_orca_version(path) -> str:
     """
-    If available, returns the currently available version of orca.
-    
+    If available, returns the currently selected version of orca.
+
+    Arguments
+    ---------
+    path : str
+        The path of the Orca executable for which to find the version.
+
     Returns
     -------
     str
         The orca version ad a dot separated string (e.g. '6.0.1')
     """
     orca_version = None
-    output = subprocess.run(["orca", "--version"], capture_output=True, text=True).stdout
+    output = subprocess.run([path, "--version"], capture_output=True, text=True).stdout
     for line in output.split("\n"):
         if "Program Version" in line:
             orca_version: str = line.split()[2]
             break
-    
+
     if orca_version is None:
         raise RuntimeError("Failed to read the version of the orca software.")
-    
+
     return orca_version
 
 
@@ -93,12 +99,10 @@ def locate_orca(version: str = None, get_folder: bool = False) -> str:
     path = locate_executable("orca")
 
     # Check if the available version of orca matches the requirements
-    orca_version = find_orca_version()
+    orca_version = find_orca_version(path)
 
     if version is not None and orca_version != version:
-        raise RuntimeError(
-            f"The required orca version is not available. Version {orca_version} found instead."
-        )
+        raise RuntimeError(f"The required orca version is not available. Version {orca_version} found instead.")
 
     # Check if a MPI version is available in the system PATH
     _ = locate_executable("mpirun")
@@ -117,20 +121,25 @@ def locate_orca(version: str = None, get_folder: bool = False) -> str:
         raise RuntimeError("OpenMPI is either not available or the version cannot be found")
 
     # Check if the available version meets the requirements
-    openmpi_required = {"6.0.*": ["4.1.6"], "5.0.*": ["4.1.1"], "4.2.*": ["3.1.4"], "4.1.*": ["3.1.3", "2.1.5"]}
+    openmpi_required = {
+        "6.1.": ["4.1.6"],
+        "6.0.": ["4.1.6"],
+        "5.0.": ["4.1.1"],
+        "4.2.": ["3.1.4"],
+        "4.1.": ["3.1.3", "2.1.5"],
+    }
 
-    key = ".".join(orca_version.split(".")[0:-1] + ["*"])
-    if openmpi_version not in openmpi_required[key]:
-        msg = " or ".join(openmpi_required[key])
-        raise RuntimeError(
-            f"orca {orca_version} retuires OpenMPI {msg}. OpenMPI {openmpi_version} found instead."
-        )
-    
+    for key, val in openmpi_required.items():
+        if orca_version.startswith(key) and openmpi_version not in val:
+            raise RuntimeError(f"orca {orca_version} requires OpenMPI {val}. OpenMPI {openmpi_version} found instead.")
+
     try:
         folder = path.rstrip("/orca")
         locate_executable(f"{folder}/otool_xtb")
     except:
-        logger.warning("The `otool_xtb` symbolic link to xTB has not been found. The orca interface for xTB will not be available.")
+        logger.warning(
+            "The `otool_xtb` symbolic link to xTB has not been found. The orca interface for xTB will not be available."
+        )
 
     return path.rstrip("/orca") if get_folder is True else path
 
@@ -166,11 +175,36 @@ def locate_xtb(version: str = None) -> str:
         raise RuntimeError("Failed to read the version of the xtb software.")
 
     elif version is not None and xtb_version != version:
-        raise RuntimeError(
-            f"The required xtb version is not available. Version {xtb_version} found instead."
-        )
+        raise RuntimeError(f"The required xtb version is not available. Version {xtb_version} found instead.")
 
     return path
+
+
+def find_crest_version(path: str) -> str:
+    """
+    If available, returns the currently selected version of crest.
+
+    Arguments
+    ---------
+    path : str
+        The path of the Crest executable for which to find the version.
+
+    Returns
+    -------
+    str
+        The crest version as a dot separated string (e.g. '3.0.2')
+    """
+    crest_version = None
+    output = subprocess.run([path, "--version"], capture_output=True, text=True).stdout
+    for line in output.split("\n"):
+        if "Version" in line:
+            crest_version: str = line.split()[1]
+            break
+
+    if crest_version is None:
+        raise RuntimeError("Failed to read the version of the crest software.")
+
+    return crest_version
 
 
 def locate_crest(version: str = None) -> str:
@@ -192,21 +226,13 @@ def locate_crest(version: str = None) -> str:
     path = locate_executable("crest")
 
     # Check if the available version of crest matches the requirements
-    crest_version = None
-    output = subprocess.run(["crest", "--version"], capture_output=True, text=True).stdout
-    for line in output.split("\n"):
-
-        if "Version" in line:
-            crest_version: str = line.split()[1]
-            break
+    crest_version = find_crest_version(path)
 
     if crest_version is None:
         raise RuntimeError("Failed to read the version of the crest software.")
 
     elif version is not None and crest_version != version:
-        raise RuntimeError(
-            f"The required crest version is not available. Version {crest_version} found instead."
-        )
+        raise RuntimeError(f"The required crest version is not available. Version {crest_version} found instead.")
 
     return path
 
@@ -231,9 +257,7 @@ def locate_dftbplus(version: str = None) -> str:
 
     # Check if the available version of dftb+ matches the requirements
     dftbplus_version = None
-    dftbplus_output = subprocess.run(
-        ["dftb+", "--version"], capture_output=True, text=True
-    ).stdout
+    dftbplus_output = subprocess.run(["dftb+", "--version"], capture_output=True, text=True).stdout
     for line in dftbplus_output.split("\n"):
 
         if "DFTB+ release" in line:
@@ -244,9 +268,7 @@ def locate_dftbplus(version: str = None) -> str:
         raise RuntimeError("Failed to read the version of the dftb+ software.")
 
     elif version is not None and dftbplus_version != version:
-        raise RuntimeError(
-            f"The required dftb+ version is not available. Version {dftbplus_version} found instead."
-        )
+        raise RuntimeError(f"The required dftb+ version is not available. Version {dftbplus_version} found instead.")
 
     return path
 
