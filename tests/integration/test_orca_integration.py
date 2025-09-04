@@ -38,7 +38,7 @@ def test_OrcaInput___init__():
 # RUNS WITH BOTH ORCA 6.0.1 and ORCA 5.0.3
 def test_OrcaInput_spe_CCSD():
     engine = OrcaInput(method="DLPNO-CCSD", basis_set="def2-SVP", aux_basis="AutoAux")
-    mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz", charge=1, spin=2)
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz", charge=1, spin=2)
 
     try:
         newmol = engine.spe(mol, ncores=4)
@@ -71,7 +71,7 @@ def test_OrcaInput_spe_CCSD():
 # RUNS WITH BOTH ORCA 6.0.1 and ORCA 5.0.3
 def test_OrcaInput_forbidden():
     engine = OrcaInput(method="DLPNO-CCSD(T)", basis_set="6-311++G**", aux_basis="AutoAux")
-    mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz", charge=1, spin=2)
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz", charge=1, spin=2)
 
     try:
         engine.spe(mol, ncores=4, inplace=True)
@@ -89,7 +89,7 @@ def test_OrcaInput_forbidden():
 # RUNS WITH BOTH ORCA 6.0.1 and ORCA 5.0.3
 def test_OrcaInput_runtime_error_input():
     engine = OrcaInput(method="PBU", basis_set="def2-SVP", aux_basis="def2/J", solvent=None)
-    mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
         engine.spe(mol, ncores=4)
@@ -107,7 +107,7 @@ def test_OrcaInput_runtime_error_input():
 # RUNS WITH BOTH ORCA 6.0.1 and ORCA 5.0.3
 def test_OrcaInput_runtime_error_missing_basis():
     engine = OrcaInput(method="DLPNO-CCSD", basis_set="def2-SVP", aux_basis="def2/J", solvent=None)
-    mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
         engine.spe(mol, ncores=4)
@@ -131,7 +131,7 @@ def test_OrcaInput_runtime_error_scf_not_converged_in_init():
         solvent=None,
         blocks={"scf": {"maxiter": 2}},
     )
-    mol = System(f"{TEST_DIR}/utils/xyz_files/europium-aquoion.xyz", charge=3, spin=7)
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/europium-aquoion.xyz", charge=3, spin=7)
 
     try:
         engine.spe(mol, ncores=4)
@@ -154,7 +154,7 @@ def test_OrcaInput_runtime_error_scf_not_converged_in_function():
         aux_basis="def2/J",
         solvent=None,
     )
-    mol = System(f"{TEST_DIR}/utils/xyz_files/europium-aquoion.xyz", charge=3, spin=7)
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/europium-aquoion.xyz", charge=3, spin=7)
 
     try:
         engine.spe(mol, ncores=4, blocks={"scf": {"maxiter": 2}})
@@ -172,7 +172,7 @@ def test_OrcaInput_runtime_error_scf_not_converged_in_function():
 # RUNS WITH BOTH ORCA 6.0.1 and ORCA 5.0.3
 def test_OrcaInput_runtime_error_wrong_multiplicity():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis="def2/J", solvent=None)
-    mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz", charge=0, spin=2)
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz", charge=0, spin=2)
 
     try:
         engine.spe(mol, ncores=4)
@@ -194,7 +194,7 @@ def test_OrcaInput_runtime_error_wrong_multiplicity():
 @pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_spe():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis="def2/J", solvent="DMSO")
-    mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz", charge=1, spin=2)
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz", charge=1, spin=2)
 
     try:
         engine.spe(mol, ncores=4, inplace=True)
@@ -221,7 +221,7 @@ def test_OrcaInput_spe():
 @pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_spe_no_inplace():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis="def2/J", solvent="DMSO")
-    mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz", charge=1, spin=2)
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz", charge=1, spin=2)
 
     try:
         newmol = engine.spe(mol, ncores=4)
@@ -254,7 +254,7 @@ def test_OrcaInput_spe_no_inplace():
 @pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_opt():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis="def2/J", solvent=None)
-    mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
         engine.opt(mol, ncores=4, inplace=True)
@@ -286,7 +286,7 @@ def test_OrcaInput_opt():
 @pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_opt_no_inplace():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis="def2/J", solvent=None)
-    mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
         newmol = engine.opt(mol, ncores=4)
@@ -318,7 +318,7 @@ def test_OrcaInput_opt_no_inplace():
 @pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_opt_ts():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis=None, solvent=None, optionals="D3BJ")
-    mol = System(f"{TEST_DIR}/utils/xyz_files/distorted_TS.xyz", charge=-1, spin=1)
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/distorted_TS.xyz", charge=-1, spin=1)
 
     try:
         engine.opt_ts(mol, ncores=4, inplace=True)
@@ -353,7 +353,7 @@ def test_OrcaInput_opt_ts():
 @pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_opt_ts_no_inplace():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis=None, solvent=None, optionals="D3BJ")
-    mol = System(f"{TEST_DIR}/utils/xyz_files/distorted_TS.xyz", charge=-1, spin=1)
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/distorted_TS.xyz", charge=-1, spin=1)
 
     try:
         newmol = engine.opt_ts(mol, ncores=4)
@@ -388,7 +388,7 @@ def test_OrcaInput_opt_ts_no_inplace():
 @pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_freq():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis="def2/J", solvent=None)
-    mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
         engine.freq(mol, ncores=4, inplace=True)
@@ -444,7 +444,7 @@ def test_OrcaInput_freq():
 @pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_freq_no_inplace():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis="def2/J", solvent=None)
-    mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
         newmol = engine.freq(mol, ncores=4)
@@ -469,7 +469,7 @@ def test_OrcaInput_freq_no_inplace():
 @pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_nfreq():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis="def2/J", solvent="ethanol")
-    mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
         engine.nfreq(mol, ncores=4, inplace=True)
@@ -525,7 +525,7 @@ def test_OrcaInput_nfreq():
 @pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_nfreq_no_inplace():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis="def2/J", solvent="ethanol")
-    mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
         newmol = engine.nfreq(mol, ncores=4)
@@ -581,7 +581,7 @@ def test_OrcaInput_nfreq_no_inplace():
 @pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_raman_nearir():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis="def2/J")
-    mol = System(f"{TEST_DIR}/utils/xyz_files/CO2.xyz")
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/CO2.xyz")
 
     engine.opt(mol, ncores=4, optimization_level="TIGHTOPT", inplace=True)
     engine.nfreq(mol, ncores=4, raman=True, overtones=True, inplace=True)
@@ -646,7 +646,7 @@ def test_OrcaInput_raman_nearir():
 # RUNS WITH BOTH ORCA 6.0.1 and ORCA 5.0.3
 def test_OrcaInput_scan():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis="def2/J", solvent=None)
-    mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
         ensemble: Ensemble = engine.scan(mol, scan="B 0 1 = 0.8, 1.5, 10", ncores=4)
@@ -682,7 +682,7 @@ def test_OrcaInput_scan():
 @pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_scan_ts():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis="def2/J", solvent=None)
-    mol = System(f"{TEST_DIR}/utils/xyz_files/SN2_scan_example.xyz", charge=-1, spin=1)
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/SN2_scan_example.xyz", charge=-1, spin=1)
 
     try:
         newmol, ensemble = engine.scan_ts(mol, scan="B 0 5 = 3.0, 1.0, 10", ncores=4)
@@ -729,7 +729,7 @@ def test_OrcaInput_scan_ts():
 @pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_scan_ts_inplace():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis="def2/J", solvent=None)
-    mol = System(f"{TEST_DIR}/utils/xyz_files/SN2_scan_example.xyz", charge=-1, spin=1)
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/SN2_scan_example.xyz", charge=-1, spin=1)
 
     try:
         engine.scan_ts(mol, scan="B 0 5 = 3.0, 1.0, 10", ncores=4, inplace=True)
@@ -761,8 +761,8 @@ def test_OrcaInput_scan_ts_inplace():
 @pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_neb_ci():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis=None, solvent=None, optionals="D3BJ")
-    reactant = System(f"{TEST_DIR}/utils/xyz_files/NEB_reactant.xyz", charge=0, spin=1)
-    product = System(f"{TEST_DIR}/utils/xyz_files/NEB_product.xyz", charge=0, spin=1)
+    reactant = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_reactant.xyz", charge=0, spin=1)
+    product = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_product.xyz", charge=0, spin=1)
 
     try:
         MEP_ensemble: Ensemble = engine.neb_ci(reactant, product, nimages=5, ncores=4)
@@ -802,8 +802,8 @@ def test_OrcaInput_neb_ci():
 @pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_neb_ts():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis=None, solvent=None, optionals="D3BJ")
-    reactant = System(f"{TEST_DIR}/utils/xyz_files/NEB_reactant.xyz", charge=0, spin=1)
-    product = System(f"{TEST_DIR}/utils/xyz_files/NEB_product.xyz", charge=0, spin=1)
+    reactant = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_reactant.xyz", charge=0, spin=1)
+    product = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_product.xyz", charge=0, spin=1)
 
     try:
         transition_state, MEP_ensemble = engine.neb_ts(reactant, product, nimages=5, ncores=4)
@@ -858,9 +858,9 @@ def test_OrcaInput_neb_ts():
 @pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_neb_ts_with_guess():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis=None, solvent=None, optionals="D3BJ")
-    reactant = System(f"{TEST_DIR}/utils/xyz_files/NEB_reactant.xyz", charge=0, spin=1)
-    product = System(f"{TEST_DIR}/utils/xyz_files/NEB_product.xyz", charge=0, spin=1)
-    guess = System(f"{TEST_DIR}/utils/xyz_files/NEB_ts_guess.xyz", charge=0, spin=1)
+    reactant = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_reactant.xyz", charge=0, spin=1)
+    product = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_product.xyz", charge=0, spin=1)
+    guess = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_ts_guess.xyz", charge=0, spin=1)
 
     try:
         transition_state, MEP_ensemble = engine.neb_ts(reactant, product, guess=guess, nimages=5, ncores=4)
@@ -916,7 +916,7 @@ def test_OrcaInput_neb_ts_with_guess():
 @pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_cosmors_simple():
     
-    acetone = System(f"{TEST_DIR}/utils/xyz_files/acetone.xyz", charge=0, spin=1)
+    acetone = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/acetone.xyz", charge=0, spin=1)
     orca = OrcaInput(method="PBE", basis_set="def2-TZVP", solvent="water")
 
     try:
@@ -934,7 +934,7 @@ def test_cosmors_simple():
 @pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_cosmors_engine_settings():
 
-    acetone = System(f"{TEST_DIR}/utils/xyz_files/acetone.xyz", charge=0, spin=1)
+    acetone = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/acetone.xyz", charge=0, spin=1)
     orca = OrcaInput(method="PBE", basis_set="def2-TZVP", solvent="water")
 
     try:
@@ -951,7 +951,7 @@ def test_cosmors_engine_settings():
 @pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_cosmors_solventfile():
 
-    acetone = System(f"{TEST_DIR}/utils/xyz_files/acetone.xyz", charge=0, spin=1)
+    acetone = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/acetone.xyz", charge=0, spin=1)
     orca = OrcaInput()
 
     try:

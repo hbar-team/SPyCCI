@@ -15,7 +15,7 @@ TEST_DIR = dirname(abspath(__file__))
 # Test the tautomer_search() function on a urea molecule in water
 def test_crest_tautomer_search():
 
-    mol = System(f"{TEST_DIR}/utils/xyz_files/urea.xyz")
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/urea.xyz")
 
     try:
         tautomers: Ensemble = crest.tautomer_search(mol, ncores=4, solvent="water")
@@ -32,7 +32,7 @@ def test_crest_tautomer_search():
 # Test the conformer_search() function on a propanol molecule in water
 def test_crest_conformer_search():
 
-    mol = System(f"{TEST_DIR}/utils/xyz_files/propan-1-ol.xyz")
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/propan-1-ol.xyz")
 
     try:
         conformers: Ensemble = crest.conformer_search(mol, ncores=4, solvent="water")
@@ -49,7 +49,7 @@ def test_crest_conformer_search():
 # Test the deprotonate() function on a tyrosine molecule in water
 def test_crest_deprotonate():
 
-    mol = System(f"{TEST_DIR}/utils/xyz_files/3-amino-L-tyrosine.xyz")
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/3-amino-L-tyrosine.xyz")
 
     try:
         conformers: Ensemble = crest.deprotonate(mol, ncores=4, solvent="water")
@@ -66,7 +66,7 @@ def test_crest_deprotonate():
 # Test the protonate() function on a tyrosine molecule in water
 def test_crest_protonate():
 
-    mol = System(f"{TEST_DIR}/utils/xyz_files/3-amino-L-tyrosine.xyz")
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/3-amino-L-tyrosine.xyz")
 
     try:
         conformers: Ensemble = crest.protonate(mol, ncores=4, solvent="water")
@@ -87,8 +87,8 @@ def test_crest_protonate():
 # # Test the qcg_grow() function on a urea molecule + 5 water molecules
 # def test_qcg_grow():
 
-#     solute = System(f"{TEST_DIR}/utils/xyz_files/urea.xyz")
-#     solvent = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
+#     solute = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/urea.xyz")
+#     solvent = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
 #     try:
 #         cluster: System = crest.qcg_grow(
@@ -107,8 +107,8 @@ def test_crest_protonate():
 # # Test the qcg_ensemble() function on a urea molecule + 3 water molecules
 # def test_qcg_ensemble():
 
-#     solute = System(f"{TEST_DIR}/utils/xyz_files/urea.xyz")
-#     solvent = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
+#     solute = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/urea.xyz")
+#     solvent = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
 #     try:
 #         ensemble: Ensemble = crest.qcg_ensemble(
