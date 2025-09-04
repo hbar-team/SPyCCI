@@ -107,8 +107,8 @@ class MolecularGeometry:
         smiles: str,
         force_uff: bool = False,
         default_mmffvariant: str = "MMFF94",
-        use_small_ring_torsions: bool = False,
-        use_macrocycle_torsions: bool = False,
+        use_small_ring_torsions: bool = True,
+        use_macrocycle_torsions: bool = True,
         maxiter: int = 500,
         random_seed: int = -1,
     ) -> MolecularGeometry:
@@ -130,10 +130,10 @@ class MolecularGeometry:
             "MMFF94s" is generally recommended for more accurate static geometries.
         use_small_ring_torsions: bool
             If True, enables special torsional sampling for small rings during 3D embedding.
-            Recommended when working with strained ring systems (e.g., cyclopropanes, aziridines). (default: False)
+            Recommended when working with strained ring systems (e.g., cyclopropanes, aziridines). (default: True)
         use_macrocycle_torsions: bool
             If True, enables special torsional treatment of macrocycles during embedding.
-            Recommended for cyclic peptides or large ring systems (≥12 atoms). (default: False)
+            Recommended for cyclic peptides or large ring systems (≥12 atoms). (default: True)
         maxiter: int
             The maximum number of iterations allowed for the force field optimization step. (default=500)
         random_seed: int
