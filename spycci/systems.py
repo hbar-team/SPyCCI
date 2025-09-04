@@ -83,11 +83,11 @@ class System:
 
         Raises
         ------
-        FileExistsError
+        FileNotFoundError
             Exception raised if the specified `.xyz` file cannot be found.
         """
         if not os.path.isfile(path):
-            raise FileExistsError(f"The specified XYZ file `{path}` does not exist.")
+            raise FileNotFoundError(f"The specified XYZ file `{path}` does not exist.")
 
         name = os.path.basename(path).strip(".xyz")
         geometry = MolecularGeometry.from_xyz(path)
@@ -104,9 +104,14 @@ class System:
         ----------
         path : str
             The path of the `.json` file.
+        
+        Raises
+        ------
+        FileNotFoundError
+            Exception raised if the specified `.json` file cannot be found.
         """
         if not os.path.isfile(path):
-            raise ValueError(f"The specified JSON file `{path}` does not exist.")
+            raise FileNotFoundError(f"The specified JSON file `{path}` does not exist.")
 
         with open(path, "r") as jsonfile:
             data = json.load(jsonfile)
