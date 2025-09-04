@@ -5,7 +5,7 @@ from spycci.systems import System, Ensemble
 from spycci.tools import split_multixyz
 from spycci.tools import cyclization_check
 from spycci.tools import process_output
-from spycci.core.dependency_finder import locate_crest, locate_executable
+from spycci.core.dependency_finder import locate_crest, locate_executable, find_crest_version
 import logging
 
 logger = logging.getLogger(__name__)
@@ -434,17 +434,20 @@ def qcg_grow(
         System object containing the explicitly solvated input molecule
     """
 
-    try:
-        locate_executable("xtbiff")
-    except:
-        logger.warning("xtbiff executable not found. Cannot continue with QCG run.")
-        return None
-
     if ncores is None:
         ncores = get_ncores()
 
     if CRESTPATH is None:
         CRESTPATH = locate_crest()
+
+    CREST_VERSION = find_crest_version(CRESTPATH)
+
+    if CREST_VERSION < "3.0":
+        try:
+            locate_executable("xtbiff")
+        except:
+            logger.warning("The xtbiff executable is required for CREST < 3.0. Cannot continue with QCG run.")
+            return None
 
     if charge is None:
         charge = solute.charge
@@ -554,17 +557,20 @@ def qcg_ensemble(
         is taken as the weighted average of all generated ensembles.
     """
 
-    try:
-        locate_executable("xtbiff")
-    except:
-        logger.warning("xtbiff executable not found. Cannot continue with QCG run.")
-        return None
-
     if ncores is None:
         ncores = get_ncores()
 
     if CRESTPATH is None:
         CRESTPATH = locate_crest()
+
+    CREST_VERSION = find_crest_version(CRESTPATH)
+
+    if CREST_VERSION < "3.0":
+        try:
+            locate_executable("xtbiff")
+        except:
+            logger.warning("The xtbiff executable is required for CREST < 3.0. Cannot continue with QCG run.")
+            return None
 
     if charge is None:
         charge = solute.charge

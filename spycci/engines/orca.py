@@ -1799,8 +1799,8 @@ class OrcaInput(Engine):
             blocks = {}
 
         # Check if the available version of orca is >= 6.0.0
-        orca_version = find_orca_version()
-        if int(orca_version.split(".")[0]) < 6:
+        orca_version = find_orca_version(locate_orca())
+        if orca_version < "6.0.0":
             msg = f"COSMO-RS is supported only by version of ORCA >= 6.0.0 - Version {orca_version} was found."
             logger.error(msg)
             raise RuntimeError(msg)
