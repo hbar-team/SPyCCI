@@ -81,45 +81,64 @@ def test_crest_protonate():
         rmtree("error_files")
 
 
-### !!! ###
-# QCG is currently crashing on my workstation, do not use these test until fixed!
-### !!! ###
+##################################################################################################
+# NOTE: This test segfaults with low-memory machines, even though it shouldn't need as much RAM. #
+# Works without needing to change stack sizes if there's enough system memory, still it's safer  #
+# to skip it for now                                                                             #
+##################################################################################################
+# Test the qcg_grow() function on a urea molecule + 5 water molecules
+@pytest.mark.skip(reason="This test is currently failing with a segfault")
+def test_qcg_grow():
 
-# # Test the qcg_grow() function on a urea molecule + 5 water molecules
-# def test_qcg_grow():
+    solute = System(f"{TEST_DIR}/utils/xyz_files/urea.xyz")
+    solvent = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
-#     solute = System(f"{TEST_DIR}/utils/xyz_files/urea.xyz")
-#     solvent = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
+    try:
+        cluster: System = crest.qcg_grow(
+            solute=solute,
+            solvent=solvent,
+            ncores=4,
+            alpb_solvent="water",
+            nsolv=5,
+            optionals="--mquick",
+        )
+    except:
+        assert False, "Unexpected exception raised during QCG run"
 
-#     try:
-#         cluster: System = crest.qcg_grow(
-#             solute=solute, solvent=solvent, ncores=4, alpb_solvent="water", optionals="--mquick"
-#         )
-#     except:
-#         assert False, "Unexpected exception raised during QCG run"
+    else:
+        assert cluster.geometry.atomcount == 23
 
-#     else:
-#         assert cluster.geometry.atomcount == 23
-
-#         rmtree("output_files")
-#         rmtree("error_files")
+        rmtree("output_files")
+        rmtree("error_files")
 
 
-# # Test the qcg_ensemble() function on a urea molecule + 3 water molecules
-# def test_qcg_ensemble():
+###############################################################################################
+# NOTE: This test is still crashing with a segfault, even with an OMP_STACKSIZE of 10GB       #
+# on a system with a 64-core Epyc CPU and 512GB of memory, so this looks like a CREST problem #
+###############################################################################################
 
-#     solute = System(f"{TEST_DIR}/utils/xyz_files/urea.xyz")
-#     solvent = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
-#     try:
-#         ensemble: Ensemble = crest.qcg_ensemble(
-#             solute=solute, solvent=solvent, ncores=4, alpb_solvent="water", optionals="--mquick"
-#         )
-#     except:
-#         assert False, "Unexpected exception raised during tautomer search"
+# Test the qcg_ensemble() function on a urea molecule + 3 water molecules
+@pytest.mark.skip(reason="This test is currently failing with a segfault")
+def test_qcg_ensemble():
 
-#     else:
-#         assert len(ensemble.systems) == ??
+    solute = System(f"{TEST_DIR}/utils/xyz_files/urea.xyz")
+    solvent = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
-#         rmtree("output_files")
-#         rmtree("error_files")
+    try:
+        ensemble: Ensemble = crest.qcg_ensemble(
+            solute=solute,
+            solvent=solvent,
+            ncores=4,
+            alpb_solvent="water",
+            nsolv=5,
+            optionals="--mquick",
+        )
+    except:
+        assert False, "Unexpected exception raised during tautomer search"
+
+    else:
+        assert len(ensemble.systems) == 10
+
+        rmtree("output_files")
+        rmtree("error_files")

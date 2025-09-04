@@ -29,8 +29,10 @@ def test_calculate_pka_xtb():
     except:
         assert False, "Unexpected exception raised during pka calculation"
 
-    assert_almost_equal(pka.direct, 8.401564242900081, decimal=3)
-    assert_almost_equal(protonated.properties.pka.direct, 8.401564242900081, decimal=3)
+    # NOTE: xtb 6.7.1 gives 8.40, xtb 6.6.1 gives 8.39
+    # I set the accuracy to the 2nd decimal - Luca
+    assert_almost_equal(pka.direct, 8.401564242900081, decimal=2)
+    assert_almost_equal(protonated.properties.pka.direct, 8.401564242900081, decimal=2)
 
     assert pka.oxonium is None
     assert pka.oxonium_cosmors is None
@@ -58,8 +60,10 @@ def test_calculate_pka_oxonium_scheme_xtb():
     except:
         assert False, "Unexpected exception raised during pka calculation"
 
-    assert_almost_equal(pka.oxonium, 13.22416853109027, decimal=3)
-    assert_almost_equal(protonated.properties.pka.oxonium, 13.22416853109027, decimal=3)
+    # NOTE: xtb 6.7.1 gives 13.22, xtb 6.6.1 gives 13.21
+    # I set the accuracy to the 2nd decimal - Luca
+    assert_almost_equal(pka.oxonium, 13.22416853109027, decimal=2)
+    assert_almost_equal(protonated.properties.pka.oxonium, 13.22416853109027, decimal=2)
 
     assert pka.direct is None
     assert pka.oxonium_cosmors is None
@@ -86,8 +90,10 @@ def test_auto_calculate_pka_xtb():
     except:
         assert False, "Unexpected exception raised during pka calculation"
 
-    assert_almost_equal(pka.direct, 8.306140678635513, decimal=3)
-    assert_almost_equal(protonated.properties.pka.direct, 8.306140678635513, decimal=3)
+    # NOTE: xtb 6.7.1 gives 8.30, xtb 6.6.1 gives 8.22
+    # I set the accuracy to the 1st decimal - Luca
+    assert_almost_equal(pka.direct, 8.306140678635513, decimal=1)
+    assert_almost_equal(protonated.properties.pka.direct, 8.306140678635513, decimal=1)
 
     assert pka.oxonium is None
     assert pka.oxonium_cosmors is None
@@ -113,7 +119,7 @@ def test_run_pka_workflow_different_geometry():
             use_cosmors=True,
             ncores=4,
         )
-    
+
     except:
         assert False, "Unexpected exception raised during pka calculation"
 
@@ -138,22 +144,23 @@ def test_run_pka_workflow_different_geometry():
         "G(vac) Oxonium": -76.72559529110801,
     }
 
+    # NOTE: xtb 6.7.1 and xtb 6.6.1 results differ at the 2nd decimal unit - Luca 
     for key, value in expected_pka.items():
-        assert_almost_equal(value, pka[key], decimal=3)
-        assert_almost_equal(value, opt_system.properties.pka[key], decimal=3)
+        assert_almost_equal(value, pka[key], decimal=2)
+        assert_almost_equal(value, opt_system.properties.pka[key], decimal=2)
 
     for key, value in expected_free_energies.items():
-        assert_almost_equal(value, pka.free_energies[key], decimal=3)
-        assert_almost_equal(value, opt_system.properties.pka.free_energies[key], decimal=3)
-    
+        assert_almost_equal(value, pka.free_energies[key], decimal=2)
+        assert_almost_equal(value, opt_system.properties.pka.free_energies[key], decimal=2)
+
     # for key in pka.keys():
     #     if key not in expected_pka.keys():
     #         assert False, "Unexpected key found in pka dictionary"
-    
+
     # for key in pka.free_energies.keys():
     #     if key not in expected_free_energies.keys():
     #         assert False, "Unexpected key found in free energies dictionary"
-    
+
     rmtree("output_files")
     rmtree("error_files")
 
@@ -176,7 +183,7 @@ def test_run_pka_workflow_different_electronic():
             use_cosmors=True,
             ncores=4,
         )
-    
+
     except:
         assert False, "Unexpected exception raised during pka calculation"
 
@@ -201,21 +208,22 @@ def test_run_pka_workflow_different_electronic():
         "G(vac) Oxonium": -76.727536454973,
     }
 
+    # NOTE: xtb 6.7.1 and xtb 6.6.1 results differ at the 2nd decimal unit - Luca 
     for key, value in expected_pka.items():
-        assert_almost_equal(value, pka[key], decimal=3)
-        assert_almost_equal(value, opt_system.properties.pka[key], decimal=3)
+        assert_almost_equal(value, pka[key], decimal=2)
+        assert_almost_equal(value, opt_system.properties.pka[key], decimal=2)
 
     for key, value in expected_free_energies.items():
-        assert_almost_equal(value, pka.free_energies[key], decimal=3)
-        assert_almost_equal(value, opt_system.properties.pka.free_energies[key], decimal=3)
-    
+        assert_almost_equal(value, pka.free_energies[key], decimal=2)
+        assert_almost_equal(value, opt_system.properties.pka.free_energies[key], decimal=2)
+
     # for key in pka.keys():
     #     if key not in expected_pka.keys():
     #         assert False, "Unexpected key found in pka dictionary"
-    
+
     # for key in pka.free_energies.keys():
     #     if key not in expected_free_energies.keys():
     #         assert False, "Unexpected key found in free energies dictionary"
-    
+
     rmtree("output_files")
     rmtree("error_files")

@@ -3,7 +3,7 @@ import pytest
 from spycci.engines.orca import OrcaInput
 from spycci.systems import System, Ensemble
 from spycci.tools.externalutilities import split_multixyz
-from spycci.core.dependency_finder import find_orca_version
+from spycci.core.dependency_finder import find_orca_version, locate_orca
 
 from os import listdir
 from os.path import dirname, abspath, isfile
@@ -191,7 +191,7 @@ def test_OrcaInput_runtime_error_wrong_multiplicity():
 # =================================================================
 
 # Test the spe() function on a radical cation water molecule in DMSO
-@pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
+@pytest.mark.skipif(find_orca_version(locate_orca()) != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_spe():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis="def2/J", solvent="DMSO")
     mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz", charge=1, spin=2)
@@ -218,7 +218,7 @@ def test_OrcaInput_spe():
 
 
 # Test the spe() function on a radical cation water molecule in DMSO without the inplace option
-@pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
+@pytest.mark.skipif(find_orca_version(locate_orca()) != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_spe_no_inplace():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis="def2/J", solvent="DMSO")
     mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz", charge=1, spin=2)
@@ -251,7 +251,7 @@ def test_OrcaInput_spe_no_inplace():
 
 
 # Test the opt() function on a water molecule in vacuum
-@pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
+@pytest.mark.skipif(find_orca_version(locate_orca()) != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_opt():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis="def2/J", solvent=None)
     mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
@@ -283,7 +283,7 @@ def test_OrcaInput_opt():
 
 
 # Test the opt() function on a water molecule in vacuum with no inplace option
-@pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
+@pytest.mark.skipif(find_orca_version(locate_orca()) != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_opt_no_inplace():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis="def2/J", solvent=None)
     mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
@@ -315,7 +315,7 @@ def test_OrcaInput_opt_no_inplace():
 
 
 # Test the opt_ts() function on a water molecule in vacuum
-@pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
+@pytest.mark.skipif(find_orca_version(locate_orca()) != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_opt_ts():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis=None, solvent=None, optionals="D3BJ")
     mol = System(f"{TEST_DIR}/utils/xyz_files/distorted_TS.xyz", charge=-1, spin=1)
@@ -350,7 +350,7 @@ def test_OrcaInput_opt_ts():
 
 
 # Test the opt_ts() function on the distorted TS of the SN2 reaction between bromo methane and the chloride ionin vacuum with no inplace option
-@pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
+@pytest.mark.skipif(find_orca_version(locate_orca()) != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_opt_ts_no_inplace():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis=None, solvent=None, optionals="D3BJ")
     mol = System(f"{TEST_DIR}/utils/xyz_files/distorted_TS.xyz", charge=-1, spin=1)
@@ -385,7 +385,7 @@ def test_OrcaInput_opt_ts_no_inplace():
 
 
 # Test the freq() function on a water molecule in vacuum
-@pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
+@pytest.mark.skipif(find_orca_version(locate_orca()) != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_freq():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis="def2/J", solvent=None)
     mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
@@ -441,7 +441,7 @@ def test_OrcaInput_freq():
 
 
 # Test the freq() function on a water molecule in vacuum with no inplace option
-@pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
+@pytest.mark.skipif(find_orca_version(locate_orca()) != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_freq_no_inplace():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis="def2/J", solvent=None)
     mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
@@ -466,7 +466,7 @@ def test_OrcaInput_freq_no_inplace():
 
 
 # Test the nfreq() function on a water molecule in ethanol
-@pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
+@pytest.mark.skipif(find_orca_version(locate_orca()) != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_nfreq():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis="def2/J", solvent="ethanol")
     mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
@@ -522,7 +522,7 @@ def test_OrcaInput_nfreq():
 
 
 # Test the nfreq() function on a water molecule in ethanol with no inplace option
-@pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
+@pytest.mark.skipif(find_orca_version(locate_orca()) != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_nfreq_no_inplace():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis="def2/J", solvent="ethanol")
     mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz")
@@ -578,7 +578,7 @@ def test_OrcaInput_nfreq_no_inplace():
 
 
 # Test the calculation of raman spectra and overtones in orca using a tight optimization
-@pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
+@pytest.mark.skipif(find_orca_version(locate_orca()) != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_raman_nearir():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis="def2/J")
     mol = System(f"{TEST_DIR}/utils/xyz_files/CO2.xyz")
@@ -679,7 +679,7 @@ def test_OrcaInput_scan():
 
 
 # Test the scan_ts() function on a the SN2 reaction between bromo methane and the chloride ion in vacuum
-@pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
+@pytest.mark.skipif(find_orca_version(locate_orca()) != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_scan_ts():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis="def2/J", solvent=None)
     mol = System(f"{TEST_DIR}/utils/xyz_files/SN2_scan_example.xyz", charge=-1, spin=1)
@@ -726,7 +726,7 @@ def test_OrcaInput_scan_ts():
 
 
 # Test the scan_ts() function on a the SN2 reaction between bromo methane and the chloride ion in vacuum with inplace option
-@pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
+@pytest.mark.skipif(find_orca_version(locate_orca()) != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_scan_ts_inplace():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis="def2/J", solvent=None)
     mol = System(f"{TEST_DIR}/utils/xyz_files/SN2_scan_example.xyz", charge=-1, spin=1)
@@ -758,7 +758,7 @@ def test_OrcaInput_scan_ts_inplace():
 
 
 # Test the OrcaInput NEB-CI function
-@pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
+@pytest.mark.skipif(find_orca_version(locate_orca()) != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_neb_ci():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis=None, solvent=None, optionals="D3BJ")
     reactant = System(f"{TEST_DIR}/utils/xyz_files/NEB_reactant.xyz", charge=0, spin=1)
@@ -799,7 +799,7 @@ def test_OrcaInput_neb_ci():
 
 
 # Test the OrcaInput NEB-TS function
-@pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
+@pytest.mark.skipif(find_orca_version(locate_orca()) != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_neb_ts():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis=None, solvent=None, optionals="D3BJ")
     reactant = System(f"{TEST_DIR}/utils/xyz_files/NEB_reactant.xyz", charge=0, spin=1)
@@ -855,7 +855,7 @@ def test_OrcaInput_neb_ts():
 
 
 # Test the OrcaInput NEB-TS function when providing a transition state guess
-@pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
+@pytest.mark.skipif(find_orca_version(locate_orca()) != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_OrcaInput_neb_ts_with_guess():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis=None, solvent=None, optionals="D3BJ")
     reactant = System(f"{TEST_DIR}/utils/xyz_files/NEB_reactant.xyz", charge=0, spin=1)
@@ -913,7 +913,7 @@ def test_OrcaInput_neb_ts_with_guess():
 
 
 # Test the OrcaInput COSMO-RS function using default settings using built-in water solvent model
-@pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
+@pytest.mark.skipif(find_orca_version(locate_orca()) != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_cosmors_simple():
     
     acetone = System(f"{TEST_DIR}/utils/xyz_files/acetone.xyz", charge=0, spin=1)
@@ -931,7 +931,7 @@ def test_cosmors_simple():
 
 
 # Test the OrcaInput COSMO-RS function using engine level of theory and  built-in water solvent model
-@pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
+@pytest.mark.skipif(find_orca_version(locate_orca()) != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_cosmors_engine_settings():
 
     acetone = System(f"{TEST_DIR}/utils/xyz_files/acetone.xyz", charge=0, spin=1)
@@ -948,7 +948,7 @@ def test_cosmors_engine_settings():
 
 
 # Test the OrcaInput COSMO-RS function using default settings using external solvent file
-@pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
+@pytest.mark.skipif(find_orca_version(locate_orca()) != "6.0.1", reason="Test designed for orca==6.0.1")
 def test_cosmors_solventfile():
 
     acetone = System(f"{TEST_DIR}/utils/xyz_files/acetone.xyz", charge=0, spin=1)

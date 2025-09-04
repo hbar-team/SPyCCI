@@ -7,7 +7,7 @@ from spycci.functions.fukui import calculate_fukui, CubeGrids
 from os.path import dirname, abspath
 from numpy.testing import assert_array_almost_equal
 from shutil import rmtree
-from spycci.core.dependency_finder import find_orca_version
+from spycci.core.dependency_finder import locate_orca, find_orca_version
 
 # Get the path of the tests directory
 TEST_DIR = dirname(abspath(__file__))
@@ -18,7 +18,7 @@ TEST_DIR = dirname(abspath(__file__))
 # =================================================================
 
 
-@pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
+@pytest.mark.skipif(find_orca_version(locate_orca()) < "6.0", reason="Test designed for Orca 6.0 and above")
 def test_calculate_fukui():
 
     mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz", charge=0, spin=1)
@@ -70,7 +70,7 @@ def test_calculate_fukui():
     rmtree("error_files", ignore_errors=True)
 
 
-@pytest.mark.skipif(find_orca_version() != "6.0.1", reason="Test designed for orca==6.0.1")
+@pytest.mark.skipif(find_orca_version(locate_orca()) < "6.0", reason="Test designed for Orca 6.0 and above")
 def test_calculate_fukui_no_cube():
 
     mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz", charge=0, spin=1)
