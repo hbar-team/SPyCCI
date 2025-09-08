@@ -15,7 +15,7 @@ from spycci.tools import (
 from spycci.tools.internaltools import clean_suffix
 
 from typing import Dict
-from spycci.core.dependency_finder import locate_dftbplus, locate_dftbparamdir
+from spycci.core.program_finder import locate_dftbplus, locate_dftbparamdir
 
 import logging
 

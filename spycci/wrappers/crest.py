@@ -5,7 +5,7 @@ from spycci.systems import System, Ensemble
 from spycci.tools import split_multixyz
 from spycci.tools import cyclization_check
 from spycci.tools import process_output
-from spycci.core.dependency_finder import locate_crest, locate_executable, find_crest_version
+from spycci.core.program_finder import locate_crest
 import logging
 
 logger = logging.getLogger(__name__)
@@ -244,12 +244,12 @@ def deprotonate(
         mol.geometry.write_xyz("geom.xyz")
 
         if solvent:
-            cmd = f"crest geom.xyz --alpb {solvent} --chrg {mol.charge} --uhf {mol.spin-1} --deprotonate --fstrict {optionals} -T {ncores} > output.out 2>> output.err"
+            cmd = f"{CRESTPATH} geom.xyz --alpb {solvent} --chrg {mol.charge} --uhf {mol.spin-1} --deprotonate --fstrict {optionals} -T {ncores} > output.out 2>> output.err"
             logger.debug(f"Running CREST with command: {cmd}")
             os.system(cmd)
 
         else:
-            cmd = f"crest geom.xyz --chrg {mol.charge} --uhf {mol.spin-1} --deprotonate --fstrict {optionals} -T {ncores} > output.out 2>> output.err"
+            cmd = f"{CRESTPATH} geom.xyz --chrg {mol.charge} --uhf {mol.spin-1} --deprotonate --fstrict {optionals} -T {ncores} > output.out 2>> output.err"
             logger.debug(f"Running CREST with command: {cmd}")
             os.system(cmd)
 
@@ -338,12 +338,12 @@ def protonate(
         mol.geometry.write_xyz("geom.xyz")
 
         if solvent:
-            cmd = f"crest geom.xyz --alpb {solvent} --chrg {mol.charge} --uhf {mol.spin-1} --protonate --fstrict {optionals} -T {ncores} > output.out 2>> output.err"
+            cmd = f"{CRESTPATH} geom.xyz --alpb {solvent} --chrg {mol.charge} --uhf {mol.spin-1} --protonate --fstrict {optionals} -T {ncores} > output.out 2>> output.err"
             logger.debug(f"Running CREST with command: {cmd}")
             os.system(cmd)
 
         else:
-            cmd = f"crest geom.xyz --chrg {mol.charge} --uhf {mol.spin-1} --protonate --fstrict {optionals} -T {ncores} > output.out 2>> output.err"
+            cmd = f"{CRESTPATH} geom.xyz --chrg {mol.charge} --uhf {mol.spin-1} --protonate --fstrict {optionals} -T {ncores} > output.out 2>> output.err"
             logger.debug(f"Running CREST with command: {cmd}")
             os.system(cmd)
 
@@ -439,15 +439,9 @@ def qcg_grow(
 
     if CRESTPATH is None:
         CRESTPATH = locate_crest()
-
-    CREST_VERSION = find_crest_version(CRESTPATH)
-
-    if CREST_VERSION < "3.0":
-        try:
-            locate_executable("xtbiff")
-        except:
-            logger.warning("The xtbiff executable is required for CREST < 3.0. Cannot continue with QCG run.")
-            return None
+    else:
+        # run locate_crest anyway to trigger check for xtbiff
+        locate_crest(CRESTPATH)
 
     if charge is None:
         charge = solute.charge
@@ -464,12 +458,12 @@ def qcg_grow(
         solvent.geometry.write_xyz("solvent.xyz")
 
         if alpb_solvent:
-            cmd = f"crest solute.xyz --qcg solvent.xyz --nsolv {nsolv} --{method} --alpb {alpb_solvent} --chrg {charge} --uhf {spin-1} {optionals} --T {ncores} > output.out 2>> output.err"
+            cmd = f"{CRESTPATH} solute.xyz --qcg solvent.xyz --nsolv {nsolv} --{method} --alpb {alpb_solvent} --chrg {charge} --uhf {spin-1} {optionals} --T {ncores} > output.out 2>> output.err"
             logger.debug(f"Running CREST with command: {cmd}")
             os.system(cmd)
 
         else:
-            cmd = f"crest solute.xyz --qcg solvent.xyz --nsolv {nsolv} --{method} --chrg {charge} --uhf {spin-1} {optionals} --T {ncores} > output.out 2>> output.err"
+            cmd = f"{CRESTPATH} solute.xyz --qcg solvent.xyz --nsolv {nsolv} --{method} --chrg {charge} --uhf {spin-1} {optionals} --T {ncores} > output.out 2>> output.err"
             logger.debug(f"Running CREST with command: {cmd}")
             os.system(cmd)
 
@@ -562,15 +556,9 @@ def qcg_ensemble(
 
     if CRESTPATH is None:
         CRESTPATH = locate_crest()
-
-    CREST_VERSION = find_crest_version(CRESTPATH)
-
-    if CREST_VERSION < "3.0":
-        try:
-            locate_executable("xtbiff")
-        except:
-            logger.warning("The xtbiff executable is required for CREST < 3.0. Cannot continue with QCG run.")
-            return None
+    else:
+        # run locate_crest anyway to trigger check for xtbiff
+        locate_crest(CRESTPATH)
 
     if charge is None:
         charge = solute.charge
@@ -587,12 +575,12 @@ def qcg_ensemble(
         solvent.geometry.write_xyz("solvent.xyz")
 
         if alpb_solvent:
-            cmd = f"crest solute.xyz --qcg solvent.xyz --nsolv {nsolv} --{method} --ensemble --enslvl {enslvl} --alpb {alpb_solvent} --chrg {charge} --uhf {spin-1} {optionals} --T {ncores} > output.out 2>> output.err"
+            cmd = f"{CRESTPATH} solute.xyz --qcg solvent.xyz --nsolv {nsolv} --{method} --ensemble --enslvl {enslvl} --alpb {alpb_solvent} --chrg {charge} --uhf {spin-1} {optionals} --T {ncores} > output.out 2>> output.err"
             logger.debug(f"Running CREST with command: {cmd}")
             os.system(cmd)
 
         else:
-            cmd = f"crest solute.xyz --qcg solvent.xyz --nsolv {nsolv} --{method} --ensemble --enslvl {enslvl} --chrg {charge} --uhf {spin-1} {optionals} --T {ncores} > output.out 2>> output.err"
+            cmd = f"{CRESTPATH} solute.xyz --qcg solvent.xyz --nsolv {nsolv} --{method} --ensemble --enslvl {enslvl} --chrg {charge} --uhf {spin-1} {optionals} --T {ncores} > output.out 2>> output.err"
             logger.debug(f"Running CREST with command: {cmd}")
             os.system(cmd)
 

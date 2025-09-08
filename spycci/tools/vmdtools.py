@@ -3,7 +3,7 @@ from tempfile import NamedTemporaryFile as tmp
 from os import system
 from os.path import join, basename
 
-from spycci.core.dependency_finder import locate_vmd
+from spycci.core.program_finder import locate_vmd
 
 
 def render_fukui_cube(
@@ -41,7 +41,8 @@ def render_fukui_cube(
         The path to the vmd folder. Is set to None (default), will automatically search vmd
         in the system PATH.
     """
-    vmd_root = VMD_PATH if VMD_PATH is not None else locate_vmd()
+
+    vmd_root = VMD_PATH if VMD_PATH is not None else locate_vmd().rstrip("/bin/vmd")
     tachyon_path = join(vmd_root, "lib/vmd/tachyon_LINUXAMD64")
 
     root_name = basename(cubfile).rstrip(".fukui.cube")
@@ -134,7 +135,7 @@ def render_condensed_fukui(
         The path to the vmd folder. Is set to None (default), will automatically search vmd
         in the system PATH.
     """
-    vmd_root = VMD_PATH if VMD_PATH is not None else locate_vmd()
+    vmd_root = VMD_PATH if VMD_PATH is not None else locate_vmd().rstrip("/bin/vmd")
     tachyon_path = join(vmd_root, "lib/vmd/tachyon_LINUXAMD64")
 
     root_name = basename(cubfile).rstrip(".fukui.cube")
@@ -229,7 +230,7 @@ def render_spin_density_cube(
         The path to the vmd folder. Is set to None (default), will automatically search vmd
         in the system PATH.
     """
-    vmd_root = VMD_PATH if VMD_PATH is not None else locate_vmd()
+    vmd_root = VMD_PATH if VMD_PATH is not None else locate_vmd().rstrip("/bin/vmd")
     tachyon_path = join(vmd_root, "lib/vmd/tachyon_LINUXAMD64")
 
     root_name = basename(cubfile).rstrip(".fukui.cube")

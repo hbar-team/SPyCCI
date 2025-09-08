@@ -7,7 +7,7 @@ from spycci.core.base import Engine
 from spycci.systems import System
 from spycci.tools import process_output, dissociation_check, cyclization_check
 from spycci.tools.internaltools import clean_suffix
-from spycci.core.dependency_finder import locate_xtb
+from spycci.core.program_finder import locate_xtb
 
 import logging
 

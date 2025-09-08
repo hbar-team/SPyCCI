@@ -10,7 +10,7 @@ from spycci.systems import Ensemble, System
 from spycci.tools import process_output
 from spycci.tools.externalutilities import split_multixyz
 from spycci.core.base import Engine
-from spycci.core.dependency_finder import locate_orca, find_orca_version
+from spycci.core.program_finder import locate_orca
 from spycci.core.spectroscopy import VibrationalData
 from spycci.tools.internaltools import clean_suffix
 
@@ -539,7 +539,7 @@ class OrcaInput(Engine):
         self.solvent = solvent
         self.optionals = optionals
         self.blocks = blocks if blocks else {}
-        self.__ORCADIR = ORCADIR if ORCADIR else locate_orca(get_folder=True)
+        self.__ORCADIR = ORCADIR if ORCADIR else locate_orca().rstrip("/orca")
 
         self.level_of_theory += f""" | basis: {basis_set} | solvent: {solvent}"""
 
@@ -1799,9 +1799,8 @@ class OrcaInput(Engine):
             blocks = {}
 
         # Check if the available version of orca is >= 6.0.0
-        orca_version = find_orca_version(locate_orca())
-        if orca_version < "6.0.0":
-            msg = f"COSMO-RS is supported only by version of ORCA >= 6.0.0 - Version {orca_version} was found."
+        if not locate_orca(f"{self.__ORCADIR}/orca", ">=6.0.0"):
+            msg = f"COSMO-RS is supported only by version of ORCA >= 6.0.0."
             logger.error(msg)
             raise RuntimeError(msg)
 
