@@ -100,7 +100,7 @@ class DFTBInput(Engine):
         else:
             self.output_path = "/dev/null"
 
-        self.__DFTBPATH = DFTBPATH if DFTBPATH else locate_dftbplus()
+        self.__DFTBPATH = locate_dftbplus(DFTBPATH if DFTBPATH else "dftb+")
         self.__DFTBPARAMDIR = DFTBPARAMDIR if DFTBPARAMDIR else locate_dftbparamdir()
 
         self.level_of_theory += f" | parameters: {parameters} | 3rd order: {thirdorder} | dispersion: {dispersion}"
