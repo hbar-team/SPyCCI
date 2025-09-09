@@ -6,6 +6,80 @@ from os.path import join, basename
 from spycci.core.dependency_finder import locate_vmd
 
 
+def render_molecule(
+    molecule_file: str,
+    resolution: int = 4800,
+    shadows: bool = True,
+    ambientocclusion: bool = True,
+    dof: bool = True,
+    VMD_PATH: str = None,
+) -> None:
+    """
+    Given the path to a molecule file (e.g. .xyz, .pdb) the function saves a `.bmp` render
+    of the molecular structure.
+
+    Arguments
+    ---------
+    molecule_file: str
+        The path to the file encoding the structure of the molecule.
+    resolution: int
+        The resolution of the output image (default: 4800).
+    shadows: bool
+        If set to True will enable the vmd shadows option
+    ambientocclusion: bool
+        If set to True will enable the vmd ambientocclusion option
+    dof: bool
+        If set to True will enable the vmd dof option
+    VMD_PATH: str
+        The path to the vmd folder. Is set to None (default), will automatically search vmd
+        in the system PATH.
+    """
+    vmd_root = VMD_PATH if VMD_PATH is not None else locate_vmd().rstrip("/bin/vmd")
+    tachyon_path = join(vmd_root, "lib/vmd/tachyon_LINUXAMD64")
+
+    root_name = basename(molecule_file).rsplit('.', 1)[0]
+
+    with tmp(mode="w+", suffix=".vmd") as vmd_script:
+
+        vmd_script.write(f"""
+        mol addrep 0
+        display projection Orthographic
+        display resetview
+        mol new {molecule_file}
+
+
+        axes location Off
+        mol color Name
+        mol representation CPK 1.000000 0.300000 150.000000 12.000000
+        mol selection all
+        mol material Opaque
+        mol addrep 0
+
+        display resetview
+        """
+        )
+
+        if shadows:
+            vmd_script.write("display shadows on\n")
+        if ambientocclusion:
+            vmd_script.write("display ambientocclusion on\n")
+        if dof:
+            vmd_script.write("display dof on\n")
+
+        vmd_script.write(
+            f"""
+            color Display Background white
+            color Name C black
+            mol modcolor 0 0 Element
+            render Tachyon {root_name}.dat "{tachyon_path}" -fullshade -aasamples 12 %s -format BMP -res {resolution} {resolution} -o {root_name}.bmp
+            exit
+            """
+        )
+
+        vmd_script.seek(0)
+        system(f"vmd -dispdev text -e {vmd_script.name}")
+
+
 def render_fukui_cube(
     cubfile: str,
     isovalue: float = 0.003,
