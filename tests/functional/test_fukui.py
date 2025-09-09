@@ -7,7 +7,7 @@ from spycci.functions.fukui import calculate_fukui, CubeGrids
 from os.path import dirname, abspath
 from numpy.testing import assert_array_almost_equal
 from shutil import rmtree
-from spycci.core.program_finder import locate_orca
+from spycci.core.dependency_finder import locate_orca
 
 # Get the path of the tests directory
 TEST_DIR = dirname(abspath(__file__))

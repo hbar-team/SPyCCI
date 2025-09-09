@@ -5,7 +5,7 @@ from spycci.systems import System, Ensemble
 from spycci.tools import split_multixyz
 from spycci.tools import cyclization_check
 from spycci.tools import process_output
-from spycci.core.program_finder import locate_crest
+from spycci.core.dependency_finder import locate_crest
 import logging
 
 logger = logging.getLogger(__name__)

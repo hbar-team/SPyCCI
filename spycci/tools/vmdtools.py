@@ -3,7 +3,7 @@ from tempfile import NamedTemporaryFile as tmp
 from os import system
 from os.path import join, basename
 
-from spycci.core.program_finder import locate_vmd
+from spycci.core.dependency_finder import locate_vmd
 
 
 def render_fukui_cube(

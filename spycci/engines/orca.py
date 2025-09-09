@@ -10,7 +10,7 @@ from spycci.systems import Ensemble, System
 from spycci.tools import process_output
 from spycci.tools.externalutilities import split_multixyz
 from spycci.core.base import Engine
-from spycci.core.program_finder import locate_orca
+from spycci.core.dependency_finder import locate_orca
 from spycci.core.spectroscopy import VibrationalData
 from spycci.tools.internaltools import clean_suffix
 

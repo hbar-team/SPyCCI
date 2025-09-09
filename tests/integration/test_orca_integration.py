@@ -3,7 +3,7 @@ import pytest
 from spycci.engines.orca import OrcaInput
 from spycci.systems import System, Ensemble
 from spycci.tools.externalutilities import split_multixyz
-from spycci.core.program_finder import locate_orca
+from spycci.core.dependency_finder import locate_orca
 
 from os import listdir
 from os.path import dirname, abspath, isfile
