@@ -1,12 +1,36 @@
 import pytest
 
+import shutil
+import subprocess
+
 from spycci.engines.dftbplus import DFTBInput
 
-DFTBPLUS = "dftbplus"
-DFTBPARAMDIR = "dftbparamdir"
+
+class FakeProc:
+    def __init__(self, stdout=""):
+        self.stdout = stdout
+        self.stderr = ""
+        self.returncode = 0
+
 
 # Test the DFTBInput class constructor
-def test_DFTBInput___init__():
+def test_DFTBInput___init__(monkeypatch):
+
+    # Fake environment
+    outputs = {
+        "dftb+": "|  DFTB+ release 23.1\n",
+    }
+
+    def fake_which(name):
+        base = name.split("/")[-1]
+        return f"/fake/bin/{base}"
+
+    def fake_run(cmd, capture_output=True, text=True):
+        base = cmd[0].split("/")[-1]
+        return FakeProc(stdout=outputs.get(base, ""))
+
+    monkeypatch.setattr(shutil, "which", fake_which)
+    monkeypatch.setattr(subprocess, "run", fake_run)
 
     try:
         engine = DFTBInput(
@@ -19,8 +43,8 @@ def test_DFTBInput___init__():
             fermi_temp=300.0,
             parallel="mpi",
             verbose=True,
-            DFTBPATH=DFTBPLUS,
-            DFTBPARAMDIR=DFTBPARAMDIR,
+            DFTBPATH="/fake/bin/dftb+",
+            DFTBPARAMDIR="/fake/params",
         )
 
     except:

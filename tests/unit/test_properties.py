@@ -1,12 +1,20 @@
 import pytest
-from numpy.testing import assert_array_almost_equal, assert_almost_equal
+import shutil
+import subprocess
 
+from numpy.testing import assert_array_almost_equal, assert_almost_equal
 from spycci.core.base import Engine
 from spycci.core.properties import Properties, pKa
 
 from spycci.engines.xtb import XtbInput
 
-XTBPATH = "xtbpath"
+
+class FakeProc:
+    def __init__(self, stdout=""):
+        self.stdout = stdout
+        self.stderr = ""
+        self.returncode = 0
+
 
 # Test the Properties class
 # ------------------------------------------------------------------------------------------
@@ -183,10 +191,26 @@ def test_pKa_is_set():
     assert pka.is_set() is True, "Is set function returned False for a set object"
 
 
-def test_pKa_set_values():
+def test_pKa_set_values(monkeypatch):
+
+    # Fake environment
+    outputs = {
+        "xtb": "* xtb version 6.6.1\n",
+    }
+
+    def fake_which(name):
+        base = name.split("/")[-1]
+        return f"/fake/bin/{base}"
+
+    def fake_run(cmd, capture_output=True, text=True):
+        base = cmd[0].split("/")[-1]
+        return FakeProc(stdout=outputs.get(base, ""))
+
+    monkeypatch.setattr(shutil, "which", fake_which)
+    monkeypatch.setattr(subprocess, "run", fake_run)
 
     pka = pKa()
-    xtb = XtbInput(XTBPATH=XTBPATH)
+    xtb = XtbInput(XTBPATH="/fake/bin/xtb")
 
     try:
         pka.set_direct(1.0)
@@ -234,10 +258,26 @@ def test_pKa_wrong_key():
         assert False, "Exception was not raised when accessing object with wrong key"
 
 
-def test_pKa___str___set():
+def test_pKa___str___set(monkeypatch):
+
+    # Fake environment
+    outputs = {
+        "xtb": "* xtb version 6.6.1\n",
+    }
+
+    def fake_which(name):
+        base = name.split("/")[-1]
+        return f"/fake/bin/{base}"
+
+    def fake_run(cmd, capture_output=True, text=True):
+        base = cmd[0].split("/")[-1]
+        return FakeProc(stdout=outputs.get(base, ""))
+
+    monkeypatch.setattr(shutil, "which", fake_which)
+    monkeypatch.setattr(subprocess, "run", fake_run)
 
     pka = pKa()
-    xtb = XtbInput(XTBPATH=XTBPATH)
+    xtb = XtbInput(XTBPATH="/fake/bin/xtb")
 
     pka.set_direct(1.0)
     pka.set_oxonium(2.0)
@@ -257,15 +297,29 @@ def test_pKa___str___not_set():
     pka = pKa()
     expected_string = "pKa object status is NOT SET\n"
 
-    assert (
-        str(pka) == expected_string
-    ), "pKa string representation is different from expected"
+    assert str(pka) == expected_string, "pKa string representation is different from expected"
 
 
-def test_pKa_to_dict():
+def test_pKa_to_dict(monkeypatch):
+
+    # Fake environment
+    outputs = {
+        "xtb": "* xtb version 6.6.1\n",
+    }
+
+    def fake_which(name):
+        base = name.split("/")[-1]
+        return f"/fake/bin/{base}"
+
+    def fake_run(cmd, capture_output=True, text=True):
+        base = cmd[0].split("/")[-1]
+        return FakeProc(stdout=outputs.get(base, ""))
+
+    monkeypatch.setattr(shutil, "which", fake_which)
+    monkeypatch.setattr(subprocess, "run", fake_run)
 
     pka = pKa()
-    xtb = XtbInput(XTBPATH=XTBPATH)
+    xtb = XtbInput(XTBPATH="/fake/bin/xtb")
 
     pka.set_direct(1.0)
     pka.set_oxonium(2.0)
@@ -288,11 +342,11 @@ def test_pKa_to_dict():
     for key in out_dict.keys():
         if key not in expectd_dict.keys():
             assert False, "Key mismatch found"
-    
+
     for key in expectd_dict.keys():
         if key not in out_dict.keys():
             assert False, "Key mismatch found"
-    
+
     for key, value in expectd_dict.items():
         if key == "free energies":
             for k, v in expectd_dict["free energies"].items():
@@ -301,7 +355,7 @@ def test_pKa_to_dict():
             assert value == out_dict[key], "Mismatch in COSMO-RS level of theory"
         else:
             assert_almost_equal(value, out_dict[key], decimal=6)
-    
+
 
 def test_pKa_from_dict():
 
@@ -331,5 +385,3 @@ def test_pKa_from_dict():
 
     assert_almost_equal(pka.free_energies["First"], 4.0, decimal=6)
     assert_almost_equal(pka.free_energies["Second"], 5.0, decimal=6)
-
-    

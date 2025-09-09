@@ -42,7 +42,7 @@ class XtbInput(Engine):
 
         self.solvent = solvent
         self.optionals = optionals
-        self.__XTBPATH = XTBPATH if XTBPATH else locate_xtb()
+        self.__XTBPATH = locate_xtb(XTBPATH if XTBPATH else "xtb")
 
         self.level_of_theory += f" | solvent: {solvent}"
         self.__output_suffix = f"xtb_{self.method}_"

@@ -1,269 +1,334 @@
-import subprocess, logging
-
-from os.path import abspath
+import shutil
+import subprocess
+import logging
+import re
+from dataclasses import dataclass, field
+from typing import Optional, List, Dict
+from packaging.version import Version, InvalidVersion
+from packaging.specifiers import Specifier, SpecifierSet
 from os import environ
+from os.path import basename
 
-logger = logging.getLogger(__name__) 
+logger = logging.getLogger(__name__)
 
-def locate_executable(name: str) -> str:
-    """
-    Locates a given executable in the system PATH. If the program is found the path is
-    returned, else an exception is raised.
+###############
+# Data models #
+###############
 
-    Arguments
-    ---------
+
+@dataclass
+class ProgramSpec:
     name: str
-        The name of the program to locate.
+    version_marker: Optional[str] = None  # substring to identify the line containing the version
+    token_index: Optional[int] = None  # which whitespace token contains the version
 
-    Raises
-    ------
-    RuntimeError
-        Exception raised if the program is not found in the system path.
 
-    Returns
-    -------
-    str
-        The path to the requested program.
+@dataclass
+class DependencySpec(ProgramSpec):
+    versions_map: Optional[Dict[str, List[str]]] = None    # versions_map: parent_version_prefix -> list of exact allowed dependency versions
+    critical: bool = True  # if True, failure to meet this dependency raises an error
+
+
+@dataclass
+class EngineSpec(ProgramSpec):
+    dependencies: List[DependencySpec] = field(default_factory=list)
+
+
+###########################################
+# Engine specifications                   #
+# Add new engines by extending this list. #
+###########################################
+
+ENGINE_SPECS: List[EngineSpec] = [
+    EngineSpec(
+        name="orca",
+        version_marker="Program Version",
+        token_index=2,
+        dependencies=[
+            DependencySpec(
+                name="mpirun",
+                version_marker="(Open MPI)",
+                token_index=3,
+                versions_map={
+                    "==6.1.*": ["==4.1.6"],
+                    "==6.0.*": ["==4.1.6"],
+                    "==5.0.*": ["==4.1.1"],
+                    "==4.2.*": ["==3.1.4"],
+                    "==4.1.*": ["==3.1.3", "==2.1.5"],
+                },
+                critical=True,
+            ),
+            DependencySpec(
+                name="otool_xtb",
+                critical=False,
+            ),
+        ],
+    ),
+    EngineSpec(name="xtb", version_marker="xtb version", token_index=3),
+    EngineSpec(
+        name="crest",
+        version_marker="Version",
+        token_index=1,
+        dependencies=[
+            DependencySpec(
+                name="xtbiff",
+                version_marker="Version",
+                token_index=3,
+                versions_map={
+                    "<3.0": ["==1.1"],   # Only required for crest < 3.0
+                },
+                critical=True,
+            )
+        ],
+    ),
+    EngineSpec(name="dftb+", version_marker="DFTB+ release", token_index=3),
+    EngineSpec(name="vmd"),
+]
+
+################
+# EngineFinder #
+################
+
+
+# Regex to extract the leading numeric version (X, X.Y or X.Y.Z) from a raw token
+_VERSION_CORE_RE = re.compile(r"^(\d+(?:\.\d+){0,2})")
+
+
+def _extract_core_version(token: str) -> str:
     """
-    try:
-        output = subprocess.check_output(f"which {name}", shell=True).decode("utf-8")
-        output = output.strip("\n")
-        return output
-
-    except:
-        raise RuntimeError(f"cannot find '{name}' in the system path")
-
-
-def locate_vmd() -> str:
+    Return the leading numeric version (X, X.Y or X.Y.Z) from a raw token.
+    Examples:
+      '6.1.0-f.0' -> '6.1.0'
+      '3.0.2,'    -> '3.0.2'
+      '5.4'       -> '5.4'
+      '7'         -> '7'
     """
-    Locate the path to the 'vmd' folder from the system PATH.
+    m = _VERSION_CORE_RE.match(token)
+    if not m:
+        raise RuntimeError(f"cannot parse version core from '{token}'")
+    return m.group(1)
 
-    Returns
-    -------
-    str
-        The path to the vmd base folder (the one containing the `bin` and `lib` subfolders)
+
+class EngineFinder:
     """
-    path = locate_executable("vmd")
-    return path.rstrip("/bin/vmd")
-
-
-def find_orca_version() -> str:
-    """
-    If available, returns the currently available version of orca.
-    
-    Returns
-    -------
-    str
-        The orca version ad a dot separated string (e.g. '6.0.1')
-    """
-    orca_version = None
-    output = subprocess.run(["orca", "--version"], capture_output=True, text=True).stdout
-    for line in output.split("\n"):
-        if "Program Version" in line:
-            orca_version: str = line.split()[2]
-            break
-    
-    if orca_version is None:
-        raise RuntimeError("Failed to read the version of the orca software.")
-    
-    return orca_version
-
-
-def locate_orca(version: str = None, get_folder: bool = False) -> str:
-    """
-    Locates the path to the 'orca' executable from the system PATH. If the executable is
-    located checks that the correct version of OpenMPI is exported (explicit reference to
-    the static builds). If specified, checks that the correct version of orca is loaded.
+    The `EngineFinder` class provides a general interface for locating software dependencies,
+    checking their versions and the availablility of auxiliary tools and softwares.
 
     Arguments
     ---------
-    version: str
-        The string defining the desired version of orca. If set to None (default) all
-        versions of orca are accepted.
-    get_folder: bool
-        If set to True will return the path of the folder containing the orca executable
-        instead of the default path to the executable itself. Equivalent to applying an
-        `rstrip('/orca')` to the executable path
-
-    Returns
-    -------
-    str
-        The path to the orca executable file.
+    specs : List[EngineSpec]
+        List of `EngineSpec` objects defining supported programs and their dependencies.    
     """
-    path = locate_executable("orca")
+    def __init__(self, specs: List[EngineSpec]):
+        self._specs: Dict[str, EngineSpec] = {s.name: s for s in specs}
 
-    # Check if the available version of orca matches the requirements
-    orca_version = find_orca_version()
+    # Public entry point
+    def locate(self, path: str, version: Optional[str] = None) -> str:
+        """
+        Locates an executable and validate its version and dependencies.
 
-    if version is not None and orca_version != version:
-        raise RuntimeError(
-            f"The required orca version is not available. Version {orca_version} found instead."
-        )
+        Arguments
+        ---------
+        path : str
+            The name or the expected path of the program to locate.
+        version : Optional[str]
+            A version specifier string (e.g., '>=1.0,<2.0'). If None, no version is enforced.
 
-    # Check if a MPI version is available in the system PATH
-    _ = locate_executable("mpirun")
+        Returns
+        -------
+        str
+            The full path to the located executable.
 
-    # Check if the version of the loaded OpenMPI
-    openmpi_version = None
-    output = subprocess.run(["mpirun", "--version"], capture_output=True, text=True).stdout
+        Raises
+        ------
+        RuntimeError
+            Exception raised if the program is not found, version check fails, or a critical dependency is missing.
+        """
+        # Extract the program name from the path and check that the program is known
+        name = basename(path)   
+        if name not in self._specs:
+            raise RuntimeError(f"unknown program '{name}'")
 
-    for line in output.split("\n"):
+        # Check that the user provided version is in a specifier form. If not generate
+        # a specifier assuming equality (e.g. "1.0.0" is converted to "==1.0.0")
+        if version and not any(op in version for op in "<>!=~"):
+            version = f"=={version}"
 
-        if "(Open MPI)" in line:
-            openmpi_version: str = line.split()[3]
-            break
+        # Obtain the path of the program using the `which` command
+        exe = shutil.which(path)
+        if not exe:
+            raise RuntimeError(f"cannot find '{name}' in the system path")
 
-    if openmpi_version is None:
-        raise RuntimeError("OpenMPI is either not available or the version cannot be found")
+        spec = self._specs[name]
+        
+        if spec.version_marker:
+            found_version = self._get_version(spec, exe)
+            req_spec = SpecifierSet(version) if version else None
+            self._enforce_version(name, found_version, req_spec)
 
-    # Check if the available version meets the requirements
-    openmpi_required = {"6.0.*": ["4.1.6"], "5.0.*": ["4.1.1"], "4.2.*": ["3.1.4"], "4.1.*": ["3.1.3", "2.1.5"]}
+            if spec.dependencies:
+                self._check_dependencies(spec, found_version)
+        elif version:
+            raise RuntimeError(f"version checking not supported for '{name}'")
 
-    key = ".".join(orca_version.split(".")[0:-1] + ["*"])
-    if openmpi_version not in openmpi_required[key]:
-        msg = " or ".join(openmpi_required[key])
-        raise RuntimeError(
-            f"orca {orca_version} retuires OpenMPI {msg}. OpenMPI {openmpi_version} found instead."
-        )
-    
-    try:
-        folder = path.rstrip("/orca")
-        locate_executable(f"{folder}/otool_xtb")
-    except:
-        logger.warning("The `otool_xtb` symbolic link to xTB has not been found. The orca interface for xTB will not be available.")
+        return exe
 
-    return path.rstrip("/orca") if get_folder is True else path
+    ####################
+    # Internal helpers #
+    ####################
+
+    def _get_version(self, spec: ProgramSpec, exe: str) -> Version:
+        """
+        Extract and normalize the version of a program from its `--version` output.
+
+        Arguments
+        ---------
+        spec : ProgramSpec
+            The `ProgramSpec` object encoding the info (version marker and token index) required
+            to parse the `--version` output.
+        exe : str
+            The full path to the executable.
+
+        Returns
+        -------
+        Version
+            A `packaging.version.Version` object representing the extracted version.
+
+        Raises
+        ------
+        RuntimeError
+            Exception raised if the version cannot be extracted or is invalid.
+        ValueError
+            Exception raised if the `version_marker` or `token_index` is not defined in the spec.
+        """
+        if not spec.version_marker or spec.token_index is None:
+            raise ValueError("spec must define version_marker and token_index to extract version")
+
+        proc = subprocess.run([exe, "--version"], capture_output=True, text=True)
+        raw = (proc.stdout or "") + (proc.stderr or "")
+
+        for line in raw.splitlines():
+            if spec.version_marker in line:
+                raw_token = line.split()[spec.token_index]
+                core = _extract_core_version(raw_token)
+                break
+        else:
+            raise RuntimeError(
+                f"failed to extract version (version_marker='{spec.version_marker}', index={spec.token_index})"
+            )
+
+        try:
+            return Version(core)
+        except InvalidVersion as e:
+            raise RuntimeError(f"Invalid normalized version '{core}' from token '{raw_token}': {e}") from e
+
+    def _enforce_version(self, name: str, found: Version, required: Optional[SpecifierSet]):
+        """
+        Ensure that the found version satisfies the required version constraints.
+
+        Arguments
+        ---------
+        name : str
+            The name of the program.
+        found : Version
+            The program version extracted from PATH.
+        required : Optional[SpecifierSet]
+            The version constraints to check against.
+
+        Raises
+        ------
+        RuntimeError
+            Exception raised if the found version does not satisfy the constraints.
+        """
+        if not required:
+            return
+        if found not in required:
+            raise RuntimeError(f"requested {name} version '{required}' not satisfied by installed '{found}'")
+
+    def _check_dependencies(self, parent_spec: EngineSpec, parent_version: Version):
+        """
+        Validate the dependencies of a given program version. The function checks whether all critical
+        dependencies are present and that their versions match any constraints defined in `versions_map`,
+        depending on the version of the parent program. 
+
+        Arguments
+        ---------
+        parent_spec : EngineSpec
+            The specification of the main program.
+        parent_version : Version
+            The version of the main program.
+
+        Raises
+        ------
+        RuntimeError
+            Exception raised if a critical dependency is missing, or its version is incompatible with
+            the expected range.
+        """
+        for dep in parent_spec.dependencies:
+            dep_exe = shutil.which(dep.name)
+            if not dep_exe:
+                if dep.versions_map:
+                    # If dependency is conditional and parent version does NOT match any key, skip silently
+                    if not any(parent_version in SpecifierSet(k) for k in dep.versions_map.keys()):
+                        continue
+                # Unconditional dependency
+                if dep.critical:
+                    raise RuntimeError(f"{parent_spec.name} requires '{dep.name}', but it was not found in PATH")
+                else:
+                    logger.warning(f"{parent_spec.name} recommends '{dep.name}', but it was not found in PATH")
+                    continue
+
+            dep_version: Optional[Version] = None
+            if dep.version_marker and dep.token_index is not None:
+                dep_version = self._get_version(dep, dep_exe)
+
+            if dep.versions_map:
+                # Only enforce if parent matches one of the specifiers
+                for parent_specifier, allowed_spec_list in dep.versions_map.items():
+                    if parent_version in SpecifierSet(parent_specifier):
+                        if dep_version is None:
+                            raise RuntimeError(
+                                f"missing version info for dependency '{dep.name}' required by {parent_spec.name}"
+                            )
+                        if not any(dep_version in SpecifierSet(spec) for spec in allowed_spec_list):
+                            raise RuntimeError(
+                                f"{parent_spec.name} {parent_version} requires {dep.name} in "
+                                f"[{', '.join(allowed_spec_list)}], found {dep_version}"
+                            )
+                        break
+                # If not matched_parent: dependency not required for this parent version -> skip silently
+                continue
 
 
-def locate_xtb(version: str = None) -> str:
-    """
-    Locates the path to the 'xtb' executable from the system PATH. If specified, checks that
-    the correct version of xtb is loaded.
+##################################################
+# Global finder instance + convenience functions #
+##################################################
 
-    Arguments
-    ---------
-    version: str
-        The string defining the desired version of xtb. If set to None (default) all
-        versions of xtb are accepted.
-
-    Returns
-    -------
-    str
-        The path to the xtb executable file.
-    """
-    path = locate_executable("xtb")
-
-    # Check if the available version of xtb matches the requirements
-    xtb_version = None
-    output = subprocess.run(["xtb", "--version"], capture_output=True, text=True).stdout
-    for line in output.split("\n"):
-
-        if "xtb version" in line:
-            xtb_version: str = line.split()[3]
-            break
-
-    if xtb_version is None:
-        raise RuntimeError("Failed to read the version of the xtb software.")
-
-    elif version is not None and xtb_version != version:
-        raise RuntimeError(
-            f"The required xtb version is not available. Version {xtb_version} found instead."
-        )
-
-    return path
+finder = EngineFinder(ENGINE_SPECS)
 
 
-def locate_crest(version: str = None) -> str:
-    """
-    Locates the path to the 'crest' executable from the system PATH. If specified, checks
-    that the correct version of crest is loaded.
-
-    Arguments
-    ---------
-    version: str
-        The string defining the desired version of crest. If set to None (default) all
-        versions of crest are accepted.
-
-    Returns
-    -------
-    str
-        The path to the crest executable file.
-    """
-    path = locate_executable("crest")
-
-    # Check if the available version of crest matches the requirements
-    crest_version = None
-    output = subprocess.run(["crest", "--version"], capture_output=True, text=True).stdout
-    for line in output.split("\n"):
-
-        if "Version" in line:
-            crest_version: str = line.split()[1]
-            break
-
-    if crest_version is None:
-        raise RuntimeError("Failed to read the version of the crest software.")
-
-    elif version is not None and crest_version != version:
-        raise RuntimeError(
-            f"The required crest version is not available. Version {crest_version} found instead."
-        )
-
-    return path
+def locate_orca(path: str = "orca", version: str = "") -> str:
+    return finder.locate(path, version=version or None)
 
 
-def locate_dftbplus(version: str = None) -> str:
-    """
-    Locates the path to the 'dftb+' executable from the system PATH. If specified, checks
-    that the correct version of dftb+ is loaded.
+def locate_xtb(path: str = "xtb", version: str = "") -> str:
+    return finder.locate(path, version=version or None)
 
-    Arguments
-    ---------
-    version: str
-        The string defining the desired version of dftb+. If set to None (default) all
-        versions of dftb+ are accepted.
 
-    Returns
-    -------
-    str
-        The path to the dftb+ executable file.
-    """
-    path = locate_executable("dftb+")
+def locate_crest(path: str = "crest", version: str = "") -> str:
+    return finder.locate(path, version=version or None)
 
-    # Check if the available version of dftb+ matches the requirements
-    dftbplus_version = None
-    dftbplus_output = subprocess.run(
-        ["dftb+", "--version"], capture_output=True, text=True
-    ).stdout
-    for line in dftbplus_output.split("\n"):
 
-        if "DFTB+ release" in line:
-            dftbplus_version: str = line.split()[3]
-            break
+def locate_dftbplus(path: str = "dftb+", version: str = "") -> str:
+    return finder.locate(path, version=version or None)
 
-    if dftbplus_version is None:
-        raise RuntimeError("Failed to read the version of the dftb+ software.")
 
-    elif version is not None and dftbplus_version != version:
-        raise RuntimeError(
-            f"The required dftb+ version is not available. Version {dftbplus_version} found instead."
-        )
-
-    return path
+def locate_vmd(path: str = "vmd") -> str:
+    return finder.locate(path)
 
 
 def locate_dftbparamdir() -> str:
-    """
-    Locates the path to the DFTBPLUS_PARAM_DIR environment variable.
-
-    Returns
-    -------
-    str
-        The path to the DFTBPLUS_PARAM_DIR environment variable.
-    """
-    path = None
     try:
-        path = environ["DFTBPLUS_PARAM_DIR"]
+        return environ["DFTBPLUS_PARAM_DIR"]
     except KeyError:
         raise RuntimeError("Failed to locate DFTBPLUS_PARAM_DIR environment variable.")
-
-    return path
