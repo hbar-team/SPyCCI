@@ -16,6 +16,7 @@ dependencies = [
     "rdkit>=2025.3.3",
     "morfeus-ml>=0.7.2",
     "matplotlib>=3.10.3",
+    "packaging>=23.1",
 ]
 
 [project.optional-dependencies]

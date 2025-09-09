@@ -7,6 +7,7 @@ from typing import Optional, List, Dict
 from packaging.version import Version, InvalidVersion
 from packaging.specifiers import Specifier, SpecifierSet
 from os import environ
+from os.path import basename
 
 logger = logging.getLogger(__name__)
 
@@ -24,8 +25,7 @@ class ProgramSpec:
 
 @dataclass
 class DependencySpec(ProgramSpec):
-    versions_map: Optional[Dict[str, List[str]]] = None
-    # versions_map: parent_version_prefix -> list of exact allowed dependency versions
+    versions_map: Optional[Dict[str, List[str]]] = None    # versions_map: parent_version_prefix -> list of exact allowed dependency versions
     critical: bool = True  # if True, failure to meet this dependency raises an error
 
 
@@ -110,20 +110,57 @@ def _extract_core_version(token: str) -> str:
 
 
 class EngineFinder:
+    """
+    The `EngineFinder` class provides a general interface for locating software dependencies,
+    checking their versions and the availablility of auxiliary tools and softwares.
+
+    Arguents
+    --------
+    specs : List[EngineSpec]
+        List of `EngineSpec` objects defining supported programs and their dependencies.    
+    """
     def __init__(self, specs: List[EngineSpec]):
         self._specs: Dict[str, EngineSpec] = {s.name: s for s in specs}
 
     # Public entry point
-    def locate(self, name: str, version: Optional[str] = None) -> str:
+    def locate(self, path: str, version: Optional[str] = None) -> str:
+        """
+        Locates an executable and validate its version and dependencies.
+
+        Arguents
+        --------
+        path : str
+            The name or the expected path of the program to locate.
+        version : Optional[str]
+            A version specifier string (e.g., '>=1.0,<2.0'). If None, no version is enforced.
+
+        Returns
+        -------
+        str
+            The full path to the located executable.
+
+        Raises
+        ------
+        RuntimeError
+            Exception raised if the program is not found, version check fails, or a critical dependency is missing.
+        """
+        # Extract the program name from the path and check that the program is known
+        name = basename(path)   
         if name not in self._specs:
             raise RuntimeError(f"unknown program '{name}'")
 
-        exe = shutil.which(name)
+        # Check that the user provided version is in a specifier form. If not generate
+        # a specifier assuming equality (e.g. "1.0.0" is converted to "==1.0.0")
+        if version and not any(op in version for op in "<>!=~"):
+            version = f"=={version}"
+
+        # Obtain the path of the program using the `which` command
+        exe = shutil.which(path)
         if not exe:
             raise RuntimeError(f"cannot find '{name}' in the system path")
 
         spec = self._specs[name]
-
+        
         if spec.version_marker:
             found_version = self._get_version(spec, exe)
             req_spec = SpecifierSet(version) if version else None
@@ -141,6 +178,29 @@ class EngineFinder:
     ####################
 
     def _get_version(self, spec: ProgramSpec, exe: str) -> Version:
+        """
+        Extract and normalize the version of a program from its `--version` output.
+
+        Arguments
+        ---------
+        spec : ProgramSpec
+            The `ProgramSpec` object encoding the info (version marker and token index) required
+            to parse the `--version` output.
+        exe : str
+            The full path to the executable.
+
+        Returns
+        -------
+        Version
+            A `packaging.version.Version` object representing the extracted version.
+
+        Raises
+        ------
+        RuntimeError
+            Exception raised if the version cannot be extracted or is invalid.
+        ValueError
+            Exception raised if the `version_marker` or `token_index` is not defined in the spec.
+        """
         if not spec.version_marker or spec.token_index is None:
             raise ValueError("spec must define version_marker and token_index to extract version")
 
@@ -163,12 +223,47 @@ class EngineFinder:
             raise RuntimeError(f"Invalid normalized version '{core}' from token '{raw_token}': {e}") from e
 
     def _enforce_version(self, name: str, found: Version, required: Optional[SpecifierSet]):
+        """
+        Ensure that the found version satisfies the required version constraints.
+
+        Arguments
+        ---------
+        name : str
+            The name of the program.
+        found : Version
+            The program version extracted from PATH.
+        required : Optional[SpecifierSet]
+            The version constraints to check against.
+
+        Raises
+        ------
+        RuntimeError
+            Exception raised if the found version does not satisfy the constraints.
+        """
         if not required:
             return
         if found not in required:
             raise RuntimeError(f"requested {name} version '{required}' not satisfied by installed '{found}'")
 
     def _check_dependencies(self, parent_spec: EngineSpec, parent_version: Version):
+        """
+        Validate the dependencies of a given program version. The function checks whether all critical
+        dependencies are present and that their versions match any constraints defined in `versions_map`,
+        depending on the version of the parent program. 
+
+        Arguments
+        ---------
+        parent_spec : EngineSpec
+            The specification of the main program.
+        parent_version : Version
+            The version of the main program.
+
+        Raises
+        ------
+        RuntimeError
+            Exception raised if a critical dependency is missing, or its version is incompatible with
+            the expected range.
+        """
         for dep in parent_spec.dependencies:
             dep_exe = shutil.which(dep.name)
             if not dep_exe:
@@ -189,10 +284,8 @@ class EngineFinder:
 
             if dep.versions_map:
                 # Only enforce if parent matches one of the specifiers
-                matched_parent = False
                 for parent_specifier, allowed_spec_list in dep.versions_map.items():
                     if parent_version in SpecifierSet(parent_specifier):
-                        matched_parent = True
                         if dep_version is None:
                             raise RuntimeError(
                                 f"missing version info for dependency '{dep.name}' required by {parent_spec.name}"
