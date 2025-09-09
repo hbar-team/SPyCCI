@@ -78,7 +78,11 @@ Testing in the SPyCCI library has been divided into three categories:
 * `integration`: All the tests related to the interaction between `SPyCCI` and the calculation softwares. These test are intended to verify the correctness of the submitted calculations and the results obtained from the parsing routines.
 * `functional`: All the rest related to the operation of composite functions involving one or more calculation software and further data processing by `SPyCCI` itself.
 
-As such, `unit` test can be run without any third party software while `integration` and `functional` tests require the computational softwares to be available. For the current version of `SPyCCI` the following version of third party software are required for testing:
+As such, `unit` test can be run without any third party software while `integration` and `functional` tests require the computational softwares to be available. 
+
+:::{admonition} Third party software versions
+:class: danger
+For the current version of `SPyCCI` the following version of third party software are **required** for testing:
 
 * orca `6.0.1`
 * xtb `6.7.1`
@@ -86,4 +90,27 @@ As such, `unit` test can be run without any third party software while `integrat
 * dftb+ `24.1`
 * packmol `20.14.2`
 
-Compatibility of the available test with other versions must be verified.
+**Compatibility of the available test with other versions must be verified.**
+:::
+
+Specific test groups can be run explicitly by referencing the corresponding folder or script. For example, the command:
+
+```
+pytest tests/unit
+```
+
+will run only the unit tests, while the command:
+
+```
+pytest tests/integration/test_orca_integration.py 
+```
+
+will run only the integration tests for the ORCA engine.
+
+If a specific test needs to be executed (e.g., for development purposes), it can be selected using the `::` syntax. For example, the command:
+
+```
+pytest tests/integration/test_orca_integration.py::test_cosmors_solventfile
+```
+
+will run only the `test_cosmors_solventfile` from the integration tests for the ORCA engine.
