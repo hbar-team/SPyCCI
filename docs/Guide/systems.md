@@ -90,7 +90,7 @@ Another convenient way to initialize a `System` object is that of using **S**imp
 ```{code-cell} python
 from spycci.systems import System
 
-mol = System.from_smiles("ethanol", "COO")
+mol = System.from_smiles("ethanol", "CCO")
 
 # Print some attributes
 print(f"Name: {mol.name}")
@@ -100,23 +100,23 @@ print(f"Number of atoms: {mol.geometry.atomcount}")
 print(f"Atoms list: {mol.geometry.atoms}")
 ```
 
-The class constructor automatically add hydrogens to the structure, embeds it in the 3D space and runs a rough geometry optimization using either the `MMFF`s or the `UFF` scheme. Additional optional keywords that can be used to configure the SMILES translation process can be found in the [`System` object API](API-systems). 
+The class constructor automatically adds implicit hydrogens to the structure, embeds it in the 3D space and runs a rough geometry optimization using either the `MMFF`s or the `UFF` force fields. Additional optional keywords that can be used to configure the SMILES translation process can be found in the [`System` object API](API-systems). 
 
 ### Saving an loading a `System` to and form a `.json` file
 
-Once created, a `System` object, together with all its computed properties and attributes, can be saved to a standardized `.json` file. This can be done using the method `save_json` proiding the path to the destination file. The syntax of the command is simple and can be examined in the following example:
+Once created, a `System` object, together with all its computed properties and attributes, can be saved to a standardized `.json` file. This can be done using the method `save_json` providing the path to the destination file. The syntax of the command is simple and can be examined in the following example:
 
 ```python
 from spycci.systems import System
 
 mol = System.from_xyz("water.xyz")
 
-# ... SOME CALULATION CAN BE DONE HERE ...
+# ... SOME CALCULATION CAN BE DONE HERE ...
 
 mol.save_json("water.json")
 ```
 
-The saved `.json` file contains all the informations of the `System` object and can be used to rebuild the same object at a later time. This can be done using the `from_json()` classmethod according to:
+The saved `.json` file contains all the information of the `System` object and can be used to rebuild the same object at a later time. This can be done using the `from_json()` classmethod according to:
 
 ```python
 from spycci.systems import System
