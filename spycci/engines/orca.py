@@ -731,7 +731,7 @@ class OrcaInput(Engine):
             os.system(cmd)
 
             if inplace is False:
-                newmol = System(f"{mol.name}.xyz", charge=mol.charge, spin=mol.spin)
+                newmol = System.from_xyz(f"{mol.name}.xyz", charge=mol.charge, spin=mol.spin)
                 newmol.properties = copy.copy(mol.properties)
                 self.parse_output(newmol)
 
@@ -846,7 +846,7 @@ class OrcaInput(Engine):
             os.system(cmd)
 
             if inplace is False:
-                newmol = System("input.xyz", charge=mol.charge, spin=mol.spin)
+                newmol = System.from_xyz("input.xyz", charge=mol.charge, spin=mol.spin)
                 newmol.name = mol.name
                 newmol.geometry.level_of_theory_geometry = self.level_of_theory
                 self.parse_output(newmol)
@@ -976,7 +976,7 @@ class OrcaInput(Engine):
             os.system(cmd)
 
             if inplace is False:
-                newmol = System("input.xyz", charge=mol.charge, spin=mol.spin)
+                newmol = System.from_xyz("input.xyz", charge=mol.charge, spin=mol.spin)
                 newmol.name = mol.name
                 newmol.geometry.level_of_theory_geometry = self.level_of_theory
                 self.parse_output(newmol)
@@ -1082,7 +1082,7 @@ class OrcaInput(Engine):
             os.system(cmd)
 
             if inplace is False:
-                newmol = System(f"{mol.name}.xyz", charge=mol.charge, spin=mol.spin)
+                newmol = System.from_xyz(f"{mol.name}.xyz", charge=mol.charge, spin=mol.spin)
                 newmol.properties = copy.copy(mol.properties)
                 self.parse_output(newmol)
 
@@ -1180,7 +1180,7 @@ class OrcaInput(Engine):
             os.system(cmd)
 
             if inplace is False:
-                newmol = System(f"{mol.name}.xyz", charge=mol.charge, spin=mol.spin)
+                newmol = System.from_xyz(f"{mol.name}.xyz", charge=mol.charge, spin=mol.spin)
                 newmol.properties = copy.copy(mol.properties)
                 self.parse_output(newmol)
 
@@ -1301,7 +1301,7 @@ class OrcaInput(Engine):
             for xyz in xyz_list:
                 index = xyz.split(".")[1]
                 shutil.move(f"input.{index}.xyz", f"{mol.name}.{index}.xyz")
-                system = System(f"{mol.name}.{index}.xyz", charge=mol.charge, spin=mol.spin)
+                system = System.from_xyz(f"{mol.name}.{index}.xyz", charge=mol.charge, spin=mol.spin)
                 system.properties.set_electronic_energy(energies.pop(0), self)
                 mol_list.append(system)
 
@@ -1456,7 +1456,7 @@ class OrcaInput(Engine):
 
                     index = xyz.split(".")[1]
                     shutil.copy(f"input.{index}.xyz", f"{mol.name}.{index}.xyz")
-                    system = System(f"{mol.name}.{index}.xyz", charge=mol.charge, spin=mol.spin)
+                    system = System.from_xyz(f"{mol.name}.{index}.xyz", charge=mol.charge, spin=mol.spin)
                     system.properties.set_electronic_energy(energies[int(index) - 1], self)
                     indexed_mol_list.append([index, system])
 
@@ -1464,7 +1464,7 @@ class OrcaInput(Engine):
                 ensemble = Ensemble([x[1] for x in indexed_mol_list])
 
                 shutil.move("input.xyz", f"{mol.name}_TS.xyz")
-                newmol = System(f"{mol.name}_TS.xyz", charge=mol.charge, spin=mol.spin)
+                newmol = System.from_xyz(f"{mol.name}_TS.xyz", charge=mol.charge, spin=mol.spin)
                 self.parse_output(newmol)
 
                 process_output(mol, self.__output_suffix, "scanTS", mol.charge, mol.spin)
@@ -1720,7 +1720,7 @@ class OrcaInput(Engine):
             logger.debug(f"Running Orca with command: {cmd}")
             os.system(cmd)
 
-            transition_state = System("input.xyz", charge=reactant.charge, spin=reactant.spin)
+            transition_state = System.from_xyz("input.xyz", charge=reactant.charge, spin=reactant.spin)
             transition_state.name = f"{reactant.name}_TS"
             self.parse_output(transition_state)
 

@@ -16,8 +16,8 @@ TEST_DIR = dirname(abspath(__file__))
 
 def test_calculate_pka_xtb():
 
-    protonated = System(f"{TEST_DIR}/utils/xyz_files/acetic_acid.xyz", charge=0, spin=1)
-    deprotonated = System(f"{TEST_DIR}/utils/xyz_files/deprotonated_acetic_acid.xyz", charge=-1, spin=1)
+    protonated = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/acetic_acid.xyz", charge=0, spin=1)
+    deprotonated = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/deprotonated_acetic_acid.xyz", charge=-1, spin=1)
 
     xtb = XtbInput(solvent="water")
     xtb.opt(protonated, inplace=True)
@@ -43,10 +43,10 @@ def test_calculate_pka_xtb():
 
 def test_calculate_pka_oxonium_scheme_xtb():
 
-    protonated = System(f"{TEST_DIR}/utils/xyz_files/acetic_acid.xyz", charge=0, spin=1)
-    deprotonated = System(f"{TEST_DIR}/utils/xyz_files/deprotonated_acetic_acid.xyz", charge=-1, spin=1)
-    water = System(f"{TEST_DIR}/utils/xyz_files/water.xyz", charge=0, spin=1)
-    oxonium = System(f"{TEST_DIR}/utils/xyz_files/oxonium.xyz", charge=1, spin=1)
+    protonated = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/acetic_acid.xyz", charge=0, spin=1)
+    deprotonated = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/deprotonated_acetic_acid.xyz", charge=-1, spin=1)
+    water = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz", charge=0, spin=1)
+    oxonium = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/oxonium.xyz", charge=1, spin=1)
 
     xtb = XtbInput(solvent="water")
     xtb.opt(protonated, inplace=True)
@@ -74,7 +74,7 @@ def test_calculate_pka_oxonium_scheme_xtb():
 
 def test_auto_calculate_pka_xtb():
 
-    protonated = System(f"{TEST_DIR}/utils/xyz_files/acetic_acid.xyz")
+    protonated = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/acetic_acid.xyz")
     xtb = XtbInput(solvent="water")
 
     try:
@@ -104,8 +104,8 @@ def test_auto_calculate_pka_xtb():
 
 def test_run_pka_workflow_different_geometry():
 
-    protonated = System(f"{TEST_DIR}/utils/xyz_files/acetic_acid.xyz", charge=0, spin=1)
-    deprotonated = System(f"{TEST_DIR}/utils/xyz_files/deprotonated_acetic_acid.xyz", charge=-1, spin=1)
+    protonated = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/acetic_acid.xyz", charge=0, spin=1)
+    deprotonated = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/deprotonated_acetic_acid.xyz", charge=-1, spin=1)
 
     xtb = XtbInput(solvent="water")
     orca = OrcaInput(method="BP86", basis_set="def2-TZVPD", solvent="water")
@@ -167,8 +167,8 @@ def test_run_pka_workflow_different_geometry():
 
 def test_run_pka_workflow_different_electronic():
 
-    protonated = System(f"{TEST_DIR}/utils/xyz_files/acetic_acid.xyz", charge=0, spin=1)
-    deprotonated = System(f"{TEST_DIR}/utils/xyz_files/deprotonated_acetic_acid.xyz", charge=-1, spin=1)
+    protonated = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/acetic_acid.xyz", charge=0, spin=1)
+    deprotonated = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/deprotonated_acetic_acid.xyz", charge=-1, spin=1)
 
     xtb = XtbInput(solvent="water")
     orca = OrcaInput(method="BP86", basis_set="def2-TZVPD", solvent="water")

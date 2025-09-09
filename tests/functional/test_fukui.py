@@ -27,7 +27,7 @@ def check_orca_version():
 @pytest.mark.skipif(check_orca_version(), reason="Test designed for Orca 6.0 and above")
 def test_calculate_fukui():
 
-    mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz", charge=0, spin=1)
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz", charge=0, spin=1)
     orca = OrcaInput("PBE", basis_set="def2-SVP", solvent="water")
 
     try:
@@ -79,7 +79,7 @@ def test_calculate_fukui():
 @pytest.mark.skipif(check_orca_version(), reason="Test designed for Orca 6.0 and above")
 def test_calculate_fukui_no_cube():
 
-    mol = System(f"{TEST_DIR}/utils/xyz_files/water.xyz", charge=0, spin=1)
+    mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz", charge=0, spin=1)
     orca = OrcaInput("PBE", basis_set="def2-SVP", solvent="water")
 
     try:
