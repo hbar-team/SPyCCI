@@ -505,7 +505,7 @@ class OrcaInput(Engine):
     blocks: Optional[Dict[str, Dict[str, Any]]]
         The dictionary of dictionaries encoding a series of custom blocks defined by the user
     ORCAPATH: str, optional
-        the path or environment variable containing the path to the ORCA folder. If set
+        the path or environment variable containing the path to the ORCA executable. If set
         to None (default) the orca executable will be loaded automatically.
 
     Examples
