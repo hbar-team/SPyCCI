@@ -74,7 +74,9 @@ class VMDRenderer:
         # Search for the VMD folder and set the vmd root variable
         self.__vmd_root = None
         if VMD_PATH and isfile(VMD_PATH) is False:
-            raise FileNotFoundError(f"The VMD_PATH {VMD_PATH} does not point to a valid executable.")
+            raise FileNotFoundError(
+                f"The VMD_PATH {VMD_PATH} does not point to a valid executable."
+            )
 
         elif VMD_PATH:
             self.__vmd_root = locate_vmd(VMD_PATH).rstrip("/bin/vmd")
@@ -129,7 +131,11 @@ class VMDRenderer:
             raise ValueError("The XYX rotation must be a list of 3 float values.")
         self.__xyx_rotation: float = [float(v) for v in value]
 
-    def render_molecule(self, molecule_file: str) -> None:
+    def render_molecule(
+        self,
+        molecule_file: str,
+        filename: Optional[str] = None,
+    ) -> None:
         """
         Given the path to a molecule file (e.g. .xyz, .pdb) the function saves a `.bmp` render
         of the molecular structure.
@@ -138,6 +144,9 @@ class VMDRenderer:
         ---------
         molecule_file: str
             The path to the file encoding the structure of the molecule.
+        filename: Optional[str]
+            The name, or the path, of the output `.bmp` file. If `None` (default) the output file
+            will be generated from the root of the input filename (e.g. `root.bmp` from `root.xyz`).
         """
         # Check if given file exists
         if isfile(molecule_file) is False:
@@ -150,9 +159,16 @@ class VMDRenderer:
         script += f"mol new {molecule_file}\n"
         script += self._tcl_plot_backbone()
 
-        self._render(script, root_name)
+        filename = filename.strip(".bmp") if filename is not None else root_name
+        self._render(script, filename)
 
-    def render_fukui_cube(self, cubefile: str, isovalue: float = 0.003, show_negative: bool = False) -> None:
+    def render_fukui_cube(
+        self,
+        cubefile: str,
+        isovalue: float = 0.01,
+        show_negative: bool = False,
+        filename: Optional[str] = None,
+    ) -> None:
         """
         Given the path to a Fukui function cube file saves a `.bmp` render the volumetric Fukui
         function.
@@ -162,10 +178,13 @@ class VMDRenderer:
         cubefile: str
             The path to the `.fukui.cube` file that must be rendered.
         isovalue: float
-            The isovalue at which the contour must be plotted (default: 0.003).
+            The isovalue at which the contour must be plotted (default: 0.01).
         show_negative: bool
             If set to True, will render also the negative part of the Fukui function. (default:
             False)
+        filename: Optional[str]
+            The name, or the path, of the output `.bmp` file. If `None` (default) the output file
+            will be generated from the root of the input filename (e.g. `root.bmp` from `root.xyz`).
         """
         root_name = basename(cubefile).rstrip(".fukui.cube")
 
@@ -179,9 +198,14 @@ class VMDRenderer:
             show_negative=show_negative,
         )
 
-        self._render(script, root_name)
+        filename = filename.strip(".bmp") if filename is not None else root_name
+        self._render(script, filename)
 
-    def render_condensed_fukui(self, cubefile: str) -> None:
+    def render_condensed_fukui(
+        self,
+        cubefile: str,
+        filename: Optional[str] = None,
+    ) -> None:
         """
         Given the path to a Fukui function cube file saves a `.bmp` render of the condensed Fukui
         functions.
@@ -190,6 +214,9 @@ class VMDRenderer:
         ---------
         cubefile: str
             The path to the `.fukui.cube` file that must be rendered.
+        filename: Optional[str]
+            The name, or the path, of the output `.bmp` file. If `None` (default) the output file will
+            be generated from the root of the input filename (e.g. `root_condensed.bmp` from `root.xyz`).
         """
         # Check if given file exists
         if isfile(cubefile) is False:
@@ -226,9 +253,15 @@ class VMDRenderer:
         script += "mol selection all"
         script += "mol material Opaque"
 
-        self._render(script, root_name)
+        filename = filename.strip(".bmp") if filename is not None else f"{root_name}_condensed"
+        self._render(script, filename)
 
-    def render_spin_density_cube(self, cubefile: str, isovalue: float = 0.005) -> None:
+    def render_spin_density_cube(
+        self,
+        cubefile: str,
+        isovalue: float = 0.01,
+        filename: Optional[str] = None,
+    ) -> None:
         """
         Given the path to a spin density cube file saves a `.bmp` render the function.
 
@@ -237,10 +270,13 @@ class VMDRenderer:
         cubefile: str
             The path to the `.fukui.cube` file that must be rendered.
         isovalue: float
-            The isovalue at which the contour must be plotted (default: 0.003).
+            The isovalue at which the contour must be plotted (default: 0.01).
         xyx_rotation: Optional[tuple]
             The tuple of 3 rotation angles (from 0 to 360°) defyning subsequent rotations around
             the X, Y and X axis. If None (default), no rotation is applied.
+        filename: Optional[str]
+            The name, or the path, of the output `.bmp` file. If `None` (default) the output file will
+            be generated from the root of the input filename (e.g. `root_condensed.bmp` from `root.xyz`).
         """
         root_name = basename(cubefile).rstrip(".spindens.cube")
 
@@ -254,7 +290,8 @@ class VMDRenderer:
             show_negative=True,
         )
 
-        self._render(script, root_name)
+        filename = filename.strip(".bmp") if filename is not None else root_name
+        self._render(script, filename)
 
     ####################
     # Internal helpers #
