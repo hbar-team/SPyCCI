@@ -128,6 +128,184 @@ class VMDRenderer:
             raise ValueError("The XYX rotation must be a list of 3 float values.")
         self.__xyx_rotation: float = [float(v) for v in value]
 
+
+    def render_molecule(self, molecule_file: str) -> None:
+        """
+        Given the path to a molecule file (e.g. .xyz, .pdb) the function saves a `.bmp` render
+        of the molecular structure.
+
+        Arguments
+        ---------
+        molecule_file: str
+            The path to the file encoding the structure of the molecule.
+        """
+        # Check if given file exists
+        if isfile(molecule_file) is False:
+            raise FileNotFoundError(f"Unable to find the {molecule_file} file.")
+
+        root_name = basename(molecule_file).rsplit(".", 1)[0]
+        script = self._header()
+
+        # Load the molecule from file and plot its backbone
+        script += f"mol new {molecule_file}\n"
+        script += "mol addrep 0\n"
+        script += "mol modstyle 0 0 CPK 1.000000 0.300000 150.000000 12.000000\n"
+        script += "mol color Name\n"
+        script += "mol selection all\n"
+        script += "mol material Opaque\n"
+        script += "mol modcolor 0 0 Element\n"
+
+        self._render(script, root_name)
+
+    def render_fukui_cube(
+        self, cubfile: str, isovalue: float = 0.003, include_negative: bool = False
+    ) -> None:
+        """
+        Given the path to a Fukui function cube file saves a `.bmp` render the volumetric Fukui
+        function.
+
+        Arguments
+        ---------
+        cubefile: str
+            The path to the `.fukui.cube` file that must be rendered.
+        isovalue: float
+            The isovalue at which the contour must be plotted (default: 0.003).
+        include_negative: bool
+            If set to True, will render also the negative part of the Fukui function. (default:
+            False)
+        """
+        # Check if given file exists
+        if isfile(cubfile) is False:
+            raise FileNotFoundError(f"Unable to find the {cubfile} file.")
+
+        root_name = basename(cubfile).rstrip(".fukui.cube")
+        script = self._header()
+
+        # Plot the molecular backbone
+        script += f"mol new {cubfile} type {{cube}} first 0 last -1 step 1 waitfor 1 volsets {{0 }}\n"
+        script += "mol modstyle 0 0 CPK 1.000000 0.300000 150.000000 12.000000\n"
+        script += "mol color Name\n"
+        script += "mol addrep 0\n"
+
+        # Print positive part of the isosurface
+        script += "mol modcolor 1 0 ColorID 1\n"
+        script += f"mol modstyle 1 0 Isosurface {isovalue} 0 0 0 1 1\n"
+        script += "mol modmaterial 1 0 Translucent\n"
+        script += "mol scaleminmax 0 1 0.000000 1.000000\n"
+        script += "display cuemode Linear\n"
+
+        # If required print the negative part of the isosurface
+        if include_negative:
+            script += "mol addrep 0\n"
+            script += "mol modcolor 2 0 ColorID 0\n"
+            script += "mol modstyle 2 0 Isosurface {-isovalue} 0 0 0 1 1\n"
+            script += "mol modmaterial 2 0 Translucent\n"
+            script += "mol scaleminmax 0 2 -1.000000 0.000000\n"
+        
+        # Apply some final settings
+        script += "display cuemode Linear"
+        script += "mol selection all"
+        script += "mol material Opaque"
+                
+        self._render(script, root_name)
+
+    def render_condensed_fukui(self, cubfile: str) -> None:
+        """
+        Given the path to a Fukui function cube file saves a `.bmp` render of the condensed Fukui
+        functions.
+
+        Arguments
+        ---------
+        cubefile: str
+            The path to the `.fukui.cube` file that must be rendered.
+        """
+        # Check if given file exists
+        if isfile(cubfile) is False:
+            raise FileNotFoundError(f"Unable to find the {cubfile} file.")
+
+        root_name = basename(cubfile).rstrip(".fukui.cube")
+        script = self._header()
+
+        # Load the molecule from the cube file, plot its backbone using Licorice style
+        # and color it using the data encoding the condensed Fukui values (saved as partial charges)
+        script += f"mol new {cubfile} type {{cube}} first 0 last -1 step 1 waitfor 1 volsets {{0 }}\n"
+        script += "mol addrep 0\n"
+        script += "mol modstyle 0 0 Licorice 0.1 20.000000 20.000000\n"
+        script += "color scale method BWR\n"
+        script += "mol modcolor 0 0 Charge\n"
+        script += "mol color Charge\n"
+
+        # Add labels near each atom with the condensed Fukui value
+        script += "label delete Atoms all\n"
+        script += """set all [atomselect 0 "all"]\n"""
+        script += "set i 0\n"
+        script += "foreach atom [$all list] {\n"
+        script += """    label add Atoms "0/$atom"\n"""
+        script += """    label textformat Atoms $i {%q}\n"""
+        script += """    label textoffset Atoms $i { 0.025  0.0  }\n"""
+        script += """    incr i\n"""
+        script += "}\n"
+        script += "label textsize 1.5\n"
+        script += "label textthickness 3\n"
+        script += "color Labels Atoms black\n"
+
+        # Apply some final settings
+        script += "display cuemode Linear"
+        script += "mol selection all"
+        script += "mol material Opaque"
+            
+        self._render(script, root_name)
+
+    def render_spin_density_cube(self, cubfile: str, isovalue: float = 0.005) -> None:
+        """
+        Given the path to a spin density cube file saves a `.bmp` render the function.
+
+        Arguments
+        ---------
+        cubefile: str
+            The path to the `.fukui.cube` file that must be rendered.
+        isovalue: float
+            The isovalue at which the contour must be plotted (default: 0.003).
+        xyx_rotation: Optional[tuple]
+            The tuple of 3 rotation angles (from 0 to 360°) defyning subsequent rotations around
+            the X, Y and X axis. If None (default), no rotation is applied.
+        """
+        # Check if given file exists
+        if isfile(cubfile) is False:
+            raise FileNotFoundError(f"Unable to find the {cubfile} file.")
+
+        root_name = basename(cubfile).rstrip(".spindens.cube")
+        script = self._header()
+
+        # Plot the molecular backbone
+        script += f"mol new {cubfile} type {{cube}} first 0 last -1 step 1 waitfor 1 volsets {{0 }}\n"
+        script += "mol modstyle 0 0 CPK 1.000000 0.300000 150.000000 12.000000\n"
+        script += "mol color Name\n"
+        script += "mol addrep 0\n"
+        
+        # Print positive part of the isosurface
+        script += "mol modcolor 1 0 ColorID 31\n"
+        script += f"mol modstyle 1 0 Isosurface {isovalue} 0 0 0 1 1\n"
+        script += "mol modmaterial 1 0 Translucent\n"
+        script += "mol scaleminmax 0 1 0.000000 1.000000\n"
+
+        # Print negative part of the isosurface
+        script += "mol modcolor 2 0 ColorID 26\n"
+        script += "mol modstyle 2 0 Isosurface {-isovalue} 0 0 0 1 1\n"
+        script += "mol modmaterial 2 0 Translucent\n"
+        script += "mol scaleminmax 0 2 -1.000000 0.000000\n"
+
+        # Apply some final settings
+        script += "display cuemode Linear\n"
+        script += "mol selection all\n"
+        script += "mol material Opaque\n"
+
+        self._render(script, root_name)
+
+    ####################
+    # Internal helpers #
+    ####################
+
     def _render(
         self,
         instructions: str,
@@ -170,173 +348,20 @@ class VMDRenderer:
 
             vmd_script.seek(0)
             system(f"vmd -dispdev text -e {vmd_script.name}")
-
-    def render_molecule(self, molecule_file: str) -> None:
+    
+    def _header(self) -> str:
         """
-        Given the path to a molecule file (e.g. .xyz, .pdb) the function saves a `.bmp` render
-        of the molecular structure.
+        Generates a standar header for the VMD instructions script.
 
-        Arguments
-        ---------
-        molecule_file: str
-            The path to the file encoding the structure of the molecule.
+        Returns
+        -------
+        str
+            The script encoding the script opening
         """
-        root_name = basename(molecule_file).rsplit(".", 1)[0]
-
         script = ""
         script += "display projection Orthographic\n"
         script += "display resetview\n"
         script += "axes location Off\n"
         script += "color Display Background white\n"
         script += "color Name C black\n"
-
-        script += f"mol new {molecule_file}\n"
-        script += "mol addrep 0\n"
-        script += "mol color Name\n"
-        script += "mol representation CPK 1.000000 0.300000 150.000000 12.000000\n"
-        script += "mol selection all\n"
-        script += "mol material Opaque\n"
-        script += "mol modcolor 0 0 Element\n"
-
-        self._render(script, root_name)
-
-    def render_fukui_cube(
-        self, cubfile: str, isovalue: float = 0.003, include_negative: bool = False
-    ) -> None:
-        """
-        Given the path to a Fukui function cube file saves a `.bmp` render the volumetric Fukui
-        function.
-
-        Arguments
-        ---------
-        cubefile: str
-            The path to the `.fukui.cube` file that must be rendered.
-        isovalue: float
-            The isovalue at which the contour must be plotted (default: 0.003).
-        include_negative: bool
-            If set to True, will render also the negative part of the Fukui function. (default:
-            False)
-        """
-
-        root_name = basename(cubfile).rstrip(".fukui.cube")
-
-        script = ""
-        script += "display projection Orthographic\n"
-        script += "display resetview\n"
-        script += "axes location Off\n"
-        script += "color Display Background white\n"
-        script += "color Name C black\n"
-
-        script += f"mol new {cubfile} type {{cube}} first 0 last -1 step 1 waitfor 1 volsets {{0 }}\n"
-        script += "mol modstyle 0 0 CPK 1.000000 0.300000 150.000000 12.000000\n"
-        script += "mol color Name\n"
-        script += "mol selection all\n"
-        script += "mol material Opaque\n"
-        script += "mol addrep 0\n"
-
-        script += "mol modcolor 1 0 ColorID 1\n"
-        script += f"mol modstyle 1 0 Isosurface {isovalue} 0 0 0 1 1\n"
-        script += "mol modmaterial 1 0 Translucent\n"
-        script += "mol scaleminmax 0 1 0.000000 1.000000\n"
-        script += "display cuemode Linear\n"
-
-        if include_negative:
-            script += "mol addrep 0\n"
-            script += "mol modcolor 2 0 ColorID 0\n"
-            script += "mol modstyle 2 0 Isosurface {-isovalue} 0 0 0 1 1\n"
-            script += "mol modmaterial 2 0 Translucent\n"
-            script += "mol scaleminmax 0 2 -1.000000 0.000000\n"
-                
-
-        self._render(script, root_name)
-
-    def render_condensed_fukui(self, cubfile: str) -> None:
-        """
-        Given the path to a Fukui function cube file saves a `.bmp` render of the condensed Fukui
-        functions.
-
-        Arguments
-        ---------
-        cubefile: str
-            The path to the `.fukui.cube` file that must be rendered.
-        """
-        root_name = basename(cubfile).rstrip(".fukui.cube")
-
-        script = ""
-        script += "display projection Orthographic\n"
-        script += "display resetview\n"
-        script += "axes location Off\n"
-        script += "color Display Background white\n"
-        script += "color Name C black\n"
-
-        script += f"mol new {cubfile} type {{cube}} first 0 last -1 step 1 waitfor 1 volsets {{0 }}\n"
-        script += "mol addrep 0\n"
-        script += "mol modstyle 0 0 Licorice 0.1 20.000000 20.000000\n"
-        script += "color scale method BWR\n"
-        script += "mol modcolor 0 0 Charge\n"
-        script += "mol color Charge\n"
-        
-        script += "mol selection all\n"
-        script += "mol material Opaque\n"
-        script += "display cuemode Linear\n"
-
-        script += "label delete Atoms all\n"
-        script += """set all [atomselect 0 "all"]\n"""
-        script += "set i 0\n"
-        script += "foreach atom [$all list] {\n"
-        script += """    label add Atoms "0/$atom"\n"""
-        script += """    label textformat Atoms $i {%q}\n"""
-        script += """    label textoffset Atoms $i { 0.025  0.0  }\n"""
-        script += """    incr i\n"""
-        script += "}\n"
-        script += "label textsize 1.5\n"
-        script += "label textthickness 3\n"
-        script += "color Labels Atoms black\n"
-            
-        self._render(script, root_name)
-
-    def render_spin_density_cube(self, cubfile: str, isovalue: float = 0.005) -> None:
-        """
-        Given the path to a spin density cube file saves a `.bmp` render the function.
-
-        Arguments
-        ---------
-        cubefile: str
-            The path to the `.fukui.cube` file that must be rendered.
-        isovalue: float
-            The isovalue at which the contour must be plotted (default: 0.003).
-        xyx_rotation: Optional[tuple]
-            The tuple of 3 rotation angles (from 0 to 360°) defyning subsequent rotations around
-            the X, Y and X axis. If None (default), no rotation is applied.
-        """
-
-        root_name = basename(cubfile).rstrip(".spindens.cube")
-
-        script = ""
-        script += "display projection Orthographic\n"
-        script += "display resetview\n"
-        script += "axes location Off\n"
-        script += "color Display Background white\n"
-        script += "color Name C black\n"
-
-        script += f"mol new {cubfile} type {{cube}} first 0 last -1 step 1 waitfor 1 volsets {{0 }}"
-        script += "mol addrep 0"
-        script += "mol modstyle 0 0 CPK 1.000000 0.300000 150.000000 12.000000"
-        script += "mol color Name"
-
-        script += "mol selection all"
-        script += "mol material Opaque"
-        
-        script += "mol modcolor 1 0 ColorID 31"
-        script += f"mol modstyle 1 0 Isosurface {isovalue} 0 0 0 1 1"
-        script += "mol modmaterial 1 0 Translucent"
-        script += "mol scaleminmax 0 1 0.000000 1.000000"
-
-        script += "mol modcolor 2 0 ColorID 26"
-        script += "mol modstyle 2 0 Isosurface {-isovalue} 0 0 0 1 1"
-        script += "mol modmaterial 2 0 Translucent"
-        script += "mol scaleminmax 0 2 -1.000000 0.000000"
-
-        script += "display cuemode Linear"
-
-        self._render(script, root_name)
+        return script
