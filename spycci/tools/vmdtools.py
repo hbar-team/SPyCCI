@@ -420,6 +420,7 @@ class VMDRenderer:
         script += self._tcl_plot_backbone()
 
         # Print positive part of the isosurface
+        script += "mol addrep 0\n"
         script += f"mol modcolor 1 0 ColorID {positive_color}\n"
         script += f"mol modstyle 1 0 Isosurface {isovalue} 0 0 0 1 1\n"
         script += "mol modmaterial 1 0 Translucent\n"
@@ -427,6 +428,7 @@ class VMDRenderer:
 
         # Print negative part of the isosurface
         if show_negative is True:
+            script += "mol addrep 0\n"
             script += f"mol modcolor 2 0 ColorID {negative_color}\n"
             script += f"mol modstyle 2 0 Isosurface {-isovalue} 0 0 0 1 1\n"
             script += "mol modmaterial 2 0 Translucent\n"
