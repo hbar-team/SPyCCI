@@ -2,6 +2,7 @@ from tempfile import NamedTemporaryFile as tmp
 
 from os import system
 from os.path import join, basename
+from typing import Optional
 
 from spycci.core.dependency_finder import locate_vmd
 
@@ -12,6 +13,8 @@ def render_molecule(
     shadows: bool = True,
     ambientocclusion: bool = True,
     dof: bool = True,
+    xyx_rotation: Optional[tuple] = None,
+    tail_name: Optional[str] = None,
     VMD_PATH: str = None,
 ) -> None:
     """
@@ -30,6 +33,13 @@ def render_molecule(
         If set to True will enable the vmd ambientocclusion option
     dof: bool
         If set to True will enable the vmd dof option
+    xyx_rotation: Optional[tuple]
+        The tuple of 3 rotation angles (from 0 to 360°) defyning subsequent rotations around
+        the X, Y and X axis. If None (default), no rotation is applied.
+    tail_name: Optional[str]
+        If set to `None` (default), the output render will be named as `root.bmp` where root is
+        the rootname of the input file (e.g. `root.xyz`). If set, to a uder defined `string` value
+        the output render will be named `root_string.bmp`.
     VMD_PATH: str
         The path to the vmd folder. Is set to None (default), will automatically search vmd
         in the system PATH.
@@ -37,11 +47,13 @@ def render_molecule(
     vmd_root = VMD_PATH if VMD_PATH is not None else locate_vmd().rstrip("/bin/vmd")
     tachyon_path = join(vmd_root, "lib/vmd/tachyon_LINUXAMD64")
 
-    root_name = basename(molecule_file).rsplit('.', 1)[0]
+    root_name = basename(molecule_file).rsplit(".", 1)[0]
+    output_name = root_name if tail_name is None else f"{root_name}_{tail_name}"
 
     with tmp(mode="w+", suffix=".vmd") as vmd_script:
 
-        vmd_script.write(f"""
+        vmd_script.write(
+            f"""
         mol addrep 0
         display projection Orthographic
         display resetview
@@ -59,6 +71,14 @@ def render_molecule(
         """
         )
 
+        if xyx_rotation:
+            if len(xyx_rotation) != 3:
+                raise ValueError("A 3 values tuple is expected for XYX euler angle.")
+
+            vmd_script.write(f"rotate x by {xyx_rotation[0]}\n")
+            vmd_script.write(f"rotate y by {xyx_rotation[1]}\n")
+            vmd_script.write(f"rotate x by {xyx_rotation[2]}\n")
+
         if shadows:
             vmd_script.write("display shadows on\n")
         if ambientocclusion:
@@ -71,7 +91,7 @@ def render_molecule(
             color Display Background white
             color Name C black
             mol modcolor 0 0 Element
-            render Tachyon {root_name}.dat "{tachyon_path}" -fullshade -aasamples 12 %s -format BMP -res {resolution} {resolution} -o {root_name}.bmp
+            render Tachyon {output_name}.dat "{tachyon_path}" -fullshade -aasamples 12 %s -format BMP -res {resolution} {resolution} -o {output_name}.bmp
             exit
             """
         )
