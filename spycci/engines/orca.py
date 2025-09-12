@@ -534,7 +534,7 @@ class OrcaInput(Engine):
         self.solvent = solvent
         self.optionals = optionals
         self.blocks = blocks if blocks else {}
-        self.__ORCAPATH = locate_orca(ORCAPATH if ORCAPATH else "orca").rstrip("/orca")
+        self.__ORCAPATH = locate_orca(ORCAPATH if ORCAPATH else "orca")
 
         self.level_of_theory += f""" | basis: {basis_set} | solvent: {solvent}"""
 
