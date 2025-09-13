@@ -136,34 +136,11 @@ class VMDRenderer:
             raise ValueError("The XYX rotation must be a list of 3 float values.")
         self.__xyx_rotation: float = [float(v) for v in value]
 
-    def render_system(self, mol: System, filename: Optional[str] = None) -> None:
-        """
-        Given a `System` object the function saves a `.bmp` render of its molecular structure.
+    ############################
+    # Core rendering functions #
+    ############################
 
-        Arguments
-        ---------
-        mol: System
-            The `System` object to render.
-        filename: Optional[str]
-            The name, or the path, of the output `.bmp` file. If `None` (default) the output file
-            will be generated from the root of the input filename (e.g. `root.bmp` from `root.xyz`).
-        """
-        tdir = mkdtemp(prefix=f"{mol.name}_vmd_", dir=os.getcwd())
-
-        with sh.pushd(tdir):
-
-            if filename is None:
-                filename = f"{mol.name}_{mol.charge}_{mol.spin}.bmp"
-
-            elif filename.endswith(".dmp"):
-                filename += ".bmp"
-
-            mol.geometry.write_xyz(f"{mol.name}.xyz")
-            self.render_molecule(f"{mol.name}.xyz", filename="output.bmp")
-            shutil.copy("output.bmp", f"../{filename}")
-            shutil.rmtree(tdir)
-
-    def render_molecule(
+    def render_system_file(
         self,
         molecule_file: str,
         filename: Optional[str] = None,
@@ -194,6 +171,137 @@ class VMDRenderer:
         filename = filename.strip(".bmp") if filename is not None else root_name
         self._render(script, filename)
 
+    def render_cube_file(
+        self,
+        cubefile: str,
+        isovalue: Optional[float] = None,
+        positive_color: int = 1,
+        negative_color: int = 0,
+        show_negative: bool = False,
+        filename: Optional[str] = None,
+    ) -> None:
+        """
+        Given the path to a generic `.cube` file, saves a `.bmp` render of the contained
+        volumetric data.
+
+        Arguments
+        ---------
+        cubefile: str
+            The path to the `.fukui.cube` file that must be rendered.
+        isovalue: Optional[float]
+            The isovalue at which the contour must be plotted. If set to `None` (default)
+            a proper isovalue will be set automatically as the 20% of the maximum voxel value.
+        positive_color: int
+            The color of the positive phase of the plot.
+        negative_color: int
+            The color of the positive phase of the plot.
+        show_negative: bool
+            If set to True, will render also the negative part of the Fukui function. (default:
+            False)
+        filename: Optional[str]
+            The name, or the path, of the output `.bmp` file. If `None` (default) the output file
+            will be generated from the root of the input filename (e.g. `root.bmp` from `root.xyz`).
+        """
+        script = self._tcl_script_preamble()
+
+        script += self._tcl_cube_script(
+            cubefile,
+            isovalue=isovalue,
+            positive_color=positive_color,
+            negative_color=negative_color,
+            show_negative=show_negative,
+        )
+
+        root_name = basename(cubefile).rstrip(".cube")
+        filename = filename.strip(".bmp") if filename is not None else root_name
+        self._render(script, filename)
+
+    #########################################
+    # Interface functions to SPyCCI objects #
+    #########################################
+
+    def render_system(self, mol: System, filename: Optional[str] = None) -> None:
+        """
+        Given a `System` object the function saves a `.bmp` render of its molecular structure.
+
+        Arguments
+        ---------
+        mol: System
+            The `System` object to render.
+        filename: Optional[str]
+            The name, or the path, of the output `.bmp` file. If `None` (default) the output file
+            will be generated from the root of the input filename (e.g. `root.bmp` from `root.xyz`).
+        """
+        tdir = mkdtemp(prefix=f"{mol.name}_vmd_", dir=os.getcwd())
+
+        with sh.pushd(tdir):
+
+            if filename is None:
+                filename = f"{mol.name}_{mol.charge}_{mol.spin}.bmp"
+
+            elif filename.endswith(".dmp"):
+                filename += ".bmp"
+
+            mol.geometry.write_xyz(f"{mol.name}.xyz")
+            self.render_system_file(f"{mol.name}.xyz", filename="output.bmp")
+            shutil.copy("output.bmp", f"../{filename}")
+            shutil.rmtree(tdir)
+
+    def render_cube(
+        self,
+        cube: Cube,
+        filename: str,
+        isovalue: Optional[float] = None,
+        positive_color: int = 1,
+        negative_color: int = 0,
+        show_negative: bool = False,
+    ) -> None:
+        """
+        Given a `Cube` object the function saves a `.bmp` render of the contained
+        volumetric data.
+
+        Arguments
+        ---------
+        cube: Cube
+            The `Cube` object encoding the volumetric data.
+        filename: str
+            The name, or the path, of the output `.bmp` file (Required because `Cube` objects
+            have no pre-assigned names).
+        isovalue: Optional[float]
+            The isovalue at which the contour must be plotted. If set to `None` (default)
+            a proper isovalue will be set automatically as the 20% of the maximum voxel value.
+        positive_color: int
+            The color of the positive phase of the plot.
+        negative_color: int
+            The color of the positive phase of the plot.
+        show_negative: bool
+            If set to True, will render also the negative part of the Fukui function. (default:
+            False)
+        """
+        root_name = filename.strip(".bmp")
+
+        tdir = mkdtemp(prefix=f"{root_name}_vmd_", dir=os.getcwd())
+
+        with sh.pushd(tdir):
+
+            cube.save(f"{root_name}.cube")
+
+            self.render_cube_file(
+                f"{root_name}.cube",
+                isovalue=isovalue,
+                positive_color=positive_color,
+                negative_color=negative_color,
+                show_negative=show_negative,
+                filename="output.bmp"
+            )
+            
+            shutil.copy("output.bmp", f"../{root_name}.bmp")
+            shutil.rmtree(tdir)
+
+    #############################
+    # Format specific functions #
+    #############################
+
     def render_fukui_cube(
         self,
         cubefile: str,
@@ -220,19 +328,51 @@ class VMDRenderer:
             will be generated from the root of the input filename (e.g. `root.bmp` from `root.xyz`).
         """
         root_name = basename(cubefile).rstrip(".fukui.cube")
+        filename = filename.strip(".bmp") if filename is not None else root_name
 
-        script = self._tcl_script_preamble()
-
-        script += self._tcl_cube_script(
+        self.render_cube_file(
             cubefile,
             isovalue=isovalue,
             positive_color=1,
             negative_color=0,
             show_negative=show_negative,
+            filename=filename,
         )
 
+    def render_spin_density_cube(
+        self,
+        cubefile: str,
+        isovalue: Optional[float] = None,
+        filename: Optional[str] = None,
+    ) -> None:
+        """
+        Given the path to an ORCA spin density cube file saves a `.bmp` render the function.
+
+        Arguments
+        ---------
+        cubefile: str
+            The path to the `.fukui.cube` file that must be rendered.
+        isovalue: Optional[float]
+            The isovalue at which the contour must be plotted. If set to `None` (default)
+            a proper isovalue will be set automatically as the 20% of the maximum voxel value.
+        xyx_rotation: Optional[tuple]
+            The tuple of 3 rotation angles (from 0 to 360°) defyning subsequent rotations around
+            the X, Y and X axis. If None (default), no rotation is applied.
+        filename: Optional[str]
+            The name, or the path, of the output `.bmp` file. If `None` (default) the output file will
+            be generated from the root of the input filename (e.g. `root_condensed.bmp` from `root.xyz`).
+        """
+        root_name = basename(cubefile).rstrip(".spindens.cube")
         filename = filename.strip(".bmp") if filename is not None else root_name
-        self._render(script, filename)
+
+        self.render_cube_file(
+            cubefile,
+            isovalue=isovalue,
+            positive_color=31,
+            negative_color=26,
+            show_negative=True,
+            filename=filename,
+        )
 
     def render_condensed_fukui(
         self,
@@ -286,45 +426,9 @@ class VMDRenderer:
         script += "mol selection all"
         script += "mol material Opaque"
 
-        filename = filename.strip(".bmp") if filename is not None else f"{root_name}_condensed"
-        self._render(script, filename)
-
-    def render_spin_density_cube(
-        self,
-        cubefile: str,
-        isovalue: Optional[float] = None,
-        filename: Optional[str] = None,
-    ) -> None:
-        """
-        Given the path to a spin density cube file saves a `.bmp` render the function.
-
-        Arguments
-        ---------
-        cubefile: str
-            The path to the `.fukui.cube` file that must be rendered.
-        isovalue: Optional[float]
-            The isovalue at which the contour must be plotted. If set to `None` (default)
-            a proper isovalue will be set automatically as the 20% of the maximum voxel value.
-        xyx_rotation: Optional[tuple]
-            The tuple of 3 rotation angles (from 0 to 360°) defyning subsequent rotations around
-            the X, Y and X axis. If None (default), no rotation is applied.
-        filename: Optional[str]
-            The name, or the path, of the output `.bmp` file. If `None` (default) the output file will
-            be generated from the root of the input filename (e.g. `root_condensed.bmp` from `root.xyz`).
-        """
-        root_name = basename(cubefile).rstrip(".spindens.cube")
-
-        script = self._tcl_script_preamble()
-
-        script += self._tcl_cube_script(
-            cubefile,
-            isovalue=isovalue,
-            positive_color=31,
-            negative_color=26,
-            show_negative=True,
+        filename = (
+            filename.strip(".bmp") if filename is not None else f"{root_name}_condensed"
         )
-
-        filename = filename.strip(".bmp") if filename is not None else root_name
         self._render(script, filename)
 
     ####################
