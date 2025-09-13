@@ -1,4 +1,6 @@
 import pytest
+import numpy as np
+
 from os.path import abspath, dirname, join
 from numpy.testing import assert_array_almost_equal, assert_almost_equal
 
@@ -74,12 +76,12 @@ def test_Cube___getitem__():
 # Test the `save` method of the `Cube` class
 def test_Cube_save(tmp_path_factory):
 
-    cube = Cube.from_file(f"{TEST_DIR}/utils/cube_examples/dummy.cube")
+    obj = Cube.from_file(f"{TEST_DIR}/utils/cube_examples/dummy.cube")
 
     folder = tmp_path_factory.mktemp("tmp_cube_folder")
     path = join(folder, "output.cube")
 
-    cube.save(path, comment_1st="First line", comment_2nd="Second line")
+    obj.save(path, comment_1st="First line", comment_2nd="Second line")
 
     with open(path, "r") as cubefile:
         data = cubefile.readlines()
@@ -105,3 +107,136 @@ def test_Cube_save(tmp_path_factory):
     ]
 
     assert expected == data
+
+
+# Test the `scale` method of the `Cube` class
+def test_Cube_scale():
+
+    obj = Cube.from_file(f"{TEST_DIR}/utils/cube_examples/dummy.cube")
+
+    try:
+        obj = obj.scale(0.25)
+    except:
+        assert False, "Exception raised when calling scale method"
+
+    expected_cube = np.array([
+        [[0.0, 9.0, 18.0], [3.0, 12.0, 21.0], [6.0, 15.0, 24.0]],
+        [[1.0, 10.0, 19.0], [4.0, 13.0, 22.0], [7.0, 16.0, 25.0]],
+        [[2.0, 11.0, 20.0], [5.0, 14.0, 23.0], [8.0, 17.0, 26.0]],
+    ])
+    
+    expected_cube /= 4.
+
+    assert obj.nvoxels == [3, 3, 3], "Mismatch in the number of voxels"
+    assert obj.atomcount == 2
+    assert obj.atoms == ["H", "H"], "Mismatch in the atom list"
+    assert obj.atomic_numbers == [1, 1], "Mismatch in the atomic number list"
+
+    assert_array_almost_equal(obj.origin, [0.0, 0.0, 0.0], decimal=6)
+    assert_array_almost_equal(obj.axes[0], [1.0, 0.0, 0.0], decimal=6)
+    assert_array_almost_equal(obj.axes[1], [0.0, 1.0, 0.0], decimal=6)
+    assert_array_almost_equal(obj.axes[2], [0.0, 0.0, 1.0], decimal=6)
+    assert_array_almost_equal(obj.charges, [-0.01, 0.01], decimal=6)
+
+    assert_array_almost_equal(obj.cube, expected_cube, decimal=6)
+
+
+
+# Test the `__add__` method of the `Cube` class
+def test_Cube___add__():
+
+    obj_1 = Cube.from_file(f"{TEST_DIR}/utils/cube_examples/dummy.cube")
+    obj_2 = obj_1.scale(0.25)
+
+    try:
+        obj = obj_1 + obj_2
+    except:
+        assert False, "Exception raised when adding two cube objects"
+
+    expected_cube = np.array([
+        [[0.0, 9.0, 18.0], [3.0, 12.0, 21.0], [6.0, 15.0, 24.0]],
+        [[1.0, 10.0, 19.0], [4.0, 13.0, 22.0], [7.0, 16.0, 25.0]],
+        [[2.0, 11.0, 20.0], [5.0, 14.0, 23.0], [8.0, 17.0, 26.0]],
+    ])
+    
+    expected_cube *= 1.25
+
+    assert obj.nvoxels == [3, 3, 3], "Mismatch in the number of voxels"
+    assert obj.atomcount == 2
+    assert obj.atoms == ["H", "H"], "Mismatch in the atom list"
+    assert obj.atomic_numbers == [1, 1], "Mismatch in the atomic number list"
+
+    assert_array_almost_equal(obj.origin, [0.0, 0.0, 0.0], decimal=6)
+    assert_array_almost_equal(obj.axes[0], [1.0, 0.0, 0.0], decimal=6)
+    assert_array_almost_equal(obj.axes[1], [0.0, 1.0, 0.0], decimal=6)
+    assert_array_almost_equal(obj.axes[2], [0.0, 0.0, 1.0], decimal=6)
+    assert_array_almost_equal(obj.charges, [-0.01, 0.01], decimal=6)
+
+    assert_array_almost_equal(obj.cube, expected_cube, decimal=6)
+
+
+# Test the `__sub__` method of the `Cube` class
+def test_Cube___sub__():
+
+    obj_1 = Cube.from_file(f"{TEST_DIR}/utils/cube_examples/dummy.cube")
+    obj_2 = obj_1.scale(0.25)
+
+    try:
+        obj = obj_1 - obj_2
+    except:
+        assert False, "Exception raised when subtracting two cube objects"
+
+    expected_cube = np.array([
+        [[0.0, 9.0, 18.0], [3.0, 12.0, 21.0], [6.0, 15.0, 24.0]],
+        [[1.0, 10.0, 19.0], [4.0, 13.0, 22.0], [7.0, 16.0, 25.0]],
+        [[2.0, 11.0, 20.0], [5.0, 14.0, 23.0], [8.0, 17.0, 26.0]],
+    ])
+    
+    expected_cube *= 0.75
+
+    assert obj.nvoxels == [3, 3, 3], "Mismatch in the number of voxels"
+    assert obj.atomcount == 2
+    assert obj.atoms == ["H", "H"], "Mismatch in the atom list"
+    assert obj.atomic_numbers == [1, 1], "Mismatch in the atomic number list"
+
+    assert_array_almost_equal(obj.origin, [0.0, 0.0, 0.0], decimal=6)
+    assert_array_almost_equal(obj.axes[0], [1.0, 0.0, 0.0], decimal=6)
+    assert_array_almost_equal(obj.axes[1], [0.0, 1.0, 0.0], decimal=6)
+    assert_array_almost_equal(obj.axes[2], [0.0, 0.0, 1.0], decimal=6)
+    assert_array_almost_equal(obj.charges, [-0.01, 0.01], decimal=6)
+
+    assert_array_almost_equal(obj.cube, expected_cube, decimal=6)
+
+
+# Test the `__mul__` method of the `Cube` class
+def test_Cube___mul__():
+
+    obj = Cube.from_file(f"{TEST_DIR}/utils/cube_examples/dummy.cube")
+
+    try:
+        obj = obj * obj
+    except:
+        assert False, "Exception raised when multiplying two cube objects"
+
+    expected_cube = np.array([
+        [[0.0, 9.0, 18.0], [3.0, 12.0, 21.0], [6.0, 15.0, 24.0]],
+        [[1.0, 10.0, 19.0], [4.0, 13.0, 22.0], [7.0, 16.0, 25.0]],
+        [[2.0, 11.0, 20.0], [5.0, 14.0, 23.0], [8.0, 17.0, 26.0]],
+    ])
+    
+    expected_cube = expected_cube**2
+
+    assert obj.nvoxels == [3, 3, 3], "Mismatch in the number of voxels"
+    assert obj.atomcount == 2
+    assert obj.atoms == ["H", "H"], "Mismatch in the atom list"
+    assert obj.atomic_numbers == [1, 1], "Mismatch in the atomic number list"
+
+    assert_array_almost_equal(obj.origin, [0.0, 0.0, 0.0], decimal=6)
+    assert_array_almost_equal(obj.axes[0], [1.0, 0.0, 0.0], decimal=6)
+    assert_array_almost_equal(obj.axes[1], [0.0, 1.0, 0.0], decimal=6)
+    assert_array_almost_equal(obj.axes[2], [0.0, 0.0, 1.0], decimal=6)
+    assert_array_almost_equal(obj.charges, [-0.01, 0.01], decimal=6)
+
+    assert_array_almost_equal(obj.cube, expected_cube, decimal=6)
+
+
