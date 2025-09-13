@@ -52,8 +52,6 @@ def test_is_dftb_level_of_theory():
         fermi_temp=300.0,
         parallel="mpi",
         verbose=True,
-        DFTBPATH="dummy",
-        DFTBPARAMDIR="dummy",
     )
 
     assert is_dftb_level_of_theory(engine.level_of_theory) == True
