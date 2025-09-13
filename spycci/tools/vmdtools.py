@@ -1,4 +1,7 @@
+import sh, os, shutil
+
 from tempfile import NamedTemporaryFile as tmp
+from tempfile import mkdtemp
 
 from os import system
 from os.path import join, basename, isfile
@@ -6,6 +9,7 @@ from typing import List, Optional
 
 from spycci.core.dependency_finder import locate_vmd
 from spycci.tools.cubetools import Cube
+from spycci.systems import System
 
 
 class VMDRenderer:
@@ -131,6 +135,33 @@ class VMDRenderer:
         if len(value) != 3:
             raise ValueError("The XYX rotation must be a list of 3 float values.")
         self.__xyx_rotation: float = [float(v) for v in value]
+
+    def render_system(self, mol: System, filename: Optional[str] = None) -> None:
+        """
+        Given a `System` object the function saves a `.bmp` render of its molecular structure.
+
+        Arguments
+        ---------
+        mol: System
+            The `System` object to render.
+        filename: Optional[str]
+            The name, or the path, of the output `.bmp` file. If `None` (default) the output file
+            will be generated from the root of the input filename (e.g. `root.bmp` from `root.xyz`).
+        """
+        tdir = mkdtemp(prefix=f"{mol.name}_vmd_", dir=os.getcwd())
+
+        with sh.pushd(tdir):
+
+            if filename is None:
+                filename = f"{mol.name}_{mol.charge}_{mol.spin}.bmp"
+
+            elif filename.endswith(".dmp"):
+                filename += ".bmp"
+
+            mol.geometry.write_xyz(f"{mol.name}.xyz")
+            self.render_molecule(f"{mol.name}.xyz", filename="output.bmp")
+            shutil.copy("output.bmp", f"../{filename}")
+            shutil.rmtree(tdir)
 
     def render_molecule(
         self,
@@ -421,7 +452,7 @@ class VMDRenderer:
         if isovalue is None:
             cube = Cube.from_file(cubefile)
             cmax, cmin = cube.max, cube.min
-            isovalue = 0.2*max(abs(cmax), abs(cmin))
+            isovalue = 0.2 * max(abs(cmax), abs(cmin))
 
         script = ""
 
