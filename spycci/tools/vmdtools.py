@@ -5,6 +5,7 @@ from os.path import join, basename, isfile
 from typing import List, Optional
 
 from spycci.core.dependency_finder import locate_vmd
+from spycci.tools.cubetools import Cube
 
 
 class VMDRenderer:
@@ -165,7 +166,7 @@ class VMDRenderer:
     def render_fukui_cube(
         self,
         cubefile: str,
-        isovalue: float = 0.01,
+        isovalue: Optional[float] = None,
         show_negative: bool = False,
         filename: Optional[str] = None,
     ) -> None:
@@ -177,8 +178,9 @@ class VMDRenderer:
         ---------
         cubefile: str
             The path to the `.fukui.cube` file that must be rendered.
-        isovalue: float
-            The isovalue at which the contour must be plotted (default: 0.01).
+        isovalue: Optional[float]
+            The isovalue at which the contour must be plotted. If set to `None` (default)
+            a proper isovalue will be set automatically as the 20% of the maximum voxel value.
         show_negative: bool
             If set to True, will render also the negative part of the Fukui function. (default:
             False)
@@ -259,7 +261,7 @@ class VMDRenderer:
     def render_spin_density_cube(
         self,
         cubefile: str,
-        isovalue: float = 0.01,
+        isovalue: Optional[float] = None,
         filename: Optional[str] = None,
     ) -> None:
         """
@@ -269,8 +271,9 @@ class VMDRenderer:
         ---------
         cubefile: str
             The path to the `.fukui.cube` file that must be rendered.
-        isovalue: float
-            The isovalue at which the contour must be plotted (default: 0.01).
+        isovalue: Optional[float]
+            The isovalue at which the contour must be plotted. If set to `None` (default)
+            a proper isovalue will be set automatically as the 20% of the maximum voxel value.
         xyx_rotation: Optional[tuple]
             The tuple of 3 rotation angles (from 0 to 360°) defyning subsequent rotations around
             the X, Y and X axis. If None (default), no rotation is applied.
@@ -377,7 +380,7 @@ class VMDRenderer:
     def _tcl_cube_script(
         self,
         cubefile: str,
-        isovalue: float = 0.01,
+        isovalue: Optional[float] = None,
         positive_color: int = 1,
         negative_color: int = 0,
         show_negative: bool = True,
@@ -390,8 +393,9 @@ class VMDRenderer:
         ---------
         cubefile: str
             The path to the `.cube` file that must be rendered.
-        isovalue: float
-            The isovalue at which the contour must be plotted (default: 0.01).
+        isovalue: Optional[float]
+            The isovalue at which the contour must be plotted. If set to `None` (default)
+            a proper isovalue will be set automatically as the 20% of the maximum voxel value.
         positive_color: int
             The color of the positive phase of the plot.
         negative_color: int
@@ -412,6 +416,12 @@ class VMDRenderer:
         # Check if given file exists
         if isfile(cubefile) is False:
             raise FileNotFoundError(f"Unable to find the {cubefile} file.")
+
+        # If not specified by the user automatically compute a guess of the isovalue
+        if isovalue is None:
+            cube = Cube.from_file(cubefile)
+            cmax, cmin = cube.max, cube.min
+            isovalue = 0.2*max(abs(cmax), abs(cmin))
 
         script = ""
 
