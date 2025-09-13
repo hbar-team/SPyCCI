@@ -21,7 +21,7 @@ class Cube:
         self.__axes: List[np.ndarray] = []  # List of the three axes vectors
         self.__atomic_numbers: List[int] = []  # List of atomic numbers of the atoms
         self.__atomic_charges: List[float] = []  # List of atomic "charges" of the atoms
-        self.__coordinates: List[np.ndarray] = []  # List of coordinate vectors of each atom
+        self.__coordinates: List[np.ndarray] = []  # List of coordinates of each atom
         self.__cube: np.ndarray = None  # The volumetric data in cube format
 
     @classmethod
@@ -71,27 +71,14 @@ class Cube:
                 data = file.readline().split()
                 obj.__atomic_numbers.append(int(data[0]))
                 obj.__atomic_charges.append(float(data[1]))
-                obj.__coordinates.append(np.array([float(value) for value in data[2::]]))
+                obj.__coordinates.append(
+                    np.array([float(value) for value in data[2::]])
+                )
 
-            # Read the whole cube section
-            buffer = []
-            for line in file.readlines():
-                sline = line.strip("\n").split()
-                for element in sline:
-                    buffer.append(float(element))
-            
-            x = []
-            for i in range(obj.__nvoxels[0]):
-                y = []
-                for j in range(obj.__nvoxels[1]):
-                    z = []
-                    for k in range(obj.__nvoxels[2]):
-                        index = i*obj.__nvoxels[1]*obj.__nvoxels[2] + j*obj.__nvoxels[2] + k
-                        z.append(buffer[index])
-                    y.append(np.array(z))
-                x.append(np.array(y))
-
-            obj.__cube = np.array(x)
+            # Read the rest of the file and reshape it according to the number of voxels
+            data_str = file.read().split()
+            buffer = np.fromiter(map(float, data_str), dtype=np.float32)
+            obj.__cube = buffer.reshape(tuple(obj.__nvoxels))
 
         return obj
 
@@ -115,34 +102,42 @@ class Cube:
             file.write(f"{comment_2nd}\n")
 
             # Write the line containing the number of atoms and the position of the origin
-            file.write(f"\t{self.__atomcount}")
-            for value in self.__origin:
-                file.write(f"\t{value:.6e}")
-            file.write("\n")
+            line = f"{self.__atomcount}    "
+            line += "    ".join([f"{v:.6e}" for v in self.__origin])
+            file.write(f"{line}\n")
 
             # Write the number of voxel along each axis and the axis vector
-            for i in range(3):
-                file.write(f"\t{self.__nvoxels[i]}")
-                for value in self.__axes[i]:
-                    file.write(f"\t{value:.6e}")
-                file.write("\n")
+            for nv, axis in zip(self.__nvoxels, self.__axes):
+                line = f"{nv}    "
+                line += "    ".join([f"{v:.6e}" for v in axis])
+                file.write(f"{line}\n")
 
             # Write the section containing the atomic positions
-            for i in range(self.__atomcount):
-                file.write(f"\t{self.__atomic_numbers[i]}")
-                file.write(f"\t{self.__atomic_charges[i]:.6e}")
-                for value in self.__coordinates[i]:
-                    file.write(f"\t{value:.6e}")
-                file.write("\n")
+            for atomic_number, charge, coords in zip(
+                self.__atomic_numbers,
+                self.__atomic_charges,
+                self.__coordinates,
+            ):
+                line = f"{atomic_number}    {charge:.6e}    "
+                line += "    ".join([f"{c:.6e}" for c in coords])
+                file.write(f"{line}\n")
 
-            # Read the whole cube section
+            lines = []
             for i in range(self.__nvoxels[0]):
                 for j in range(self.__nvoxels[1]):
+
+                    chunks = []
                     for k in range(self.__nvoxels[2]):
-                        file.write(f"\t{self.__cube[i][j][k]:.6e}")
+
+                        chunks.append(f"{self.__cube[i][j][k]:.6e}")
                         if k % 6 == 5:
-                            file.write("\n")
-                    file.write("\n")
+                            lines.append("    ".join(chunks))
+                            chunks = []
+
+                    if len(chunks) != 0:
+                        lines.append("    ".join(chunks))
+
+            file.write("\n".join(lines) + "\n")
 
     def __validate(self, other: Cube, rtol: float = 1e-2) -> None:
         """
@@ -176,7 +171,6 @@ class Cube:
                 "Cannot perform the operation, the cubes object are not compatible"
             )
 
-
     def __getitem__(self, key: Tuple[int]) -> float:
         """
         Given a 3 index tuple (i, j, k) returns the value of the voxel at the position
@@ -188,7 +182,7 @@ class Cube:
         key: Tuple[int]
             The tuple of 3 values encoding the position of the required voxel.
             Slicing according to numpy syntax is accepted.
-        
+
         Raises
         ------
         ValueError
@@ -200,7 +194,9 @@ class Cube:
             The cube value at the selected voxel.
         """
         if len(key) != 3:
-            raise ValueError("The key tuple to access cube coodinates bust have length 3.")
+            raise ValueError(
+                "The key tuple to access cube coodinates bust have length 3."
+            )
         return self.__cube[key]
 
     def __add__(self, other: Cube) -> Cube:
@@ -320,7 +316,7 @@ class Cube:
             The 3 coordinate vector encoding the position of the origin.
         """
         return self.__origin
-    
+
     @property
     def nvoxels(self) -> List[int]:
         """
@@ -360,7 +356,7 @@ class Cube:
             The list of atomic numbers of each atom.
         """
         return self.__atomic_numbers
-    
+
     @property
     def atoms(self) -> List[str]:
         """
@@ -372,7 +368,7 @@ class Cube:
             The list of atoms (element symbols).
         """
         return [atoms_dict[n] for n in self.__atomic_numbers]
-    
+
     @property
     def charges(self) -> List[float]:
         """
@@ -386,11 +382,13 @@ class Cube:
             The list of charges associated to each atom in the cube
         """
         return self.__atomic_charges
-    
+
     @charges.setter
     def charges(self, new_charges: List[float]) -> None:
         if len(new_charges) != self.__atomcount:
-            raise ValueError(f"Cannot set charges, {len(new_charges)} values given for a {self.__atomcount} atom molecule")
+            raise ValueError(
+                f"Cannot set charges, {len(new_charges)} values given for a {self.__atomcount} atom molecule"
+            )
         self.__atomic_charges = new_charges
 
     @property
@@ -416,7 +414,7 @@ class Cube:
             The numpy array containing the value of the cube property for each voxel.
         """
         return self.__cube
-    
+
     @property
     def max(self) -> float:
         """
