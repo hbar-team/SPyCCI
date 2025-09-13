@@ -279,6 +279,43 @@ class Cube:
             The numpy array containing the value of the cube property for each voxel
         """
         return self.__cube
+    
+    @property
+    def max(self) -> float:
+        """
+        The maximum value encoded in the cube volumetric data
+
+        Returns
+        -------
+        float
+            The maximum value encoded in the cube
+        """
+        value = None
+        for y in self.__cube:
+            for z in y:
+                zmax = max(z)
+                value = zmax if value is None else max([value, zmax])
+
+        return value
+
+    @property
+    def min(self) -> float:
+        """
+        The minimum value encoded in the cube volumetric data
+
+        Returns
+        -------
+        float
+            The minimum value encoded in the cube
+        """
+        value = None
+        for y in self.__cube:
+            for z in y:
+                zmin = min(z)
+                value = zmin if value is None else min([value, zmin])
+
+        return value
+
 
     @property
     def charges(self) -> List[float]:
