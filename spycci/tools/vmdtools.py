@@ -168,7 +168,7 @@ class VMDRenderer:
         script += f"mol new {molecule_file}\n"
         script += self._tcl_plot_backbone()
 
-        filename = filename.strip(".bmp") if filename is not None else root_name
+        filename = filename.rstrip(".bmp") if filename is not None else root_name
         self._render(script, filename)
 
     def render_cube_file(
@@ -213,7 +213,7 @@ class VMDRenderer:
         )
 
         root_name = basename(cubefile).rstrip(".cube")
-        filename = filename.strip(".bmp") if filename is not None else root_name
+        filename = filename.rstrip(".bmp") if filename is not None else root_name
         self._render(script, filename)
 
     #########################################
@@ -278,7 +278,7 @@ class VMDRenderer:
             If set to True, will render also the negative part of the Fukui function. (default:
             False)
         """
-        root_name = filename.strip(".bmp")
+        root_name = filename.rstrip(".bmp")
 
         tdir = mkdtemp(prefix=f"{root_name}_vmd_", dir=os.getcwd())
 
@@ -292,9 +292,9 @@ class VMDRenderer:
                 positive_color=positive_color,
                 negative_color=negative_color,
                 show_negative=show_negative,
-                filename="output.bmp"
+                filename="output.bmp",
             )
-            
+
             shutil.copy("output.bmp", f"../{root_name}.bmp")
             shutil.rmtree(tdir)
 
@@ -328,7 +328,7 @@ class VMDRenderer:
             will be generated from the root of the input filename (e.g. `root.bmp` from `root.xyz`).
         """
         root_name = basename(cubefile).rstrip(".fukui.cube")
-        filename = filename.strip(".bmp") if filename is not None else root_name
+        filename = filename.rstrip(".bmp") if filename is not None else root_name
 
         self.render_cube_file(
             cubefile,
@@ -363,7 +363,7 @@ class VMDRenderer:
             be generated from the root of the input filename (e.g. `root_condensed.bmp` from `root.xyz`).
         """
         root_name = basename(cubefile).rstrip(".spindens.cube")
-        filename = filename.strip(".bmp") if filename is not None else root_name
+        filename = filename.rstrip(".bmp") if filename is not None else root_name
 
         self.render_cube_file(
             cubefile,
@@ -411,24 +411,23 @@ class VMDRenderer:
         script += "label delete Atoms all\n"
         script += """set all [atomselect 0 "all"]\n"""
         script += "set i 0\n"
-        script += "foreach atom [$all list] {\n"
+        script += "foreach atom [$all get index] {\n"
         script += """    label add Atoms "0/$atom"\n"""
-        script += """    label textformat Atoms $i {%q}\n"""
-        script += """    label textoffset Atoms $i { 0.025  0.0  }\n"""
+        script += """    label textformat Atoms $i {  (%e) %q}\n"""
+        script += """    label textoffset Atoms $i {1.0 0.0}\n"""
         script += """    incr i\n"""
         script += "}\n"
-        script += "label textsize 1.5\n"
-        script += "label textthickness 3\n"
+        script += "label textsize 1.\n"
+        script += "label textthickness 2\n"
         script += "color Labels Atoms black\n"
 
         # Apply some final settings
-        script += "display cuemode Linear"
-        script += "mol selection all"
-        script += "mol material Opaque"
+        script += "display cuemode Linear\n"
+        script += "mol selection all\n"
+        script += "mol material Opaque\n"
 
-        filename = (
-            filename.strip(".bmp") if filename is not None else f"{root_name}_condensed"
-        )
+        filename = filename.rstrip(".bmp") if filename is not None else f"{root_name}_condensed"
+
         self._render(script, filename)
 
     ####################
