@@ -60,6 +60,16 @@ class Cube:
             data = file.readline().split()
             obj.__atomcount = int(data[0])
             obj.__origin = np.array([float(value) for value in data[1::]])
+            
+            # ************************* TEMPORARY PATCH *************************
+            
+            # Check if atomcount is negative as in a orca MO cube file
+            is_orca_mo = False
+            if obj.__atomcount < 0:
+                is_orca_mo = True
+                obj.__atomcount *= -1
+
+            # *******************************************************************
 
             # Read the number of voxel along each axis and the axis vector
             for _ in range(3):
@@ -86,6 +96,18 @@ class Cube:
                 obj.__coordinates.append(
                     np.array([float(value) for value in data[2::]])
                 )
+            
+            # ************************* TEMPORARY PATCH *************************
+            
+            if is_orca_mo is True:
+
+                file_position = file.tell()
+                
+                data = file.readline().split()
+                if len(data) != 2:
+                    file.seek(file_position)
+
+            # *******************************************************************
 
             # Read the rest of the file and reshape it according to the number of voxels
             data_str = file.read().split()
