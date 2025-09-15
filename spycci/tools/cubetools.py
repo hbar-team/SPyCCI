@@ -6,7 +6,7 @@ from copy import deepcopy
 
 import numpy as np
 
-from spycci.constants import atoms_dict
+from spycci.constants import atoms_dict, bohr_to_angstrom
 
 
 class Cube:
@@ -23,6 +23,7 @@ class Cube:
         self.__atomic_charges: List[float] = []  # List of atomic "charges" of the atoms
         self.__coordinates: List[np.ndarray] = []  # List of coordinates of each atom
         self.__cube: np.ndarray = None  # The volumetric data in cube format
+        self.__is_bohr: bool = None     # If True the cube is written in atomic units else angstroms
 
     @classmethod
     def from_file(cls, path: str) -> Cube:
@@ -65,6 +66,17 @@ class Cube:
                 data = file.readline().split()
                 obj.__nvoxels.append(int(data[0]))
                 obj.__axes.append(np.array([float(value) for value in data[1::]]))
+            
+            # Check if values are in atomic units (bohr) or Angstrom (also check consistency)
+            if all([n<0 for n in obj.__nvoxels]):
+                obj.__is_bohr = False
+                obj.__nvoxels = [-n for n in obj.__nvoxels]
+
+            elif all([n>0 for n in obj.__nvoxels]):
+                obj.__is_bohr = True
+            
+            else:
+                raise RuntimeError("Unexpected behavior in the number of voxels.")
 
             # Read the section containing the atomic positions
             for _ in range(obj.__atomcount):
@@ -108,7 +120,7 @@ class Cube:
 
             # Write the number of voxel along each axis and the axis vector
             for nv, axis in zip(self.__nvoxels, self.__axes):
-                line = f"{nv}    "
+                line = f"{nv}    " if self.__is_bohr else f"{-nv}    "
                 line += "    ".join([f"{v:.6e}" for v in axis])
                 file.write(f"{line}\n")
 
@@ -162,9 +174,9 @@ class Cube:
             [
                 self.__atomcount == other.__atomcount,
                 self.__nvoxels == other.__nvoxels,
-                np.allclose(self.__origin, other.__origin, rtol=rtol),
-                np.allclose(self.__axes, other.__axes, rtol=rtol),
-                np.allclose(self.__coordinates, other.__coordinates, rtol=rtol),
+                np.allclose(self.origin, other.origin, rtol=rtol),
+                np.allclose(self.axes, other.axes, rtol=rtol),
+                np.allclose(self.coordinates, other.coordinates, rtol=rtol),
             ]
         ):
             raise ValueError(
@@ -308,14 +320,32 @@ class Cube:
     @property
     def origin(self) -> np.ndarray:
         """
-        The position of the origin of the volumetric data.
+        The position of the origin of the volumetric data in Angstrom.
 
         Retuns
         ------
         np.ndarray
             The 3 coordinate vector encoding the position of the origin.
         """
-        return self.__origin
+        if self.__is_bohr is True:
+            return self.__origin * bohr_to_angstrom
+        else:
+            return self.__origin
+    
+    @property
+    def origin_bohr(self) -> np.ndarray:
+        """
+        The position of the origin of the volumetric data in atomic units (Bohr).
+
+        Retuns
+        ------
+        np.ndarray
+            The 3 coordinate vector encoding the position of the origin.
+        """
+        if self.__is_bohr is True:
+            return self.__origin
+        else:
+            return self.__origin / bohr_to_angstrom
 
     @property
     def nvoxels(self) -> List[int]:
@@ -335,15 +365,32 @@ class Cube:
     @property
     def axes(self) -> List[np.ndarray]:
         """
-        The list of the 3 axes coordinates (as the side of each voxel) in the 3D cartesian
-        space.
+        The list of the 3 axes coordinates (as the side of each voxel) in Angstrom.
 
         Returns
         -------
         List[np.ndarray]
             The list of 3 `np.ndarray` vectors of length 3 encoding the axis coordinates.
         """
-        return self.__axes
+        if self.__is_bohr is True:
+            return [x * bohr_to_angstrom for x in self.__axes]
+        else:
+            return self.__axes
+    
+    @property
+    def axes_bohr(self) -> List[np.ndarray]:
+        """
+        The list of the 3 axes coordinates (as the side of each voxel) in atomic units (Bohr).
+
+        Returns
+        -------
+        List[np.ndarray]
+            The list of 3 `np.ndarray` vectors of length 3 encoding the axis coordinates.
+        """
+        if self.__is_bohr is True:
+            return self.__axes
+        else:
+            return [x / bohr_to_angstrom for x in self.__axes]    
 
     @property
     def atomic_numbers(self) -> List[int]:
@@ -394,14 +441,33 @@ class Cube:
     @property
     def coordinates(self) -> List[np.ndarray]:
         """
-        The list of coordinates encoding the position of each atom in the molecule.
+        The list of coordinates in Angstrom encoding the position of each atom in the molecule.
 
         Returns
         -------
         List[np.ndarray]
             The list of 3D np.ndarray encoding the position of each atom.
         """
-        return self.__coordinates
+        if self.__is_bohr is True:
+            return [x * bohr_to_angstrom for x in self.__coordinates]
+        else:
+            return self.__coordinates
+
+    @property
+    def coordinates_borh(self) -> List[np.ndarray]:
+        """
+        The list of coordinates in atomic units (Bohr) encoding the position of
+        each atom in the molecule.
+
+        Returns
+        -------
+        List[np.ndarray]
+            The list of 3D np.ndarray encoding the position of each atom.
+        """
+        if self.__is_bohr is True:
+            return self.__coordinates
+        else:
+            return [x / bohr_to_angstrom for x in self.__coordinates]
 
     @property
     def cube(self) -> np.ndarray:

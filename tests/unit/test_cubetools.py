@@ -40,10 +40,10 @@ def test_Cube_from_file():
     assert obj.atoms == ["H", "H"], "Mismatch in the atom list"
     assert obj.atomic_numbers == [1, 1], "Mismatch in the atomic number list"
 
-    assert_array_almost_equal(obj.origin, [0.0, 0.0, 0.0], decimal=6)
-    assert_array_almost_equal(obj.axes[0], [1.0, 0.0, 0.0], decimal=6)
-    assert_array_almost_equal(obj.axes[1], [0.0, 1.0, 0.0], decimal=6)
-    assert_array_almost_equal(obj.axes[2], [0.0, 0.0, 1.0], decimal=6)
+    assert_array_almost_equal(obj.origin_bohr, [0.0, 0.0, 0.0], decimal=6)
+    assert_array_almost_equal(obj.axes_bohr[0], [1.0, 0.0, 0.0], decimal=6)
+    assert_array_almost_equal(obj.axes_bohr[1], [0.0, 1.0, 0.0], decimal=6)
+    assert_array_almost_equal(obj.axes_bohr[2], [0.0, 0.0, 1.0], decimal=6)
     assert_array_almost_equal(obj.charges, [-0.01, 0.01], decimal=6)
     assert_array_almost_equal(obj.cube, expected_cube, decimal=6)
 
@@ -132,10 +132,10 @@ def test_Cube_scale():
     assert obj.atoms == ["H", "H"], "Mismatch in the atom list"
     assert obj.atomic_numbers == [1, 1], "Mismatch in the atomic number list"
 
-    assert_array_almost_equal(obj.origin, [0.0, 0.0, 0.0], decimal=6)
-    assert_array_almost_equal(obj.axes[0], [1.0, 0.0, 0.0], decimal=6)
-    assert_array_almost_equal(obj.axes[1], [0.0, 1.0, 0.0], decimal=6)
-    assert_array_almost_equal(obj.axes[2], [0.0, 0.0, 1.0], decimal=6)
+    assert_array_almost_equal(obj.origin_bohr, [0.0, 0.0, 0.0], decimal=6)
+    assert_array_almost_equal(obj.axes_bohr[0], [1.0, 0.0, 0.0], decimal=6)
+    assert_array_almost_equal(obj.axes_bohr[1], [0.0, 1.0, 0.0], decimal=6)
+    assert_array_almost_equal(obj.axes_bohr[2], [0.0, 0.0, 1.0], decimal=6)
     assert_array_almost_equal(obj.charges, [-0.01, 0.01], decimal=6)
 
     assert_array_almost_equal(obj.cube, expected_cube, decimal=6)
@@ -166,10 +166,10 @@ def test_Cube___add__():
     assert obj.atoms == ["H", "H"], "Mismatch in the atom list"
     assert obj.atomic_numbers == [1, 1], "Mismatch in the atomic number list"
 
-    assert_array_almost_equal(obj.origin, [0.0, 0.0, 0.0], decimal=6)
-    assert_array_almost_equal(obj.axes[0], [1.0, 0.0, 0.0], decimal=6)
-    assert_array_almost_equal(obj.axes[1], [0.0, 1.0, 0.0], decimal=6)
-    assert_array_almost_equal(obj.axes[2], [0.0, 0.0, 1.0], decimal=6)
+    assert_array_almost_equal(obj.origin_bohr, [0.0, 0.0, 0.0], decimal=6)
+    assert_array_almost_equal(obj.axes_bohr[0], [1.0, 0.0, 0.0], decimal=6)
+    assert_array_almost_equal(obj.axes_bohr[1], [0.0, 1.0, 0.0], decimal=6)
+    assert_array_almost_equal(obj.axes_bohr[2], [0.0, 0.0, 1.0], decimal=6)
     assert_array_almost_equal(obj.charges, [-0.01, 0.01], decimal=6)
 
     assert_array_almost_equal(obj.cube, expected_cube, decimal=6)
@@ -199,10 +199,10 @@ def test_Cube___sub__():
     assert obj.atoms == ["H", "H"], "Mismatch in the atom list"
     assert obj.atomic_numbers == [1, 1], "Mismatch in the atomic number list"
 
-    assert_array_almost_equal(obj.origin, [0.0, 0.0, 0.0], decimal=6)
-    assert_array_almost_equal(obj.axes[0], [1.0, 0.0, 0.0], decimal=6)
-    assert_array_almost_equal(obj.axes[1], [0.0, 1.0, 0.0], decimal=6)
-    assert_array_almost_equal(obj.axes[2], [0.0, 0.0, 1.0], decimal=6)
+    assert_array_almost_equal(obj.origin_bohr, [0.0, 0.0, 0.0], decimal=6)
+    assert_array_almost_equal(obj.axes_bohr[0], [1.0, 0.0, 0.0], decimal=6)
+    assert_array_almost_equal(obj.axes_bohr[1], [0.0, 1.0, 0.0], decimal=6)
+    assert_array_almost_equal(obj.axes_bohr[2], [0.0, 0.0, 1.0], decimal=6)
     assert_array_almost_equal(obj.charges, [-0.01, 0.01], decimal=6)
 
     assert_array_almost_equal(obj.cube, expected_cube, decimal=6)
@@ -231,10 +231,10 @@ def test_Cube___mul__():
     assert obj.atoms == ["H", "H"], "Mismatch in the atom list"
     assert obj.atomic_numbers == [1, 1], "Mismatch in the atomic number list"
 
-    assert_array_almost_equal(obj.origin, [0.0, 0.0, 0.0], decimal=6)
-    assert_array_almost_equal(obj.axes[0], [1.0, 0.0, 0.0], decimal=6)
-    assert_array_almost_equal(obj.axes[1], [0.0, 1.0, 0.0], decimal=6)
-    assert_array_almost_equal(obj.axes[2], [0.0, 0.0, 1.0], decimal=6)
+    assert_array_almost_equal(obj.origin_bohr, [0.0, 0.0, 0.0], decimal=6)
+    assert_array_almost_equal(obj.axes_bohr[0], [1.0, 0.0, 0.0], decimal=6)
+    assert_array_almost_equal(obj.axes_bohr[1], [0.0, 1.0, 0.0], decimal=6)
+    assert_array_almost_equal(obj.axes_bohr[2], [0.0, 0.0, 1.0], decimal=6)
     assert_array_almost_equal(obj.charges, [-0.01, 0.01], decimal=6)
 
     assert_array_almost_equal(obj.cube, expected_cube, decimal=6)

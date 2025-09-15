@@ -239,3 +239,4 @@ proton_hydration_free_energy = -270.29 # Proton solvation free energy in water (
 ## Collection of conversion factors
 Eh_to_kcalmol = 627.5
 kcal_to_J = 4184.
+bohr_to_angstrom = 0.529177210544
