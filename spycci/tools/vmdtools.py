@@ -36,11 +36,13 @@ class VMDRenderer:
         The list of 3 rotation angles (from 0 to 360°) defyning subsequent rotations around
         the X, Y and X axis. (default: [0., 0., 0.] no rotation is applied).
     shadows: bool
-        If set to `True` will enable the vmd shadows option
+        If set to `True` will enable the vmd shadows option. (default: True)
     ambientocclusion: bool
-        If set to `True` will enable the vmd ambientocclusion option
+        If set to `True` will enable the vmd ambientocclusion option. (default: True)
     dof: bool
-        If set to `True` will enable the vmd dof option
+        If set to `True` will enable the vmd dof option. (default: True)
+    show_axes: bool
+        If set to `True` will show the axes representation in the render window. (default: False)
     VMD_PATH: str
         The path to the vmd executable. Is set to `None` (default), will automatically search `vmd`
         in the system PATH.
@@ -64,6 +66,7 @@ class VMDRenderer:
         shadows: bool = True,
         ambientocclusion: bool = True,
         dof: bool = True,
+        show_axes: bool = False,
         VMD_PATH: Optional[str] = None,
     ) -> None:
         
@@ -71,6 +74,7 @@ class VMDRenderer:
         self.shadows: bool = shadows
         self.ambientocclusion: bool = ambientocclusion
         self.dof: bool = dof
+        self.show_axes: bool = show_axes
 
         # Define the attributes to be set using properties
         self.__scale: float = None
@@ -552,9 +556,12 @@ class VMDRenderer:
         script = ""
         script += "display projection Orthographic\n"
         script += "display resetview\n"
-        script += "axes location Off\n"
         script += "color Display Background white\n"
         script += "color Name C black\n"
+
+        if self.show_axes is False:
+            script += "axes location Off\n"
+
         return script
 
     def _tcl_plot_backbone(self) -> str:
