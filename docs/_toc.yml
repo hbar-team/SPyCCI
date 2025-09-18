@@ -11,6 +11,7 @@ chapters:
     - file: Guide/run
     - file: Guide/functions
     - file: Guide/tools
+    - file: Guide/molecular_visualization
 
 - file: api
   sections:

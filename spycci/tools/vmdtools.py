@@ -1,287 +1,647 @@
+import sh, os, shutil
+
 from tempfile import NamedTemporaryFile as tmp
+from tempfile import mkdtemp
 
 from os import system
-from os.path import join, basename
+from os.path import join, basename, isfile
+from typing import List, Optional, Union
 
 from spycci.core.dependency_finder import locate_vmd
+from spycci.tools.cubetools import Cube
+from spycci.systems import System
 
 
-def render_fukui_cube(
-    cubfile: str,
-    isovalue: float = 0.003,
-    include_negative: bool = False,
-    resolution: int = 4800,
-    shadows: bool = True,
-    ambientocclusion: bool = True,
-    dof: bool = True,
-    VMD_PATH: str = None,
-) -> None:
+class VMDRenderer:
     """
-    Given the path to a Fukui function cube file saves a `.bmp` render the volumetric Fukui
-    function.
+    The `VMDRenderer` class is a simple wrapper developed around the Visual Molecular Dynamics (VMD)
+    software. The class allows the user to easily generate images and renders of molecules and cube files.
+    Once an instance of the `VMDRenderer` is created, the user can use its render functionality through
+    the provided built-in methods.
 
     Arguments
     ---------
-    cubefile: str
-        The path to the `.fukui.cube` file that must be rendered.
-    isovalue: float
-        The isovalue at which the contour must be plotted (default: 0.003).
-    include_negative: bool
-        If set to True, will render also the negative part of the Fukui function. (default:
-        False)
-    resolution: int
-        The resolution of the output image (default: 4800).
+    resolution: Union[int, List[int]]
+        The resolution of the output image. This argument accepts either a single integer, which sets the
+        same resolution for both the X and Y axes (producing a square image), or a list of two integers,
+        which independently specify the resolution along the X (width) and Y (height) axes (producing a
+        rectangular image). (default: 800).
+    scale: float
+        Scales the frame zoom according to the user specified factor (default: 1. no
+        zoom is applied)
+    xyz_translation: List[float]
+        A list of three float values defining the translation vector (X, Y, Z) to apply to the
+        object. (default: [0., 0., 0.] no translation is applied).
+    xyx_rotation: List[float]
+        The list of 3 rotation angles (from 0 to 360°) defyning subsequent rotations around
+        the X, Y and X axis. (default: [0., 0., 0.] no rotation is applied).
     shadows: bool
-        If set to True will enable the vmd shadows option
+        If set to `True` will enable the vmd shadows option
     ambientocclusion: bool
-        If set to True will enable the vmd ambientocclusion option
+        If set to `True` will enable the vmd ambientocclusion option
     dof: bool
-        If set to True will enable the vmd dof option
+        If set to `True` will enable the vmd dof option
     VMD_PATH: str
-        The path to the vmd folder. Is set to None (default), will automatically search vmd
+        The path to the vmd executable. Is set to `None` (default), will automatically search `vmd`
         in the system PATH.
+
+    Raises
+    ------
+    FileNotFoundError
+        Exception raised if the user provided `VMD_PATH` is invalid.
+    RuntimeError
+        Exception raised if either the `vmd` program or the Tachyon ray tracer are not found.
+    ValueError
+        Exception raised if scale or xyx rotation angles are not properly formatted.
     """
 
-    vmd_root = VMD_PATH if VMD_PATH is not None else locate_vmd().rstrip("/bin/vmd")
-    tachyon_path = join(vmd_root, "lib/vmd/tachyon_LINUXAMD64")
+    def __init__(
+        self,
+        resolution: Union[int, List[int]] = 800,
+        scale: float = 1.0,
+        xyz_translation: List[float] = [0.0, 0.0, 0.0],
+        xyx_rotation: List[float] = [0.0, 0.0, 0.0],
+        shadows: bool = True,
+        ambientocclusion: bool = True,
+        dof: bool = True,
+        VMD_PATH: Optional[str] = None,
+    ) -> None:
+        
+        # Store basic rendering settings
+        self.shadows: bool = shadows
+        self.ambientocclusion: bool = ambientocclusion
+        self.dof: bool = dof
 
-    root_name = basename(cubfile).rstrip(".fukui.cube")
-
-    with tmp(mode="w+") as vmd_script:
-
-        vmd_script.write(
-            f"""
-            mol addrep 0
-            display projection Orthographic
-            display resetview
-            mol new {cubfile} type {{cube}} first 0 last -1 step 1 waitfor 1 volsets {{0 }}
-            animate style Loop
-            axes location Off
-            mol modstyle 0 0 CPK 1.000000 0.300000 12.000000 12.000000
-            mol color Name
-            mol representation CPK 1.000000 0.300000 150.000000 12.000000
-            mol selection all
-            mol material Opaque
-
-            mol addrep 0
-            mol modcolor 1 0 ColorID 1
-            mol modstyle 1 0 Isosurface {isovalue} 0 0 0 1 1
-            mol modmaterial 1 0 Translucent
-            mol scaleminmax 0 1 0.000000 1.000000
-            
-            display cuemode Linear
-            """
-        )
-
-        if include_negative:
-            vmd_script.write(
-                f"""
-                mol addrep 0
-                mol modcolor 2 0 ColorID 0
-                mol modstyle 2 0 Isosurface {-isovalue} 0 0 0 1 1
-                mol modmaterial 2 0 Translucent
-                mol scaleminmax 0 2 -1.000000 0.000000
-                """
+        # Define the attributes to be set using properties
+        self.__scale: float = None
+        self.__resolution: List[int] = None
+        self.__xyz_translation: List[float] = None
+        self.__xyx_rotation: List[float] = None
+        
+        # Set the protected attributes using propery setters
+        self.scale = scale
+        self.resolution = resolution
+        self.xyz_translation = xyz_translation
+        self.xyx_rotation = xyx_rotation
+        
+        # Search for the VMD folder and set the vmd root variable
+        self.__vmd_root = None
+        if VMD_PATH and isfile(VMD_PATH) is False:
+            raise FileNotFoundError(
+                f"The VMD_PATH {VMD_PATH} does not point to a valid executable."
             )
 
-        if shadows:
-            vmd_script.write("display shadows on\n")
+        elif VMD_PATH:
+            self.__vmd_root = locate_vmd(VMD_PATH).removesuffix("/bin/vmd")
 
-        if ambientocclusion:
-            vmd_script.write("display ambientocclusion on\n")
+        else:
+            self.__vmd_root = locate_vmd().removesuffix("/bin/vmd")
 
-        if dof:
-            vmd_script.write("display dof on")
+        # Check the availability of the tachyon ray tracer
+        self.__tachyon_path = join(self.__vmd_root, "lib/vmd/tachyon_LINUXAMD64")
+        if isfile(self.__tachyon_path) is False:
+            raise RuntimeError(
+                f"Cannot locate the Tachyon ray tracer (required by VMD)."
+            )
 
-        vmd_script.write(
-            f"""
-            color Display Background white
-            color Element C black
-            mol modcolor 0 0 Element
-            render Tachyon {root_name}.dat "{tachyon_path}" -fullshade -aasamples 12 %s -format BMP -res {resolution} {resolution} -o {root_name}.bmp
-            exit
-            """
+    @property
+    def scale(self) -> float:
+        """
+        The float value setting the frame zoom. The value 1. is set by VMD on startup
+        to render the whole molecule in the unrotated frame.
+
+        Return
+        ------
+        float
+            The scale of the frame.
+        """
+        return self.__scale
+
+    @scale.setter
+    def scale(self, value: float) -> None:
+        if value <= 0.0:
+            raise ValueError(
+                "The VMD frame scale factor must be a non-zero positive float."
+            )
+        self.__scale: float = value
+
+    @property
+    def xyz_translation(self) -> List[float]:
+        """
+        The list of three float values defining the translation vector (X, Y, Z) to apply to the
+        object.
+
+        Return
+        ------
+        List[float]
+            The translation vector.
+        """
+        return self.__xyz_translation
+
+    @xyz_translation.setter
+    def xyz_translation(self, value: List[float]) -> None:
+        if len(value) != 3:
+            raise ValueError("The translation vector must be a list of 3 float values.")
+        self.__xyz_translation: float = [float(v) for v in value]
+    
+
+    @property
+    def xyx_rotation(self) -> List[float]:
+        """
+        The list of 3 rotation angles (from 0 to 360°) defyning subsequent rotations around
+        the X, Y and X axis.
+
+        Return
+        ------
+        List[float]
+            The list of XYX rotation angles.
+        """
+        return self.__xyx_rotation
+
+    @xyx_rotation.setter
+    def xyx_rotation(self, value: List[float]) -> None:
+        if len(value) != 3:
+            raise ValueError("The XYX rotation must be a list of 3 float values.")
+        self.__xyx_rotation: float = [float(v) for v in value]
+
+    
+    @property
+    def resolution(self) -> List[int]:
+        """
+        The list of two integer values setting the XY resolution of the output image.
+
+        Returns
+        -------
+        List[int]
+            The list encoding the image resolution across the X and Y axes.
+        """
+        return self.__resolution
+    
+    @resolution.setter
+    def resolution(self, value: Union[int, List[int]]) -> None:
+
+        if isinstance(value, (list, tuple)) and len(value) == 2:
+            self.__resolution = [int(r) for r in value]
+        
+        elif isinstance(value, int):
+            self.__resolution = [value, value]
+        
+        else:
+            raise ValueError("Resolution must be either an int or a list of two integers.")
+        
+
+    ############################
+    # Core rendering functions #
+    ############################
+
+    def render_system_file(
+        self,
+        molecule_file: str,
+        filename: Optional[str] = None,
+    ) -> None:
+        """
+        Given the path to a molecule file (e.g. .xyz, .pdb) the function saves a `.bmp` render
+        of the molecular structure.
+
+        Arguments
+        ---------
+        molecule_file: str
+            The path to the file encoding the structure of the molecule.
+        filename: Optional[str]
+            The name, or the path, of the output `.bmp` file. If `None` (default) the output file
+            will be generated from the root of the input filename (e.g. `root.bmp` from `root.xyz`).
+        """
+        # Check if given file exists
+        if isfile(molecule_file) is False:
+            raise FileNotFoundError(f"Unable to find the {molecule_file} file.")
+
+        root_name = basename(molecule_file).rsplit(".", 1)[0]
+        script = self._tcl_script_preamble()
+
+        # Load the molecule from file and plot its backbone
+        script += f"mol new {molecule_file}\n"
+        script += self._tcl_plot_backbone()
+
+        filename = filename.removesuffix(".bmp") if filename is not None else root_name
+        self._render(script, filename)
+
+    def render_cube_file(
+        self,
+        cubefile: str,
+        isovalue: Optional[float] = None,
+        positive_color: int = 1,
+        negative_color: int = 0,
+        show_negative: bool = False,
+        filename: Optional[str] = None,
+    ) -> None:
+        """
+        Given the path to a generic `.cube` file, saves a `.bmp` render of the contained
+        volumetric data.
+
+        Arguments
+        ---------
+        cubefile: str
+            The path to the `.fukui.cube` file that must be rendered.
+        isovalue: Optional[float]
+            The isovalue at which the contour must be plotted. If set to `None` (default)
+            a proper isovalue will be set automatically as the 20% of the maximum voxel value.
+        positive_color: int
+            The color of the positive phase of the plot.
+        negative_color: int
+            The color of the positive phase of the plot.
+        show_negative: bool
+            If set to True, will render also the negative part of the Fukui function. (default:
+            False)
+        filename: Optional[str]
+            The name, or the path, of the output `.bmp` file. If `None` (default) the output file
+            will be generated from the root of the input filename (e.g. `root.bmp` from `root.xyz`).
+        """
+        script = self._tcl_script_preamble()
+
+        script += self._tcl_cube_script(
+            cubefile,
+            isovalue=isovalue,
+            positive_color=positive_color,
+            negative_color=negative_color,
+            show_negative=show_negative,
         )
 
-        vmd_script.seek(0)
-        system(f"vmd -dispdev text -e {vmd_script.name}")
+        root_name = basename(cubefile).removesuffix(".cube")
+        filename = filename.removesuffix(".bmp") if filename is not None else root_name
+        self._render(script, filename)
 
+    #########################################
+    # Interface functions to SPyCCI objects #
+    #########################################
 
-def render_condensed_fukui(
-    cubfile: str,
-    resolution: int = 4800,
-    shadows: bool = True,
-    ambientocclusion: bool = True,
-    dof: bool = True,
-    VMD_PATH: str = None,
-) -> None:
-    """
-    Given the path to a Fukui function cube file saves a `.bmp` render of the condensed Fukui
-    functions.
+    def render_system(self, mol: System, filename: Optional[str] = None) -> None:
+        """
+        Given a `System` object the function saves a `.bmp` render of its molecular structure.
 
-    Arguments
-    ---------
-    cubefile: str
-        The path to the `.fukui.cube` file that must be rendered.
-    resolution: int
-        The resolution of the output image (default: 4800).
-    shadows: bool
-        If set to True will enable the vmd shadows option
-    ambientocclusion: bool
-        If set to True will enable the vmd ambientocclusion option
-    dof: bool
-        If set to True will enable the vmd dof option
-    VMD_PATH: str
-        The path to the vmd folder. Is set to None (default), will automatically search vmd
-        in the system PATH.
-    """
-    vmd_root = VMD_PATH if VMD_PATH is not None else locate_vmd().rstrip("/bin/vmd")
-    tachyon_path = join(vmd_root, "lib/vmd/tachyon_LINUXAMD64")
+        Arguments
+        ---------
+        mol: System
+            The `System` object to render.
+        filename: Optional[str]
+            The name, or the path, of the output `.bmp` file. If `None` (default) the output file
+            will be generated from the root of the input filename (e.g. `root.bmp` from `root.xyz`).
+        """
+        tdir = mkdtemp(prefix=f"{mol.name}_vmd_", dir=os.getcwd())
 
-    root_name = basename(cubfile).rstrip(".fukui.cube")
+        with sh.pushd(tdir):
 
-    with tmp(mode="w+") as vmd_script:
+            if filename is None:
+                filename = f"{mol.name}_{mol.charge}_{mol.spin}.bmp"
 
-        vmd_script.write(
-            f"""
-            mol addrep 0
-            display projection Orthographic
-            mol new {cubfile} type {{cube}} first 0 last -1 step 1 waitfor 1 volsets {{0 }}
-            """
+            elif filename.endswith(".dmp"):
+                filename += ".bmp"
+
+            mol.geometry.write_xyz(f"{mol.name}.xyz")
+            self.render_system_file(f"{mol.name}.xyz", filename="output.bmp")
+            shutil.copy("output.bmp", f"../{filename}")
+            shutil.rmtree(tdir)
+
+    def render_cube(
+        self,
+        cube: Cube,
+        filename: str,
+        isovalue: Optional[float] = None,
+        positive_color: int = 1,
+        negative_color: int = 0,
+        show_negative: bool = False,
+    ) -> None:
+        """
+        Given a `Cube` object the function saves a `.bmp` render of the contained
+        volumetric data.
+
+        Arguments
+        ---------
+        cube: Cube
+            The `Cube` object encoding the volumetric data.
+        filename: str
+            The name, or the path, of the output `.bmp` file (Required because `Cube` objects
+            have no pre-assigned names).
+        isovalue: Optional[float]
+            The isovalue at which the contour must be plotted. If set to `None` (default)
+            a proper isovalue will be set automatically as the 20% of the maximum voxel value.
+        positive_color: int
+            The color of the positive phase of the plot.
+        negative_color: int
+            The color of the positive phase of the plot.
+        show_negative: bool
+            If set to True, will render also the negative part of the Fukui function. (default:
+            False)
+        """
+        root_name = filename.removesuffix(".bmp")
+
+        tdir = mkdtemp(prefix=f"{root_name}_vmd_", dir=os.getcwd())
+
+        with sh.pushd(tdir):
+
+            cube.save(f"{root_name}.cube")
+
+            self.render_cube_file(
+                f"{root_name}.cube",
+                isovalue=isovalue,
+                positive_color=positive_color,
+                negative_color=negative_color,
+                show_negative=show_negative,
+                filename="output.bmp",
+            )
+
+            shutil.copy("output.bmp", f"../{root_name}.bmp")
+            shutil.rmtree(tdir)
+
+    #############################
+    # Format specific functions #
+    #############################
+
+    def render_fukui_cube(
+        self,
+        cubefile: str,
+        isovalue: Optional[float] = None,
+        show_negative: bool = False,
+        filename: Optional[str] = None,
+    ) -> None:
+        """
+        Given the path to a Fukui function cube file saves a `.bmp` render the volumetric Fukui
+        function.
+
+        Arguments
+        ---------
+        cubefile: str
+            The path to the `.fukui.cube` file that must be rendered.
+        isovalue: Optional[float]
+            The isovalue at which the contour must be plotted. If set to `None` (default)
+            a proper isovalue will be set automatically as the 20% of the maximum voxel value.
+        show_negative: bool
+            If set to True, will render also the negative part of the Fukui function. (default:
+            False)
+        filename: Optional[str]
+            The name, or the path, of the output `.bmp` file. If `None` (default) the output file
+            will be generated from the root of the input filename (e.g. `root.bmp` from `root.xyz`).
+        """
+        root_name = basename(cubefile).removesuffix(".fukui.cube")
+        filename = filename.removesuffix(".bmp") if filename is not None else root_name
+
+        self.render_cube_file(
+            cubefile,
+            isovalue=isovalue,
+            positive_color=1,
+            negative_color=0,
+            show_negative=show_negative,
+            filename=filename,
         )
 
-        vmd_script.write(
-            """
-            animate style Loop
-            mol selection all
-            mol color Charge
-            mol representation Licorice 0.1 20.000000 20.000000
-            mol material Opaque
-            mol modrep 0 0
-            color Display Background white
-            color scale method BWR
-            display cuemode Linear
-            axes location Off
+    def render_spin_density_cube(
+        self,
+        cubefile: str,
+        isovalue: Optional[float] = None,
+        filename: Optional[str] = None,
+    ) -> None:
+        """
+        Given the path to an ORCA spin density cube file saves a `.bmp` render the function.
 
-            label delete Atoms all
-            set all [atomselect 0 "all"]
-            set i 0
-            foreach atom [$all list] {
-            label add Atoms "0/$atom"
-            label textformat Atoms $i {%q}
-            label textoffset Atoms $i { 0.025  0.0  }
-            incr i
-            }
+        Arguments
+        ---------
+        cubefile: str
+            The path to the `.fukui.cube` file that must be rendered.
+        isovalue: Optional[float]
+            The isovalue at which the contour must be plotted. If set to `None` (default)
+            a proper isovalue will be set automatically as the 20% of the maximum voxel value.
+        xyx_rotation: Optional[tuple]
+            The tuple of 3 rotation angles (from 0 to 360°) defyning subsequent rotations around
+            the X, Y and X axis. If None (default), no rotation is applied.
+        filename: Optional[str]
+            The name, or the path, of the output `.bmp` file. If `None` (default) the output file will
+            be generated from the root of the input filename (e.g. `root_condensed.bmp` from `root.xyz`).
+        """
+        root_name = basename(cubefile).removesuffix(".spindens.cube")
+        filename = filename.removesuffix(".bmp") if filename is not None else root_name
 
-            label textsize 1
-            label textthickness 3
-            color Labels Atoms black
-            display resetview
-            """
+        self.render_cube_file(
+            cubefile,
+            isovalue=isovalue,
+            positive_color=31,
+            negative_color=26,
+            show_negative=True,
+            filename=filename,
         )
 
-        if shadows:
-            vmd_script.write("display shadows on\n")
+    def render_condensed_fukui(
+        self,
+        cubefile: str,
+        filename: Optional[str] = None,
+    ) -> None:
+        """
+        Given the path to a Fukui function cube file saves a `.bmp` render of the condensed Fukui
+        functions.
 
-        if ambientocclusion:
-            vmd_script.write("display ambientocclusion on\n")
+        Arguments
+        ---------
+        cubefile: str
+            The path to the `.fukui.cube` file that must be rendered.
+        filename: Optional[str]
+            The name, or the path, of the output `.bmp` file. If `None` (default) the output file will
+            be generated from the root of the input filename (e.g. `root_condensed.bmp` from `root.xyz`).
+        """
+        # Check if given file exists
+        if isfile(cubefile) is False:
+            raise FileNotFoundError(f"Unable to find the {cubefile} file.")
 
-        if dof:
-            vmd_script.write("display dof on")
+        root_name = basename(cubefile).removesuffix(".fukui.cube")
+        script = self._tcl_script_preamble()
 
-        vmd_script.write(
-            f"""
-            render Tachyon {root_name}_condensed.dat "{tachyon_path}" -fullshade -aasamples 12 %s -format BMP -res {resolution} {resolution} -o {root_name}_condensed.bmp
-            exit
-            """
-        )
+        # Load the molecule from the cube file, plot its backbone using Licorice style
+        # and color it using the data encoding the condensed Fukui values (saved as partial charges)
+        script += f"mol new {cubefile} type {{cube}} first 0 last -1 step 1 waitfor 1 volsets {{0 }}\n"
+        script += "mol addrep 0\n"
+        script += "mol modstyle 0 0 Licorice 0.1 20.000000 20.000000\n"
+        script += "color scale method BWR\n"
+        script += "mol modcolor 0 0 Charge\n"
+        script += "mol color Charge\n"
 
-        vmd_script.seek(0)
-        system(f"vmd -dispdev text -e {vmd_script.name}")
+        # Add labels near each atom with the condensed Fukui value
+        script += "label delete Atoms all\n"
+        script += """set all [atomselect 0 "all"]\n"""
+        script += "set i 0\n"
+        script += "foreach atom [$all get index] {\n"
+        script += """    label add Atoms "0/$atom"\n"""
+        script += """    label textformat Atoms $i {  (%e) %q}\n"""
+        script += """    label textoffset Atoms $i {1.0 0.0}\n"""
+        script += """    incr i\n"""
+        script += "}\n"
+        script += "label textsize 1.\n"
+        script += "label textthickness 2\n"
+        script += "color Labels Atoms black\n"
 
+        # Apply some final settings
+        script += "display cuemode Linear\n"
+        script += "mol selection all\n"
+        script += "mol material Opaque\n"
 
-def render_spin_density_cube(
-    cubfile: str,
-    isovalue: float = 0.005,
-    resolution: int = 4800,
-    shadows: bool = True,
-    ambientocclusion: bool = True,
-    dof: bool = True,
-    VMD_PATH: str = None,
-) -> None:
-    """
-    Given the path to a spin density cube file saves a `.bmp` render the function.
+        filename = filename.removesuffix(".bmp") if filename is not None else f"{root_name}_condensed"
 
-    Arguments
-    ---------
-    cubefile: str
-        The path to the `.fukui.cube` file that must be rendered.
-    isovalue: float
-        The isovalue at which the contour must be plotted (default: 0.003).
-    resolution: int
-        The resolution of the output image (default: 4800).
-    shadows: bool
-        If set to True will enable the vmd shadows option
-    ambientocclusion: bool
-        If set to True will enable the vmd ambientocclusion option
-    dof: bool
-        If set to True will enable the vmd dof option
-    VMD_PATH: str
-        The path to the vmd folder. Is set to None (default), will automatically search vmd
-        in the system PATH.
-    """
-    vmd_root = VMD_PATH if VMD_PATH is not None else locate_vmd().rstrip("/bin/vmd")
-    tachyon_path = join(vmd_root, "lib/vmd/tachyon_LINUXAMD64")
+        self._render(script, filename)
 
-    root_name = basename(cubfile).rstrip(".fukui.cube")
+    ####################
+    # Internal helpers #
+    ####################
 
-    with tmp(mode="w+") as vmd_script:
+    def _render(
+        self,
+        instructions: str,
+        output_name: str,
+    ) -> None:
+        """
+        Given a set of `vmd` instructions, run a render operation outputting a `.bmp`
+        image file.
 
-        vmd_script.write(
-            f"""
-            mol addrep 0
-            display projection Orthographic
-            display resetview
-            mol new {cubfile} type {{cube}} first 0 last -1 step 1 waitfor 1 volsets {{0 }}
-            animate style Loop
-            axes location Off
-            mol modstyle 0 0 CPK 1.000000 0.300000 12.000000 12.000000
-            mol color Name
-            mol representation CPK 1.000000 0.300000 150.000000 12.000000
-            mol selection all
-            mol material Opaque
-            mol addrep 0
-            mol modcolor 1 0 ColorID 31
-            mol modstyle 1 0 Isosurface {isovalue} 0 0 0 1 1
-            mol modmaterial 1 0 Translucent
-            mol scaleminmax 0 1 0.000000 1.000000
-            mol addrep 0
-            mol modcolor 2 0 ColorID 26
-            mol modstyle 2 0 Isosurface {-isovalue} 0 0 0 1 1
-            mol modmaterial 2 0 Translucent
-            mol scaleminmax 0 2 -1.000000 0.000000
-            display cuemode Linear
-            """
-        )
+        Arguments
+        ---------
+        instructions: str
+            The string encoding the operations to be executed by `vmd`.
+        output_name: str
+            The name of the output file (`output_name.bmp`).
+        """
 
-        if shadows:
-            vmd_script.write("display shadows on\n")
+        with tmp(mode="w+", suffix=".vmd") as vmd_script:
 
-        if ambientocclusion:
-            vmd_script.write("display ambientocclusion on\n")
+            vmd_script.write(instructions)
+            
+            # Apply translation vector 
+            vmd_script.write(f"translate by {self.__xyz_translation[0]} {self.__xyz_translation[1]} {self.__xyz_translation[2]}\n")
+            
+            # Uses an XYX rotation sequence following the proper Euler angle convention. 
+            # Rotations are around the camera (screen) axes, which change after each step. 
+            # Although the first and third axes are both X, they differ in orientation due 
+            # to the intermediate Y rotation, enabling full 3D rotation coverage.
+            vmd_script.write(f"rotate x by {self.__xyx_rotation[0]}\n")
+            vmd_script.write(f"rotate y by {self.__xyx_rotation[1]}\n")
+            vmd_script.write(f"rotate x by {self.__xyx_rotation[2]}\n")
+            
+            # Apply scale factor
+            vmd_script.write(f"scale by {self.__scale}\n")
 
-        if dof:
-            vmd_script.write("display dof on")
+            if self.shadows:
+                vmd_script.write("display shadows on\n")
+            if self.ambientocclusion:
+                vmd_script.write("display ambientocclusion on\n")
+            if self.dof:
+                vmd_script.write("display dof on\n")
 
-        vmd_script.write(
-            f"""
-            color Display Background white
-            color Element C black
-            mol modcolor 0 0 Element
-            render Tachyon {root_name}.dat "{tachyon_path}" -fullshade -aasamples 12 %s -format BMP -res {resolution} {resolution} -o {root_name}.bmp
-            exit
-            """
-        )
+            vmd_script.write(
+                f"""render Tachyon {output_name}.dat "{self.__tachyon_path}" -fullshade -aasamples 12 %s -format BMP -res {self.__resolution[0]} {self.__resolution[1]} -o {output_name}.bmp\n"""
+            )
+            vmd_script.write("exit\n")
 
-        vmd_script.seek(0)
-        system(f"vmd -dispdev text -e {vmd_script.name}")
+            vmd_script.seek(0)
+            system(f"vmd -dispdev text -e {vmd_script.name}")
+
+    def _tcl_script_preamble(self) -> str:
+        """
+        Generates a standard header for the VMD instructions script. The header
+        sets orthographic projection, removes axes and sets white background.
+        The preamble also sets the carbon color to black.
+
+        Returns
+        -------
+        str
+            The script encoding the script opening
+        """
+        script = ""
+        script += "display projection Orthographic\n"
+        script += "display resetview\n"
+        script += "axes location Off\n"
+        script += "color Display Background white\n"
+        script += "color Name C black\n"
+        return script
+
+    def _tcl_plot_backbone(self) -> str:
+        """
+        Generates the code required to plot the molecular backbone of a loaded mol object.
+
+        Returns
+        -------
+        str
+            The script encoding the backbone rendering.
+        """
+        script = ""
+        script += "mol selection all\n"
+        script += "mol addrep 0\n"
+        script += "mol modstyle 0 0 CPK 1.000000 0.300000 150.000000 12.000000\n"
+        script += "mol material Opaque\n"
+        script += "mol color Name\n"
+        return script
+
+    def _tcl_cube_script(
+        self,
+        cubefile: str,
+        isovalue: Optional[float] = None,
+        positive_color: int = 1,
+        negative_color: int = 0,
+        show_negative: bool = True,
+    ) -> str:
+        """
+        Generates a general script to render a cube file. The user can select the isovalue,
+        the color of each phase of the cube file and whether the negative phase is shown.
+
+        Arguments
+        ---------
+        cubefile: str
+            The path to the `.cube` file that must be rendered.
+        isovalue: Optional[float]
+            The isovalue at which the contour must be plotted. If set to `None` (default)
+            a proper isovalue will be set automatically as the 20% of the maximum voxel value.
+        positive_color: int
+            The color of the positive phase of the plot.
+        negative_color: int
+            The color of the positive phase of the plot.
+        show_negative: bool
+            If set to True will plot the negative part of the cube file.
+
+        Raises
+        ------
+        FileNotFoundError
+            Exception raised if the cube file cannot be found.
+
+        Return
+        ------
+        str
+            The script encoding the cube rendering
+        """
+        # Check if given file exists
+        if isfile(cubefile) is False:
+            raise FileNotFoundError(f"Unable to find the {cubefile} file.")
+
+        # If not specified by the user automatically compute a guess of the isovalue
+        if isovalue is None:
+            cube = Cube.from_file(cubefile)
+            cmax, cmin = cube.max, cube.min
+            isovalue = 0.2 * max(abs(cmax), abs(cmin))
+
+        script = ""
+
+        # Plot the molecular backbone
+        script += f"mol new {cubefile} type {{cube}} first 0 last -1 step 1 waitfor 1 volsets {{0 }}\n"
+        script += self._tcl_plot_backbone()
+
+        # Print positive part of the isosurface
+        script += "mol addrep 0\n"
+        script += f"mol modcolor 1 0 ColorID {positive_color}\n"
+        script += f"mol modstyle 1 0 Isosurface {isovalue} 0 0 0 1 1\n"
+        script += "mol modmaterial 1 0 Translucent\n"
+        script += "mol scaleminmax 0 1 0.000000 1.000000\n"
+
+        # Print negative part of the isosurface
+        if show_negative is True:
+            script += "mol addrep 0\n"
+            script += f"mol modcolor 2 0 ColorID {negative_color}\n"
+            script += f"mol modstyle 2 0 Isosurface {-isovalue} 0 0 0 1 1\n"
+            script += "mol modmaterial 2 0 Translucent\n"
+            script += "mol scaleminmax 0 2 -1.000000 0.000000\n"
+
+        # Apply some final settings
+        script += "display cuemode Linear\n"
+
+        return script

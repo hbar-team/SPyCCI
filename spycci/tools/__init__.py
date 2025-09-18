@@ -10,6 +10,4 @@ from spycci.tools.xyz2mol import maxdist
 
 from spycci.tools.reorderenergies import reorder_energies
 
-from spycci.tools.vmdtools import render_fukui_cube
-from spycci.tools.vmdtools import render_condensed_fukui
-from spycci.tools.vmdtools import render_spin_density_cube
+from spycci.tools.vmdtools import VMDRenderer
