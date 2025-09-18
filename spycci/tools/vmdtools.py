@@ -92,10 +92,10 @@ class VMDRenderer:
             )
 
         elif VMD_PATH:
-            self.__vmd_root = locate_vmd(VMD_PATH).rstrip("/bin/vmd")
+            self.__vmd_root = locate_vmd(VMD_PATH).removesuffix("/bin/vmd")
 
         else:
-            self.__vmd_root = locate_vmd().rstrip("/bin/vmd")
+            self.__vmd_root = locate_vmd().removesuffix("/bin/vmd")
 
         # Check the availability of the tachyon ray tracer
         self.__tachyon_path = join(self.__vmd_root, "lib/vmd/tachyon_LINUXAMD64")
@@ -222,7 +222,7 @@ class VMDRenderer:
         script += f"mol new {molecule_file}\n"
         script += self._tcl_plot_backbone()
 
-        filename = filename.rstrip(".bmp") if filename is not None else root_name
+        filename = filename.removesuffix(".bmp") if filename is not None else root_name
         self._render(script, filename)
 
     def render_cube_file(
@@ -266,8 +266,8 @@ class VMDRenderer:
             show_negative=show_negative,
         )
 
-        root_name = basename(cubefile).rstrip(".cube")
-        filename = filename.rstrip(".bmp") if filename is not None else root_name
+        root_name = basename(cubefile).removesuffix(".cube")
+        filename = filename.removesuffix(".bmp") if filename is not None else root_name
         self._render(script, filename)
 
     #########################################
@@ -332,7 +332,7 @@ class VMDRenderer:
             If set to True, will render also the negative part of the Fukui function. (default:
             False)
         """
-        root_name = filename.rstrip(".bmp")
+        root_name = filename.removesuffix(".bmp")
 
         tdir = mkdtemp(prefix=f"{root_name}_vmd_", dir=os.getcwd())
 
@@ -381,8 +381,8 @@ class VMDRenderer:
             The name, or the path, of the output `.bmp` file. If `None` (default) the output file
             will be generated from the root of the input filename (e.g. `root.bmp` from `root.xyz`).
         """
-        root_name = basename(cubefile).rstrip(".fukui.cube")
-        filename = filename.rstrip(".bmp") if filename is not None else root_name
+        root_name = basename(cubefile).removesuffix(".fukui.cube")
+        filename = filename.removesuffix(".bmp") if filename is not None else root_name
 
         self.render_cube_file(
             cubefile,
@@ -416,8 +416,8 @@ class VMDRenderer:
             The name, or the path, of the output `.bmp` file. If `None` (default) the output file will
             be generated from the root of the input filename (e.g. `root_condensed.bmp` from `root.xyz`).
         """
-        root_name = basename(cubefile).rstrip(".spindens.cube")
-        filename = filename.rstrip(".bmp") if filename is not None else root_name
+        root_name = basename(cubefile).removesuffix(".spindens.cube")
+        filename = filename.removesuffix(".bmp") if filename is not None else root_name
 
         self.render_cube_file(
             cubefile,
@@ -449,7 +449,7 @@ class VMDRenderer:
         if isfile(cubefile) is False:
             raise FileNotFoundError(f"Unable to find the {cubefile} file.")
 
-        root_name = basename(cubefile).rstrip(".fukui.cube")
+        root_name = basename(cubefile).removesuffix(".fukui.cube")
         script = self._tcl_script_preamble()
 
         # Load the molecule from the cube file, plot its backbone using Licorice style
@@ -480,7 +480,7 @@ class VMDRenderer:
         script += "mol selection all\n"
         script += "mol material Opaque\n"
 
-        filename = filename.rstrip(".bmp") if filename is not None else f"{root_name}_condensed"
+        filename = filename.removesuffix(".bmp") if filename is not None else f"{root_name}_condensed"
 
         self._render(script, filename)
 
