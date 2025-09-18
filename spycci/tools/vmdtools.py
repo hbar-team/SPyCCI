@@ -509,10 +509,18 @@ class VMDRenderer:
 
             vmd_script.write(instructions)
             
+            # Apply translation vector 
             vmd_script.write(f"translate by {self.__xyz_translation[0]} {self.__xyz_translation[1]} {self.__xyz_translation[2]}\n")
+            
+            # Uses an XYX rotation sequence following the proper Euler angle convention. 
+            # Rotations are around the camera (screen) axes, which change after each step. 
+            # Although the first and third axes are both X, they differ in orientation due 
+            # to the intermediate Y rotation, enabling full 3D rotation coverage.
             vmd_script.write(f"rotate x by {self.__xyx_rotation[0]}\n")
             vmd_script.write(f"rotate y by {self.__xyx_rotation[1]}\n")
             vmd_script.write(f"rotate x by {self.__xyx_rotation[2]}\n")
+            
+            # Apply scale factor
             vmd_script.write(f"scale by {self.__scale}\n")
 
             if self.shadows:

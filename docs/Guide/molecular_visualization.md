@@ -72,6 +72,12 @@ Please notice how the `scale` argument has been set to `1.5` to zoom while a rot
 :align: center
 ```
 
+
+:::{admonition} Notes about rotations
+:class: info
+The current implementation of the `VMDRendered` class uses an XYX rotation sequence, following the convention of proper Euler angles. Unlike intrinsic rotations tied to the molecular frame, these rotations are applied around the camera (screen) axes, which change orientation after each step. As a result, the second application of the X-axis rotation occurs around a different orientation than the first, due to the intermediate Y-axis rotation. This sequence allows representation of arbitrary 3D orientations, despite the repeated axis label.
+:::
+
 <h4> Rendering a generic <code>.cube</code> file </h4>
 
 Rendering of a generic cube file can be achieved using the `render_cube_file()` function of the `VMDRenderer` class. The function, that can be called by simply providing the name of the cube file, can be set to render positive and negative regions of volumetric data with a user specified `isovalue`. If the isovalue is not explicilty indicated a default value will be computed as the 20% of the maximum voxel value (in absolute values). Additional features such as the color of the positive and negative reagions, whether to show the negative part of the cube or the filename of the output file, can be set by the user using the built in keywords.
