@@ -10,7 +10,7 @@ from spycci.tools.cubetools import Cube
 TEST_DIR = dirname(abspath(__file__))
 
 
-# Test the `Cube` class `__init__` mathod
+# Test the `Cube` class `__init__` method
 def test_Cube___init__():
 
     try:

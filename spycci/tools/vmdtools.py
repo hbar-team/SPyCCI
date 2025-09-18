@@ -5,7 +5,7 @@ from tempfile import mkdtemp
 
 from os import system
 from os.path import join, basename, isfile
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from spycci.core.dependency_finder import locate_vmd
 from spycci.tools.cubetools import Cube
@@ -21,11 +21,17 @@ class VMDRenderer:
 
     Arguments
     ---------
-    resolution: int
-        The resolution of the output image (default: 800).
+    resolution: Union[int, List[int]]
+        The resolution of the output image. This argument accepts either a single integer, which sets the
+        same resolution for both the X and Y axes (producing a square image), or a list of two integers,
+        which independently specify the resolution along the X (width) and Y (height) axes (producing a
+        rectangular image). (default: 800).
     scale: float
         Scales the frame zoom according to the user specified factor (default: 1. no
         zoom is applied)
+    xyz_translation: List[float]
+        A list of three float values defining the translation vector (X, Y, Z) to apply to the
+        object. (default: [0., 0., 0.] no translation is applied).
     xyx_rotation: List[float]
         The list of 3 rotation angles (from 0 to 360°) defyning subsequent rotations around
         the X, Y and X axis. (default: [0., 0., 0.] no rotation is applied).
@@ -51,31 +57,33 @@ class VMDRenderer:
 
     def __init__(
         self,
-        resolution: int = 800,
+        resolution: Union[int, List[int]] = 800,
         scale: float = 1.0,
+        xyz_translation: List[float] = [0.0, 0.0, 0.0],
         xyx_rotation: List[float] = [0.0, 0.0, 0.0],
         shadows: bool = True,
         ambientocclusion: bool = True,
         dof: bool = True,
         VMD_PATH: Optional[str] = None,
     ) -> None:
-
-        # Check and set the user provided scale
-        if scale <= 0.0:
-            raise ValueError("Frame scale factor must be a non-zero positive float.")
-        self.__scale: float = scale
-
-        # Check and set the user provided frame orientation
-        if len(xyx_rotation) != 3:
-            raise ValueError("The XYX rotation must be a list of 3 float values.")
-        self.__xyx_rotation: float = [float(v) for v in xyx_rotation]
-
+        
         # Store basic rendering settings
-        self.resolution: int = resolution
         self.shadows: bool = shadows
         self.ambientocclusion: bool = ambientocclusion
         self.dof: bool = dof
 
+        # Define the attributes to be set using properties
+        self.__scale: float = None
+        self.__resolution: List[int] = None
+        self.__xyz_translation: List[float] = None
+        self.__xyx_rotation: List[float] = None
+        
+        # Set the protected attributes using propery setters
+        self.scale = scale
+        self.resolution = resolution
+        self.xyz_translation = xyz_translation
+        self.xyx_rotation = xyx_rotation
+        
         # Search for the VMD folder and set the vmd root variable
         self.__vmd_root = None
         if VMD_PATH and isfile(VMD_PATH) is False:
@@ -118,6 +126,26 @@ class VMDRenderer:
         self.__scale: float = value
 
     @property
+    def xyz_translation(self) -> List[float]:
+        """
+        The list of three float values defining the translation vector (X, Y, Z) to apply to the
+        object.
+
+        Return
+        ------
+        List[float]
+            The translation vector.
+        """
+        return self.__xyz_translation
+
+    @xyz_translation.setter
+    def xyz_translation(self, value: List[float]) -> None:
+        if len(value) != 3:
+            raise ValueError("The translation vector must be a list of 3 float values.")
+        self.__xyz_translation: float = [float(v) for v in value]
+    
+
+    @property
     def xyx_rotation(self) -> List[float]:
         """
         The list of 3 rotation angles (from 0 to 360°) defyning subsequent rotations around
@@ -135,6 +163,32 @@ class VMDRenderer:
         if len(value) != 3:
             raise ValueError("The XYX rotation must be a list of 3 float values.")
         self.__xyx_rotation: float = [float(v) for v in value]
+
+    
+    @property
+    def resolution(self) -> List[int]:
+        """
+        The list of two integer values setting the XY resolution of the output image.
+
+        Returns
+        -------
+        List[int]
+            The list encoding the image resolution across the X and Y axes.
+        """
+        return self.__resolution
+    
+    @resolution.setter
+    def resolution(self, value: Union[int, List[int]]) -> None:
+
+        if isinstance(value, (list, tuple)) and len(value) == 2:
+            self.__resolution = [int(r) for r in value]
+        
+        elif isinstance(value, int):
+            self.__resolution = [value, value]
+        
+        else:
+            raise ValueError("Resolution must be either an int or a list of two integers.")
+        
 
     ############################
     # Core rendering functions #
@@ -454,7 +508,8 @@ class VMDRenderer:
         with tmp(mode="w+", suffix=".vmd") as vmd_script:
 
             vmd_script.write(instructions)
-
+            
+            vmd_script.write(f"translate by {self.__xyz_translation[0]} {self.__xyz_translation[1]} {self.__xyz_translation[2]}\n")
             vmd_script.write(f"rotate x by {self.__xyx_rotation[0]}\n")
             vmd_script.write(f"rotate y by {self.__xyx_rotation[1]}\n")
             vmd_script.write(f"rotate x by {self.__xyx_rotation[2]}\n")
@@ -468,7 +523,7 @@ class VMDRenderer:
                 vmd_script.write("display dof on\n")
 
             vmd_script.write(
-                f"""render Tachyon {output_name}.dat "{self.__tachyon_path}" -fullshade -aasamples 12 %s -format BMP -res {self.resolution} {self.resolution} -o {output_name}.bmp\n"""
+                f"""render Tachyon {output_name}.dat "{self.__tachyon_path}" -fullshade -aasamples 12 %s -format BMP -res {self.__resolution[0]} {self.__resolution[1]} -o {output_name}.bmp\n"""
             )
             vmd_script.write("exit\n")
 

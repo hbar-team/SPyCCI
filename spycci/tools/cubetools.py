@@ -77,7 +77,9 @@ class Cube:
                 obj.__nvoxels.append(int(data[0]))
                 obj.__axes.append(np.array([float(value) for value in data[1::]]))
             
-            # Check if values are in atomic units (bohr) or Angstrom (also check consistency)
+            # If the sign of the number of voxels in a dimension is positive then the units are Bohr,
+            # if negative then Angstroms. Check if values are in atomic units (bohr) or Angstrom
+            # and check consistency across all axes.
             if all([n<0 for n in obj.__nvoxels]):
                 obj.__is_bohr = False
                 obj.__nvoxels = [-n for n in obj.__nvoxels]
