@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-import logging, warnings
-import numpy as np
+import logging
+import spycci.config
 
 from typing import Dict, List, Union
+from spycci.config import StrictnessLevel
 from spycci.core.base import Engine
 from spycci.core.spectroscopy import VibrationalData
 
@@ -158,10 +159,11 @@ class Properties:
 
         level_of_theory = self.__check_engine(engine)
 
-        logger.debug("Validating electronic energy")
-        logger.debug(
-            f"current: {self.__level_of_theory_electronic}, requested: {level_of_theory}"
-        )
+        logger.debug("VALIDATING ELECTRONIC LEVEL OF THEORY")
+        logger.debug(f"Strictness level: {spycci.config.STRICTNESS_LEVEL.name}")
+        logger.debug(f"Current electronic level of theory: {self.__level_of_theory_electronic}")
+        logger.debug(f"Current vibrational level of theory: {self.__level_of_theory_vibrational}")
+        logger.debug(f"Requested electronic level of theory: {level_of_theory}")
 
         if self.__level_of_theory_electronic is None:
             self.__level_of_theory_electronic = level_of_theory
@@ -172,16 +174,24 @@ class Properties:
             self.__clear_electronic()
             self.__level_of_theory_electronic = level_of_theory
 
+        if self.__level_of_theory_electronic != self.__level_of_theory_vibrational:  
+            if spycci.config.STRICTNESS_LEVEL in [StrictnessLevel.STRICT, StrictnessLevel.VERY_STRICT]:
+                    msg = "The electronic and vibrational levels of theory differs. Clearing properties with different vibrational level of theory."
+                    logger.warning(msg)
+                    self.__clear_vibrational()
+
     def __validate_vibrational(self, engine: Engine) -> None:
 
         level_of_theory = self.__check_engine(engine)
 
-        logger.debug("Validating vibrational contribution")
-        logger.debug(
-            f"current: {self.__level_of_theory_vibrational}, requested: {level_of_theory}"
-        )
+        logger.debug("VALIDATING VIBRATIONAL LEVEL OF THEORY")
+        logger.debug(f"Strictness level: {spycci.config.STRICTNESS_LEVEL.name}")
+        logger.debug(f"Current electronic level of theory: {self.__level_of_theory_electronic}")
+        logger.debug(f"Current vibrational level of theory: {self.__level_of_theory_vibrational}")
+        logger.debug(f"Requested vibrational level of theory: {level_of_theory}")
 
         if self.__level_of_theory_vibrational is None:
+            
             if self.__pka.is_set() is True:
                 msg = "Added vibrational contribution. Clearing pKa computed with electronic energy only."
                 logger.warning(msg)
@@ -194,6 +204,12 @@ class Properties:
             logger.warning(msg)
             self.__clear_vibrational()
             self.__level_of_theory_vibrational = level_of_theory
+        
+        if self.__level_of_theory_electronic != self.__level_of_theory_vibrational:  
+            if spycci.config.STRICTNESS_LEVEL in [StrictnessLevel.STRICT, StrictnessLevel.VERY_STRICT]:
+                    msg = "The electronic and vibrational levels of theory differs. Clearing properties with different electronic level of theory."
+                    logger.warning(msg)
+                    self.__clear_electronic()
 
     def to_dict(self) -> dict:
         """

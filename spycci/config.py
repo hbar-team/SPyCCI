@@ -1,11 +1,11 @@
 import os
 import logging
+from enum import IntEnum
 
 logger = logging.getLogger(__name__)
 
 __JSON_VERSION__ = 1
 
-global MPI_FLAGS
 MPI_FLAGS = "--bind-to none"
 
 def get_ncores():
@@ -19,3 +19,11 @@ def get_ncores():
     logger.debug(f"Number of cores: {ncores}")
     return ncores
 
+
+class StrictnessLevel(IntEnum):
+    NORMAL = 0
+    STRICT = 1
+    VERY_STRICT = 2
+
+
+STRICTNESS_LEVEL = StrictnessLevel.NORMAL
