@@ -1,22 +1,17 @@
 %pal
-  nprocs 4
+  nprocs 8
 end
 
-%maxcore 350
+%maxcore 750
 
 ! PBE def2-SVP 
 ! RIJCOSX def2/J
-! Opt 
 
-%geom 
-  scan 
-    B 0 1 = 0.8, 1.5, 10
-  end
+! Opt
+
+%geom
+  scan B 0 1 = 0.8, 1.5, 10  end
 end
 
-* xyz 0 1
-O       -3.21035       -0.58504       -0.01395
-H       -2.24247       -0.61827        0.01848
-H       -3.48920       -1.24911        0.63429
-*
+* xyzfile 0 1 water.xyz
 

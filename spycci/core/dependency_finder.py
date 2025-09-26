@@ -50,7 +50,7 @@ ENGINE_SPECS: List[EngineSpec] = [
                 version_marker="(Open MPI)",
                 token_index=3,
                 versions_map={
-                    "==6.1.*": ["==4.1.6"],
+                    "==6.1.*": ["==4.1.8"],
                     "==6.0.*": ["==4.1.6"],
                     "==5.0.*": ["==4.1.1"],
                     "==4.2.*": ["==3.1.4"],

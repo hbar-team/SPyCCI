@@ -1,0 +1,15 @@
+%pal
+  nprocs 8
+end
+
+%maxcore 750
+
+
+%cosmors
+  solvent "water"
+  dftfunc "PBE"
+  dftbas "def2-TZVP"
+end
+
+* xyzfile 0 1 acetone.xyz
+
