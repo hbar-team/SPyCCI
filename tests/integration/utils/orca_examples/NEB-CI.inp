@@ -1,16 +1,16 @@
-! PBE def2-SVP D3BJ NEB-CI
-
 %pal
-    nprocs 4
+  nprocs 8
 end
 
 %maxcore 750
 
+! PBE def2-SVP D3BJ
+! NEB-CI
+
 %neb
-    neb_end_xyzfile "NEB_product.xyz"
-    NImages 5
+  product "NEB_product.xyz"
+  nimages 5
 end
 
-*xyzfile 0 1 NEB_reactant.xyz
-
+* xyzfile 0 1 NEB_reactant.xyz
 

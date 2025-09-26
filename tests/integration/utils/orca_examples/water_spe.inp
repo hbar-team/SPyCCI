@@ -1,19 +1,17 @@
 %pal
-  nprocs 4
+  nprocs 8
 end
 
-%maxcore 350
+%maxcore 750
 
 ! PBE def2-SVP 
 ! RIJCOSX def2/J
 
-%CPCM
-  SMD True
-  SMDsolvent "DMSO"
+
+%cpcm
+  smd true
+  smdsolvent "DMSO"
 end
 
-* xyz 1 2
-O       -3.21035       -0.58504       -0.01395
-H       -2.24247       -0.61827        0.01848
-H       -3.48920       -1.24911        0.63429
-*
+* xyzfile 1 2 water.xyz
+

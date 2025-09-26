@@ -1,5 +1,5 @@
 %pal
-  nprocs 4
+  nprocs 8
 end
 
 %maxcore 750
@@ -14,3 +14,4 @@ end
 end
 
 * xyzfile 0 1 NEB_reactant.xyz
+
