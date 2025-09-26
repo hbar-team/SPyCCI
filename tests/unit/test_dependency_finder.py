@@ -150,7 +150,7 @@ def test_orca_dependency_success(exec_env):
     exec_env(
         outputs={
             "orca": "Program Version 6.1.0-f.0\n",
-            "mpirun": "mpirun (Open MPI) 4.1.6\n",
+            "mpirun": "mpirun (Open MPI) 4.1.8\n",
         },
         missing={"otool_xtb"},
     )
