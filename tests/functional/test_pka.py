@@ -3,7 +3,12 @@ import pytest
 from spycci.engines.xtb import XtbInput
 from spycci.engines.orca import OrcaInput
 from spycci.systems import System, Ensemble
-from spycci.functions.pka import calculate_pka, calculate_pka_oxonium_scheme, auto_calculate_pka, run_pka_workflow
+from spycci.functions.pka import (
+    calculate_pka,
+    calculate_pka_oxonium_scheme,
+    auto_calculate_pka,
+    run_pka_workflow,
+)
 from os.path import dirname, abspath
 from shutil import rmtree
 
@@ -102,6 +107,11 @@ def test_auto_calculate_pka_xtb():
     rmtree("error_files")
 
 
+# =================================================================
+#     The following tests have been developed for ORCA 6.1.0
+# =================================================================
+
+
 def test_run_pka_workflow_different_geometry():
 
     protonated = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/acetic_acid.xyz", charge=0, spin=1)
@@ -124,27 +134,27 @@ def test_run_pka_workflow_different_geometry():
         assert False, "Unexpected exception raised during pka calculation"
 
     expected_pka = {
-        "direct": 7.415821942831063,
-        "oxonium": 18.4104980835822,
-        "oxonium COSMO-RS": 0.1687110148782882,
+        "direct": 7.42913365186978,
+        "oxonium": 18.423841456788455,
+        "oxonium COSMO-RS": 0.2627522624964962,
     }
 
     expected_free_energies = {
-        "G(solv) Protonated": -229.16930255037,
-        "G(solv) Deprotonated": -228.722438784737,
-        "G(solv) Water": -76.47613139996601,
-        "G(solv) Oxonium": -76.879179351375,
-        "dG(COSMO-RS) Protonated": -0.011657871459,
-        "dG(COSMO-RS) Deprotonated": -0.133906468434,
-        "dG(COSMO-RS) Water": -0.012186990744,
-        "dG(COSMO-RS) Oxonium": -0.172558918245,
-        "G(vac) Protonated": -229.15909637338498,
-        "G(vac) Deprotonated": -228.61163676684,
-        "G(vac) Water": -76.464912575421,
-        "G(vac) Oxonium": -76.72559529110801,
+        "G(solv) Protonated": -229.169292065185,
+        "G(solv) Deprotonated": -228.722399358581,
+        "G(solv) Water": -76.476129950296,
+        "G(solv) Oxonium": -76.879177832864,
+        "dG(COSMO-RS) Protonated": -0.011667116259,
+        "dG(COSMO-RS) Deprotonated": -0.133820497721,
+        "dG(COSMO-RS) Water": -0.012171743587,
+        "dG(COSMO-RS) Oxonium": -0.172502808099,
+        "G(vac) Protonated": -229.15908478666202,
+        "G(vac) Deprotonated": -228.61156082994202,
+        "G(vac) Water": -76.46491195712699,
+        "G(vac) Oxonium": -76.725590646525,
     }
 
-    # NOTE: xtb 6.7.1 and xtb 6.6.1 results differ at the 2nd decimal unit - Luca 
+    # NOTE: xtb 6.7.1 and xtb 6.6.1 results differ at the 2nd decimal unit - Luca
     for key, value in expected_pka.items():
         assert_almost_equal(value, pka[key], decimal=2)
         assert_almost_equal(value, opt_system.properties.pka[key], decimal=2)
@@ -188,27 +198,27 @@ def test_run_pka_workflow_different_electronic():
         assert False, "Unexpected exception raised during pka calculation"
 
     expected_pka = {
-        "direct": 7.83276723959946,
-        "oxonium": 18.42137626296255,
-        "oxonium COSMO-RS": 0.3984120920212615,
+        "direct": 7.8319719542137785,
+        "oxonium": 18.420967059853076,
+        "oxonium COSMO-RS": 0.4592855502229256,
     }
 
     expected_free_energies = {
-        "G(solv) Protonated": -229.171070549242,
-        "G(solv) Deprotonated": -228.72330030332898,
-        "G(solv) Water": -76.477315918202,
-        "G(solv) Oxonium": -76.881246699654,
-        "dG(COSMO-RS) Protonated": -0.011657871459,
-        "dG(COSMO-RS) Deprotonated": -0.133906468434,
-        "dG(COSMO-RS) Water": -0.012186990744,
-        "dG(COSMO-RS) Oxonium": -0.172558918245,
-        "G(vac) Protonated": -229.160591082023,
-        "G(vac) Deprotonated": -228.61179837069201,
-        "G(vac) Water": -76.466020027342,
-        "G(vac) Oxonium": -76.727536454973,
+        'G(solv) Protonated': -229.171070654057,
+        'G(solv) Deprotonated': -228.723302137173,
+        'G(solv) Water': -76.47731686852,
+        'G(solv) Oxonium': -76.881246810591,
+        'dG(COSMO-RS) Protonated': -0.011667116259,
+        'dG(COSMO-RS) Deprotonated': -0.133820497721,
+        'dG(COSMO-RS) Water': -0.012171743587,
+        'dG(COSMO-RS) Oxonium': -0.172502808099,
+        'G(vac) Protonated': -229.1605913353,
+        'G(vac) Deprotonated': -228.61180103379402,
+        'G(vac) Water': -76.46602068902699,
+        'G(vac) Oxonium': -76.727538440421
     }
 
-    # NOTE: xtb 6.7.1 and xtb 6.6.1 results differ at the 2nd decimal unit - Luca 
+    # NOTE: xtb 6.7.1 and xtb 6.6.1 results differ at the 2nd decimal unit - Luca
     for key, value in expected_pka.items():
         assert_almost_equal(value, pka[key], decimal=2)
         assert_almost_equal(value, opt_system.properties.pka[key], decimal=2)
