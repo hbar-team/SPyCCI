@@ -76,4 +76,4 @@ RUN useradd -m -s /bin/bash spyccitest && \
 USER spyccitest
 WORKDIR /workspace
 
-CMD ["pytest","-vvv","--color=yes","ra","--maxfail=0"]
+CMD ["pytest","-vvv","--color=yes","-ra","--maxfail=0"]
