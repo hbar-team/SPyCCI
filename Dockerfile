@@ -33,11 +33,11 @@ RUN --mount=type=secret,id=gh_token \
     set -euo pipefail; \
     GH_TOKEN="$(cat /run/secrets/gh_token)"; \
     release_json=$(curl -s -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
-                          "https://api.github.com/repos/${ORCA_OWNER}/${ORCA_REPO}/releases/tags/${ORCA_TAG}"); \
+    "https://api.github.com/repos/${ORCA_OWNER}/${ORCA_REPO}/releases/tags/${ORCA_TAG}"); \
     asset_api=$(echo "$release_json" | jq -r --arg NAME "$ORCA_ASSET" '.assets[]? | select(.name==$NAME) | .url'); \
     [ -n "$asset_api" ] && [ "$asset_api" != "null" ] || { echo "Asset $ORCA_ASSET not found"; exit 1; }; \
     curl -sL -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
-         "$asset_api" -o /tmp/orca.tar.xz; \
+    "$asset_api" -o /tmp/orca.tar.xz; \
     mkdir -p /opt/orca && \
     tar -xf /tmp/orca.tar.xz -C /opt/orca --strip-components=1 2>/dev/null || \
     tar -xf /tmp/orca.tar.xz -C /opt/orca; \
@@ -62,8 +62,7 @@ RUN wget -q https://github.com/crest-lab/crest/releases/download/v3.0.2/crest-gn
 
 # --- runtime env + user ------------------------------------------------------
 ENV ORCA_ROOT=/opt/orca
-ENV PATH=/opt/orca/bin:${XTBHOME}/bin:${CREST_BIN}:\
-/opt/conda/envs/spycci/bin:$PATH
+ENV PATH=/opt/orca/bin:${XTBHOME}/bin:${CREST_BIN}:/opt/conda/envs/spycci/bin:$PATH
 ENV LD_LIBRARY_PATH=/opt/conda/envs/spycci/lib:/opt/orca/lib:$LD_LIBRARY_PATH
 ENV OMPI_MCA_plm=isolated
 ENV OMPI_MCA_rmaps_base_oversubscribe=1
