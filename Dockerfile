@@ -4,7 +4,7 @@ SHELL ["/bin/bash","-o","pipefail","-c"]
 
 # --- base system + tooling ---------------------------------------------------
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends wget ca-certificates tar xz-utils curl jq && \
+    apt-get install -y --no-install-recommends wget ca-certificates tar zip xz-utils curl jq && \
     rm -rf /var/lib/apt/lists/*
 
 # --- conda env ---------------------------------------------------------------
