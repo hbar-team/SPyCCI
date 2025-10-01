@@ -67,6 +67,7 @@ ENV LD_LIBRARY_PATH=/opt/conda/envs/spycci/lib:/opt/orca/lib:$LD_LIBRARY_PATH
 ENV OMPI_MCA_plm=isolated
 ENV OMPI_MCA_rmaps_base_oversubscribe=1
 ENV OMPI_MCA_btl_vader_single_copy_mechanism=none
+ENV OMPI_MCA_btl=^openib
 ENV PYTHONUNBUFFERED=1
 
 RUN useradd -m -s /bin/bash spyccitest && \
@@ -75,4 +76,4 @@ RUN useradd -m -s /bin/bash spyccitest && \
 USER spyccitest
 WORKDIR /workspace
 
-CMD ["pytest","-vvv","--color=yes","-ra","--maxfail=0"]
+CMD ["pytest","-vvv","--color=yes"]
