@@ -1,0 +1,20 @@
+name: CI
+on: [push, pull_request]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build test image
+        run: |
+          docker build \
+            --secret id=gh_token,env=ORCA_PAT \
+            -t ghcr.io/${{ github.repository_owner }}/spycci-ci:${{ github.sha }} \
+            .
+        env:
+          ORCA_PAT: ${{ secrets.ORCA_PAT }}
+      - name: Run pytest inside container
+        run: docker run --rm ghcr.io/${{ github.repository_owner }}/spycci-ci:${{ github.sha }}
