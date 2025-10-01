@@ -67,6 +67,7 @@ ENV PATH=/opt/orca/bin:${XTBHOME}/bin:${CREST_BIN}:\
 ENV LD_LIBRARY_PATH=/opt/conda/envs/spycci/lib:/opt/orca/lib:$LD_LIBRARY_PATH
 ENV OMPI_MCA_plm=isolated
 ENV OMPI_MCA_rmaps_base_oversubscribe=1
+ENV OMPI_MCA_btl_vader_single_copy_mechanism=none
 ENV PYTHONUNBUFFERED=1
 
 RUN useradd -m -s /bin/bash spyccitest && \
