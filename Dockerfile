@@ -29,19 +29,32 @@ ARG ORCA_OWNER=hbar-team
 ARG ORCA_REPO=orca-binaries
 ARG ORCA_TAG=v6.1.0-f.0
 ARG ORCA_ASSET=orca-6.1.0-f.0_linux_x86-64_openmpi41.tar.xz
-RUN --mount=type=secret,id=gh_token \
+ARG ORCA_LOCAL_ARCHIVE=
+RUN --mount=type=secret,id=gh_token,required=0 \
     set -euo pipefail; \
-    GH_TOKEN="$(cat /run/secrets/gh_token)"; \
+    TOKEN_FILE="/run/secrets/gh_token"; \
+    ORCA_TMP="/tmp/orca.tar.xz"; \
+    if [ -s "$TOKEN_FILE" ]; then \
+    GH_TOKEN="$(cat "$TOKEN_FILE")"; \
+    echo "Downloading ORCA via GitHub API (token detected)"; \
     release_json=$(curl -s -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
     "https://api.github.com/repos/${ORCA_OWNER}/${ORCA_REPO}/releases/tags/${ORCA_TAG}"); \
     asset_api=$(echo "$release_json" | jq -r --arg NAME "$ORCA_ASSET" '.assets[]? | select(.name==$NAME) | .url'); \
     [ -n "$asset_api" ] && [ "$asset_api" != "null" ] || { echo "Asset $ORCA_ASSET not found"; exit 1; }; \
-    curl -sL -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
-    "$asset_api" -o /tmp/orca.tar.xz; \
+    curl -sL -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" "$asset_api" -o "$ORCA_TMP"; \
+    else \
+    [ -n "${ORCA_LOCAL_ARCHIVE}" ] || { \
+    echo "Provide ORCA_PAT (for CI) or --build-arg ORCA_LOCAL_ARCHIVE=<path-in-context>"; exit 1; }; \
+    LOCAL_SRC="/workspace/${ORCA_LOCAL_ARCHIVE}"; \
+    [ -f "$LOCAL_SRC" ] || { echo "Local ORCA archive not found at $LOCAL_SRC"; exit 1; }; \
+    echo "Using local ORCA archive $LOCAL_SRC"; \
+    cp "$LOCAL_SRC" "$ORCA_TMP"; \
+    rm -f "$LOCAL_SRC"; \
+    fi; \
     mkdir -p /opt/orca && \
-    tar -xf /tmp/orca.tar.xz -C /opt/orca --strip-components=1 2>/dev/null || \
-    tar -xf /tmp/orca.tar.xz -C /opt/orca; \
-    rm /tmp/orca.tar.xz; \
+    tar -xf "$ORCA_TMP" -C /opt/orca --strip-components=1 2>/dev/null || \
+    tar -xf "$ORCA_TMP" -C /opt/orca; \
+    rm "$ORCA_TMP"; \
     chmod -R a+rx /opt/orca; \
     find /opt/orca -maxdepth 3 -type f -name orca -perm -u+x -print -quit
 
@@ -71,8 +84,10 @@ ENV OMPI_MCA_btl=^openib
 ENV PYTHONUNBUFFERED=1
 
 RUN useradd -m -s /bin/bash spyccitest && \
-    chown -R spyccitest:spyccitest /workspace /opt/conda/envs/spycci \
-    ${ORCA_ROOT} ${XTBHOME} ${CREST_BIN} ${DFTBPLUS_PARAM_DIR} 
+    chown -R spyccitest:spyccitest \
+    /workspace \
+    /opt/conda/envs/spycci \
+    "${ORCA_ROOT}" "${XTBHOME}" "${CREST_BIN}" "${DFTBPLUS_PARAM_DIR}" 
 USER spyccitest
 WORKDIR /workspace
 

@@ -114,3 +114,27 @@ pytest tests/integration/test_orca_integration.py::test_cosmors_solventfile
 ```
 
 will run only the `test_cosmors_solventfile` from the integration tests for the ORCA engine.
+
+### Running tests via the Docker container
+
+To simplify the testing procedure, we provide a Dockerfile with all the required third-party software in the specific versions used for development. The only current exception is Orca, for which users need to provide their own archive, downloaded from the [FACCTs](https://www.faccts.de) website.
+
+To build the container, copy the `.tar.xz` archive with Orca (we recommend using version `6.1.0-f.0`) in the `SPyCCI` folder (the archive must be in the same location from which you launch the `docker build` command), and run:
+
+```shell
+docker build --build-arg ORCA_LOCAL_ARCHIVE=orca-6.1.0-f.0_linux_x86-64_openmpi41.tar.xz -t spycci:test .
+```
+
+After having built the container, you can run the test suite via the following command:
+
+```shell
+docker run --rm spycci:test
+```
+
+The `--rm` flag ensures the container file is eliminated after each run, but is optional if you want to keep the built image.
+
+It is also possible to run only a subset of tests and pass specific flags to the `pytest` command:
+
+```bash
+docker run --rm spycci:test pytest -vvv --color=yes tests/integration/test_xtb*
+```
