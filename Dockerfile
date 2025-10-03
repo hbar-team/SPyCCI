@@ -47,10 +47,10 @@ RUN --mount=type=secret,id=gh_token \
 
 # --- XTB (official binary) ---------------------------------------------------
 ENV XTBHOME=/opt/xtb
-RUN wget -q https://github.com/grimme-lab/xtb/releases/download/v6.6.1/xtb-6.6.1-linux-x86_64.tar.xz && \
-    tar -xf xtb-6.6.1-linux-x86_64.tar.xz && \
-    mv xtb-6.6.1 "${XTBHOME}" && \
-    rm xtb-6.6.1-linux-x86_64.tar.xz
+RUN wget -q https://github.com/grimme-lab/xtb/releases/download/v6.7.0/xtb-6.7.0-linux-x86_64.tar.xz && \
+    tar -xf xtb-6.7.0-linux-x86_64.tar.xz && \
+    mv xtb-dist "${XTBHOME}" && \
+    rm xtb-6.7.0-linux-x86_64.tar.xz
 
 # --- CREST (official binary) -------------------------------------------------
 ENV CREST_BIN=/opt/crest
