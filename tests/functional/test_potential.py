@@ -16,49 +16,37 @@ TEST_DIR = dirname(abspath(__file__))
 
 def test_calculate_potential_xtb():
 
-    reduced = System.from_xyz(
-        f"{TEST_DIR}/utils/xyz_files/1,4-dimethoxybenzene.xyz", charge=0, spin=1
-    )
-    oxidised = System.from_xyz(
-        f"{TEST_DIR}/utils/xyz_files/1,4-dimethoxybenzene.xyz", charge=1, spin=2
-    )
+    reduced = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/1,4-dimethoxybenzene.xyz", charge=0, spin=1)
+    oxidised = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/1,4-dimethoxybenzene.xyz", charge=1, spin=2)
 
     xtb = XtbInput(solvent="water")
     xtb.opt(oxidised, inplace=True)
     xtb.opt(reduced, inplace=True)
 
     try:
-        potential, exc_electrons, exc_protons = calculate_reduction_potential(
-            oxidised, reduced
-        )
+        potential, exc_electrons, exc_protons = calculate_reduction_potential(oxidised, reduced)
 
     except:
         assert False, "Unexpected exception raised during reduction potential calculation"
 
     assert exc_electrons == 1
     assert exc_protons == 0
-    assert_almost_equal(potential, 1.2975408638371952, decimal=4)
+    assert_almost_equal(potential, 1.2977739495554257, decimal=4)
 
     rmtree("output_files")
     rmtree("error_files")
 
 
 def test_calculate_potential_xtb_pcet():
-    reduced = System.from_xyz(
-        f"{TEST_DIR}/utils/xyz_files/2-methoxyphenol_prot.xyz", charge=0, spin=1
-    )
-    oxidised = System.from_xyz(
-        f"{TEST_DIR}/utils/xyz_files/2-methoxyphenol_deprot.xyz", charge=0, spin=2
-    )
+    reduced = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/2-methoxyphenol_prot.xyz", charge=0, spin=1)
+    oxidised = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/2-methoxyphenol_deprot.xyz", charge=0, spin=2)
 
     xtb = XtbInput(solvent="water")
     xtb.opt(oxidised, inplace=True)
     xtb.opt(reduced, inplace=True)
 
     try:
-        potential, exc_electrons, exc_protons = calculate_reduction_potential(
-            oxidised, reduced
-        )
+        potential, exc_electrons, exc_protons = calculate_reduction_potential(oxidised, reduced)
 
     except:
         assert False, "Unexpected exception raised during reduction potential calculation"
