@@ -37,11 +37,11 @@ RUN --mount=type=secret,id=gh_token,required=0 \
     if [ -s "$TOKEN_FILE" ]; then \
     GH_TOKEN="$(cat "$TOKEN_FILE")"; \
     echo "Downloading ORCA via GitHub API (token detected)"; \
-    release_json=$(curl -s -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+    release_json=$(curl --fail -s -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
     "https://api.github.com/repos/${ORCA_OWNER}/${ORCA_REPO}/releases/tags/${ORCA_TAG}"); \
     asset_api=$(echo "$release_json" | jq -r --arg NAME "$ORCA_ASSET" '.assets[]? | select(.name==$NAME) | .url'); \
     [ -n "$asset_api" ] && [ "$asset_api" != "null" ] || { echo "Asset $ORCA_ASSET not found"; exit 1; }; \
-    curl -sL -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" "$asset_api" -o "$ORCA_TMP"; \
+    curl --fail -sL -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" "$asset_api" -o "$ORCA_TMP"; \
     else \
     [ -n "${ORCA_LOCAL_ARCHIVE}" ] || { \
     echo "Provide ORCA_PAT (for CI) or --build-arg ORCA_LOCAL_ARCHIVE=<path-in-context>"; exit 1; }; \
