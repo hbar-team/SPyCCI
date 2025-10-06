@@ -9,12 +9,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build test image
-        run: |
-          docker build \
-            --secret id=gh_token,env=ORCA_PAT \
-            -t ghcr.io/${{ github.repository_owner }}/spycci-ci:${{ github.sha }} \
-            .
-        env:
-          ORCA_PAT: ${{ secrets.ORCA_PAT }}
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          tags: ghcr.io/${{ github.repository_owner }}/spycci-ci:${{ github.sha }}
+          secrets: |
+            "gh_token=${{ secrets.ORCA_PAT }}"
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
       - name: Run pytest inside container
         run: docker run --rm ghcr.io/${{ github.repository_owner }}/spycci-ci:${{ github.sha }}
