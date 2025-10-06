@@ -294,6 +294,7 @@ class EngineFinder:
                             raise RuntimeError(
                                 f"missing version info for dependency '{dep.name}' required by {parent_spec.name}"
                             )
+                        allowed_spec_list_parsed = []
                         for spec in allowed_spec_list:
                             # Adjust spec according to VERSION_MATCH
                             if VERSION_MATCH == "strict":
@@ -312,11 +313,14 @@ class EngineFinder:
 
                             if dep_version in SpecifierSet(spec):
                                 break
+
+                            # Keep track of the adjusted specs for error reporting
+                            allowed_spec_list_parsed.append(spec)
                             
                         else:
                             raise RuntimeError(
                                 f"{parent_spec.name} {parent_version} requires {dep.name} in "
-                                f"[{', '.join(allowed_spec_list)}], found {dep_version}"
+                                f"[{', '.join(allowed_spec_list_parsed)}], found {dep_version}"
                             )
                         break
                 # If not matched_parent: dependency not required for this parent version -> skip silently
