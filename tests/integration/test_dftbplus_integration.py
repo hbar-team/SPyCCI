@@ -25,7 +25,7 @@ def test_DFTBInput___init__():
         engine = DFTBInput(parameters="3ob-3-1", parallel="nompi")
 
     except:
-        assert False, "Unenxpected exception raised during DFTBInput class construction"
+        assert False, "Unexpected exception raised during DFTBInput class construction"
 
     else:
         assert engine.method == "DFTB"
