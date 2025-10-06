@@ -56,7 +56,7 @@ RUN --mount=type=secret,id=gh_token,required=0 \
     tar -xf "$ORCA_TMP" -C /opt/orca; \
     rm "$ORCA_TMP"; \
     chmod -R a+rx /opt/orca; \
-    find /opt/orca -maxdepth 3 -type f -name orca -perm -u+x -print -quit
+    find /opt/orca -maxdepth 3 -type f -name orca -perm -u+x -print -quit || { echo "ORCA binary not found in /opt/orca"; exit 1; }
 
 # --- XTB (official binary) ---------------------------------------------------
 ENV XTBHOME=/opt/xtb
