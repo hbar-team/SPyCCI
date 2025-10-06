@@ -318,6 +318,7 @@ class EngineFinder:
                                 f"{parent_spec.name} {parent_version} requires {dep.name} in "
                                 f"[{', '.join(allowed_spec_list)}], found {dep_version}"
                             )
+                        break
                 # If not matched_parent: dependency not required for this parent version -> skip silently
                 continue
 
