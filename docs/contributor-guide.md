@@ -131,7 +131,7 @@ After having built the container, you can run the test suite via the following c
 docker run --rm spycci:test
 ```
 
-The `--rm` flag ensures the container file is eliminated after each run, but is optional if you want to keep the built image.
+The `--rm` flag removes the container after the run; the image remains available.
 
 It is also possible to run only a subset of tests and pass specific flags to the `pytest` command:
 
