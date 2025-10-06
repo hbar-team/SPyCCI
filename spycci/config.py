@@ -10,7 +10,7 @@ MPI_FLAGS = "--bind-to none"
 
 global VERSION_MATCH
 # Used in dependency_finder.py to match version maps
-# Options: "default", "strict", "loose"
+# Options: "default", "strict", "loose", "disabled"
 # "default": allow minor version changes (e.g., 4.1.8 -> 4.1.x, 4.1 -> 4.x)
 # "strict": match exact version (e.g., 4.1.6 -> 4.1.6)
 # "loose": match only major version (e.g., 4.1.8 -> 4.x)
