@@ -8,21 +8,15 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-        with:
-          driver: docker-container
-
       - name: Build test image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          tags: ghcr.io/${{ github.repository_owner }}/spycci-ci:${{ github.sha }}
-          secrets: |
-            "gh_token=${{ secrets.ORCA_PAT }}"
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+        run: |
+          docker build \
+            --secret id=gh_token,env=ORCA_PAT \
+            -t ghcr.io/${{ github.repository_owner }}/spycci-ci:${{ github.sha }} \
+            .
+        env:
+          ORCA_PAT: ${{ secrets.ORCA_PAT }}
+
 
       - name: Run pytest inside container
         run: docker run --rm ghcr.io/${{ github.repository_owner }}/spycci-ci:${{ github.sha }}
