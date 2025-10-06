@@ -17,11 +17,12 @@ from numpy.testing import assert_array_almost_equal
 # Get the path of the tests directory
 TEST_DIR = dirname(abspath(__file__))
 
+
 # Test the DFTBInput class constructor
 def test_DFTBInput___init__():
 
     try:
-        engine = DFTBInput(parameters="3ob-3-1", parallel="mpi")
+        engine = DFTBInput(parameters="3ob-3-1", parallel="nompi")
 
     except:
         assert False, "Unenxpected exception raised during DFTBInput class construction"
@@ -37,7 +38,7 @@ def test_DFTBInput___init__():
 # Test the spe() function on a water molecule in vacuum
 def test_DFTBInput_spe():
 
-    engine = DFTBInput(parameters="3ob-3-1", parallel="mpi")
+    engine = DFTBInput(parameters="3ob-3-1", parallel="nompi")
     mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
@@ -47,9 +48,7 @@ def test_DFTBInput_spe():
 
     else:
         assert mol.properties.level_of_theory_electronic == engine.level_of_theory
-        assert_array_almost_equal(
-            mol.properties.electronic_energy, -4.0706605560, decimal=6
-        )
+        assert_array_almost_equal(mol.properties.electronic_energy, -4.0706605560, decimal=6)
 
         rmtree("output_files")
         rmtree("error_files")
@@ -58,7 +57,7 @@ def test_DFTBInput_spe():
 # Test the spe() function on a water molecule in vacuum with no inplace option
 def test_DFTBInput_spe_no_inplace():
 
-    engine = DFTBInput(parameters="3ob-3-1", parallel="mpi")
+    engine = DFTBInput(parameters="3ob-3-1", parallel="nompi")
     mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
@@ -68,9 +67,7 @@ def test_DFTBInput_spe_no_inplace():
 
     else:
         assert newmol.properties.level_of_theory_electronic == engine.level_of_theory
-        assert_array_almost_equal(
-            newmol.properties.electronic_energy, -4.0706605560, decimal=6
-        )
+        assert_array_almost_equal(newmol.properties.electronic_energy, -4.0706605560, decimal=6)
 
         rmtree("output_files")
         rmtree("error_files")
@@ -79,7 +76,7 @@ def test_DFTBInput_spe_no_inplace():
 # Test the opt() function on a water molecule in vacuum
 def test_DFTBInput_opt():
 
-    engine = DFTBInput(parameters="3ob-3-1", parallel="mpi")
+    engine = DFTBInput(parameters="3ob-3-1", parallel="nompi")
     mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
@@ -90,9 +87,7 @@ def test_DFTBInput_opt():
     else:
         assert mol.properties.level_of_theory_electronic == engine.level_of_theory
 
-        assert_array_almost_equal(
-            mol.properties.electronic_energy, -4.0715923330, decimal=6
-        )
+        assert_array_almost_equal(mol.properties.electronic_energy, -4.0715923330, decimal=6)
 
         expected_geometry = [
             np.array([-3.19051453, -0.60510932, 0.00563685]),
@@ -108,7 +103,7 @@ def test_DFTBInput_opt():
 # Test the opt() function on a water molecule in vacuum with no inplace option
 def test_DFTBInput_opt_no_inplace():
 
-    engine = DFTBInput(parameters="3ob-3-1", parallel="mpi")
+    engine = DFTBInput(parameters="3ob-3-1", parallel="nompi")
     mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
@@ -119,9 +114,7 @@ def test_DFTBInput_opt_no_inplace():
     else:
         assert newmol.properties.level_of_theory_electronic == engine.level_of_theory
 
-        assert_array_almost_equal(
-            newmol.properties.electronic_energy, -4.0715923330, decimal=6
-        )
+        assert_array_almost_equal(newmol.properties.electronic_energy, -4.0715923330, decimal=6)
 
         expected_geometry = [
             np.array([-3.19051453, -0.60510932, 0.00563685]),
@@ -137,7 +130,7 @@ def test_DFTBInput_opt_no_inplace():
 # Test the md_nvt() function on a water molecule in vacuum
 def test_DFTBInput_md_nvt():
 
-    engine = DFTBInput(parameters="3ob-3-1", parallel="mpi")
+    engine = DFTBInput(parameters="3ob-3-1", parallel="nompi")
     mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
@@ -157,7 +150,7 @@ def test_DFTBInput_md_nvt():
 # Test the simulated_annealing() function on a water molecule in vacuum
 def test_DFTBInput_simulated_annealing():
 
-    engine = DFTBInput(parameters="3ob-3-1", parallel="mpi")
+    engine = DFTBInput(parameters="3ob-3-1", parallel="nompi")
     mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
@@ -193,7 +186,7 @@ def test_DFTBInput_simulated_annealing():
 # Test the simulated_annealing() function on a water molecule in vacuum with no inplace option
 def test_DFTBInput_simulated_annealing_no_inplace():
 
-    engine = DFTBInput(parameters="3ob-3-1", parallel="mpi")
+    engine = DFTBInput(parameters="3ob-3-1", parallel="nompi")
     mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
@@ -223,7 +216,6 @@ def test_DFTBInput_simulated_annealing_no_inplace():
         rmtree("error_files")
         rmtree("MD_data")
         rmtree("MD_trajectories")
-
 
 
 # Test the catching of runtime errors
