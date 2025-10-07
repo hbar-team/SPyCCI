@@ -83,6 +83,8 @@ ENV OMPI_MCA_btl_vader_single_copy_mechanism=none
 ENV OMPI_MCA_btl=^openib
 ENV PYTHONUNBUFFERED=1
 
+ENV SPYCCI_VERSION_MATCH=minor
+
 RUN useradd -m -s /bin/bash spyccitest && \
     chown -R spyccitest:spyccitest \
     /workspace \
