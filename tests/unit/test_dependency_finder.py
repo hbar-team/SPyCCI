@@ -59,7 +59,6 @@ def exec_env(monkeypatch):
             state["path_map"] = path_map
         if version_match is not None:
             state["version_match"] = version_match
-            monkeypatch.setattr(df, "VERSION_MATCH", version_match, raising=False)
 
         def fake_which(name):
             base = name.split("/")[-1]
@@ -76,6 +75,7 @@ def exec_env(monkeypatch):
             out = state["outputs"].get(base, "")
             return FakeProc(stdout=out, stderr="")
 
+        monkeypatch.setattr(df, "VERSION_MATCH", state["version_match"], raising=False)
         monkeypatch.setattr(df.shutil, "which", fake_which)
         monkeypatch.setattr(df.subprocess, "run", fake_run)
 
