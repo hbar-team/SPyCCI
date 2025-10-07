@@ -299,10 +299,10 @@ class EngineFinder:
                             # Adjust spec according to VERSION_MATCH
                             if VERSION_MATCH == "strict":
                                 pass  # do not modify the spec
-                            elif VERSION_MATCH == "default":
+                            elif VERSION_MATCH == "minor":
                                 # Relax the last specifier regardless of version format
                                 spec = spec.rsplit(".", 1)[0] + ".*"
-                            elif VERSION_MATCH == "loose":
+                            elif VERSION_MATCH == "major":
                                 # Relax to major version (regardless of spec format)
                                 spec = spec.split(".", 1)[0] + ".*"
                             elif VERSION_MATCH == "disabled":
@@ -316,11 +316,13 @@ class EngineFinder:
 
                             # Keep track of the adjusted specs for error reporting
                             allowed_spec_list_parsed.append(spec)
-                            
+
                         else:
                             raise RuntimeError(
                                 f"{parent_spec.name} {parent_version} requires {dep.name} in "
-                                f"[{', '.join(allowed_spec_list_parsed)}], found {dep_version}"
+                                f"[{', '.join(allowed_spec_list_parsed)}], found {dep_version}. "
+                                "Adjust the environment variable SPYCCI_VERSION_MATCH to [minor | major | disabled] to "
+                                "change the version matching behaviour."
                             )
                         break
                 # If not matched_parent: dependency not required for this parent version -> skip silently

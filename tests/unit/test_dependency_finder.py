@@ -38,7 +38,7 @@ def exec_env(monkeypatch):
         "missing": set(),
         "extra_present": {"otool_xtb"},  # optional link for orca
         "path_map": {},
-        "version_match": "default",
+        "version_match": "strict",
     }
 
     def configure(
@@ -154,65 +154,6 @@ def test_xtb_version_specifier(exec_env):
 ########################################
 
 
-def test_orca_dependency_default(exec_env):
-    exec_env(
-        outputs={
-            "orca": "Program Version 6.1.0-f.0\n",
-            "mpirun": "mpirun (Open MPI) 4.1.6\n",
-        },
-        version_match="default",
-    )
-    path = df.locate_orca(version="6.1.*")
-    assert path.endswith("/orca")
-
-
-def test_orca_dependency_default_mismatch(exec_env):
-    exec_env(
-        outputs={
-            "orca": "Program Version 6.0.1\n",
-            "mpirun": "mpirun (Open MPI) 4.2.6\n",
-        },
-    )
-    with pytest.raises(RuntimeError, match="requires mpirun"):
-        df.locate_orca(version="6.0.*")
-
-
-def test_orca_dependency_loose(exec_env):
-    exec_env(
-        outputs={
-            "orca": "Program Version 6.0.1\n",
-            "mpirun": "mpirun (Open MPI) 4.2.6\n",
-        },
-        version_match="loose",
-    )
-    path = df.locate_orca(version="6.0.*")
-    assert path.endswith("/orca")
-
-
-def test_orca_dependency_loose_mismatch(exec_env):
-    exec_env(
-        outputs={
-            "orca": "Program Version 6.0.1\n",
-            "mpirun": "mpirun (Open MPI) 5.1.6\n",
-        },
-        version_match="loose",
-    )
-    with pytest.raises(RuntimeError, match="requires mpirun"):
-        df.locate_orca(version="6.0.*")
-
-
-def test_orca_dependency_disabled(exec_env):
-    exec_env(
-        outputs={
-            "orca": "Program Version 6.0.1\n",
-            "mpirun": "mpirun (Open MPI) 5.2.6\n",
-        },
-        version_match="disabled",
-    )
-    path = df.locate_orca(version="6.0.*")
-    assert path.endswith("/orca")
-
-
 def test_orca_dependency_strict(exec_env):
     exec_env(
         outputs={
@@ -231,10 +172,69 @@ def test_orca_dependency_strict_mismatch(exec_env):
             "orca": "Program Version 6.1.0-f.0\n",
             "mpirun": "mpirun (Open MPI) 4.1.6\n",
         },
-        version_match="strict",
     )
     with pytest.raises(RuntimeError, match="requires mpirun"):
         df.locate_orca(version="6.1.*")
+
+
+def test_orca_dependency_minor(exec_env):
+    exec_env(
+        outputs={
+            "orca": "Program Version 6.1.0-f.0\n",
+            "mpirun": "mpirun (Open MPI) 4.1.6\n",
+        },
+        version_match="minor",
+    )
+    path = df.locate_orca(version="6.1.*")
+    assert path.endswith("/orca")
+
+
+def test_orca_dependency_minor_mismatch(exec_env):
+    exec_env(
+        outputs={
+            "orca": "Program Version 6.1.0-f.0\n",
+            "mpirun": "mpirun (Open MPI) 4.2.6\n",
+        },
+        version_match="minor",
+    )
+    with pytest.raises(RuntimeError, match="requires mpirun"):
+        df.locate_orca(version="6.1.*")
+
+
+def test_orca_dependency_major(exec_env):
+    exec_env(
+        outputs={
+            "orca": "Program Version 6.1.0-f.0\n",
+            "mpirun": "mpirun (Open MPI) 4.2.6\n",
+        },
+        version_match="major",
+    )
+    path = df.locate_orca(version="6.1.*")
+    assert path.endswith("/orca")
+
+
+def test_orca_dependency_major_mismatch(exec_env):
+    exec_env(
+        outputs={
+            "orca": "Program Version 6.1.0-f.0\n",
+            "mpirun": "mpirun (Open MPI) 5.1.6\n",
+        },
+        version_match="major",
+    )
+    with pytest.raises(RuntimeError, match="requires mpirun"):
+        df.locate_orca(version="6.1.*")
+
+
+def test_orca_dependency_disabled(exec_env):
+    exec_env(
+        outputs={
+            "orca": "Program Version 6.0.1\n",
+            "mpirun": "mpirun (Open MPI) 5.2.6\n",
+        },
+        version_match="disabled",
+    )
+    path = df.locate_orca(version="6.0.*")
+    assert path.endswith("/orca")
 
 
 def test_orca_optional_dependency_warning(exec_env, caplog):
