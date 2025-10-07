@@ -91,6 +91,7 @@ For the current version of `SPyCCI` the following version of third party softwar
 * packmol `20.14.2`
 
 **Compatibility of the available test with other versions must be verified.**
+
 :::
 
 Specific test groups can be run explicitly by referencing the corresponding folder or script. For example, the command:
@@ -114,6 +115,15 @@ pytest tests/integration/test_orca_integration.py::test_cosmors_solventfile
 ```
 
 will run only the `test_cosmors_solventfile` from the integration tests for the ORCA engine.
+
+### `SPYCCI_VERSION_MATCH` environment variable
+
+By default, the `spycci` library requires an exact match for version dependency, for example Orca 6.1.0 requires OpenMPI version 4.1.8. If any other version is found, an exception is raised and the program will stop running. This behaviour can be adjusted via the `SPYCCI_VERSION_MATCH` environment variable, by setting it to one of these options:
+
+* `strict` (default): enforces an exact match between dependencies
+* `minor`: allows the last version specifier for a given dependency to change (e.g., if OpenMPI 4.1.8 is requested by the dependency, any version 4.1.x will be accepted)
+* `major`: enforces only major version match (e.g., if OpenMPI 4.1.8 is requested by the dependency, any version 4.x will be accepted)
+* `disabled`: does not enforce any version check for dependencies. Users must ensure themselves software versions are compatible.
 
 ### Running tests via the Docker container
 
