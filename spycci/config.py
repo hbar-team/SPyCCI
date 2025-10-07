@@ -10,16 +10,16 @@ MPI_FLAGS = "--bind-to none"
 
 global VERSION_MATCH
 # Used in dependency_finder.py to match version maps
-# Options: "default", "strict", "loose", "disabled"
-# "default": allow minor version changes (e.g., 4.1.8 -> 4.1.x, 4.1 -> 4.x)
+# Options: "strict", "minor", "major", "disabled"
 # "strict": match exact version (e.g., 4.1.6 -> 4.1.6)
-# "loose": match only major version (e.g., 4.1.8 -> 4.x)
+# "minor": allow minor version changes (e.g., 4.1.8 -> 4.1.x, 4.1 -> 4.x)
+# "major": match only major version (e.g., 4.1.8 -> 4.x)
 # "disabled": do not check versions at all (print a warning)
-VERSION_MATCH = os.environ.get("SPYCCI_VERSION_MATCH", "default")
-if VERSION_MATCH not in ["default", "strict", "loose", "disabled"]:
+VERSION_MATCH = os.environ.get("SPYCCI_VERSION_MATCH", "strict").lower()
+if VERSION_MATCH not in ["strict", "minor", "major", "disabled"]:
     raise ValueError(
         f"Invalid value for SPYCCI_VERSION_MATCH: {VERSION_MATCH}. "
-        'Allowed values are "default", "strict", "loose", "disabled".'
+        'Allowed values are "strict", "minor", "major", "disabled".'
     )
 
 
