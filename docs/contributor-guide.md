@@ -131,6 +131,11 @@ To simplify the testing procedure, we provide a Dockerfile with all the required
 
 To build the container, copy the `.tar.xz` archive with Orca (we recommend using version `6.1.0-f.0`) in the `SPyCCI` folder (the archive must be in the same location from which you launch the `docker build` command), and run:
 
+:::{admonition} Note
+:class: info
+Depending on your environment, you may need to provide superuser privileges for `docker` commands.
+:::
+
 ```shell
 DOCKER_BUILDKIT=1 docker build --build-arg ORCA_LOCAL_ARCHIVE=orca-6.1.0-f.0_linux_x86-64_openmpi41.tar.xz -t spycci:test .
 ```
