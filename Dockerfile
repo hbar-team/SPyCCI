@@ -74,7 +74,7 @@ RUN wget -q https://github.com/crest-lab/crest/releases/download/v3.0.2/crest-gn
 
 # --- runtime env + user ------------------------------------------------------
 ENV ORCA_ROOT=/opt/orca
-ENV PATH=/opt/orca/bin:${XTBHOME}/bin:${CREST_BIN}:/opt/conda/envs/spycci/bin:$PATH
+ENV PATH=/opt/orca:/opt/orca/bin:${XTBHOME}/bin:${CREST_BIN}:/opt/conda/envs/spycci/bin:$PATH
 ENV LD_LIBRARY_PATH=/opt/conda/envs/spycci/lib:/opt/orca/lib:$LD_LIBRARY_PATH
 ENV OMPI_MCA_plm=isolated
 ENV OMPI_MCA_rmaps_base_oversubscribe=1
