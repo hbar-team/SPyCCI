@@ -52,11 +52,10 @@ RUN --mount=type=secret,id=gh_token,required=0 \
     rm -f "$LOCAL_SRC"; \
     fi; \
     mkdir -p /opt/orca && \
-    tar -xf "$ORCA_TMP" -C /opt/orca --strip-components=1 2>/dev/null || \
-    tar -xf "$ORCA_TMP" -C /opt/orca; \
+    tar -xf "$ORCA_TMP" -C /opt/orca --strip-components=1 2>/dev/null; \
     rm "$ORCA_TMP"; \
     chmod -R a+rx /opt/orca; \
-    find /opt/orca -maxdepth 3 -type f -name orca -perm -u+x -print -quit || { echo "ORCA binary not found in /opt/orca"; exit 1; }
+    find /opt/orca -maxdepth 2 -type f -name orca -perm -u+x -print -quit || { echo "ORCA binary not found in /opt/orca"; exit 1; }
 
 # --- XTB (official binary) ---------------------------------------------------
 ENV XTBHOME=/opt/xtb
