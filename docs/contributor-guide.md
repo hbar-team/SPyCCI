@@ -127,13 +127,13 @@ By default, the `spycci` library requires an exact match for version dependency,
 
 ### Running tests via the Docker container
 
-To simplify the testing procedure, we provide a Dockerfile with all the required third-party software in the specific versions used for development. The only current exception is Orca, for which users need to provide their own archive, downloaded from the [FACCTs](https://www.faccts.de) website.
+To simplify the testing procedure, we provide a Dockerfile with all the required third-party software in the specific versions used for development. The only current exception is Orca, for which users need to provide their own archive, downloaded from the [FACCTs](https://www.faccts.de) website or the [Orca Forums](https://orcaforum.kofo.mpg.de/app.php/portal).
 
-To build the container, copy the `.tar.xz` archive with Orca (we recommend using version `6.1.0-f.0`) in the `SPyCCI` folder (the archive must be in the same location from which you launch the `docker build` command), and run:
+To build the container, copy the `.tar.xz` archive with Orca (we recommend using version `6.1.0`) in the `SPyCCI` folder (the archive must be in the same location from which you launch the `docker build` command), and run:
 
 :::{admonition} Note
 :class: info
-Depending on your environment, you may need to provide superuser privileges for `docker` commands.
+Depending on your environment, you may need to provide superuser privileges for running `docker` commands.
 :::
 
 ```shell
@@ -146,7 +146,18 @@ After having built the container, you can run the test suite via the following c
 docker run --rm spycci:test
 ```
 
-The `--rm` flag removes the container after the run; the image remains available.
+The `--rm` flag removes the container after the run; the image remains available. If you want to also remove the image (to list all available images: `docker images`), run:
+
+```shell
+docker rmi spycci:test
+```
+
+:::{admonition} Images vs Containers
+:class: info
+For those unfamiliar with Docker, think as a Container as an *instance* of an Image. Images are the "recipes", Containers are the "cakes". Images are immutable, read-only snapshots, Containers are the working implementation of the corresponding Image, with a writable (therefore, mutable) layer.
+:::
+
+To remove only the unused images (i.e., images not referenced by any container), run `docker image prune`.
 
 It is also possible to run only a subset of tests and pass specific flags to the `pytest` command:
 
