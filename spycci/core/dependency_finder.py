@@ -8,6 +8,7 @@ from packaging.version import Version, InvalidVersion
 from packaging.specifiers import Specifier, SpecifierSet
 from os import environ
 from os.path import basename
+from spycci.config import VERSION_MATCH
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +26,9 @@ class ProgramSpec:
 
 @dataclass
 class DependencySpec(ProgramSpec):
-    versions_map: Optional[Dict[str, List[str]]] = None    # versions_map: parent_version_prefix -> list of exact allowed dependency versions
+    versions_map: Optional[Dict[str, List[str]]] = (
+        None  # versions_map: parent_version_prefix -> list of exact allowed dependency versions
+    )
     critical: bool = True  # if True, failure to meet this dependency raises an error
 
 
@@ -75,7 +78,7 @@ ENGINE_SPECS: List[EngineSpec] = [
                 version_marker="Version",
                 token_index=3,
                 versions_map={
-                    "<3.0": ["==1.1"],   # Only required for crest < 3.0
+                    "<3.0": ["==1.1"],  # Only required for crest < 3.0
                 },
                 critical=True,
             )
@@ -117,8 +120,9 @@ class EngineFinder:
     Arguments
     ---------
     specs : List[EngineSpec]
-        List of `EngineSpec` objects defining supported programs and their dependencies.    
+        List of `EngineSpec` objects defining supported programs and their dependencies.
     """
+
     def __init__(self, specs: List[EngineSpec]):
         self._specs: Dict[str, EngineSpec] = {s.name: s for s in specs}
 
@@ -145,7 +149,7 @@ class EngineFinder:
             Exception raised if the program is not found, version check fails, or a critical dependency is missing.
         """
         # Extract the program name from the path and check that the program is known
-        name = basename(path)   
+        name = basename(path)
         if name not in self._specs:
             raise RuntimeError(f"unknown program '{name}'")
 
@@ -160,7 +164,7 @@ class EngineFinder:
             raise RuntimeError(f"cannot find '{name}' in the system path")
 
         spec = self._specs[name]
-        
+
         if spec.version_marker:
             found_version = self._get_version(spec, exe)
             req_spec = SpecifierSet(version) if version else None
@@ -249,7 +253,7 @@ class EngineFinder:
         """
         Validate the dependencies of a given program version. The function checks whether all critical
         dependencies are present and that their versions match any constraints defined in `versions_map`,
-        depending on the version of the parent program. 
+        depending on the version of the parent program.
 
         Arguments
         ---------
@@ -290,10 +294,35 @@ class EngineFinder:
                             raise RuntimeError(
                                 f"missing version info for dependency '{dep.name}' required by {parent_spec.name}"
                             )
-                        if not any(dep_version in SpecifierSet(spec) for spec in allowed_spec_list):
+                        allowed_spec_list_parsed = []
+                        for spec in allowed_spec_list:
+                            # Adjust spec according to VERSION_MATCH
+                            if VERSION_MATCH == "strict":
+                                pass  # do not modify the spec
+                            elif VERSION_MATCH == "minor":
+                                # Relax the last specifier regardless of version format
+                                spec = spec.rsplit(".", 1)[0] + ".*"
+                            elif VERSION_MATCH == "major":
+                                # Relax to major version (regardless of spec format)
+                                spec = spec.split(".", 1)[0] + ".*"
+                            elif VERSION_MATCH == "disabled":
+                                logger.warning(
+                                    "Version checking is disabled. Please ensure software versions are compatible."
+                                )
+                                break
+
+                            if dep_version in SpecifierSet(spec):
+                                break
+
+                            # Keep track of the adjusted specs for error reporting
+                            allowed_spec_list_parsed.append(spec)
+
+                        else:
                             raise RuntimeError(
                                 f"{parent_spec.name} {parent_version} requires {dep.name} in "
-                                f"[{', '.join(allowed_spec_list)}], found {dep_version}"
+                                f"[{', '.join(allowed_spec_list_parsed)}], found {dep_version}. "
+                                "Adjust the environment variable SPYCCI_VERSION_MATCH to [minor | major | disabled] to "
+                                "change the version matching behaviour."
                             )
                         break
                 # If not matched_parent: dependency not required for this parent version -> skip silently

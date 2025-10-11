@@ -156,12 +156,12 @@ def test_run_pka_workflow_different_geometry():
 
     # NOTE: xtb 6.7.1 and xtb 6.6.1 results differ at the 2nd decimal unit - Luca
     for key, value in expected_pka.items():
-        assert_almost_equal(value, pka[key], decimal=2)
-        assert_almost_equal(value, opt_system.properties.pka[key], decimal=2)
+        assert_almost_equal(pka[key], value, decimal=2)
+        assert_almost_equal(opt_system.properties.pka[key], value, decimal=2)
 
     for key, value in expected_free_energies.items():
-        assert_almost_equal(value, pka.free_energies[key], decimal=2)
-        assert_almost_equal(value, opt_system.properties.pka.free_energies[key], decimal=2)
+        assert_almost_equal(pka.free_energies[key], value, decimal=2)
+        assert_almost_equal(opt_system.properties.pka.free_energies[key], value, decimal=2)
 
     # for key in pka.keys():
     #     if key not in expected_pka.keys():
@@ -220,12 +220,12 @@ def test_run_pka_workflow_different_electronic():
 
     # NOTE: xtb 6.7.1 and xtb 6.6.1 results differ at the 2nd decimal unit - Luca
     for key, value in expected_pka.items():
-        assert_almost_equal(value, pka[key], decimal=2)
-        assert_almost_equal(value, opt_system.properties.pka[key], decimal=2)
+        assert_almost_equal(pka[key], value, decimal=2)
+        assert_almost_equal(opt_system.properties.pka[key], value, decimal=2)
 
     for key, value in expected_free_energies.items():
-        assert_almost_equal(value, pka.free_energies[key], decimal=2)
-        assert_almost_equal(value, opt_system.properties.pka.free_energies[key], decimal=2)
+        assert_almost_equal(pka.free_energies[key], value, decimal=2)
+        assert_almost_equal(opt_system.properties.pka.free_energies[key], value, decimal=2)
 
     # for key in pka.keys():
     #     if key not in expected_pka.keys():

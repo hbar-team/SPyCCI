@@ -1,5 +1,11 @@
 main.py
 
+# Local archives (e.g., Orca binaries for local containers)
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.zip
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
