@@ -60,7 +60,7 @@ class DFTBInput(Engine):
     method : str
         level of theory, by default "DFTB". "xTB" also supported.
     parameters : str
-        parameters to be used for the DFTB Hamiltonian (by default 3ob)
+        parameters to be used for the DFTB Hamiltonian (by default 3ob-3-1)
     solver : str
         LAPACK eigensolver method (check manual for available options)
     dispersion : bool
@@ -74,7 +74,7 @@ class DFTBInput(Engine):
     def __init__(
         self,
         method: str = "DFTB",
-        parameters: str = "3ob/3ob-3-1",
+        parameters: str = "3ob-3-1",
         solver: str = None,
         thirdorder: bool = True,
         dispersion: bool = False,

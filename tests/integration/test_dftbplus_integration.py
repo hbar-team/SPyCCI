@@ -31,7 +31,7 @@ def test_DFTBInput___init__():
         assert engine.method == "DFTB"
         assert (
             engine.level_of_theory
-            == "DFTBInput || method: DFTB | parameters: 3ob/3ob-3-1 | 3rd order: True | dispersion: False"
+            == "DFTBInput || method: DFTB | parameters: 3ob-3-1 | 3rd order: True | dispersion: False"
         )
 
 
