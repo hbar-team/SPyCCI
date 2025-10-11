@@ -25,6 +25,8 @@ def exec_env(monkeypatch):
         additional basenames to report present (i.e., 'otool_xtb' for orca), is overridden by `missing`
     path_map: dict[str, str]
         dict name -> custom absolute path (overrides default /usr/bin/<name>)
+    version_match: str
+        one of "default", "strict", "loose", "disabled" (sets SPYCCI_VERSION_MATCH)
 
     Returns
     -------
@@ -36,6 +38,7 @@ def exec_env(monkeypatch):
         "missing": set(),
         "extra_present": {"otool_xtb"},  # optional link for orca
         "path_map": {},
+        "version_match": "strict",
     }
 
     def configure(
@@ -44,6 +47,7 @@ def exec_env(monkeypatch):
         missing=None,
         extra_present=None,
         path_map=None,
+        version_match=None,
     ):
         if outputs is not None:
             state["outputs"] = outputs
@@ -53,6 +57,8 @@ def exec_env(monkeypatch):
             state["extra_present"] = set(extra_present)
         if path_map is not None:
             state["path_map"] = path_map
+        if version_match is not None:
+            state["version_match"] = version_match
 
         def fake_which(name):
             base = name.split("/")[-1]
@@ -69,8 +75,10 @@ def exec_env(monkeypatch):
             out = state["outputs"].get(base, "")
             return FakeProc(stdout=out, stderr="")
 
+        monkeypatch.setattr(df, "VERSION_MATCH", state["version_match"], raising=False)
         monkeypatch.setattr(df.shutil, "which", fake_which)
         monkeypatch.setattr(df.subprocess, "run", fake_run)
+
         return state
 
     return configure
@@ -146,27 +154,87 @@ def test_xtb_version_specifier(exec_env):
 ########################################
 
 
-def test_orca_dependency_success(exec_env):
+def test_orca_dependency_strict(exec_env):
     exec_env(
         outputs={
             "orca": "Program Version 6.1.0-f.0\n",
-            "mpirun": "mpirun (Open MPI) 4.1.6\n",
+            "mpirun": "mpirun (Open MPI) 4.1.8\n",
         },
-        missing={"otool_xtb"},
+        version_match="strict",
     )
     path = df.locate_orca(version="6.1.*")
     assert path.endswith("/orca")
 
 
-def test_orca_dependency_mismatch(exec_env):
+def test_orca_dependency_strict_mismatch(exec_env):
+    exec_env(
+        outputs={
+            "orca": "Program Version 6.1.0-f.0\n",
+            "mpirun": "mpirun (Open MPI) 4.1.6\n",
+        },
+    )
+    with pytest.raises(RuntimeError, match="requires mpirun"):
+        df.locate_orca(version="6.1.*")
+
+
+def test_orca_dependency_minor(exec_env):
+    exec_env(
+        outputs={
+            "orca": "Program Version 6.1.0-f.0\n",
+            "mpirun": "mpirun (Open MPI) 4.1.6\n",
+        },
+        version_match="minor",
+    )
+    path = df.locate_orca(version="6.1.*")
+    assert path.endswith("/orca")
+
+
+def test_orca_dependency_minor_mismatch(exec_env):
+    exec_env(
+        outputs={
+            "orca": "Program Version 6.1.0-f.0\n",
+            "mpirun": "mpirun (Open MPI) 4.2.6\n",
+        },
+        version_match="minor",
+    )
+    with pytest.raises(RuntimeError, match="requires mpirun"):
+        df.locate_orca(version="6.1.*")
+
+
+def test_orca_dependency_major(exec_env):
+    exec_env(
+        outputs={
+            "orca": "Program Version 6.1.0-f.0\n",
+            "mpirun": "mpirun (Open MPI) 4.2.6\n",
+        },
+        version_match="major",
+    )
+    path = df.locate_orca(version="6.1.*")
+    assert path.endswith("/orca")
+
+
+def test_orca_dependency_major_mismatch(exec_env):
+    exec_env(
+        outputs={
+            "orca": "Program Version 6.1.0-f.0\n",
+            "mpirun": "mpirun (Open MPI) 5.1.6\n",
+        },
+        version_match="major",
+    )
+    with pytest.raises(RuntimeError, match="requires mpirun"):
+        df.locate_orca(version="6.1.*")
+
+
+def test_orca_dependency_disabled(exec_env):
     exec_env(
         outputs={
             "orca": "Program Version 6.0.1\n",
-            "mpirun": "mpirun (Open MPI) 4.1.5\n",
-        }
+            "mpirun": "mpirun (Open MPI) 5.2.6\n",
+        },
+        version_match="disabled",
     )
-    with pytest.raises(RuntimeError, match="requires mpirun"):
-        df.locate_orca(version="6.0.*")
+    path = df.locate_orca(version="6.0.*")
+    assert path.endswith("/orca")
 
 
 def test_orca_optional_dependency_warning(exec_env, caplog):
@@ -207,7 +275,7 @@ def test_crest_requires_xtbiff_version_mismatch(exec_env):
     exec_env(
         outputs={
             "crest": "Version 2.12\n",
-            "xtbiff": "| 2016-17, Version 1.0 |\n",
+            "xtbiff": "| 2016-17, Version 0.9 |\n",
         }
     )
     with pytest.raises(RuntimeError, match="requires xtbiff"):
