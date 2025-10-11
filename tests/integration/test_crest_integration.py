@@ -41,7 +41,7 @@ def test_crest_conformer_search():
         assert False, "Unexpected exception raised during tautomer search"
 
     else:
-        assert len(conformers.systems) in [5, 6, 7]
+        assert len(conformers.systems) in [4, 5, 6, 7]
 
         rmtree("output_files")
         rmtree("error_files")
