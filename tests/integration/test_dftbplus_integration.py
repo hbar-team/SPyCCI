@@ -22,7 +22,7 @@ TEST_DIR = dirname(abspath(__file__))
 def test_DFTBInput___init__():
 
     try:
-        engine = DFTBInput(parallel="nompi")
+        engine = DFTBInput(parameters="3ob-3-1", parallel="nompi")
 
     except:
         assert False, "Unexpected exception raised during DFTBInput class construction"
@@ -31,14 +31,14 @@ def test_DFTBInput___init__():
         assert engine.method == "DFTB"
         assert (
             engine.level_of_theory
-            == "DFTBInput || method: DFTB | parameters: 3ob/3ob-3-1 | 3rd order: True | dispersion: False"
+            == "DFTBInput || method: DFTB | parameters: 3ob-3-1 | 3rd order: True | dispersion: False"
         )
 
 
 # Test the spe() function on a water molecule in vacuum
 def test_DFTBInput_spe():
 
-    engine = DFTBInput(parallel="nompi")
+    engine = DFTBInput(parameters="3ob-3-1", parallel="nompi")
     mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
@@ -57,7 +57,7 @@ def test_DFTBInput_spe():
 # Test the spe() function on a water molecule in vacuum with no inplace option
 def test_DFTBInput_spe_no_inplace():
 
-    engine = DFTBInput(parallel="nompi")
+    engine = DFTBInput(parameters="3ob-3-1", parallel="nompi")
     mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
@@ -76,7 +76,7 @@ def test_DFTBInput_spe_no_inplace():
 # Test the opt() function on a water molecule in vacuum
 def test_DFTBInput_opt():
 
-    engine = DFTBInput(parallel="nompi")
+    engine = DFTBInput(parameters="3ob-3-1", parallel="nompi")
     mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
@@ -103,7 +103,7 @@ def test_DFTBInput_opt():
 # Test the opt() function on a water molecule in vacuum with no inplace option
 def test_DFTBInput_opt_no_inplace():
 
-    engine = DFTBInput(parallel="nompi")
+    engine = DFTBInput(parameters="3ob-3-1", parallel="nompi")
     mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
@@ -130,7 +130,7 @@ def test_DFTBInput_opt_no_inplace():
 # Test the md_nvt() function on a water molecule in vacuum
 def test_DFTBInput_md_nvt():
 
-    engine = DFTBInput(parallel="nompi")
+    engine = DFTBInput(parameters="3ob-3-1", parallel="nompi")
     mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
@@ -150,7 +150,7 @@ def test_DFTBInput_md_nvt():
 # Test the simulated_annealing() function on a water molecule in vacuum
 def test_DFTBInput_simulated_annealing():
 
-    engine = DFTBInput(parallel="nompi")
+    engine = DFTBInput(parameters="3ob-3-1", parallel="nompi")
     mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
@@ -186,7 +186,7 @@ def test_DFTBInput_simulated_annealing():
 # Test the simulated_annealing() function on a water molecule in vacuum with no inplace option
 def test_DFTBInput_simulated_annealing_no_inplace():
 
-    engine = DFTBInput(parallel="nompi")
+    engine = DFTBInput(parameters="3ob-3-1", parallel="nompi")
     mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:

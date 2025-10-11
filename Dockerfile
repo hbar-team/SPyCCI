@@ -19,10 +19,10 @@ COPY . /workspace
 RUN pip install --no-cache-dir -e .
 
 # --- DFTB+ parameters --------------------------------------------------------
-ENV DFTBPLUS_PARAM_DIR=/opt/dftbplus
-RUN mkdir -p "${DFTBPLUS_PARAM_DIR}/3ob" && \
+ENV DFTBPLUS_PARAM_DIR=/opt/dftbplus/slakos
+RUN mkdir -p "${DFTBPLUS_PARAM_DIR}" && \
     wget -q https://github.com/dftbparams/3ob/releases/download/v3.1.0/3ob-3-1.tar.xz -O /tmp/3ob.tar.xz && \
-    tar -xf /tmp/3ob.tar.xz -C "${DFTBPLUS_PARAM_DIR}/3ob" && rm /tmp/3ob.tar.xz
+    tar -xf /tmp/3ob.tar.xz -C "${DFTBPLUS_PARAM_DIR}" && rm /tmp/3ob.tar.xz
 
 # --- ORCA (private release asset) -------------------------------------------
 ARG ORCA_OWNER=hbar-team
