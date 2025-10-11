@@ -170,7 +170,7 @@ def test_orca_dependency_strict_mismatch(exec_env):
     exec_env(
         outputs={
             "orca": "Program Version 6.1.0-f.0\n",
-            "mpirun": "mpirun (Open MPI) 4.1.8\n",
+            "mpirun": "mpirun (Open MPI) 4.1.6\n",
         },
     )
     with pytest.raises(RuntimeError, match="requires mpirun"):
