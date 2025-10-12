@@ -11,7 +11,7 @@ kernelspec:
 ---
 
 (Guide-functions)=
-# Calculating properties
+# Calculating properties using functions
 
 The `spycci.functions` submodule provides a suite of methods for calculating various physical properties of the system under investigation. These functions cover a broad range of topics and often perform multiple operations to assist users in computing chemically relevant results.
 
@@ -25,8 +25,6 @@ The functions to calculate pKa and reduction potentials take into account the se
 * electron self energy = $111.75\, \mathrm{kcal/mol}$
 * proton self energy = $164.22\, \mathrm{kcal/mol}$
 :::
-
----
 
 ## pKa calculations
 
