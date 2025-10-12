@@ -1,10 +1,9 @@
-name: documentation-deploy
+name: Documentation deploy
 
 on:
-  # Trigger the workflow on push to main branch
-  push:
-    branches:
-      - main
+  workflow_dispatch: 
+  release:
+    types: [published]
 
 # This job installs dependencies, build the book, and pushes it to `gh-pages`
 jobs:
