@@ -171,10 +171,10 @@ interface, adapt or use parts of their codes:
 
 
   ***********************************
-  * Starting time: Fri Sep 26 20:35:08 2025
+  * Starting time: Fri Sep 26 20:12:32 2025
   * Host name:     Host-001
-  * Process ID:    36334
-  * Working dir.:  /home/ppravatto/Documenti/Esperimenti/ChimicaComputazionale/SPyCCI/water_yo25hqos_orca_PBE_def2-SVP_vacuum_spe
+  * Process ID:    28791
+  * Working dir.:  /home/ppravatto/Documenti/Esperimenti/ChimicaComputazionale/SPyCCI/acetone_i76h6kxb_orca_PBE_def2-TZVP_water_cosmors
   ***********************************
 
 NOTE: MaxCore=750 MB was set to SCF,MP2,MDCI,CIPSI,MRCI,RASCI and CIS
@@ -182,7 +182,7 @@ NOTE: MaxCore=750 MB was set to SCF,MP2,MDCI,CIPSI,MRCI,RASCI and CIS
 
 
 ***************************************
-The coordinates will be read from file: water.xyz
+The coordinates will be read from file: acetone.xyz
 ***************************************
 
 
@@ -192,23 +192,10 @@ The coordinates will be read from file: water.xyz
 Your calculation utilizes the basis: def2-SVP
    F. Weigend and R. Ahlrichs, Phys. Chem. Chem. Phys. 7, 3297 (2005).
 
------ AuxJ basis set information -----
-Your calculation utilizes the auxiliary basis: def2/J
-   H-Rn: F. Weigend, Phys. Chem. Chem. Phys. 8, 1057 (2006).
-   Fr-Lr: K. Eichkorn, F. Weigend, O. Treutler, R. Ahlrichs; Theor. Chem. Acc. 97, 119 (1997).
-
 ================================================================================
                                         WARNINGS
                        Please study these warnings very carefully!
 ================================================================================
-
-
-
-WARNING: Found flag for RIJCOSX approximation but no HF exchange needed!
-  ===> : RIJCOSX  will be disabled and Split-RI-J is turned on
-
-WARNING: your system is open-shell and RHF/RKS was chosen
-  ===> : WILL SWITCH to UHF/UKS
 
 
 ================================================================================
@@ -221,70 +208,182 @@ NAME = input.inp
 |  4> 
 |  5> %maxcore 750
 |  6> 
-|  7> ! PBE def2-SVP 
-|  8> ! RIJCOSX def2/J
-|  9> 
-| 10> 
-| 11> * xyzfile 0 2 water.xyz
-| 12> 
+|  7> 
+|  8> %cosmors
+|  9>   solvent "water"
+| 10> end
+| 11> 
+| 12> * xyzfile 0 1 acetone.xyz
 | 13> 
-| 14>                          ****END OF INPUT****
+| 14> 
+| 15>                          ****END OF INPUT****
 ================================================================================
 
-                       ****************************
-                       * Single Point Calculation *
-                       ****************************
+------------------------------------------------------------------------------
+                          OPENCOSMO-RS CALCULATION
+------------------------------------------------------------------------------
 
----------------------------------
+----------------------
+GENERAL INFORMATION
+----------------------
+Calculation method                          ... DFT
+Functional                                  ... BP86
+Basis set                                   ... DEF2-TZVPD
+
+----------------------
+SOLUTE INFORMATION
+----------------------
+Number of atoms                             ...     10
+Total charge                                ...      0
+Multiplicity                                ...      1
+
 CARTESIAN COORDINATES (ANGSTROEM)
----------------------------------
-  O     -3.210350   -0.585040   -0.013950
-  H     -2.242470   -0.618270    0.018480
-  H     -3.489200   -1.249110    0.634290
+  H      1.997578    0.250226    0.729576
+  C      1.446668    0.060882   -0.189755
+  H      1.671158    0.826902   -0.933464
+  H      1.764100   -0.895809   -0.617029
+  C     -0.032188   -0.006683    0.081180
+  O     -0.471262   -0.063832    1.215906
+  C     -0.936715   -0.007596   -1.121741
+  H     -0.887613    0.976117   -1.598524
+  H     -0.589402   -0.732992   -1.859984
+  H     -1.963324   -0.221516   -0.830263
 
-----------------------------
-CARTESIAN COORDINATES (A.U.)
-----------------------------
-  NO LB      ZA    FRAG     MASS         X           Y           Z
-   0 O     8.0000    0    15.999   -6.066682   -1.105565   -0.026362
-   1 H     1.0000    0     1.008   -4.237654   -1.168361    0.034922
-   2 H     1.0000    0     1.008   -6.593632   -2.360476    1.198634
+----------------------
+SOLVENT INFORMATION
+----------------------
+Solvent name                                ... WATER
+Number of atoms                             ...      3
+Total charge                                ...      0
+Multiplicity                                ...      1
+
+CARTESIAN COORDINATES (ANGSTROEM)
+  O     -0.000795    0.401428    0.000000
+  H     -0.764800   -0.202217    0.000000
+  H      0.765595   -0.199210    0.000000
+
+----------------------------------------------
+Single Point Calculation (solute / gas-phase)
+----------------------------------------------
+Output single point calculation redirected to >input.solute_vac.lastout
+
+FINAL SINGLE POINT ENERGY (Solute-gas-phase)     -193.233980481756
+
+----------------------------------------------
+Single Point Calculation (solute / CPCM)
+----------------------------------------------
+Output single point calculation redirected to >input.solute_cpcm.lastout
+
+FINAL SINGLE POINT ENERGY (Solute-CPCM)     -193.243991096617
+
+----------------------------------------------
+Single Point Calculation (solvent / CPCM)
+----------------------------------------------
+Output single point calculation redirected to >input.solvent_cpcm.lastout
+
+FINAL SINGLE POINT ENERGY (Solvent-CPCM)      -76.479237515758
+
+----------------------
+SOLVATION DATA
+----------------------
+Reference temperature              :                 298.15 K
+Free energy of solvation (dGsolv)  :       -0.006655741604 Eh             -4.176542 kcal/mol
+
+Note: In order to calculate the free energy of the solvated solute (Gsolv), one should add
+      the computed dGsolv to the "Final Gibbs free energy" (Gvac = H-T*S) of the solute in gas-phase.
+      That is: Gsolv = Gvac + dGsolv. Here, the Gvac has been calculated previously after a frequency
+      calculation of the solute at a certain level of theory and printed in the "THERMOCHEMISTRY" block.
+
+----------------------
+openCOSMO-RS TIMINGS
+----------------------
+Time single point calculation (solute  / gas-phase) ...         9.55 (sec)
+Time single point calculation (solute  / CPCM)      ...        11.56 (sec)
+Time single point calculation (solvent / CPCM)      ...         3.45 (sec)
+Time execution openCOSMO-RS binaries                ...         0.03 (sec)
+Total time openCOSMO-RS                             ...        24.59 (sec)
+
 
 --------------------------------
-INTERNAL COORDINATES (ANGSTROEM)
+SUGGESTED CITATIONS FOR THIS RUN
 --------------------------------
- O      0   0   0     0.000000000000     0.00000000     0.00000000
- H      1   0   0     0.968993102246     0.00000000     0.00000000
- H      1   2   0     0.969000198658   103.97800340     0.00000000
 
----------------------------
-INTERNAL COORDINATES (A.U.)
----------------------------
- O      0   0   0     0.000000000000     0.00000000     0.00000000
- H      1   0   0     1.831131588903     0.00000000     0.00000000
- H      1   2   0     1.831144999180   103.97800340     0.00000000
+Below you find a list of papers that are relevant to this ORCA run
+We neither can nor want to force you to cite these papers, but we appreciate if you do
+You receive ORCA, which is the product of decades of hard work by many enthusiastic individuals, for free
+The only thing we kindly ask in return is that you cite our papers,
+We deeply appreciate it, if you show your appreciation for ORCA by not just citing the generic ORCA reference.
 
----------------------
-BASIS SET INFORMATION
----------------------
-There are 2 groups of distinct atoms
+Please note that relegating all ORCA citations to the supporting information does *not* help us.
+SI sections are not indexed - citations you put there will not count into any citation statistics
+But we need these citations in order to attract the funding resources that allow us to do what we are doing
 
- Group   1 Type O   : 7s4p1d contracted to 3s2p1d pattern {511/31/1}
- Group   2 Type H   : 4s1p contracted to 2s1p pattern {31/1}
+Therefore, if you are a happy ORCA user, please consider citing a few of the papers listed below in the main body of your paper
 
-Atom   0O    basis set group =>   1
-Atom   1H    basis set group =>   2
-Atom   2H    basis set group =>   2
----------------------------------
-AUXILIARY/J BASIS SET INFORMATION
----------------------------------
-There are 2 groups of distinct atoms
+In addition to the list printed below, the program has created the file input.bibtex that contains the list in bibtex format
+You can import this file easily into all common literature databanks and citation aid programs
 
- Group   1 Type O   : 12s5p4d2f1g contracted to 6s4p3d1f1g pattern {711111/2111/211/2/1}
- Group   2 Type H   : 5s2p1d contracted to 3s1p1d pattern {311/2/1}
 
-Atom   0O    basis set group =>   1
-Atom   1H    basis set group =>   2
-Atom   2H    basis set group =>   2
-[file orca_main/main_util_tools.cpp, line 754]: Error : multiplicity (2) is even and number of electrons (10) is even -> impossible
+List of essential papers. We consider these as the minimum necessary citations
 
+  1. Neese, F.
+     Software update: the ORCA program system, version 6.0
+     WIRES Comput. Molec. Sci. 2025 15(1), e70019
+     doi.org/10.1002/wcms.7019
+
+List of papers to cite with high priority. The work reported in these papers was absolutely
+necessary for this run to complete.
+Our perspective: the developers of density functionals and basis sets usually get cited in chemistry papers
+Good! But without the algorithms to do something with them, the functionals or basis sets would not do anything.
+Hence, in our opinion, the algorithm design and method developments papers are equally worthy of getting cited
+
+  1. Garcia-Rates, M.; Neese, F.
+     Effect of the Solute Cavity on the Solvation Energy and its Derivatives within the Framework of the Gaussian Charge Scheme
+     J. Comput. Chem. 2020 41 , 922-939
+     doi.org/10.1002/jcc.26139
+  2. Gerlach, T.; Müller, S.; González de Castilla, A.; Smirnova, I.
+     An Open Source COSMO-RS Implementation and Parameterization Supporting the Efficient Implementation of Multiple Segment Descriptors
+     Fluid Phase Equilibria 2022 560 , 113472
+     doi.org/10.1016/j.fluid.2022.113472
+  3. Neese, F.
+     The SHARK Integral Generation and Digestion System
+     J. Comp. Chem. 2022 44(3), 381
+     doi.org/10.1002/jcc.26942
+  4. Müller, S.; Nevolianis, T.; Garcia-Rates, M.; Riplinger, C.; Leonhard, K.; Smirnova, I.
+     Predicting solvation free energies for neutral molecules in any solvent with openCOSMO-RS
+     Fluid Phase Equilibria 2025 589 , 114250
+     doi.org/10.1016/j.fluid.2024.114250
+
+List of suggested additional citations. These are papers that are important in the 'surrounding' of 
+of this run, or papers that preceded the highly important papers. If you like your results we are grateful for a citation.
+
+  1. Neese, F.
+     The ORCA program system
+     WIRES Comput. Molec. Sci. 2012 2(1), 73-78
+     doi.org/10.1002/wcms.81
+  2. Neese, F.
+     Software update: the ORCA program system, version 4.0
+     WIRES Comput. Molec. Sci. 2018 8(1), 1-6
+     doi.org/10.1002/wcms.1327
+  3. Neese, F.; Wennmohs, F.; Becker, U.; Riplinger, C.
+     The ORCA quantum chemistry program package
+     J. Chem. Phys. 2020 152(22), 224108
+     doi.org/10.1063/5.0004608
+  4. Neese, F.
+     Software update: The ORCA program system—Version 5.0
+     WIRES Comput. Molec. Sci. 2022 12(1), e1606
+     doi.org/10.1002/wcms.1606
+
+List of optional additional citations
+
+  1. Neese, F.
+     Approximate second-order SCF convergence for spin unrestricted wavefunctions
+     Chem. Phys. Lett. 2000 325(1-3), 93-98
+     doi.org/10.1016/s0009-2614(00)00662-x
+
+Timings for individual modules:
+
+Sum of individual times          ...       24.594 sec (=   0.410 min)
+OPENCOSMO-RS module              ...       24.594 sec (=   0.410 min) 100.0 %
+                             ****ORCA TERMINATED NORMALLY****
+TOTAL RUN TIME: 0 days 0 hours 0 minutes 24 seconds 822 msec

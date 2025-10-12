@@ -1,59 +1,59 @@
 3
-Coordinates from ORCA-job water_scan Relaxed Surface Scan Step 1 E -76.230673893265
-  O      -3.136573     -0.586921     -0.012114
-  H      -2.338460     -0.626219      0.026240
-  H      -3.466988     -1.239280      0.624694
+Coordinates from ORCA-job input Relaxed Surface Scan Step 1 E -76.230673893579
+  O      -3.136574     -0.586922     -0.012113
+  H      -2.338461     -0.626220      0.026241
+  H      -3.466985     -1.239278      0.624692
 >
 3
-Coordinates from ORCA-job water_scan Relaxed Surface Scan Step 2 E -76.262163258457
-  O      -3.172255     -0.583139     -0.015806
+Coordinates from ORCA-job input Relaxed Surface Scan Step 2 E -76.262163258455
+  O      -3.172254     -0.583139     -0.015806
   H      -2.296410     -0.624809      0.024864
-  H      -3.473355     -1.244471      0.629762
+  H      -3.473355     -1.244472      0.629762
 >
 3
-Coordinates from ORCA-job water_scan Relaxed Surface Scan Step 3 E -76.272349415786
+Coordinates from ORCA-job input Relaxed Surface Scan Step 3 E -76.272349415780
   O      -3.208179     -0.579645     -0.019217
   H      -2.254597     -0.623574      0.023658
   H      -3.479244     -1.249201      0.634379
 >
 3
-Coordinates from ORCA-job water_scan Relaxed Surface Scan Step 4 E -76.270021275687
+Coordinates from ORCA-job input Relaxed Surface Scan Step 4 E -76.270021275676
   O      -3.244166     -0.576626     -0.022163
-  H      -2.212804     -0.622280      0.022394
-  H      -3.485049     -1.253514      0.638589
+  H      -2.212804     -0.622280      0.022395
+  H      -3.485050     -1.253514      0.638589
 >
 3
-Coordinates from ORCA-job water_scan Relaxed Surface Scan Step 5 E -76.260509382145
-  O      -3.280027     -0.574234     -0.024498
+Coordinates from ORCA-job input Relaxed Surface Scan Step 5 E -76.260509382145
+  O      -3.280027     -0.574233     -0.024499
   H      -2.170816     -0.620716      0.020867
   H      -3.491177     -1.257471      0.642451
 >
 3
-Coordinates from ORCA-job water_scan Relaxed Surface Scan Step 6 E -76.247063299898
+Coordinates from ORCA-job input Relaxed Surface Scan Step 6 E -76.247063299919
   O      -3.315602     -0.572544     -0.026147
   H      -2.128467     -0.618736      0.018934
   H      -3.497951     -1.261140      0.646033
 >
 3
-Coordinates from ORCA-job water_scan Relaxed Surface Scan Step 7 E -76.231673520505
-  O      -3.350770     -0.571575     -0.027093
-  H      -2.085643     -0.616254      0.016510
+Coordinates from ORCA-job input Relaxed Surface Scan Step 7 E -76.231673520520
+  O      -3.350770     -0.571575     -0.027092
+  H      -2.085643     -0.616254      0.016511
   H      -3.505608     -1.264591      0.649402
 >
 3
-Coordinates from ORCA-job water_scan Relaxed Surface Scan Step 8 E -76.215566794397
-  O      -3.385440     -0.571306     -0.027355
-  H      -2.042272     -0.613225      0.013554
-  H      -3.514307     -1.267889      0.652621
+Coordinates from ORCA-job input Relaxed Surface Scan Step 8 E -76.215566794550
+  O      -3.385441     -0.571307     -0.027354
+  H      -2.042273     -0.613225      0.013554
+  H      -3.514307     -1.267888      0.652621
 >
 3
-Coordinates from ORCA-job water_scan Relaxed Surface Scan Step 9 E -76.199497976750
-  O      -3.419572     -0.571683     -0.026987
+Coordinates from ORCA-job input Relaxed Surface Scan Step 9 E -76.199497976741
+  O      -3.419572     -0.571683     -0.026986
   H      -1.998339     -0.609655      0.010068
-  H      -3.524109     -1.271082      0.655739
+  H      -3.524109     -1.271082      0.655738
 >
 3
-Coordinates from ORCA-job water_scan Relaxed Surface Scan Step 10 E -76.183922132133
-  O      -3.453023     -0.572525     -0.026165
-  H      -1.953742     -0.605762      0.006268
-  H      -3.535255     -1.274133      0.658717
+Coordinates from ORCA-job input Relaxed Surface Scan Step 10 E -76.183922139341
+  O      -3.453041     -0.572544     -0.026146
+  H      -1.953760     -0.605776      0.006281
+  H      -3.535220     -1.274100      0.658685
