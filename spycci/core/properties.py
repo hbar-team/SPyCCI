@@ -180,7 +180,7 @@ class Properties:
             self.__clear_electronic()
             self.__level_of_theory_electronic = level_of_theory
 
-        if self.__level_of_theory_electronic != self.__level_of_theory_vibrational:  
+        if self.__level_of_theory_vibrational and self.__level_of_theory_electronic != self.__level_of_theory_vibrational:  
             if spycci.config.STRICTNESS_LEVEL in [StrictnessLevel.STRICT]:
                     msg = "The electronic and vibrational levels of theory differs. Clearing properties with different vibrational level of theory."
                     logger.warning(msg)
@@ -211,7 +211,7 @@ class Properties:
             self.__clear_vibrational()
             self.__level_of_theory_vibrational = level_of_theory
         
-        if self.__level_of_theory_electronic != self.__level_of_theory_vibrational:  
+        if self.__level_of_theory_electronic and self.__level_of_theory_electronic != self.__level_of_theory_vibrational:  
             if spycci.config.STRICTNESS_LEVEL in [StrictnessLevel.STRICT]:
                     msg = "The electronic and vibrational levels of theory differs. Clearing properties with different electronic level of theory."
                     logger.warning(msg)
