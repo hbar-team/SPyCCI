@@ -175,7 +175,7 @@ class Properties:
             self.__level_of_theory_electronic = level_of_theory
 
         if self.__level_of_theory_electronic != self.__level_of_theory_vibrational:  
-            if spycci.config.STRICTNESS_LEVEL in [StrictnessLevel.STRICT, StrictnessLevel.VERY_STRICT]:
+            if spycci.config.STRICTNESS_LEVEL in [StrictnessLevel.STRICT]:
                     msg = "The electronic and vibrational levels of theory differs. Clearing properties with different vibrational level of theory."
                     logger.warning(msg)
                     self.__clear_vibrational()
@@ -206,10 +206,22 @@ class Properties:
             self.__level_of_theory_vibrational = level_of_theory
         
         if self.__level_of_theory_electronic != self.__level_of_theory_vibrational:  
-            if spycci.config.STRICTNESS_LEVEL in [StrictnessLevel.STRICT, StrictnessLevel.VERY_STRICT]:
+            if spycci.config.STRICTNESS_LEVEL in [StrictnessLevel.STRICT]:
                     msg = "The electronic and vibrational levels of theory differs. Clearing properties with different electronic level of theory."
                     logger.warning(msg)
                     self.__clear_electronic()
+    
+    def __validate_strictness_simultaneously(self, el_engine: Engine, vib_engine: Engine) -> None:
+
+        el_level_of_theory = self.__check_engine(el_engine)
+        vib_level_of_theory = self.__check_engine(vib_engine)
+
+        if spycci.config.STRICTNESS_LEVEL in [StrictnessLevel.STRICT]:
+            if el_level_of_theory != vib_level_of_theory:
+                msg = f"Mismatch between levels of theory of composite property detected during setting in {spycci.config.STRICTNESS_LEVEL.name} mode."
+                logger.error(msg)
+                raise RuntimeError(msg)
+
 
     def to_dict(self) -> dict:
         """
@@ -402,8 +414,16 @@ class Properties:
             The engine used in the electronic calculation.
         vibrational_engine: Union[Engine, str]
             The engine used in the vibrational calculation. (optional)
+        
+        Raises
+        ------
+        RuntimeError
+            Exception raised if a mismatch between levels of theory is detected in STRICT mode.
         """
         logger.debug("Setting pKa")
+
+        if vibrational_engine is not None:
+            self.__validate_strictness_simultaneously(electronic_engine, vibrational_engine)
 
         self.__validate_electronic(electronic_engine)
         if vibrational_engine is not None:
