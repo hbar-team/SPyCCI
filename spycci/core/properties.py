@@ -96,7 +96,13 @@ class Properties:
     to the coputed properties and checks, whenever a new property is set, that a given input data
     is compatible with the current used level of theory. If a mismatch between levels of theory is
     detected all the properties related to the old level of theory are cleaned and a warning is
-    raised.
+    raised. The level of sanity check applied to the levels of theory is set by the `STRICTNESS_LEVEL`
+    variable of the `spycci.config` module. In `NORMAL` mode the electronic and vibrational levels
+    of theory can be different while in `STRICT` equality is enforced to ensure consistency among
+    electronic and vibrational levels of theory. In `STRICT` mode a change of a level of theory will,
+    in case of a mismatch, clear the properties associated to the other. In cased of mixed properties
+    (e.g. pKa in which electronic and vibronic levels of theory are set simultaneously) exception is
+    raised in `STRICT` mode when mismatch is detected.
     """
 
     def __init__(self):
