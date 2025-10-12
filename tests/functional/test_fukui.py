@@ -14,7 +14,7 @@ TEST_DIR = dirname(abspath(__file__))
 
 
 # =================================================================
-#     The following tests have been developed for ORCA 6.0.1
+# The following tests have been developed for ORCA 6.1.0 and 6.0.1
 # =================================================================
 
 def check_orca_version():

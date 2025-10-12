@@ -13,6 +13,9 @@ from numpy.testing import assert_almost_equal
 # Get the path of the tests directory
 TEST_DIR = dirname(abspath(__file__))
 
+# =================================================================
+#      The following test has been developed for XTB 6.7.0
+# =================================================================
 
 def test_calculate_potential_xtb():
 
