@@ -416,6 +416,69 @@ class MolecularGeometry:
         com /= self.mass
         return com
 
+    @property
+    def inertia(self) -> np.ndarray:
+        """
+        The inertia tensor, its eigenvalues and rotor type of the molecule.
+
+        The inertia tensor is calculated relative to the molecular center of mass,
+        using atomic masses (in atomic mass units) and cartesian coordinates
+        (in Ångström). The eigenvalues of the tensor correspond to the principal
+        moments of inertia (IA, IB, IC).
+
+        The rotor type is determined based on the relative magnitudes of the
+        principal moments:
+
+            * Linear rotor:           IA ≈ 0 and IB ≈ IC
+            * Spherical top:          IA ≈ IB ≈ IC
+            * Oblate symmetric top:   IA ≈ IB < IC (disc-shaped)
+            * Prolate symmetric top:  IA < IB ≈ IC (cigar-shaped)
+            * Asymmetric top:         all moments different
+
+        Returns
+        -------
+        inertia : np.ndarray of shape (3, 3)
+            The inertia tensor of the molecule in units of amu·Å².
+        eigvals : np.ndarray of shape (3)
+            The principal moments of inertia (IA, IB, IC) in amu·Å².
+        rotor_type : str
+            Type of molecular rotor.
+        """
+        xyz_centered = np.subtract(self.__coordinates, self.center_of_mass)
+        masses = np.array([atomic_masses[atom] for atom in self.__atoms])
+
+        x, y, z = xyz_centered.T
+
+        Ixx = np.sum(masses * (y**2 + z**2))
+        Iyy = np.sum(masses * (x**2 + z**2))
+        Izz = np.sum(masses * (x**2 + y**2))
+        Ixy = -np.sum(masses * x * y)
+        Iyz = -np.sum(masses * y * z)
+        Ixz = -np.sum(masses * x * z)
+
+        inertia_tensor = np.array([
+            [Ixx, Ixy, Ixz],
+            [Ixy, Iyy, Iyz],
+            [Ixz, Iyz, Izz]
+        ])
+
+        eigvals = np.sort(np.linalg.eigvals(inertia_tensor))
+
+        tol=1e-3
+        IA, IB, IC = eigvals
+        if IA < tol and abs(IB - IC) < tol:
+            rotor_type = "linear rotor"
+        elif abs(IA - IB) < tol and abs(IB - IC) < tol:
+            rotor_type = "spherical top"
+        elif abs(IA - IB) < tol and abs(IC - IB) > tol:
+            rotor_type = "oblate symmetric top"
+        elif abs(IB - IC) < tol and abs(IA - IB) > tol:
+            rotor_type = "prolate symmetric top"
+        else:
+            rotor_type = "asymmetric top"
+
+        return inertia_tensor, eigvals, rotor_type
+
     def buried_volume_fraction(
         self,
         site: int,

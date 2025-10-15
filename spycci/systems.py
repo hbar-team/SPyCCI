@@ -315,6 +315,22 @@ class System:
         info += "\n"
         info += "----------------------------------------------\n\n"
 
+        info += "Inertia tensor (amu·Å²):\n"
+        info += "----------------------------------------------\n"
+        info += "                  x          y          z     \n"
+        info += "----------------------------------------------\n"
+        inertia, eigvals, rotor_type = self.geometry.inertia
+
+        for column, row in zip(["x", "y", "z"], inertia):
+            info += f" {column:<10}"
+            for val in row:
+                info += f"{val:>11.5f}"
+            info += "\n"
+        info += "----------------------------------------------\n"
+        info += f"Rotor type: {rotor_type}\n"
+        info += f"Principal moments (amu·Å²): IA={eigvals[0]:.5f}  IB={eigvals[1]:.5f}  IC={eigvals[2]:.5f}\n"
+        info += "----------------------------------------------\n\n"
+
         info += "********************** PROPERTIES *************************\n\n"
         info += f"Geometry level of theory: {self.geometry.level_of_theory_geometry}\n"
         info += (
