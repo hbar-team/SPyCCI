@@ -15,7 +15,7 @@ from rdkit.Chem.rdForceFieldHelpers import (
     MMFFHasAllMoleculeParams,
 )
 
-from spycci.constants import atoms_dict, atomic_masses
+from spycci.constants import atoms_dict, atomic_masses, h, c, amu_to_kg
 
 
 class MolecularGeometry:
@@ -419,7 +419,8 @@ class MolecularGeometry:
     @property
     def inertia(self) -> np.ndarray:
         """
-        The inertia tensor, its eigenvalues and rotor type of the molecule.
+        The inertia tensor, its eigenvalues, rotor type and rotational constants 
+        of the molecule.
 
         The inertia tensor is calculated relative to the molecular center of mass,
         using atomic masses (in atomic mass units) and cartesian coordinates
@@ -443,6 +444,10 @@ class MolecularGeometry:
             The principal moments of inertia (IA, IB, IC) in amu·Å².
         rotor_type : str
             Type of molecular rotor.
+        rot_const_cm : np.ndarray of shape (3)
+            The rotational constants (A, B, C) in cm⁻¹.
+        rot_const_mhz : np.ndarray of shape (3)
+            The rotational constants (A, B, C) in MHz.
         """
         xyz_centered = np.subtract(self.__coordinates, self.center_of_mass)
         masses = np.array([atomic_masses[atom] for atom in self.__atoms])
@@ -463,6 +468,9 @@ class MolecularGeometry:
         ])
 
         eigvals = np.sort(np.linalg.eigvals(inertia_tensor))
+        eigvals_kgm2 = eigvals * amu_to_kg / 1.0e20
+        rot_const_cm = h / (8 * np.pi**2 * c * 100 * eigvals_kgm2)
+        rot_const_mhz = rot_const_cm * c / 1.0e4
 
         tol=1e-3
         IA, IB, IC = eigvals
@@ -477,7 +485,7 @@ class MolecularGeometry:
         else:
             rotor_type = "asymmetric top"
 
-        return inertia_tensor, eigvals, rotor_type
+        return inertia_tensor, eigvals, rotor_type, rot_const_cm, rot_const_mhz
 
     def buried_volume_fraction(
         self,

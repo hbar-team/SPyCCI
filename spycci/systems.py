@@ -319,7 +319,7 @@ class System:
         info += "----------------------------------------------\n"
         info += "                  x          y          z     \n"
         info += "----------------------------------------------\n"
-        inertia, eigvals, rotor_type = self.geometry.inertia
+        inertia, eigvals, rotor_type, rot_const_cm, rot_const_mhz = self.geometry.inertia
 
         for column, row in zip(["x", "y", "z"], inertia):
             info += f" {column:<10}"
@@ -328,7 +328,9 @@ class System:
             info += "\n"
         info += "----------------------------------------------\n"
         info += f"Rotor type: {rotor_type}\n"
-        info += f"Principal moments (amu·Å²): IA={eigvals[0]:.5f}  IB={eigvals[1]:.5f}  IC={eigvals[2]:.5f}\n"
+        info += f"Principal moments (amu·Å²):\t{eigvals[0]:.5f}  {eigvals[1]:.5f}  {eigvals[2]:.5f}\n\n"
+        info += f"Rotational constants (cm⁻¹):\t{rot_const_cm[0]:.5f}  {rot_const_cm[1]:.5f}  {rot_const_cm[2]:.5f}\n"
+        info += f"Rotational constants (MHz):\t{rot_const_mhz[0]:.5f}  {rot_const_mhz[1]:.5f}  {rot_const_mhz[2]:.5f}\n"
         info += "----------------------------------------------\n\n"
 
         info += "********************** PROPERTIES *************************\n\n"
