@@ -398,6 +398,24 @@ class MolecularGeometry:
             mass += atomic_masses[atom]
         return mass
 
+    @property
+    def center_of_mass(self) -> np.ndarray:
+        """
+        The center of mass of the molecule in Angstrom.
+
+        Returns
+        -------
+        np.ndarray
+            The numpy array containing the 3 cartesian coordinates of the center of mass
+            of the molecule in Angstrom.
+        """
+        com = np.zeros(3)
+        for atom, position in zip(self.__atoms, self.__coordinates):
+            mass = atomic_masses[atom]
+            com += mass * position
+        com /= self.mass
+        return com
+
     def buried_volume_fraction(
         self,
         site: int,

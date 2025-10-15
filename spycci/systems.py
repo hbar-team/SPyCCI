@@ -305,6 +305,16 @@ class System:
             info += "\n"
         info += "----------------------------------------------\n\n"
 
+        info += "Center of mass:\n"
+        info += "----------------------------------------------\n"
+        info += "                x (Å)      y (Å)      z (Å)   \n"
+        info += "----------------------------------------------\n"
+        info += f" {'':<6}{'':^6}"
+        for c in self.geometry.center_of_mass:
+            info += "{0:^11}".format(f"{c:.5f}")
+        info += "\n"
+        info += "----------------------------------------------\n\n"
+
         info += "********************** PROPERTIES *************************\n\n"
         info += f"Geometry level of theory: {self.geometry.level_of_theory_geometry}\n"
         info += (
