@@ -438,8 +438,8 @@ class MolecularGeometry:
 
         Returns
         -------
-        inertia : np.ndarray of shape (3, 3)
-            The inertia tensor of the molecule in units of amu·Å².
+        inertia_tensor : np.ndarray of shape (3, 3)
+            The inertia tensor of the molecule in amu·Å².
         eigvals : np.ndarray of shape (3)
             The principal moments of inertia (IA, IB, IC) in amu·Å².
         rotor_type : str
