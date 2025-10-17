@@ -2,6 +2,8 @@ import pytest
 import shutil
 import subprocess
 
+import spycci.config
+
 from numpy.testing import assert_array_almost_equal, assert_almost_equal
 from spycci.core.base import Engine
 from spycci.core.properties import Properties, pKa
@@ -117,6 +119,75 @@ def test_conflict_vibrational():
     assert p.pka["DIRECT"] == 5.0
 
 
+def test_level_of_theory_consistency_normal():
+
+    p = Properties()
+    first = Engine("FirstMethod")
+    second = Engine("SecondMethod")
+
+    assert spycci.config.STRICTNESS_LEVEL == spycci.config.StrictnessLevel.NORMAL
+    assert first.level_of_theory != second.level_of_theory
+
+    p.set_electronic_energy(0.1, first)
+    p.set_free_energy_correction(0.02, second)
+
+    assert p.level_of_theory_electronic == first.level_of_theory
+    assert p.level_of_theory_vibrational == second.level_of_theory
+    assert_almost_equal(p.electronic_energy, 0.1, decimal=6)
+    assert_almost_equal(p.free_energy_correction, 0.02, decimal=6)
+    assert_almost_equal(p.gibbs_free_energy, 0.12, decimal=6)
+
+
+def test_level_of_theory_consistency_strict_different_vibrational():
+
+    spycci.config.STRICTNESS_LEVEL = spycci.config.StrictnessLevel.STRICT
+
+    try:
+        p = Properties()
+        first = Engine("FirstMethod")
+        second = Engine("SecondMethod")
+
+        assert spycci.config.STRICTNESS_LEVEL == spycci.config.StrictnessLevel.STRICT
+        assert first.level_of_theory != second.level_of_theory
+
+        p.set_electronic_energy(0.1, first)
+        p.set_free_energy_correction(0.02, second)
+
+        assert p.level_of_theory_electronic == None
+        assert p.level_of_theory_vibrational == second.level_of_theory
+        assert p.electronic_energy == None
+        assert p.gibbs_free_energy == None
+        assert_almost_equal(p.free_energy_correction, 0.02, decimal=6)
+    
+    finally:
+        spycci.config.STRICTNESS_LEVEL = spycci.config.StrictnessLevel.NORMAL
+
+
+def test_level_of_theory_consistency_strict_different_electronic():
+
+    spycci.config.STRICTNESS_LEVEL = spycci.config.StrictnessLevel.STRICT
+
+    try:
+        p = Properties()
+        first = Engine("FirstMethod")
+        second = Engine("SecondMethod")
+
+        assert spycci.config.STRICTNESS_LEVEL == spycci.config.StrictnessLevel.STRICT
+        assert first.level_of_theory != second.level_of_theory
+
+        p.set_free_energy_correction(0.02, second)
+        p.set_electronic_energy(0.1, first)
+
+        assert p.level_of_theory_electronic == first.level_of_theory
+        assert p.level_of_theory_vibrational == None
+        assert p.free_energy_correction == None
+        assert p.gibbs_free_energy == None
+        assert_almost_equal(p.electronic_energy, 0.1, decimal=6)
+    
+    finally:
+        spycci.config.STRICTNESS_LEVEL = spycci.config.StrictnessLevel.NORMAL
+
+
 def test_pka_vibrational_addition():
 
     p = Properties()
@@ -140,6 +211,52 @@ def test_pka_vibrational_addition():
     assert p.level_of_theory_electronic == first.level_of_theory
     assert p.level_of_theory_vibrational == second.level_of_theory
     assert p.free_energy_correction == 1.0
+
+
+def test_level_of_theory_consistency_normal_for_mixed_pka():
+
+    p = Properties()
+    first = Engine("FirstMethod")
+    second = Engine("SecondMethod")
+
+    pka = pKa()
+    pka.set_direct(2.5)
+
+    assert spycci.config.STRICTNESS_LEVEL == spycci.config.StrictnessLevel.NORMAL
+    assert first.level_of_theory != second.level_of_theory
+
+    p.set_pka(pka, first, second)
+
+    assert p.level_of_theory_electronic == first.level_of_theory
+    assert p.level_of_theory_vibrational == second.level_of_theory
+    assert_almost_equal(p.pka.direct, 2.5, decimal=6)
+
+
+def test_level_of_theory_consistency_strict_for_mixed_pka():
+
+    spycci.config.STRICTNESS_LEVEL = spycci.config.StrictnessLevel.STRICT
+
+    try:
+        p = Properties()
+        first = Engine("FirstMethod")
+        second = Engine("SecondMethod")
+
+        pka = pKa()
+        pka.set_direct(2.5)
+
+        assert spycci.config.STRICTNESS_LEVEL == spycci.config.StrictnessLevel.NORMAL
+        assert first.level_of_theory != second.level_of_theory
+
+        p.set_pka(pka, first, second)
+    
+    except:
+        assert True
+
+    else:
+        assert False, "RuntimeEror exception was expected when setting mixed properties with different levels of theory in STRICT mode"
+        
+    finally:
+        spycci.config.STRICTNESS_LEVEL = spycci.config.StrictnessLevel.NORMAL
 
 
 def test_check_engine():
