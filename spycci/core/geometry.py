@@ -419,7 +419,7 @@ class MolecularGeometry:
     @property
     def inertia(self) -> np.ndarray:
         """
-        The inertia tensor, its eigenvalues, rotor type and rotational constants 
+        The inertia tensor, its eigenvalues and eigenvectors, rotor type and rotational constants
         of the molecule.
 
         The inertia tensor is calculated relative to the molecular center of mass,
@@ -442,6 +442,8 @@ class MolecularGeometry:
             The inertia tensor of the molecule in amu·Å².
         eigvals : np.ndarray of shape (3)
             The principal moments of inertia (IA, IB, IC) in amu·Å².
+        eigvecs : np.ndarray of shape (3, 3)
+            The principal axes of rotation.
         rotor_type : str
             Type of molecular rotor.
         rot_const_cm : np.ndarray of shape (3)
@@ -467,7 +469,11 @@ class MolecularGeometry:
             [Ixz, Iyz, Izz]
         ])
 
-        eigvals = np.sort(np.linalg.eigvals(inertia_tensor))
+        eigvals, eigvecs = np.linalg.eig(inertia_tensor)
+        idx = np.argsort(eigvals)
+        eigvals = eigvals[idx]
+        eigvecs = eigvecs[:, idx]
+
         eigvals_kgm2 = eigvals * amu_to_kg / 1.0e20
         rot_const_cm = h / (8 * np.pi**2 * c * 100 * eigvals_kgm2)
         rot_const_mhz = rot_const_cm * c / 1.0e4
@@ -485,7 +491,7 @@ class MolecularGeometry:
         else:
             rotor_type = "asymmetric top"
 
-        return inertia_tensor, eigvals, rotor_type, rot_const_cm, rot_const_mhz
+        return inertia_tensor, eigvals, eigvecs, rotor_type, rot_const_cm, rot_const_mhz
 
     def buried_volume_fraction(
         self,
