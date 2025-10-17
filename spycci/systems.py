@@ -319,9 +319,7 @@ class System:
         info += "----------------------------------------------\n"
         info += "                  x          y          z     \n"
         info += "----------------------------------------------\n"
-        inertia, eigvals, eigvecs, rotor_type, rot_const_cm, rot_const_mhz = self.geometry.inertia
-
-        for column, row in zip(["x", "y", "z"], inertia):
+        for column, row in zip(["x", "y", "z"], self.geometry.inertia_tensor):
             info += f" {column:<10}"
             for val in row:
                 info += f"{val:>11.5f}"
@@ -331,17 +329,19 @@ class System:
         info += "----------------------------------------------\n"
         info += "                  x          y          z     \n"
         info += "----------------------------------------------\n"
-        inertia, eigvals, eigvecs, rotor_type, rot_const_cm, rot_const_mhz = self.geometry.inertia
-        for column, row in zip(["A", "B", "C"], eigvecs):
+        for column, row in zip(["A", "B", "C"], self.geometry.inertia_eigvecs):
             info += f" {column:<10}"
             for val in row:
                 info += f"{val:>11.5f}"
             info += "\n"
         info += "----------------------------------------------\n\n"
-        info += f"Rotor type: {rotor_type}\n"
+        info += f"Rotor type: {self.geometry.rotor_type}\n"
+        eigvals = self.geometry.inertia_eigvals
         info += f"Principal moments (amu·Å²):\t{eigvals[0]:.5f}  {eigvals[1]:.5f}  {eigvals[2]:.5f}\n\n"
-        info += f"Rotational constants (cm⁻¹):\t{rot_const_cm[0]:.5f}  {rot_const_cm[1]:.5f}  {rot_const_cm[2]:.5f}\n"
-        info += f"Rotational constants (MHz):\t{rot_const_mhz[0]:.5f}  {rot_const_mhz[1]:.5f}  {rot_const_mhz[2]:.5f}\n\n"
+        rot_const = self.geometry.rotational_constants[0]
+        info += f"Rotational constants (cm⁻¹):\t{rot_const[0]:.5f}  {rot_const[1]:.5f}  {rot_const[2]:.5f}\n"
+        rot_const = self.geometry.rotational_constants[1]
+        info += f"Rotational constants (MHz):\t{rot_const[0]:.5f}  {rot_const[1]:.5f}  {rot_const[2]:.5f}\n\n"
         info += "----------------------------------------------\n\n"
 
         info += "********************** PROPERTIES *************************\n\n"
