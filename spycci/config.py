@@ -21,7 +21,6 @@ __JSON_VERSION__ = 1
 # The string encoding the default options to be used during an MPI call
 MPI_FLAGS = "--bind-to none"
 
-global VERSION_MATCH
 # Used in dependency_finder.py to match version maps
 # Options: "strict", "minor", "major", "disabled"
 # "strict": match exact version (e.g., 4.1.6 -> 4.1.6)
