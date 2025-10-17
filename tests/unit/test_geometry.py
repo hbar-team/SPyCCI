@@ -206,6 +206,16 @@ def test_MolecularGeometry_properties():
     assert mol.atomic_numbers == [8, 1, 1]
 
 
+# Test center of mass property
+def test_MolecularGeometry_write_xyz():
+    
+    xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
+    mol = MolecularGeometry.from_xyz(xyzfile)
+
+    expected = [-3.17179934199191, -0.62405335766083, 0.024132922929869]
+    assert_almost_equal(mol.center_of_mass, expected, decimal=6)
+
+
 # Test the MolecularGeometry bureid_volume_fraction method
 def test_MolecularGeometry_buried_volume_fraction():
 
