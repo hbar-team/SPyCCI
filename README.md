@@ -11,3 +11,11 @@ The Simple Python Computational Chemistry Interface (SPyCCI) provides a simple i
 SPyCCI is an open-source project (distributed under the GNU-GPL3 license) born from the fusion of two independent open-source projects:
 * The [GES-comp-echem](https://github.com/GES-compchem/GES-comp-echem) library
 * The [CoCCA](https://github.com/TheoChemPhDPadova/CoCCA) collection of python tools
+
+The **SPyCCI** package can be installed directly from `pip` using the command:
+
+```
+pip install spycci-toolkit
+```
+
+Full documentation of the latest release is available at https://hbar-team.github.io/SPyCCI/intro.html

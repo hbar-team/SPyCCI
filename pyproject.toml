@@ -4,10 +4,16 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "spycci-toolkit"
-version = "0.0.2"
+version = "1.0.0"
 description = "Simple Python Computational Chemistry Interface"
 readme = "README.md"
 requires-python = ">=3.10"
+
+authors = [
+    { name = "Pierpaolo Pravatto" },
+    { name = "Luca Babetto" },
+    { name = "Marco Dalla Tiezza" }
+]
 
 dependencies = [
     "numpy>=2.2.6",
