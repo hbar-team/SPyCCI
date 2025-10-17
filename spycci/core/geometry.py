@@ -536,10 +536,7 @@ class MolecularGeometry:
             [Ixz, Iyz, Izz]
         ])
 
-        self.__inertia_eigvals, self.__inertia_eigvecs = np.linalg.eig(self.__inertia_tensor)
-        idx = np.argsort(self.__inertia_eigvals)
-        self.__inertia_eigvals = self.__inertia_eigvals[idx]
-        self.__inertia_eigvecs = self.__inertia_eigvecs[:, idx]
+        self.__inertia_eigvals, self.__inertia_eigvecs = np.linalg.eigh(self.__inertia_tensor)
 
         eigvals_kgm2 = self.__inertia_eigvals * amu_to_kg / 1.0e20
         rot_const_cm = h / (8 * np.pi**2 * c * 100 * eigvals_kgm2)
