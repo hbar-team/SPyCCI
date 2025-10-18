@@ -4,11 +4,12 @@ import os, json
 import numpy as np
 import logging
 
-from typing import List, Generator, Optional
+from typing import List, Generator, Optional, Union
 from copy import deepcopy
 
 from spycci.constants import kB
 from spycci.config import __JSON_VERSION__
+from spycci.core.base import Engine
 from spycci.core.geometry import MolecularGeometry
 from spycci.core.properties import Properties
 
@@ -58,17 +59,42 @@ class System:
         self.__charge: int = charge
         self.__spin: int = spin
         self.__box_side = box_side
-        self.properties: Properties = Properties()
-        self.flags: list = []
 
+        self.properties: Properties = Properties()
+        self.properties._Properties__add_check_geometry_level_of_theory(self.__check_geometry_level_of_theory)   # Set listener in Properties class using mangled name
+
+        self.flags: list = []
         logger.debug(f"CREATED: System object {self.name} at ID: {hex(id(self))}.")
     
     def __on_geometry_change(self) -> None:
-        "Function used by MolecularGeometry listener to clear properties when molecular geometry has been changed."
-
+        """
+        Function used by the `MolecularGeometry` listener to clear properties when molecular geometry has been changed.
+        """
         logger.debug(f"CLEARED: Properties of {self.name} system (ID: {hex(id(self))}) due to molecular geometry change.")
         self.properties = Properties()
+    
+    def __check_geometry_level_of_theory(self, level_of_theory: str) -> None:
+        """
+        Function used by the `Properties` class listener to check compatibility of a newly provided
+        level of theory with the currently adopted geometric level of theory. If the level of theory
+        provided is different exception is raised. If the geometry level of theory is none the check is
+        skipped silently.
 
+        Argument
+        --------
+        level_of_theory: str
+            The level of theory to be checked agains the geometry level of theory.
+        
+        Raises
+        ------
+        RuntimeError
+            Exception raised if the proposed level of theory is different from the one set
+            as the geometry level of theory.
+        """
+        if self.geometry.level_of_theory_geometry is not None:
+            if level_of_theory != self.geometry.level_of_theory_geometry:
+                raise RuntimeError("Mismatch between the user-provided level of theory and the one used to set geometry")
+        
     @classmethod
     def from_xyz(
         cls, 
