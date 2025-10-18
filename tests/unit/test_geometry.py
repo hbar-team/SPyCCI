@@ -206,14 +206,122 @@ def test_MolecularGeometry_properties():
     assert mol.atomic_numbers == [8, 1, 1]
 
 
-# Test center of mass property
-def test_MolecularGeometry_write_xyz():
+def test_MolecularGeometry_center_of_mass():
     
     xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
     mol = MolecularGeometry.from_xyz(xyzfile)
 
     expected = [-3.17179934199191, -0.62405335766083, 0.024132922929869]
     assert_almost_equal(mol.center_of_mass, expected, decimal=6)
+
+
+def test_MolecularGeometry_inertia_tensor_diagonal():
+
+    mol = MolecularGeometry()
+    mol.append("H", [-1., 0., 0.])
+    mol.append("H", [1., 0., 0.])
+    
+    assert_almost_equal(mol.center_of_mass, [0., 0., 0.], decimal=6)
+
+    expected_inertia_tensor = [
+        [0.00000, 0.00000, 0.00000],
+        [0.00000, 2.01588, 0.00000],
+        [0.00000, 0.00000, 2.01588]
+    ]
+
+    expected_inertia_axes = [
+        [1.00000, 0.00000, 0.00000],
+        [0.00000, 1.00000, 0.00000],
+        [0.00000, 0.00000, 1.00000]
+    ]
+
+    assert_array_almost_equal(mol.inertia_tensor, expected_inertia_tensor, decimal=6)
+    assert_array_almost_equal(mol.inertia_eigvals, [0.00000, 2.01588, 2.01588], decimal=6)
+    assert_array_almost_equal(mol.inertia_eigvecs, expected_inertia_axes, decimal=6)
+
+    expected_rotational_constants = [
+        [None, 8.362416993118522, 8.362416993118522],
+        [None, 250698.9545187970, 250698.9545187970],
+    ]
+
+    for i in range(2):
+        for x, y in zip(mol.rotational_constants[i], expected_rotational_constants[i]):
+            if x is None:
+                assert y is None
+            else:
+                assert_almost_equal(x, y, decimal=6)
+    
+    assert mol.rotor_type == "linear rotor", "Wrong type of rotor type found"
+
+
+def test_MolecularGeometry_inertia_tensor_non_diagonal():
+
+    mol = MolecularGeometry()
+    mol.append("H", [-1./np.sqrt(2), -1./np.sqrt(2), 0.])
+    mol.append("H", [1./np.sqrt(2), 1./np.sqrt(2), 0.])
+    
+    assert_almost_equal(mol.center_of_mass, [0., 0., 0.], decimal=6)
+
+    expected_inertia_tensor = [
+        [1.00794, -1.00794, 0.00000],
+        [-1.00794, 1.00794, 0.00000],
+        [0.00000, 0.00000, 2.01588]
+    ]
+
+    expected_inertia_axes = [
+        [-0.707107, -0.707107, 0.00000],
+        [-0.707107, 0.7071070, 0.00000],
+        [0.00000, 0.00000, 1.00000]
+    ]
+
+    assert_array_almost_equal(mol.inertia_tensor, expected_inertia_tensor, decimal=6)
+    assert_array_almost_equal(mol.inertia_eigvals, [0.00000, 2.01588, 2.01588], decimal=6)
+    assert_array_almost_equal(mol.inertia_eigvecs, expected_inertia_axes, decimal=6)
+
+    expected_rotational_constants = [
+        [None, 8.362416993118522, 8.362416993118522],
+        [None, 250698.9545187970, 250698.9545187970],
+    ]
+
+    for i in range(2):
+        for x, y in zip(mol.rotational_constants[i], expected_rotational_constants[i]):
+            if x is None:
+                assert y is None
+            else:
+                assert_almost_equal(x, y, decimal=6)
+    
+    assert mol.rotor_type == "linear rotor", "Wrong type of rotor type found"
+
+
+def test_MolecularGeometry_rotor_types():
+
+    mol = MolecularGeometry.from_smiles("C#C")
+    assert mol.rotor_type == "linear rotor"
+
+    mol = MolecularGeometry.from_smiles("C")
+    assert mol.rotor_type == "spherical top"
+
+    mol = MolecularGeometry.from_smiles("c1ccccc1")
+    assert mol.rotor_type == "oblate symmetric top"
+
+    mol = MolecularGeometry.from_smiles("CC#CC")
+    assert mol.rotor_type == "prolate symmetric top"
+
+    mol = MolecularGeometry.from_smiles("CC(I)(Br)")
+    assert mol.rotor_type == "asymmetric top"
+
+
+def test_stored_properties_clearing():
+    
+    mol = MolecularGeometry()
+    mol.append("C", [-1., 0., 0.])
+    mol.append("N", [1., 0., 0.])
+
+    assert mol.rotor_type == "linear rotor"
+
+    mol.append("H", [0., 1., 0.5])
+    assert mol.rotor_type == "asymmetric top"
+
 
 
 # Test the MolecularGeometry bureid_volume_fraction method
