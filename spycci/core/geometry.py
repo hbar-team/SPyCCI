@@ -41,6 +41,19 @@ class MolecularGeometry:
         self.__rotational_constants: Optional[tuple] = None
 
         self.level_of_theory_geometry: Optional[str] = None
+    
+    def __clear_properties(self) -> None:
+        """
+        Clears the level of theory and all the structure related properties
+        that may have been cached for a previously defined molecular structure.
+        """
+        self.__inertia_tensor = None
+        self.__inertia_eigvals = None
+        self.__inertia_eigvecs = None
+        self.__rotor_type = None
+        self.__rotational_constants = None
+
+        self.level_of_theory_geometry = None
 
     def __getitem__(self, index: int) -> Tuple[str, np.ndarray]:
         if index < 0 or index >= self.atomcount:
@@ -84,6 +97,7 @@ class MolecularGeometry:
                 f"The coordinate vector must contain 3 floating poin coordinates"
             )
 
+        self.__clear_properties()
         self.__atomcount += 1
         self.__atoms.append(atom)
         self.__coordinates.append(np.array(coordinates))
