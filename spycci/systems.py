@@ -4,12 +4,11 @@ import os, json
 import numpy as np
 import logging
 
-from typing import List, Generator, Optional, Union
+from typing import List, Generator, Optional, Tuple
 from copy import deepcopy
 
 from spycci.constants import kB
 from spycci.config import __JSON_VERSION__
-from spycci.core.base import Engine
 from spycci.core.geometry import MolecularGeometry
 from spycci.core.properties import Properties
 
@@ -637,6 +636,38 @@ class ReactionPath:
         for system in systems:
             self.systems.append(system)
 
+def analyze_active_atoms(self) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Analyze atomic displacements along the reaction path.
+
+    This method computes, for each atom, the standard deviation of its cartesian
+    coordinates (x, y, z) across all steps in the reaction path. It also evaluates
+    the total spatial displacement of each atom as the Euclidean norm of the
+    coordinate standard deviations.
+
+    Returns
+    -------
+    Tuple[np.ndarray, np.ndarray]
+        A tuple containing:
+        - std : np.ndarray of shape (N atoms, 3)
+            The standard deviation (in Å) of the x, y, z coordinates for each atom.
+        - norm : np.ndarray of shape (N atoms,)
+            The total spatial standard deviation (in Å) for each atom, computed as
+            the Euclidean norm of the x, y, z standard deviations.
+    """
+    n_steps = len(self.systems)
+    n_atoms = len(self.systems[0].geometry.coordinates)
+
+    all_coords = np.zeros((n_steps, n_atoms, 3))
+
+    for i, system in enumerate(self.systems):
+        coords = np.array(system.geometry.coordinates)
+        all_coords[i, :, :] = coords
+
+    std = np.std(all_coords, axis=0) # Calculate standard deviation
+    norm = np.linalg.norm(std, axis=1) # Calculate norm. Total displacement marker
+
+    return std, norm
 
 class Ensemble:
     """
