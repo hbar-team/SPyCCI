@@ -53,7 +53,7 @@ class System:
         self.name = str(name)
 
         self.__geometry: MolecularGeometry = deepcopy(geometry)
-        self.__geometry._add_system_reset(self.__on_geometry_change)    # Set listener in MolecularGeometry class
+        self.__geometry._MolecularGeometry__add_system_reset(self.__on_geometry_change)    # Set listener in MolecularGeometry class using mangled name
 
         self.__charge: int = charge
         self.__spin: int = spin

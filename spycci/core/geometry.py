@@ -46,7 +46,7 @@ class MolecularGeometry:
         # Define a listener to reset System on geometry change
         self.__system_reset: Callable = None
     
-    def _add_system_reset(self, listener: Callable) -> None:
+    def __add_system_reset(self, listener: Callable) -> None:
         """
         Add a reference to a System reset function
 
@@ -96,7 +96,6 @@ class MolecularGeometry:
         memo[id(self)] = obj
 
         for attr_name, attr_value in self.__dict__.items():
-            print(f"{attr_name}: {attr_value}")
             setattr(obj, attr_name, deepcopy(attr_value, memo))
         
         obj.__system_reset = None
