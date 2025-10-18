@@ -14,7 +14,7 @@ kernelspec:
 # Properties handling
 After running calculations or calling dedicated [funtions](Guide-functions) the obtained results are stored in the `properties` attribute, (an instance of the `Properties` class), of the `System` object itself. 
 
-The `Properties` class is designed to store and manage computed properties (e.g. energies, vibrational data, pKa, etc.) and label them with the **level of theory** used to compute them. To do so, each property is tagged internally with either an **electronic** or **vibrational** level of theory. This association is used to ensure consistency and prevent mixing data computed with different theoretical methods. This is done under the strict assumption that, when analyzing or comparing computed data, it's crucial to know under which assumptions (level of theory) each property was derived. 
+The `Properties` class is designed to store and manage computed properties (e.g. energies, vibrational data, pKa, etc.) and label them with the **level of theory** used to compute them. To do so, each property is tagged internally with either an **electronic** or **vibrational** level of theory. This association is used to ensure consistency and prevent mixing data computed with different theoretical methods. This is done under the strict assumption that, when analyzing or comparing computed data, it's crucial to know under which assumptions (level of theory) each property was derived. Furthermore, each system is labelled with a **geometric** level of theory that further put into context the origin of the geometry at hand and the consistency among the levels of theory employed.
 
 The `Properties` class automatically:
 
@@ -22,14 +22,13 @@ The `Properties` class automatically:
 - Ensures consistency depending on a user-defined strictness level
 - Prevents undefined behavior when combining incompatible data
 
-The behavior of the class is governed by the `STRICTNESS_LEVEL` setting (defined in `spycci.config`), which defines how strictly levels of theory must match. The `STRICTNESS_LEVEL` can assume different values defined in the `spycci.config.StrictnessLevel` enumeration. At the moment, two levels have been implemented:
+The behavior of the class is governed by the `STRICTNESS_LEVEL` setting (defined in `spycci.config`), which defines how strictly levels of theory must match. The `STRICTNESS_LEVEL` can assume different values defined in the `spycci.config.StrictnessLevel` enumeration. At the moment, three levels have been implemented:
 
-- `NORMAL`: Electronic and vibrational levels of theory may differ (**default**). Consistency is ensured only within data of the same type (e.g. all electronic properties must be computed at the same electronic level of theory that can different from the one used for vibrational data).
-- `STRICT`: Electronic and vibrational levels of theory must match. A mismatch causes **automatic clearing** of conflicting properties and a **warning** is issued in the logger.
+- `NORMAL`: Electronic and vibrational levels of theory may differ (**default**). Consistency is ensured only within data of the same type (e.g. all electronic properties must be computed at the same electronic level of theory that can be different from the one used for vibrational data).
+- `STRICT`: Electronic and vibrational levels of theory must match. A mismatch causes **automatic clearing** of conflicting properties and a **warning** is issued in the logger. An **exception is raised only** for *mixed* properties like `pKa`, where both levels must be consistent at once.
+- `VERY_STRICT`: Geometric, Electronic and vibrational levels of theory must match. A mismatch between electronic and vibronic level of theory results in **automatic clearing** of conflicting properties and a **warning** is issued in the logger. A mismatch between the geometry level of theory and either of the electronic or vibrational levels of theory result in an `RuntimeError` exception. In the case of a `None` geometry level of theory, no exception is raised.
 
-In `STRICT` mode, when a new property is added using a different level of theory, the conflicting set of properties is **cleared silently**, and a warning is logged. An **exception is raised only** for *mixed* properties like `pKa`, where both levels must be consistent at once.
-
-Levels of theory are available as read-only `Properties` class arguments under the names `level_of_theory_electronic` and `level_of_theory_vibrational`.
+Levels of theory are available as read-only `Properties` class arguments under the names `level_of_theory_electronic` and `level_of_theory_vibrational`. The `level_of_theory_geometry` is available as read-only argument of the `MolecularGeometry` class. Instances of both class are available in a `System` object under the attributes `geometry` (type `MolecularGeometry`) and `properties` (type `Properties`).
 
 The full list of property implemented is the following:
 
