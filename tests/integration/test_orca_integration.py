@@ -1,7 +1,7 @@
 import pytest
 
 from spycci.engines.orca import OrcaInput
-from spycci.systems import System, Ensemble
+from spycci.systems import System, ReactionPath
 from spycci.tools.externalutilities import split_multixyz
 from spycci.core.dependency_finder import locate_orca
 
@@ -659,12 +659,12 @@ def test_OrcaInput_scan():
     mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
-        ensemble: Ensemble = engine.scan(mol, scan="B 0 1 = 0.8, 1.5, 10", ncores=8)
+        reaction_path: ReactionPath = engine.scan(mol, scan="B 0 1 = 0.8, 1.5, 10", ncores=8)
     except:
         assert False, "Unexpected exception raised during relaxed surface scan"
 
     else:
-        assert len(ensemble.systems) == 10
+        assert len(reaction_path.systems) == 10
 
         expected_energies = np.array(
             [
@@ -681,7 +681,7 @@ def test_OrcaInput_scan():
             ]
         )
 
-        calculated_energies = np.array([system.properties.electronic_energy for system in ensemble.systems])
+        calculated_energies = np.array([system.properties.electronic_energy for system in reaction_path.systems])
 
         assert_array_almost_equal(calculated_energies, expected_energies, decimal=6)
 
@@ -695,12 +695,12 @@ def test_OrcaInput_scan_ts():
     mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/SN2_scan_example.xyz", charge=-1, spin=1)
 
     try:
-        newmol, ensemble = engine.scan_ts(mol, scan="B 0 5 = 3.0, 1.0, 10", ncores=8)
+        newmol, reaction_path = engine.scan_ts(mol, scan="B 0 5 = 3.0, 1.0, 10", ncores=8)
     except:
         assert False, "Unexpected exception raised during relaxed surface scan"
 
     else:
-        assert len(ensemble.systems) == 4
+        assert len(reaction_path.systems) == 4
 
         expected_energies = np.array(
             [
@@ -711,7 +711,7 @@ def test_OrcaInput_scan_ts():
             ]
         )
 
-        calculated_energies = np.array([system.properties.electronic_energy for system in ensemble.systems])
+        calculated_energies = np.array([system.properties.electronic_energy for system in reaction_path.systems])
 
         assert_array_almost_equal(calculated_energies, expected_energies, decimal=6)
 
@@ -775,11 +775,11 @@ def test_OrcaInput_neb_ci():
     product = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_product.xyz", charge=0, spin=1)
 
     try:
-        MEP_ensemble: Ensemble = engine.neb_ci(reactant, product, nimages=5, ncores=8)
+        MEP_reaction_path: ReactionPath = engine.neb_ci(reactant, product, nimages=5, ncores=8)
     except:
         assert False, "Exception raised during NEB-CI calculation"
 
-    obtained_systems: List[System] = [s for s in MEP_ensemble]
+    obtained_systems: List[System] = [s for s in MEP_reaction_path]
     expected_systems: List[System] = split_multixyz(
         reactant,
         f"{TEST_DIR}/utils/orca_examples/NEB-CI_MEP_trj.xyz",
@@ -787,7 +787,7 @@ def test_OrcaInput_neb_ci():
         remove_xyz_files=True,
     )
 
-    assert len(MEP_ensemble) == 7
+    assert len(MEP_reaction_path) == 7
 
     assert_array_almost_equal(
         [s.properties.electronic_energy for s in obtained_systems],
@@ -816,11 +816,11 @@ def test_OrcaInput_neb_ts():
     product = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_product.xyz", charge=0, spin=1)
 
     try:
-        transition_state, MEP_ensemble = engine.neb_ts(reactant, product, nimages=5, ncores=8)
+        transition_state, MEP_reaction_path = engine.neb_ts(reactant, product, nimages=5, ncores=8)
     except:
         assert False, "Exception raised during NEB-TS calculation"
 
-    obtained_systems: List[System] = [s for s in MEP_ensemble]
+    obtained_systems: List[System] = [s for s in MEP_reaction_path]
     expected_systems: List[System] = split_multixyz(
         reactant,
         f"{TEST_DIR}/utils/orca_examples/NEB-TS_MEP_trj.xyz",
@@ -828,7 +828,7 @@ def test_OrcaInput_neb_ts():
         remove_xyz_files=True,
     )
 
-    assert len(MEP_ensemble) == 7
+    assert len(MEP_reaction_path) == 7
 
     assert_array_almost_equal(
         [s.properties.electronic_energy for s in obtained_systems],
@@ -873,11 +873,11 @@ def test_OrcaInput_neb_ts_with_guess():
     guess = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_ts_guess.xyz", charge=0, spin=1)
 
     try:
-        transition_state, MEP_ensemble = engine.neb_ts(reactant, product, guess=guess, nimages=5, ncores=8)
+        transition_state, MEP_reaction_path = engine.neb_ts(reactant, product, guess=guess, nimages=5, ncores=8)
     except:
         assert False, "Exception raised during NEB-TS calculation"
 
-    obtained_systems: List[System] = [s for s in MEP_ensemble]
+    obtained_systems: List[System] = [s for s in MEP_reaction_path]
     expected_systems: List[System] = split_multixyz(
         reactant,
         f"{TEST_DIR}/utils/orca_examples/NEB-TS_with_guess_MEP_trj.xyz",
@@ -885,7 +885,7 @@ def test_OrcaInput_neb_ts_with_guess():
         remove_xyz_files=True,
     )
 
-    assert len(MEP_ensemble) == 7
+    assert len(MEP_reaction_path) == 7
 
     assert_array_almost_equal(
         [s.properties.electronic_energy for s in obtained_systems],

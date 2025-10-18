@@ -577,6 +577,66 @@ def json_parser(input: dict) -> dict:
     return output
 
 
+class ReactionPath:
+    """
+    ReactionPath object, containing a series of System objects representing the
+    different steps along a reaction path.
+
+    Parameters
+    ----------
+    steps : List[System]
+        The list of System objects to be included in the ReactionPath.
+
+    Attributes
+    ----------
+    name : str
+        Name of the reaction path.
+    steps : List[System]
+        The list of System objects in the ReactionPath.
+    """
+
+    def __init__(self, systems: List[System]) -> None:
+
+        if len(systems) == 0:
+            raise ValueError("Cannot operate on an empty systems array")
+
+        if any(system.geometry.atoms != systems[0].geometry.atoms for system in systems):
+            raise RuntimeError("Different systems encountered in list")
+
+        self.name: str = systems[0].name
+        self.systems: List[System] = systems
+
+    def __iter__(self) -> Generator[System]:
+        for item in self.systems:
+            yield item
+
+    def __getitem__(self, index: int) -> System:
+        if index < 0 or index >= len(self.systems):
+            raise ValueError("Index out of bounds")
+
+        return self.systems[index]
+
+    def __len__(self) -> int:
+        return len(self.systems)
+    
+    def __str__(self) -> str:
+        return f"Reaction path: {self.name}, Number of steps: {len(self.systems)}"
+
+    def add(self, systems: List[System]):
+        """
+        Append more Systems to the ensemble
+
+        Parameters
+        ----------
+        systems : List[System]
+            The list of systems to be added to the ensamble
+        """
+        if any(system.geometry.atoms != systems[0].geometry.atoms for system in systems):
+            raise RuntimeError("Different systems encountered in list")
+
+        for system in systems:
+            self.systems.append(system)
+
 
 class Ensemble:
     """

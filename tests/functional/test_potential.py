@@ -1,13 +1,9 @@
-import pytest
-
 from spycci.engines.xtb import XtbInput
-from spycci.engines.orca import OrcaInput
-from spycci.systems import System, Ensemble
+from spycci.systems import System
 from spycci.functions.potential import calculate_reduction_potential
 from os.path import dirname, abspath
 from shutil import rmtree
 
-import numpy as np
 from numpy.testing import assert_almost_equal
 
 # Get the path of the tests directory

@@ -6,7 +6,7 @@ from os.path import basename, isfile, join
 
 import spycci.config as cfg
 from spycci.config import get_ncores
-from spycci.systems import Ensemble, System
+from spycci.systems import System, ReactionPath
 from spycci.tools import process_output
 from spycci.tools.externalutilities import split_multixyz
 from spycci.core.base import Engine
@@ -1204,7 +1204,7 @@ class OrcaInput(Engine):
         maxcore: int = 750,
         remove_tdir: bool = True,
         blocks: Optional[Dict[str, Dict[str, Any]]] = None,
-    ):
+    ) -> ReactionPath:
         """
         Relaxed surface scan.
 
@@ -1230,8 +1230,8 @@ class OrcaInput(Engine):
 
         Returns
         -------
-        scan_list : Ensemble
-            Output Ensemble containing the scan frames.
+        scan_list : ReactionPath
+            Output ReactionPath containing the scan frames.
 
         Examples
         --------
@@ -1243,7 +1243,7 @@ class OrcaInput(Engine):
 
         >>> output = orca.scan(mol, scan="B 0 1 = 1.0, 3.0, 10")
 
-        The ``output`` object is of type ``Ensemble`` and will contain all the evaluated structures together with their
+        The ``output`` object is of type ``ReactionPath`` and will contain all the evaluated structures together with their
         electronic energies.
         """
 
@@ -1305,13 +1305,13 @@ class OrcaInput(Engine):
                 system.properties.set_electronic_energy(energies.pop(0), self)
                 mol_list.append(system)
 
-            ensemble = Ensemble(mol_list)
+            reaction_path = ReactionPath(mol_list)
 
             process_output(mol, self.__output_suffix, "scan", mol.charge, mol.spin)
             if remove_tdir:
                 shutil.rmtree(tdir)
 
-            return ensemble
+            return reaction_path
 
     def scan_ts(
         self,
@@ -1328,7 +1328,7 @@ class OrcaInput(Engine):
         inplace: bool = False,
         remove_tdir: bool = True,
         blocks: Optional[Dict[str, Dict[str, Any]]] = None,
-    ):
+    ) -> Tuple[System, ReactionPath]:
         """
         Relaxed surface scan based transition state search.
 
@@ -1358,7 +1358,7 @@ class OrcaInput(Engine):
         inplace : bool
             If set to True will update the given `mol` System with the optimized transition state structure. If set to
             False (default) will return a new system object with the optimized transition state structure together with
-            an Ensemble object encoding the explored scan steps.
+            a ReactionPath object encoding the explored scan steps.
         remove_tdir : bool, optional
             temporary work directory will be removed, by default True
         blocks : Optional[Dict[str, Dict[str, Any]]]
@@ -1369,8 +1369,8 @@ class OrcaInput(Engine):
         -------
         System
             The optimized transition state structure. (only if inplace is False)
-        Ensemble
-            Output Ensemble containing the scan frames. (only if inplace is False)
+        Reaction Path
+            Output Reaction Path containing the scan frames. (only if inplace is False)
 
         Examples
         --------
@@ -1382,10 +1382,10 @@ class OrcaInput(Engine):
         molecule ``mol`` dividing the range from 1Å to 3Å in 10 equal steps (extremes are included). The syntax of the
         command is:
 
-        >>> transition_state, scan_ensemble = orca.scan_ts(mol, scan="B 0 1 = 1.0, 3.0, 10")
+        >>> transition_state, scan_reaction_path = orca.scan_ts(mol, scan="B 0 1 = 1.0, 3.0, 10")
 
         The ``transition_state`` object is of type ``System`` and encodes the optimized transition state structure while the
-        ``scan_ensemble`` object is of type ``Ensemble`` and will contain all the evaluated structures during the scan step.
+        ``scan_reaction_path`` object is of type ``ReactionPath`` and will contain all the evaluated structures during the scan step.
         """
 
         logger.info(f"{mol.name}, charge {mol.charge} spin {mol.spin} - {self.method} SCAN TS")
@@ -1461,7 +1461,7 @@ class OrcaInput(Engine):
                     indexed_mol_list.append([index, system])
 
                 indexed_mol_list.sort(key=lambda v: v[0])
-                ensemble = Ensemble([x[1] for x in indexed_mol_list])
+                reaction_path = ReactionPath([x[1] for x in indexed_mol_list])
 
                 shutil.move("input.xyz", f"{mol.name}_TS.xyz")
                 newmol = System.from_xyz(f"{mol.name}_TS.xyz", charge=mol.charge, spin=mol.spin)
@@ -1471,7 +1471,7 @@ class OrcaInput(Engine):
                 if remove_tdir:
                     shutil.rmtree(tdir)
 
-                return newmol, ensemble
+                return newmol, reaction_path
 
     def neb_ci(
         self,
@@ -1483,9 +1483,9 @@ class OrcaInput(Engine):
         maxcore: int = 750,
         remove_tdir: bool = True,
         blocks: Optional[Dict[str, Dict[str, Any]]] = None,
-    ) -> Ensemble:
+    ) -> ReactionPath:
         """
-        Run a climbing image nudged elastic band calculation (NEB-CI) and output the ensemble encoding the optimized
+        Run a climbing image nudged elastic band calculation (NEB-CI) and output the reaction path encoding the optimized
         minimum energy path trajectory.
 
         Arguments
@@ -1516,8 +1516,8 @@ class OrcaInput(Engine):
 
         Returns
         -------
-        Ensemble
-            The ensemble object containing the structures along the minimum energy path.
+        ReactionPath
+            The reaction path object containing the structures along the minimum energy path.
 
         Examples
         --------
@@ -1525,9 +1525,9 @@ class OrcaInput(Engine):
         calculation, returning the minimum energy path (MEP) connecting a ``reactant`` and a ``product`` structures, can
         be run invoking the ``neb_ci`` command according to the syntax:
 
-        >>> ensemble = orca.neb_ci(reactant, product)
+        >>> reaction_path = orca.neb_ci(reactant, product)
 
-        The ``ensemble`` object is of type ``Ensemble`` and will contain all the evaluated structures alomng the computed
+        The ``reaction_path`` object is of type ``ReactionPath`` and will contain all the evaluated structures along the computed
         minimum energy path.
         """
 
@@ -1576,12 +1576,12 @@ class OrcaInput(Engine):
             os.system(cmd)
 
             MEP_systems = split_multixyz(reactant, "input_MEP_trj.xyz", suffix="MEP", engine=self)
-            MEP_ensemble = Ensemble(MEP_systems)
+            MEP_reaction_path = ReactionPath(MEP_systems)
 
             if remove_tdir:
                 shutil.rmtree(tdir)
 
-            return MEP_ensemble
+            return MEP_reaction_path
 
     def neb_ts(
         self,
@@ -1594,10 +1594,10 @@ class OrcaInput(Engine):
         maxcore: int = 750,
         remove_tdir: bool = True,
         blocks: Optional[Dict[str, Dict[str, Any]]] = None,
-    ) -> Tuple[System, Ensemble]:
+    ) -> Tuple[System, ReactionPath]:
         """
         Run a climbing image nudged elastic band calculation (NEB-CI) followed by a transition state optimization
-        and output the optimized transition state structure together with the ensemble encoding the optimized minimum
+        and output the optimized transition state structure together with the reaction path encoding the optimized minimum
         energy path trajectory.
 
         Arguments
@@ -1632,8 +1632,8 @@ class OrcaInput(Engine):
         -------
         System
             The optimized transition state structure obtained from the NEB-TS.
-        Ensemble
-            The ensemble object containing the structures along the minimum energy path.
+        ReactionPath
+            The reaction path object containing the structures along the minimum energy path.
 
         Examples
         --------
@@ -1643,15 +1643,15 @@ class OrcaInput(Engine):
         located during the NEB-CI procedure a transition state optimization is carried out. The syntax to run the calculation
         is the following:
 
-        >>> transition_state, mep_ensemble = orca.neb_ts(reactant, product)
+        >>> transition_state, mep_reaction_path = orca.neb_ts(reactant, product)
 
         The ``transition_state`` object is of type ``System`` and encodes the optimized transition state structure. The
-        ``mep_ensemble`` object is of type ``Ensemble`` and will contain all the evaluated structures along the computed
+        ``mep_reaction_path`` object is of type ``ReactionPath`` and will contain all the evaluated structures along the computed
         minimum energy path.
 
         For complex calculation a transition state ``guess`` can be provided to the routine by using the ``guess`` option:
 
-        >>> transition_state, mep_ensemble = orca.neb_ts(reactant, product, guess=guess)
+        >>> transition_state, mep_reaction_path = orca.neb_ts(reactant, product, guess=guess)
 
         **Note:** All the structures (``reactant``, ``product``, ``guess``) should have the same charge, spin multiplicity but
         different names.
@@ -1729,12 +1729,12 @@ class OrcaInput(Engine):
             )
 
             MEP_systems = split_multixyz(reactant, "input_MEP_trj.xyz", suffix="MEP", engine=self)
-            MEP_ensemble = Ensemble(MEP_systems)
+            MEP_reaction_path = ReactionPath(MEP_systems)
 
             if remove_tdir:
                 shutil.rmtree(tdir)
 
-            return transition_state, MEP_ensemble
+            return transition_state, MEP_reaction_path
 
     def cosmors(
         self,
