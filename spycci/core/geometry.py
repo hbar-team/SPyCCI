@@ -598,9 +598,20 @@ class MolecularGeometry:
         self.__inertia_eigvals, self.__inertia_eigvecs = np.linalg.eigh(self.__inertia_tensor)
 
         eigvals_kgm2 = self.__inertia_eigvals * amu_to_kg / 1.0e20
-        rot_const_cm = h / (8 * np.pi**2 * c * 100 * eigvals_kgm2)
-        rot_const_mhz = rot_const_cm * c / 1.0e4
-        self.__rotational_constants = (rot_const_cm, rot_const_mhz)
+        
+        rot_const_cm, rot_const_mhz = [], []
+        for eigval in eigvals_kgm2:
+
+            if eigval == 0.:
+                rot_const_cm.append(None)
+                rot_const_mhz.append(None)
+
+            else:
+                value = h / (8 * np.pi**2 * c * 100 * eigval)
+                rot_const_cm.append(value)
+                rot_const_mhz.append(value * c / 1.0e4)           
+                
+        self.__rotational_constants = (np.array(rot_const_cm), np.array(rot_const_mhz))
 
         tol=1e-3
         IA, IB, IC = self.__inertia_eigvals
