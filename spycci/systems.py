@@ -77,8 +77,8 @@ class System:
         """
         Function used by the `Properties` class listener to check compatibility of a newly provided
         level of theory with the currently adopted geometric level of theory. If the level of theory
-        provided is different exception is raised. If the geometry level of theory is none the check is
-        skipped silently.
+        provided is different exception is raised. If the geometry level of theory is `None` the check
+        is skipped silently.
 
         Argument
         --------

@@ -4,7 +4,7 @@ import numpy as np
 
 from os.path import isfile
 from copy import deepcopy
-from typing import Tuple, List, Union, Generator, Optional, Iterator, Callable
+from typing import Tuple, List, Union, Generator, Optional, Iterator, Callable, TYPE_CHECKING
 from morfeus import BuriedVolume
 
 from rdkit.Chem import Mol, Atom, MolFromSmiles, AddHs
@@ -18,6 +18,8 @@ from rdkit.Chem.rdForceFieldHelpers import (
 
 from spycci.constants import atoms_dict, atomic_masses, h, c, amu_to_kg
 
+if TYPE_CHECKING:
+    from spycci.systems import System
 
 class MolecularGeometry:
     """
@@ -46,13 +48,13 @@ class MolecularGeometry:
         # Define a listener to reset System on geometry change
         self.__system_reset: Callable = None
     
-    def __add_system_reset(self, listener: Callable) -> None:
+    def __add_system_reset(self, listener: System.__on_geometry_change) -> None:
         """
         Add a reference to a System reset function
 
         Argument
         --------
-        listener: Callable
+        listener: System.__on_geometry_change
             The method of the `System` object handling a change in geometry
         """
         self.__system_reset = listener

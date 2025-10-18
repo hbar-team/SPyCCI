@@ -4,11 +4,13 @@ import logging
 import spycci.config
 
 from copy import deepcopy
-from typing import Dict, List, Union, Callable
+from typing import Dict, List, Union, Callable, TYPE_CHECKING
 from spycci.config import StrictnessLevel
 from spycci.core.base import Engine
 from spycci.core.spectroscopy import VibrationalData
 
+if TYPE_CHECKING:
+    from spycci.systems import System
 
 logger = logging.getLogger(__name__)
 
@@ -124,14 +126,14 @@ class Properties:
         # Define a listener to validate geometry level of theory stored in System
         self.__check_geometry_level_of_theory: Callable = None
     
-    def __add_check_geometry_level_of_theory(self, listener: Callable) -> None:
+    def __add_check_geometry_level_of_theory(self, listener: System.__check_geometry_level_of_theory) -> None:
         """
         Add a reference to a `System` function accepting as argument the geometry
         level of theory to be checked. (implemented as `__check_geometry_level_of_theory`)
 
         Argument
         --------
-        listener: Callable
+        listener: System.__check_geometry_level_of_theory
             The method `__check_geometry_level_of_theory` of the `System` handling the level of theory check
         """
         self.__check_geometry_level_of_theory = listener
