@@ -3,7 +3,8 @@ from __future__ import annotations
 import numpy as np
 
 from os.path import isfile
-from typing import Tuple, List, Union, Generator, Optional, Iterator
+from copy import deepcopy
+from typing import Tuple, List, Union, Generator, Optional, Iterator, Callable
 from morfeus import BuriedVolume
 
 from rdkit.Chem import Mol, Atom, MolFromSmiles, AddHs
@@ -41,7 +42,26 @@ class MolecularGeometry:
         self.__rotational_constants: Optional[tuple] = None
 
         self.level_of_theory_geometry: Optional[str] = None
+
+        # Define a listener to reset System on geometry change
+        self.__system_reset: Callable = None
     
+    def _add_system_reset(self, listener: Callable) -> None:
+        """
+        Add a reference to a System reset function
+
+        Argument
+        --------
+        listener: Callable
+            The method of the `System` object handling a change in geometry
+        """
+        self.__system_reset = listener
+    
+    def __call_system_reset(self) -> None:
+        "If set, call the system (owner) reset listener"
+        if self.__system_reset is not None:
+            self.__system_reset()
+
     def __clear_properties(self) -> None:
         """
         Clears the level of theory and all the structure related properties
@@ -68,6 +88,20 @@ class MolecularGeometry:
 
     def __len__(self) -> int:
         return self.__atomcount
+    
+    def __deepcopy__(self, memo) -> MolecularGeometry:
+        "Overload of the deepcopy funtion to safely remove listener reference"
+        cls = self.__class__
+        obj = cls.__new__(cls)
+        memo[id(self)] = obj
+
+        for attr_name, attr_value in self.__dict__.items():
+            print(f"{attr_name}: {attr_value}")
+            setattr(obj, attr_name, deepcopy(attr_value, memo))
+        
+        obj.__system_reset = None
+
+        return obj
 
     def append(self, atom: str, coordinates: Union[List[float], np.ndarray]) -> None:
         """
@@ -98,6 +132,7 @@ class MolecularGeometry:
             )
 
         self.__clear_properties()
+        self.__call_system_reset()
         self.__atomcount += 1
         self.__atoms.append(atom)
         self.__coordinates.append(np.array(coordinates))

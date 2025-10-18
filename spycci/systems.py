@@ -47,18 +47,28 @@ class System:
         spin: int = 1,
         box_side: Optional[float] = None,
     ) -> None:
-        
         if type(geometry) != MolecularGeometry:
                 raise TypeError("The `geometry` argument must be of type `MolecularGeometry`.")
             
         self.name = str(name)
+
         self.__geometry: MolecularGeometry = deepcopy(geometry)
+        self.__geometry._add_system_reset(self.__on_geometry_change)    # Set listener in MolecularGeometry class
+
         self.__charge: int = charge
         self.__spin: int = spin
         self.__box_side = box_side
         self.properties: Properties = Properties()
         self.flags: list = []
+
+        logger.debug(f"CREATED: System object {self.name} at ID: {hex(id(self))}.")
     
+    def __on_geometry_change(self) -> None:
+        "Function used by MolecularGeometry listener to clear properties when molecular geometry has been changed."
+
+        logger.debug(f"CLEARED: Properties of {self.name} system (ID: {hex(id(self))}) due to molecular geometry change.")
+        self.properties = Properties()
+
     @classmethod
     def from_xyz(
         cls, 
