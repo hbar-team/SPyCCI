@@ -1,14 +1,26 @@
 import os
 import logging
+from enum import IntEnum
 
 logger = logging.getLogger(__name__)
 
+def get_ncores():
+    try:
+        ncores = int(os.environ["OMP_NUM_THREADS"])
+        logger.debug("Environment variable OMP_NUM_THREADS found")
+    except:
+        ncores = len(os.sched_getaffinity(0))
+        logger.debug("Environment variable OMP_NUM_THREADS not found")
+
+    logger.debug(f"Number of cores: {ncores}")
+    return ncores
+
+# The version of the internal SPyCCI JSON file format
 __JSON_VERSION__ = 1
 
-global MPI_FLAGS
+# The string encoding the default options to be used during an MPI call
 MPI_FLAGS = "--bind-to none"
 
-global VERSION_MATCH
 # Used in dependency_finder.py to match version maps
 # Options: "strict", "minor", "major", "disabled"
 # "strict": match exact version (e.g., 4.1.6 -> 4.1.6)
@@ -22,14 +34,12 @@ if VERSION_MATCH not in ["strict", "minor", "major", "disabled"]:
         'Allowed values are "strict", "minor", "major", "disabled".'
     )
 
+# Strictness of the Level of theory check performed by the properties.py module
+# Options: "NORMAL", "STRICT"
+# "NORMAL" : The electronic and vibrational levels of theory can be different
+# "STRICT" : The electronic and vibrational levels of theory cannot differ within a property object
+class StrictnessLevel(IntEnum):
+    NORMAL = 0
+    STRICT = 1
 
-def get_ncores():
-    try:
-        ncores = int(os.environ["OMP_NUM_THREADS"])
-        logger.debug("Environment variable OMP_NUM_THREADS found")
-    except:
-        ncores = len(os.sched_getaffinity(0))
-        logger.debug("Environment variable OMP_NUM_THREADS not found")
-
-    logger.debug(f"Number of cores: {ncores}")
-    return ncores
+STRICTNESS_LEVEL = StrictnessLevel.NORMAL

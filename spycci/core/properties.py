@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-import logging, warnings
-import numpy as np
+import logging
+import spycci.config
 
 from typing import Dict, List, Union
+from spycci.config import StrictnessLevel
 from spycci.core.base import Engine
 from spycci.core.spectroscopy import VibrationalData
 
@@ -95,7 +96,13 @@ class Properties:
     to the coputed properties and checks, whenever a new property is set, that a given input data
     is compatible with the current used level of theory. If a mismatch between levels of theory is
     detected all the properties related to the old level of theory are cleaned and a warning is
-    raised.
+    raised. The level of sanity check applied to the levels of theory is set by the `STRICTNESS_LEVEL`
+    variable of the `spycci.config` module. In `NORMAL` mode the electronic and vibrational levels
+    of theory can be different while in `STRICT` equality is enforced to ensure consistency among
+    electronic and vibrational levels of theory. In `STRICT` mode a change of a level of theory will,
+    in case of a mismatch, clear the properties associated to the other. In cased of mixed properties
+    (e.g. pKa in which electronic and vibronic levels of theory are set simultaneously) exception is
+    raised in `STRICT` mode when mismatch is detected.
     """
 
     def __init__(self):
@@ -158,10 +165,11 @@ class Properties:
 
         level_of_theory = self.__check_engine(engine)
 
-        logger.debug("Validating electronic energy")
-        logger.debug(
-            f"current: {self.__level_of_theory_electronic}, requested: {level_of_theory}"
-        )
+        logger.debug("VALIDATING ELECTRONIC LEVEL OF THEORY")
+        logger.debug(f"Strictness level: {spycci.config.STRICTNESS_LEVEL.name}")
+        logger.debug(f"Current electronic level of theory: {self.__level_of_theory_electronic}")
+        logger.debug(f"Current vibrational level of theory: {self.__level_of_theory_vibrational}")
+        logger.debug(f"Requested electronic level of theory: {level_of_theory}")
 
         if self.__level_of_theory_electronic is None:
             self.__level_of_theory_electronic = level_of_theory
@@ -172,16 +180,24 @@ class Properties:
             self.__clear_electronic()
             self.__level_of_theory_electronic = level_of_theory
 
+        if self.__level_of_theory_vibrational and self.__level_of_theory_electronic != self.__level_of_theory_vibrational:  
+            if spycci.config.STRICTNESS_LEVEL in [StrictnessLevel.STRICT]:
+                    msg = "The electronic and vibrational levels of theory differs. Clearing properties with different vibrational level of theory."
+                    logger.warning(msg)
+                    self.__clear_vibrational()
+
     def __validate_vibrational(self, engine: Engine) -> None:
 
         level_of_theory = self.__check_engine(engine)
 
-        logger.debug("Validating vibrational contribution")
-        logger.debug(
-            f"current: {self.__level_of_theory_vibrational}, requested: {level_of_theory}"
-        )
+        logger.debug("VALIDATING VIBRATIONAL LEVEL OF THEORY")
+        logger.debug(f"Strictness level: {spycci.config.STRICTNESS_LEVEL.name}")
+        logger.debug(f"Current electronic level of theory: {self.__level_of_theory_electronic}")
+        logger.debug(f"Current vibrational level of theory: {self.__level_of_theory_vibrational}")
+        logger.debug(f"Requested vibrational level of theory: {level_of_theory}")
 
         if self.__level_of_theory_vibrational is None:
+            
             if self.__pka.is_set() is True:
                 msg = "Added vibrational contribution. Clearing pKa computed with electronic energy only."
                 logger.warning(msg)
@@ -194,6 +210,24 @@ class Properties:
             logger.warning(msg)
             self.__clear_vibrational()
             self.__level_of_theory_vibrational = level_of_theory
+        
+        if self.__level_of_theory_electronic and self.__level_of_theory_electronic != self.__level_of_theory_vibrational:  
+            if spycci.config.STRICTNESS_LEVEL in [StrictnessLevel.STRICT]:
+                    msg = "The electronic and vibrational levels of theory differs. Clearing properties with different electronic level of theory."
+                    logger.warning(msg)
+                    self.__clear_electronic()
+    
+    def __validate_strictness_simultaneously(self, el_engine: Engine, vib_engine: Engine) -> None:
+
+        el_level_of_theory = self.__check_engine(el_engine)
+        vib_level_of_theory = self.__check_engine(vib_engine)
+
+        if spycci.config.STRICTNESS_LEVEL in [StrictnessLevel.STRICT]:
+            if el_level_of_theory != vib_level_of_theory:
+                msg = f"Mismatch between levels of theory of composite property detected during setting in {spycci.config.STRICTNESS_LEVEL.name} mode."
+                logger.error(msg)
+                raise RuntimeError(msg)
+
 
     def to_dict(self) -> dict:
         """
@@ -386,8 +420,16 @@ class Properties:
             The engine used in the electronic calculation.
         vibrational_engine: Union[Engine, str]
             The engine used in the vibrational calculation. (optional)
+        
+        Raises
+        ------
+        RuntimeError
+            Exception raised if a mismatch between levels of theory is detected in STRICT mode.
         """
         logger.debug("Setting pKa")
+
+        if vibrational_engine is not None:
+            self.__validate_strictness_simultaneously(electronic_engine, vibrational_engine)
 
         self.__validate_electronic(electronic_engine)
         if vibrational_engine is not None:
