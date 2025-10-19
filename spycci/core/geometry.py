@@ -46,7 +46,7 @@ class MolecularGeometry:
         self.level_of_theory_geometry: Optional[str] = None
 
         # Define a listener to reset System on geometry change
-        self.__system_reset: Callable = None
+        self.__system_reset: System.__on_geometry_change = None
     
     def __add_system_reset(self, listener: System.__on_geometry_change) -> None:
         """
