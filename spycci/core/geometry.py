@@ -437,6 +437,14 @@ class MolecularGeometry:
             in the molecule
         """
         return self.__coordinates
+    
+    @coordinates.setter
+    def coordinates(self, new_coordinates: List[np.ndarray]) -> None:
+        if len(new_coordinates) != self.atomcount:
+            raise ValueError( f"The new coordinates list must contain {self.atomcount} atoms")
+        self.__clear_properties()
+        self.__call_system_reset()
+        self.__coordinates = new_coordinates
 
     @property
     def mass(self) -> float:
