@@ -581,6 +581,13 @@ class ReactionPath:
     ReactionPath object, containing a series of System objects representing the
     different steps along a reaction path.
 
+    Its primary function is to define the geometric path from reactants to products,
+    often representing **transition states** or intermediate geometries. 
+    
+    The ReactionPath is a collection of molecular geometries: it does not inherently 
+    represent a physical ensemble or thermal distribution. In that case, check
+    the `Ensemble` class.
+
     Parameters
     ----------
     steps : List[System]
@@ -728,7 +735,13 @@ class ReactionPath:
 
 class Ensemble:
     """
-    Ensemble object, containing a series of System objects.
+    A statistical collection of molecular systems representing a **physical 
+    ensemble** (e.g., canonical NVT, microcanonical NVE) typically generated 
+    from molecular dynamics (MD) or Monte Carlo (MC) simulations.
+
+    The Ensemble represents a physical collection of states corresponding to a thermal distribution;
+    it does not inherently describe a single reaction pathway or sequence of geometries.
+    In that case, check the ReactionPath class.
 
     Parameters
     ----------
