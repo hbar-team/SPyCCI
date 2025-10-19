@@ -636,6 +636,63 @@ class ReactionPath:
         for system in systems:
             self.systems.append(system)
 
+    def interpolate(self, n_points: int) -> ReactionPath:
+        """
+        Linearly interpolate the reaction path to redistribute, extend, or reduce
+        the number of steps (systems) along the path.
+
+        Parameters
+        ----------
+        n_points : int
+            The desired number of systems (images) in the new interpolated path.
+
+        Returns
+        -------
+        ReactionPath
+            A new ReactionPath object containing `n_points` interpolated systems.
+        """
+        if len(self.systems) < 2:
+            raise ValueError("Cannot interpolate a path with fewer than two systems.")
+        if n_points < 2:
+            raise ValueError("The new path must contain at least two points.")
+
+        # Number of atoms and dimensionality
+        n_atoms = self.systems[0].geometry.atomcount
+        n_dim = n_atoms * 3
+
+        # Stack all coordinates into a 2D array where the shape of the 
+        # coordinates for each step is (x1,y1,z1,x2,y2,z2,...)
+        coords = np.array([
+            np.array(sys.geometry.coordinates).reshape(-1)
+            for sys in self.systems
+        ])
+
+        # Compute vector difference and Euclidean distance along path
+        vec_diff = np.diff(coords, axis=0)
+        eucl_dist = np.linalg.norm(vec_diff, axis=1)
+
+        # Compute cumulative distance used as reaction coordinate
+        S = np.concatenate(([0.0], np.cumsum(eucl_dist)))
+
+        # Create a evenly spaced reaction coordinate
+        rc = np.linspace(S[0], S[-1], n_points)
+
+        # Interpolate each coordinate
+        new_coords = np.zeros((n_points, n_dim))
+        for i in range(n_dim):
+            new_coords[:, i] = np.interp(rc, S, coords[:, i])
+
+        # Build new systems
+        template_sys = self.systems[0]
+        new_systems = []
+        for arr in new_coords:
+            new_sys = deepcopy(template_sys)
+            reshaped = arr.reshape(n_atoms, 3)
+            new_sys.geometry.coordinates = reshaped
+            new_systems.append(new_sys)
+
+        return ReactionPath(new_systems)
+
     def analyze_active_atoms(self) -> Tuple[np.ndarray, np.ndarray]:
         """
         Analyze atomic displacements along the reaction path.
@@ -656,7 +713,7 @@ class ReactionPath:
                 the Euclidean norm of the x, y, z standard deviations.
         """
         n_steps = len(self.systems)
-        n_atoms = len(self.systems[0].geometry.coordinates)
+        n_atoms = self.systems[0].geometry.atomcount
 
         all_coords = np.zeros((n_steps, n_atoms, 3))
 
