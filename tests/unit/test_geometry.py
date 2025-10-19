@@ -316,10 +316,15 @@ def test_stored_properties_clearing():
     mol = MolecularGeometry()
     mol.append("C", [-1., 0., 0.])
     mol.append("N", [1., 0., 0.])
-
     assert mol.rotor_type == "linear rotor"
 
+    # Call append to trigger clearing of stored properties
     mol.append("H", [0., 1., 0.5])
+
+    # Test that the variable has internally been cleared
+    assert mol._MolecularGeometry__rotor_type == None
+
+    # Trigger a new computation calling the property getter
     assert mol.rotor_type == "asymmetric top"
 
 
