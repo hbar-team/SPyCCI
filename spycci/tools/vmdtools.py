@@ -1,4 +1,5 @@
-import sh, os, shutil
+import sh, os, shutil, logging
+import imageio.v2 as imageio
 
 from tempfile import NamedTemporaryFile as tmp
 from tempfile import mkdtemp
@@ -652,3 +653,63 @@ class VMDRenderer:
         script += "display cuemode Linear\n"
 
         return script
+
+
+
+####################################################################
+#               DEFINE VMD-BASED ANIMATION FUNCTIONS               #
+####################################################################
+
+def animate(
+        systems: List[System],
+        filename: str,
+        renderer: Optional[VMDRenderer] = None,
+        duration: float = 0.1,
+        loop: int = 0,
+        remove_tdir: bool = True,
+) -> None:
+    """
+    Given a list of `System` objects generate a `.gif` animation by iteratively
+    calling `vmd` to render all the frames.
+
+    Arguments
+    ---------
+    systems: List[System]
+        The ordered list of systems to be rendered in the animation.
+    filename: str
+        The name or the path of the output animation `.gif` file.
+    renderer: Optional[VMDRenderer]
+        The rendered used to generate the animation frames. (default: `VMDRenderer()`)
+    duration: float
+        The duration in seconds of each frame in the animation. (default: 0.1s)
+    loop: int
+        The number of time the `.gif` repetes itself. (default: 0 -> Infinite loop)
+    remove_tdir: bool
+        If set to `False` will keep the temporary folder containing the render of
+        each frame. (default: True)
+    """
+    vmd = renderer if renderer else VMDRenderer()
+
+    if type(vmd) != VMDRenderer:
+        raise ValueError(f"The renderer engine must be of type `VMDRenderer`, {type(vmd)} is not a valid renderer")
+
+    logging.getLogger("PIL").setLevel(logging.INFO)
+    logging.getLogger("PIL").propagate = False
+
+    tdir = mkdtemp(prefix = "vmd_animation_", dir=os.getcwd())
+    
+    with sh.pushd(tdir):
+
+        frames = []
+        for i, system in enumerate(systems):
+            vmd.render_system(system, f"frame_{i}.bmp")
+            frames.append(imageio.imread(f"frame_{i}.bmp"))
+
+        imageio.mimsave("animation.gif", frames, duration=duration, loop=loop)
+
+    shutil.copy(f"{tdir}/animation.gif", filename)
+
+    if remove_tdir:
+        shutil.rmtree(tdir)
+
+        
