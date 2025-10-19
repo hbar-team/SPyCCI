@@ -7,6 +7,16 @@
 .. autoclass:: spycci.systems.System
     :members:
 ```
+
+---
+
+## `ReactionPath` class
+
+```{eval-rst}
+.. autoclass:: spycci.systems.ReactionPath
+    :members:
+```
+
 ---
 
 ## `Ensemble` class
