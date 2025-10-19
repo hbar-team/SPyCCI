@@ -60,8 +60,8 @@ class System:
         self.__spin: int = spin
         self.__box_side = box_side
 
-        self.properties: Properties = Properties()
-        self.properties._Properties__add_check_geometry_level_of_theory(self.__check_geometry_level_of_theory)   # Set listener in Properties class using mangled name
+        self.__properties: Properties = Properties()  #: The `Properties` class containing all the molecular properties computed by engines
+        self.__properties._Properties__add_check_geometry_level_of_theory(self.__check_geometry_level_of_theory)   # Set listener in Properties class using mangled name
 
         self.flags: list = []
         logger.debug(f"CREATED: System object {self.name} at ID: {hex(id(self))}.")
@@ -252,7 +252,7 @@ class System:
         data["Charge"] = self.__charge
         data["Spin"] = self.__spin
         data["Box Side"] = self.__box_side
-        data["Geometry"] = self.__geometry.to_dict()
+        data["Geometry"] = self.geometry.to_dict()
         data["Properties"] = self.properties.to_dict()
         data["Flags"] = self.flags
 
@@ -261,6 +261,9 @@ class System:
 
     @property
     def geometry(self) -> MolecularGeometry:
+        """
+        The `MolecularGeometry` object encoding the geometry of the system       
+        """
         return self.__geometry
 
     @geometry.setter
@@ -273,11 +276,31 @@ class System:
             raise ValueError("The geometry object cannot be empty or not initialized")
 
         self.__geometry = new_geometry
+        self.__geometry._MolecularGeometry__add_system_reset(self.__on_geometry_change)
         logger.info(f"Geometry changed: clearing properties for {self.name}")
         self.properties = Properties()
+    
+    @property
+    def properties(self) -> Properties:
+        """
+        The `Properties` class object storing the computed system properties.       
+        """
+        return self.__properties
+    
+    @properties.setter
+    def properties(self, new_properties: Properties) -> None:
+        
+        if type(new_properties) != Properties:
+            raise TypeError("The properties attribute must be of type `Properties`")
+
+        self.__properties = new_properties
+        self.__properties._Properties__add_check_geometry_level_of_theory(self.__check_geometry_level_of_theory)
 
     @property
     def charge(self) -> int:
+        """
+        The total charge of the molecular system       
+        """
         return self.__charge
 
     @charge.setter
@@ -293,6 +316,9 @@ class System:
 
     @property
     def spin(self) -> int:
+        """
+        The spin multiplicity of the molecular system       
+        """
         return self.__spin
 
     @spin.setter
@@ -308,6 +334,10 @@ class System:
 
     @property
     def box_side(self) -> float:
+        """
+        The length of the side of the simulation box (in Å) used to define periodic boundary conditions.
+        If set to `None`, the system is treated as non-periodic.
+        """
         return self.__box_side
 
     @box_side.setter
