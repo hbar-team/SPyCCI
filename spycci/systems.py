@@ -60,7 +60,7 @@ class System:
         self.__spin: int = spin
         self.__box_side = box_side
 
-        self.__properties: Properties = Properties()  #: The `Properties` class containing all the molecular properties computed by engines
+        self.__properties: Properties = Properties()
         self.__properties._Properties__add_check_geometry_level_of_theory(self.__check_geometry_level_of_theory)   # Set listener in Properties class using mangled name
 
         self.flags: list = []

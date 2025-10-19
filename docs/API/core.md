@@ -6,6 +6,8 @@
 ```{eval-rst}
 .. autoclass:: spycci.core.base.Engine
     :members:
+    :undoc-members:
+    :private-members:
 ```
 
 ---
@@ -15,6 +17,8 @@
 ```{eval-rst}
 .. automodule:: spycci.core.dependency_finder
     :members:
+    :undoc-members:
+    :private-members:
 ```
 
 ---
@@ -25,6 +29,8 @@
 ```{eval-rst}
 .. automodule:: spycci.core.geometry
     :members:
+    :undoc-members:
+    :private-members:
 ```
 
 ---
@@ -34,10 +40,14 @@
 ```{eval-rst}
 .. autoclass:: spycci.core.properties.Properties
     :members:
+    :undoc-members:
+    :private-members:
 ```
 ### The `pKa` property
 
 ```{eval-rst}
 .. autoclass:: spycci.core.properties.pKa
     :members:
+    :undoc-members:
+    :private-members:
 ```
