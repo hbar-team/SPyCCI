@@ -124,7 +124,7 @@ class Properties:
         self.__vibrational_data: VibrationalData = None
 
         # Define a listener to validate geometry level of theory stored in System
-        self.__check_geometry_level_of_theory: Callable = None
+        self.__check_geometry_level_of_theory: System.__check_geometry_level_of_theory = None
     
     def __add_check_geometry_level_of_theory(self, listener: System.__check_geometry_level_of_theory) -> None:
         """
@@ -138,10 +138,10 @@ class Properties:
         """
         self.__check_geometry_level_of_theory = listener
     
-    def __call_check_geometry_level_of_theory(self, engine: Union[Engine, str]) -> None:
+    def __call_check_geometry_level_of_theory(self, level_of_theory: str) -> None:
         "If set, send to the system (owner) the engine to be checked"
         if self.__check_geometry_level_of_theory is not None:
-            self.__check_geometry_level_of_theory(engine)
+            self.__check_geometry_level_of_theory(level_of_theory)
     
     def __deepcopy__(self, memo) -> Properties:
         "Overload of the deepcopy funtion to safely remove listener reference"
