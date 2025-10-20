@@ -1,6 +1,6 @@
 import os, copy, shutil, sh, logging
 import numpy as np
-from typing import Dict, Optional, Any, Tuple
+from typing import Dict, Optional, Any, Tuple, Union
 from tempfile import mkdtemp
 from os.path import basename, isfile, join
 
@@ -43,8 +43,8 @@ class OrcaJobInfo:
         If not None, will encode the scan parameters in string format.
     scan_ts: Optional[str]
         If not None, will encode the transition state scan parameters in string format.
-    neb_ci: bool
-        If set to True will trigger a NEB-CI calculation.
+    neb: bool
+        If set to True will trigger a NEB calculation.
     constraints: Optional[str]
         If not None, will encode the constraints to be used during the scan or optimization operations.
     invert_constraints: bool
@@ -82,8 +82,7 @@ class OrcaJobInfo:
         self.nfreq: bool = False
         self.scan: Optional[str] = None
         self.scan_ts: Optional[str] = None
-        self.neb_ci: bool = False
-        self.neb_ts: bool = False
+        self.neb: bool = False
 
         self.constraints: Optional[str] = None
         self.invert_constraints: bool = False
@@ -100,6 +99,7 @@ class OrcaJobInfo:
         self.neb_ts_guess: Optional[str] = None
         self.neb_images: Optional[int] = None
         self.neb_preopt: bool = False
+        self.neb_mode: str = ''
 
         self.__user_blocks: Dict[str, Dict[str, Any]] = {}
 
@@ -268,8 +268,7 @@ class OrcaJobInfo:
 
         block = {} if "neb" not in self.user_blocks else self.user_blocks["neb"]
 
-        if self.neb_ci is True or self.neb_ts is True:
-
+        if self.neb:
             block["product"] = f'"{self.neb_product}"'
 
             if self.neb_ts_guess is not None:
@@ -614,11 +613,19 @@ class OrcaInput(Engine):
         if job_info.nearir is True:
             input += "! NearIR\n"
 
-        if job_info.neb_ci is True:
-            input += "! NEB-CI\n"
-
-        if job_info.neb_ts is True:
-            input += "! NEB-TS\n"
+        if job_info.neb:
+            if job_info.neb_mode == 'CI':
+                input += "! NEB-CI\n"
+            elif job_info.neb_mode == 'TS':
+                input += "! NEB-TS\n"
+            elif job_info.neb_mode == 'ZOOM-CI':
+                input += "! ZOOM-NEB-CI\n"
+            elif job_info.neb_mode == 'ZOOM-TS':
+                input += "! ZOOM-NEB-TS\n"
+            elif job_info.neb_mode == 'IDPP':
+                input += "! NEB-IDPP\n"
+            else:
+                input += "! NEB\n"
 
         input += "\n"
 
@@ -1473,27 +1480,42 @@ class OrcaInput(Engine):
 
                 return newmol, reaction_path
 
-    def neb_ci(
+    def neb(
         self,
+        mode: str,
         reactant: System,
         product: System,
+        guess: Optional[System] = None,
         nimages: Optional[int] = None,
         preoptimize: bool = False,
         ncores: int = None,
         maxcore: int = 750,
         remove_tdir: bool = True,
         blocks: Optional[Dict[str, Dict[str, Any]]] = None,
-    ) -> ReactionPath:
+    ) -> Union[ReactionPath, Tuple[System, ReactionPath]]:
         """
-        Run a climbing image nudged elastic band calculation (NEB-CI) and output the reaction path encoding the optimized
-        minimum energy path trajectory.
+        Run a nudged elastic band calculation (NEB) and output the reaction path encoding the optimized
+        minimum energy path trajectory. If the TS mode is requested (NEB-TS), the NEB is followed by a 
+        transition state optimization and this function will output the optimized transition state structure 
+        together with the reaction path encoding the optimized minimum energy path trajectory.
 
         Arguments
         ---------
+        mode : str
+            The NEB mode to be used in the calculation. Possible values are:  
+                - ``''`` - standard NEB calculation (NEB).
+                - ``'CI'`` - climbing image NEB (NEB-CI).
+                - ``'TS'`` - NEB calculation followed by a transition state optimization (NEB-TS).
+                - ``'ZOOM-CI'`` - Climbing Image NEB plus zoomed climbing image NEB calculation (ZOOM-NEB-CI).
+                - ``'ZOOM-TS'`` - NEB calculation plus zoomed NEB calculation plus subsequent TS optimization (ZOOM-NEB-TS).
+                - ``'IDPP'`` - IDPP (Initial Path) NEB calculation - for estimation of path length (NEB-IDPP).
+
         reactant: System
             The starting structure to be used in the calculation
         product: System
             The final structure to be used in the calculation
+        guess: Optional[System]
+            The guess for the transition state structure.
         nimages: int
             The number of images (without the fixed endpoints) to be used in the calcluation (default: 8)
         preoptimize: bool
@@ -1516,134 +1538,30 @@ class OrcaInput(Engine):
 
         Returns
         -------
+        System, ReactionPath
+            If `mode` is `'TS'`, returns a tuple:
+            - `System`: The optimized transition state structure obtained from the NEB-TS.
+            - `ReactionPath`: The reaction path object containing the structures along the minimum energy path.
+
         ReactionPath
-            The reaction path object containing the structures along the minimum energy path.
+            If `mode` is not `'TS'`, returns only the reaction path object.
 
         Examples
         --------
+        :NORMAL NEB CALCULATION:
+
         Starting from an initialized instance ``orca`` of the ``OrcaInput`` class, a climbing image nudged elastic band
         calculation, returning the minimum energy path (MEP) connecting a ``reactant`` and a ``product`` structures, can
-        be run invoking the ``neb_ci`` command according to the syntax:
+        be run invoking the ``neb`` command according to the syntax:
 
-        >>> reaction_path = orca.neb_ci(reactant, product)
+        >>> reaction_path = orca.neb('', reactant, product)
 
         The ``reaction_path`` object is of type ``ReactionPath`` and will contain all the evaluated structures along the computed
         minimum energy path.
-        """
 
-        logger.info(f"Running a NEB-CI calculation - {self.method}")
-        logger.info(f"Reactant: {reactant.name}, charge {reactant.charge} spin {reactant.spin}")
-        logger.info(f"Product:  {product.name}, charge {product.charge} spin {product.spin}")
+        :NEB-TS CALCULATION:
 
-        if reactant.name == product.name:
-            logger.error("NEB-CI required with reactant and product with the same name")
-            raise RuntimeError("Reactant and product must have different names")
-
-        if reactant.spin != product.spin:
-            logger.error("NEB-CI required with reactant and product having different spin multiplicities.")
-            raise RuntimeError("Reactant and product must have the same spin multiplicity")
-
-        if reactant.charge != product.charge:
-            logger.error("NEB-CI required with reactant and product having different charge.")
-            raise RuntimeError("Reactant and product must have the same charge")
-
-        tdir = mkdtemp(
-            prefix=reactant.name + "_" + product.name + "_",
-            suffix=f"_{self.__output_suffix}_NEB-CI",
-            dir=os.getcwd(),
-        )
-
-        with sh.pushd(tdir):
-
-            product.geometry.write_xyz(f"{product.name}.xyz")
-
-            job_info = OrcaJobInfo()
-            job_info.ncores = ncores
-            job_info.maxcore = maxcore
-            job_info.is_singlet = True if reactant.spin == 1 else False
-            job_info.solvent = self.solvent
-            job_info.neb_ci = True
-            job_info.neb_product = f"{product.name}.xyz"
-            job_info.neb_images = nimages
-            job_info.neb_preopt = preoptimize
-
-            job_info.user_blocks = blocks if blocks else self.blocks
-
-            self.write_input(mol=reactant, job_info=job_info)
-
-            cmd = f"{self.__ORCAPATH} input.inp > output.out '{cfg.MPI_FLAGS}'"
-            logger.debug(f"Running Orca with command: {cmd}")
-            os.system(cmd)
-
-            MEP_systems = split_multixyz(reactant, "input_MEP_trj.xyz", suffix="MEP", engine=self)
-            MEP_reaction_path = ReactionPath(MEP_systems)
-
-            if remove_tdir:
-                shutil.rmtree(tdir)
-
-            return MEP_reaction_path
-
-    def neb_ts(
-        self,
-        reactant: System,
-        product: System,
-        guess: Optional[System] = None,
-        nimages: Optional[int] = None,
-        preoptimize: bool = False,
-        ncores: int = None,
-        maxcore: int = 750,
-        remove_tdir: bool = True,
-        blocks: Optional[Dict[str, Dict[str, Any]]] = None,
-    ) -> Tuple[System, ReactionPath]:
-        """
-        Run a climbing image nudged elastic band calculation (NEB-CI) followed by a transition state optimization
-        and output the optimized transition state structure together with the reaction path encoding the optimized minimum
-        energy path trajectory.
-
-        Arguments
-        ---------
-        reactant: System
-            The starting structure to be used in the calculation.
-        product: System
-            The final structure to be used in the calculation.
-        guess: Optional[System]
-            The guess for the transition state structure.
-        nimages: int
-            The number of images (without the fixed endpoints) to be used in the calcluation (default: 8).
-        preoptimize: bool
-            If set to True, will run a preoptimization in internal coordinates of the reactant and product structures.
-        ncores : int, optional
-            number of cores, by default all available cores.
-        maxcore : int, optional
-            memory per core, in MB, by default 750.
-        remove_tdir : bool, optional
-            temporary work directory will be removed, by default True.
-        blocks : Optional[Dict[str, Dict[str, Any]]]
-            The dictionary of dictionaries encoding a series of custom blocks defined by the user. If set to a non-empty
-            value, will overvrite the block option eventually set on the `OrcaInput` class construction.
-
-        Raises
-        ------
-        RuntimeError
-            Exception raised if the given `System` objects are not compatible with a NEB-CI calculation (e.g. same name
-            or different charge or spin multiplicity)
-
-        Returns
-        -------
-        System
-            The optimized transition state structure obtained from the NEB-TS.
-        ReactionPath
-            The reaction path object containing the structures along the minimum energy path.
-
-        Examples
-        --------
-        Starting from an initialized instance ``orca`` of the ``OrcaInput`` class, a transition state search based on a
-        climbing image nudged elastic band calculation can be run invoking the ``neb_ts`` command. Starting from a
-        ``reactant`` and a ``product`` structures, a NEB-CI calculation is performed. Starting from the transition state
-        located during the NEB-CI procedure a transition state optimization is carried out. The syntax to run the calculation
-        is the following:
-
-        >>> transition_state, mep_reaction_path = orca.neb_ts(reactant, product)
+        >>> transition_state, mep_reaction_path = orca.neb('TS', reactant, product)
 
         The ``transition_state`` object is of type ``System`` and encodes the optimized transition state structure. The
         ``mep_reaction_path`` object is of type ``ReactionPath`` and will contain all the evaluated structures along the computed
@@ -1651,13 +1569,13 @@ class OrcaInput(Engine):
 
         For complex calculation a transition state ``guess`` can be provided to the routine by using the ``guess`` option:
 
-        >>> transition_state, mep_reaction_path = orca.neb_ts(reactant, product, guess=guess)
+        >>> transition_state, mep_reaction_path = orca.neb('TS', reactant, product, guess=guess)
 
         **Note:** All the structures (``reactant``, ``product``, ``guess``) should have the same charge, spin multiplicity but
         different names.
         """
 
-        logger.info(f"Running a NEB-TS calculation - {self.method}")
+        logger.info(f"Running a NEB {mode} calculation - {self.method}")
         logger.info(f"Reactant: {reactant.name}, charge {reactant.charge} spin {reactant.spin}")
         logger.info(f"Product:  {product.name}, charge {product.charge} spin {product.spin}")
 
@@ -1665,32 +1583,36 @@ class OrcaInput(Engine):
             logger.info(f"TS guess:  {guess.name}, charge {guess.charge} spin {guess.spin}")
 
             if reactant.name == guess.name:
-                logger.error("NEB-TS required with reactant and TS guess with the same name")
+                logger.error("NEB required with reactant and TS guess with the same name")
                 raise RuntimeError("Reactant and TS guess must have different names")
 
             if reactant.spin != guess.spin:
-                logger.error("NEB-TS required with reactant and TS guess having different spin multiplicities.")
+                logger.error("NEB required with reactant and TS guess having different spin multiplicities.")
                 raise RuntimeError("Reactant and TS guess must have the same spin multiplicity")
 
             if reactant.charge != guess.charge:
-                logger.error("NEB-TS required with reactant and TS guess having different charge.")
+                logger.error("NEB required with reactant and TS guess having different charge.")
                 raise RuntimeError("Reactant and TS guess must have the same charge")
 
         if reactant.name == product.name:
-            logger.error("NEB-TS required with reactant and product with the same name")
+            logger.error("NEB required with reactant and product with the same name")
             raise RuntimeError("Reactant and product must have different names")
 
         if reactant.spin != product.spin:
-            logger.error("NEB-TS required with reactant and product having different spin multiplicities.")
+            logger.error("NEB required with reactant and product having different spin multiplicities.")
             raise RuntimeError("Reactant and product must have the same spin multiplicity")
 
         if reactant.charge != product.charge:
-            logger.error("NEB-TS required with reactant and product having different charge.")
+            logger.error("NEB required with reactant and product having different charge.")
             raise RuntimeError("Reactant and product must have the same charge")
+        
+        if mode not in ['', 'CI', 'TS', 'ZOOM-CI', 'ZOOM-TS', 'IDPP']:
+            logger.error("NEB mode must be either '', 'CI', 'TS', 'ZOOM-CI', 'ZOOM-TS', 'IDPP'")
+            raise RuntimeError("NEB mode must be either '', 'CI', 'TS', 'ZOOM-CI', 'ZOOM-TS', 'IDPP'")
 
         tdir = mkdtemp(
             prefix=reactant.name + "_" + product.name + "_",
-            suffix=f"_{self.__output_suffix}_NEB-TS",
+            suffix=f"_{self.__output_suffix}_NEB",
             dir=os.getcwd(),
         )
 
@@ -1706,7 +1628,8 @@ class OrcaInput(Engine):
             job_info.maxcore = maxcore
             job_info.is_singlet = True if reactant.spin == 1 else False
             job_info.solvent = self.solvent
-            job_info.neb_ts = True
+            job_info.neb = True
+            job_info.neb_mode = mode
             job_info.neb_product = f"{product.name}.xyz"
             job_info.neb_ts_guess = f"{guess.name}.xyz" if guess is not None else None
             job_info.neb_images = nimages
@@ -1720,21 +1643,28 @@ class OrcaInput(Engine):
             logger.debug(f"Running Orca with command: {cmd}")
             os.system(cmd)
 
-            transition_state = System.from_xyz("input.xyz", charge=reactant.charge, spin=reactant.spin)
-            transition_state.name = f"{reactant.name}_TS"
-            self.parse_output(transition_state)
-
-            process_output(
-                transition_state, self.__output_suffix, "neb-ts", transition_state.charge, transition_state.spin
-            )
-
-            MEP_systems = split_multixyz(reactant, "input_MEP_trj.xyz", suffix="MEP", engine=self)
+            if mode == 'IDPP':
+                MEP_systems = split_multixyz(reactant, "input_initial_path_trj.xyz", suffix="IDPP", engine=self)
+            else:
+                MEP_systems = split_multixyz(reactant, "input_MEP_trj.xyz", suffix="MEP", engine=self)
             MEP_reaction_path = ReactionPath(MEP_systems)
+
+            if 'TS' in mode:
+                transition_state = System.from_xyz("input.xyz", charge=reactant.charge, spin=reactant.spin)
+                transition_state.name = f"{reactant.name}_TS"
+                self.parse_output(transition_state)
+
+                process_output(
+                    transition_state, self.__output_suffix, "neb-ts", transition_state.charge, transition_state.spin
+                )
 
             if remove_tdir:
                 shutil.rmtree(tdir)
 
-            return transition_state, MEP_reaction_path
+            if 'TS' in mode:
+                return transition_state, MEP_reaction_path
+            else:
+                return MEP_reaction_path
 
     def cosmors(
         self,
