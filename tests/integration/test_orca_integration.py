@@ -343,7 +343,7 @@ def test_OrcaInput_opt_ts():
         assert_almost_equal(mol.properties.free_energy_correction, 0.00555767, decimal=6)
         assert_almost_equal(mol.properties.gibbs_free_energy, -3073.19178819, decimal=6)
 
-        assert mol.geometry.atoms == ["C", "Br", "H", "H", "H", "Cl"]
+        assert mol.geometry.atoms == ("C", "Br", "H", "H", "H", "Cl")
 
         expected_geometry = [
             np.array([-4.346202, 1.272711, -0.022700]),
@@ -378,7 +378,7 @@ def test_OrcaInput_opt_ts_no_inplace():
         assert_almost_equal(newmol.properties.free_energy_correction, 0.00555767, decimal=6)
         assert_almost_equal(newmol.properties.gibbs_free_energy, -3073.19178819, decimal=6)
 
-        assert newmol.geometry.atoms == ["C", "Br", "H", "H", "H", "Cl"]
+        assert newmol.geometry.atoms == ("C", "Br", "H", "H", "H", "Cl")
 
         expected_geometry = [
             np.array([-4.346202, 1.272711, -0.022700]),
@@ -719,7 +719,7 @@ def test_OrcaInput_scan_ts():
         assert_almost_equal(newmol.properties.free_energy_correction, 0.00552476, decimal=6)
         assert_almost_equal(newmol.properties.gibbs_free_energy, -3073.18790075, decimal=6)
 
-        assert newmol.geometry.atoms == ["C", "Br", "H", "H", "H", "Cl"]
+        assert newmol.geometry.atoms == ("C", "Br", "H", "H", "H", "Cl")
 
         expected_geometry = [
             np.array([-4.35874488484770, 1.26841036623343,  0.00792242330803]),
@@ -751,7 +751,7 @@ def test_OrcaInput_scan_ts_inplace():
         assert_almost_equal(mol.properties.free_energy_correction, 0.00552476, decimal=6)
         assert_almost_equal(mol.properties.gibbs_free_energy, -3073.18790075, decimal=6)
 
-        assert mol.geometry.atoms == ["C", "Br", "H", "H", "H", "Cl"]
+        assert mol.geometry.atoms == ("C", "Br", "H", "H", "H", "Cl")
 
         expected_geometry = [
             np.array([-4.35874488484770, 1.26841036623343,  0.00792242330803]),
