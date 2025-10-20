@@ -767,15 +767,56 @@ def test_OrcaInput_scan_ts_inplace():
         rmtree("output_files")
 
 
-# Test the OrcaInput NEB-CI function
+# Test the OrcaInput NEB function
 @pytest.mark.skipif(check_orca_version(), reason="Test designed for orca==6.1.0")
-def test_OrcaInput_neb_ci():
-    engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis=None, solvent=None, optionals="D3BJ")
+def test_OrcaInput_neb():
+    engine = OrcaInput(method="XTB", basis_set=None, aux_basis=None, solvent=None)
     reactant = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_reactant.xyz", charge=0, spin=1)
     product = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_product.xyz", charge=0, spin=1)
 
     try:
-        MEP_reaction_path: ReactionPath = engine.neb_ci(reactant, product, nimages=5, ncores=8)
+        MEP_reaction_path: ReactionPath = engine.neb('', reactant, product, nimages=5, ncores=8)
+    except:
+        assert False, "Exception raised during NEB calculation"
+
+    obtained_systems: List[System] = [s for s in MEP_reaction_path]
+    expected_systems: List[System] = split_multixyz(
+        reactant,
+        f"{TEST_DIR}/utils/orca_examples/NEB_MEP_trj.xyz",
+        engine=engine,
+        remove_xyz_files=True,
+    )
+
+    assert len(MEP_reaction_path) == 7
+
+    assert_array_almost_equal(
+        [s.properties.electronic_energy for s in obtained_systems],
+        [
+            -5.50147524875,
+            -5.44325614459,
+            -5.39665301458,
+            -5.39018494028,
+            -5.40804951546,
+            -5.43984642618,
+            -5.47060506582
+        ],
+        decimal=6,
+    )
+
+    for obtained, expected in zip(obtained_systems, expected_systems):
+        assert obtained.geometry.atomcount == expected.geometry.atomcount
+        assert_array_almost_equal(obtained.geometry.coordinates, expected.geometry.coordinates, decimal=6)
+
+
+# Test the OrcaInput NEB-CI function
+@pytest.mark.skipif(check_orca_version(), reason="Test designed for orca==6.1.0")
+def test_OrcaInput_neb_ci():
+    engine = OrcaInput(method="XTB", basis_set=None, aux_basis=None, solvent=None)
+    reactant = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_reactant.xyz", charge=0, spin=1)
+    product = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_product.xyz", charge=0, spin=1)
+
+    try:
+        MEP_reaction_path: ReactionPath = engine.neb('CI', reactant, product, nimages=5, ncores=8)
     except:
         assert False, "Exception raised during NEB-CI calculation"
 
@@ -792,13 +833,13 @@ def test_OrcaInput_neb_ci():
     assert_array_almost_equal(
         [s.properties.electronic_energy for s in obtained_systems],
         [
-            -153.531198653803,
-            -153.499625300158,
-            -153.455456196737,
-            -153.434522739250,
-            -153.459724925124,
-            -153.492871566343,
-            -153.513745795650,
+            -5.50147524875,
+            -5.44839640432,
+            -5.40375292601,
+            -5.38737452175,
+            -5.40313292603,
+            -5.43623847898,
+            -5.47060506582
         ],
         decimal=6,
     )
@@ -811,12 +852,12 @@ def test_OrcaInput_neb_ci():
 # Test the OrcaInput NEB-TS function
 @pytest.mark.skipif(check_orca_version(), reason="Test designed for orca==6.1.0")
 def test_OrcaInput_neb_ts():
-    engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis=None, solvent=None, optionals="D3BJ")
+    engine = OrcaInput(method="XTB", basis_set=None, aux_basis=None, solvent=None)
     reactant = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_reactant.xyz", charge=0, spin=1)
     product = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_product.xyz", charge=0, spin=1)
 
     try:
-        transition_state, MEP_reaction_path = engine.neb_ts(reactant, product, nimages=5, ncores=8)
+        transition_state, MEP_reaction_path = engine.neb('TS', reactant, product, nimages=5, ncores=8)
     except:
         assert False, "Exception raised during NEB-TS calculation"
 
@@ -833,13 +874,13 @@ def test_OrcaInput_neb_ts():
     assert_array_almost_equal(
         [s.properties.electronic_energy for s in obtained_systems],
         [
-            -153.531198653803,
-            -153.500336390160,
-            -153.457600362019,
-            -153.434581451444,
-            -153.458491551980,
-            -153.493191218227,
-            -153.513745795650,
+            -5.50147524875,
+            -5.44849122882,
+            -5.40401984931,
+            -5.38737498635,
+            -5.40307178747,
+            -5.43603462219, 
+            -5.47060506582
         ],
         decimal=6,
     )
@@ -849,17 +890,13 @@ def test_OrcaInput_neb_ts():
         assert_array_almost_equal(obtained.geometry.coordinates, expected.geometry.coordinates, decimal=6)
 
     expected_TS_geometry = [
-        [-0.66317307347966,  0.28018194152757, -0.09615186292715],
-        [ 0.50836971593241, -0.51247377803065, -0.16983643777511],
-        [ 0.84043483066423, -0.85942585214089,  0.82939880141872],
-        [ 0.74498239269949,  0.86474789509194,  0.38839998504082],
-        [ 0.69182799489950, -1.24585500516987, -0.97346170576772],
-        [-0.45618980017626,  1.36545908552930,  0.56716441610144],
-        [-1.66625206053970,  0.10736571319260, -0.54551319609099],
+        [-0.63631476,  0.2459732 , -0.24597168],
+        [-0.04570402, -0.46159428,  0.46159142],
+        [ 0.68201877,  0.21562108, -0.21561974]
     ]
 
     assert_array_almost_equal(transition_state.geometry.coordinates, expected_TS_geometry, decimal=6)
-    assert_almost_equal(transition_state.properties.electronic_energy, -153.434523050378, decimal=6)
+    assert_almost_equal(transition_state.properties.electronic_energy, -5.38737352917, decimal=6)
 
     rmtree("output_files")
 
@@ -867,13 +904,13 @@ def test_OrcaInput_neb_ts():
 # Test the OrcaInput NEB-TS function when providing a transition state guess
 @pytest.mark.skipif(check_orca_version(), reason="Test designed for orca==6.1.0")
 def test_OrcaInput_neb_ts_with_guess():
-    engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis=None, solvent=None, optionals="D3BJ")
+    engine = OrcaInput(method="XTB", basis_set=None, aux_basis=None, solvent=None)
     reactant = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_reactant.xyz", charge=0, spin=1)
     product = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_product.xyz", charge=0, spin=1)
     guess = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_ts_guess.xyz", charge=0, spin=1)
 
     try:
-        transition_state, MEP_reaction_path = engine.neb_ts(reactant, product, guess=guess, nimages=5, ncores=8)
+        transition_state, MEP_reaction_path = engine.neb('TS', reactant, product, guess=guess, nimages=5, ncores=8)
     except:
         assert False, "Exception raised during NEB-TS calculation"
 
@@ -890,13 +927,13 @@ def test_OrcaInput_neb_ts_with_guess():
     assert_array_almost_equal(
         [s.properties.electronic_energy for s in obtained_systems],
         [
-            -153.531198653803,
-            -153.498622680547,
-            -153.454889532332,
-            -153.434542312249,
-            -153.461513027551,
-            -153.493670393542,
-            -153.513745715332,
+            -5.50147524875,
+            -5.44627296019,
+            -5.40096383254,
+            -5.38740698109,
+            -5.40474443625,
+            -5.43707487198,
+            -5.47060506582
         ],
         decimal=6,
     )
@@ -906,20 +943,139 @@ def test_OrcaInput_neb_ts_with_guess():
         assert_array_almost_equal(obtained.geometry.coordinates, expected.geometry.coordinates, decimal=6)
 
     expected_TS_geometry = [
-        [-0.66311684773243,  0.28017480246899, -0.09690384446646],
-        [ 0.50887622804793, -0.51215346523898, -0.16988275478336],
-        [ 0.83949370290155, -0.85903730524107,  0.82986446001246],
-        [ 0.74417131971032,  0.86367182437148,  0.38998751774075],
-        [ 0.69293429267154, -1.24547792104557, -0.97338325908739],
-        [-0.45603938536372,  1.36567048566442,  0.56613739720918],
-        [-1.66631931023520,  0.10715157902073, -0.54581951662519],
-
+        [-0.63661709,  0.24573605, -0.24573612],
+        [-0.04514099, -0.46170049,  0.46170061],
+        [ 0.68175808,  0.21596443, -0.21596449]
     ]
 
     assert_array_almost_equal(transition_state.geometry.coordinates, expected_TS_geometry, decimal=6)
-    assert_almost_equal(transition_state.properties.electronic_energy, -153.434522627235, decimal=6)
+    assert_almost_equal(transition_state.properties.electronic_energy, -5.38737353027, decimal=6)
 
     rmtree("output_files")
+
+
+# Test the OrcaInput ZOOM-NEB-CI function
+@pytest.mark.skipif(check_orca_version(), reason="Test designed for orca==6.1.0")
+def test_OrcaInput_zoom_neb_ci():
+    engine = OrcaInput(method="XTB", basis_set=None, aux_basis=None, solvent=None)
+    reactant = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_reactant.xyz", charge=0, spin=1)
+    product = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_product.xyz", charge=0, spin=1)
+
+    try:
+        MEP_reaction_path: ReactionPath = engine.neb('ZOOM-CI', reactant, product, nimages=5, ncores=8)
+    except:
+        assert False, "Exception raised during ZOOM-NEB-CI calculation"
+
+    obtained_systems: List[System] = [s for s in MEP_reaction_path]
+    expected_systems: List[System] = split_multixyz(
+        reactant,
+        f"{TEST_DIR}/utils/orca_examples/ZOOM-NEB-CI_MEP_trj.xyz",
+        engine=engine,
+        remove_xyz_files=True,
+    )
+
+    assert len(MEP_reaction_path) == 9
+
+    assert_array_almost_equal(
+        [s.properties.electronic_energy for s in obtained_systems],
+        [
+            -5.50147524875,
+            -5.44839640432,
+            -5.40398336609,
+            -5.39081409257,
+            -5.38737356275,
+            -5.39157618473,
+            -5.40325479011,
+            -5.43623847898,
+            -5.47060506582
+        ],
+        decimal=6,
+    )
+
+    for obtained, expected in zip(obtained_systems, expected_systems):
+        assert obtained.geometry.atomcount == expected.geometry.atomcount
+        assert_array_almost_equal(obtained.geometry.coordinates, expected.geometry.coordinates, decimal=6)
+
+
+# Test the OrcaInput ZOOM-NEB-TS function
+@pytest.mark.skipif(check_orca_version(), reason="Test designed for orca==6.1.0")
+def test_OrcaInput_zoom_neb_ts():
+    engine = OrcaInput(method="XTB", basis_set=None, aux_basis=None, solvent=None)
+    reactant = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_reactant.xyz", charge=0, spin=1)
+    product = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_product.xyz", charge=0, spin=1)
+
+    try:
+        transition_state, MEP_reaction_path = engine.neb('ZOOM-TS', reactant, product, nimages=5, ncores=8)
+    except:
+        assert False, "Exception raised during ZOOM-NEB-TS calculation"
+
+    obtained_systems: List[System] = [s for s in MEP_reaction_path]
+    expected_systems: List[System] = split_multixyz(
+        reactant,
+        f"{TEST_DIR}/utils/orca_examples/ZOOM-NEB-TS_MEP_trj.xyz",
+        engine=engine,
+        remove_xyz_files=True,
+    )
+
+    assert len(MEP_reaction_path) == 9
+
+    assert_array_almost_equal(
+        [s.properties.electronic_energy for s in obtained_systems],
+        [
+            -5.50147524875,
+            -5.4467725244,
+            -5.40295295201,
+            -5.38962102183,
+            -5.38747838043,
+            -5.39297088624,
+            -5.40386690821,
+            -5.4382761978,
+            -5.47060506582
+        ],
+        decimal=6,
+    )
+
+    for obtained, expected in zip(obtained_systems, expected_systems):
+        assert obtained.geometry.atomcount == expected.geometry.atomcount
+        assert_array_almost_equal(obtained.geometry.coordinates, expected.geometry.coordinates, decimal=6)
+
+    expected_TS_geometry = [
+        [-0.63619908,  0.24614718, -0.24614619],
+        [-0.04589013, -0.46161113,  0.46160927],
+        [ 0.68208922,  0.21546394, -0.21546308]
+    ]
+
+    assert_array_almost_equal(transition_state.geometry.coordinates, expected_TS_geometry, decimal=6)
+    assert_almost_equal(transition_state.properties.electronic_energy, -5.38737353069, decimal=6)
+
+    rmtree("output_files")
+
+
+# Test the OrcaInput NEB-IDPP function
+@pytest.mark.skipif(check_orca_version(), reason="Test designed for orca==6.1.0")
+def test_OrcaInput_neb_idpp():
+    engine = OrcaInput(method="XTB", basis_set=None, aux_basis=None, solvent=None)
+    reactant = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_reactant.xyz", charge=0, spin=1)
+    product = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_product.xyz", charge=0, spin=1)
+
+    try:
+        MEP_reaction_path: ReactionPath = engine.neb('IDPP', reactant, product, nimages=5, ncores=8)
+    except:
+        assert False, "Exception raised during NEB-IDPP calculation"
+
+    obtained_systems: List[System] = [s for s in MEP_reaction_path]
+    expected_systems: List[System] = split_multixyz(
+        reactant,
+        f"{TEST_DIR}/utils/orca_examples/NEB-IDPP_trj.xyz",
+        engine=engine,
+        remove_xyz_files=True,
+    )
+
+    assert len(MEP_reaction_path) == 5
+
+    for obtained, expected in zip(obtained_systems, expected_systems):
+        assert obtained.geometry.atomcount == expected.geometry.atomcount
+        assert_array_almost_equal(obtained.geometry.coordinates, expected.geometry.coordinates, decimal=6)
 
 
 # Test the OrcaInput COSMO-RS function using default settings using built-in water solvent model
