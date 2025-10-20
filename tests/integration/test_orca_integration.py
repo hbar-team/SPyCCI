@@ -767,6 +767,99 @@ def test_OrcaInput_scan_ts_inplace():
         rmtree("output_files")
 
 
+# Test the OrcaInput IRC function
+@pytest.mark.skipif(check_orca_version(), reason="Test designed for orca==6.1.0")
+def test_OrcaInput_irc():
+    engine = OrcaInput(method="XTB", basis_set=None, aux_basis=None, solvent=None)
+    ts = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/IRC_ts.xyz", charge=0, spin=1)
+
+    try:
+        MEP_reaction_path: ReactionPath = engine.irc(ts, maxiter=80, ncores=8, remove_tdir=False)
+    except:
+        assert False, "Exception raised during IRC calculation"
+
+    obtained_systems: List[System] = [s for s in MEP_reaction_path]
+    expected_systems: List[System] = split_multixyz(
+        ts,
+        f"{TEST_DIR}/utils/orca_examples/IRC_MEP_trj.xyz",
+        engine=engine,
+        remove_xyz_files=True,
+    )
+
+    assert len(MEP_reaction_path) == 60
+
+    assert_array_almost_equal(
+        [s.properties.electronic_energy for s in obtained_systems],
+        [
+            -5.50405733798,
+            -5.50405519744,
+            -5.50405207625,
+            -5.50404837535,
+            -5.50404303482,
+            -5.50403567055,
+            -5.50400966895,
+            -5.50397912716,
+            -5.50395757058,
+            -5.50392842942,
+            -5.50390084003,
+            -5.50383375283,
+            -5.50194484338,
+            -5.49812133236,
+            -5.49250998786,
+            -5.48494117056,
+            -5.47604902876,
+            -5.46481816246,
+            -5.45187512479,
+            -5.43768543786,
+            -5.42336307734,
+            -5.40888576764,
+            -5.39797321358,
+            -5.38953169449,
+            -5.38737353284,
+            -5.38912339936,
+            -5.39387673834,
+            -5.3957326628,
+            -5.39837076059,
+            -5.4012282672,
+            -5.40416017223,
+            -5.40742643131,
+            -5.41078633723,
+            -5.4144948711,
+            -5.4182854366,
+            -5.42234317369,
+            -5.42645817628,
+            -5.43069532499,
+            -5.43493716449,
+            -5.43916304913,
+            -5.4433016944,
+            -5.4472874496,
+            -5.4510549611,
+            -5.45451037445,
+            -5.45773319916,
+            -5.46058190147,
+            -5.4631697892,
+            -5.46536573374,
+            -5.46728497649,
+            -5.46883948406,
+            -5.470107979,
+            -5.47105291979,
+            -5.47171045302,
+            -5.47207278335,
+            -5.47209142903,
+            -5.47210934633,
+            -5.47211515787,
+            -5.47211934186,
+            -5.4721351475,
+            -5.47214775497,
+        ],
+        decimal=6,
+    )
+
+    for obtained, expected in zip(obtained_systems, expected_systems):
+        assert obtained.geometry.atomcount == expected.geometry.atomcount
+        assert_array_almost_equal(obtained.geometry.coordinates, expected.geometry.coordinates, decimal=6)
+
+
 # Test the OrcaInput NEB function
 @pytest.mark.skipif(check_orca_version(), reason="Test designed for orca==6.1.0")
 def test_OrcaInput_neb():
