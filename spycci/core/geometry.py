@@ -295,6 +295,10 @@ class MolecularGeometry:
         self.__atoms = []
         self.__coordinates = []
 
+        # Clear all stored properties and call the `System` class listener
+        self.__clear_properties()
+        self.__call_system_reset()
+
         # Check if the given path points to a valid file
         if not isfile(path):
             raise ValueError(f"The path {path} does not point to a valid file.")

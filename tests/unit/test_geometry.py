@@ -311,7 +311,7 @@ def test_MolecularGeometry_rotor_types():
     assert mol.rotor_type == "asymmetric top"
 
 
-def test_stored_properties_clearing():
+def test_stored_properties_clearing_on_append():
     
     mol = MolecularGeometry()
     mol.append("C", [-1., 0., 0.])
@@ -327,6 +327,24 @@ def test_stored_properties_clearing():
     # Trigger a new computation calling the property getter
     assert mol.rotor_type == "asymmetric top"
 
+
+def test_stored_properties_clearing_on_load_xyz():
+    
+    mol = MolecularGeometry.from_smiles("C")
+    assert mol.rotor_type == "spherical top"
+
+    # Change the coordinates through the `load_xyz`
+    xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
+    mol.load_xyz(xyzfile)
+
+    # Check that the molecule has been loaded correctly
+    mol.atoms[0] = "O"
+
+    # Check that the stored variable has internally been cleared
+    assert mol._MolecularGeometry__rotor_type == None
+
+    # Trigger a new computation calling the property getter
+    assert mol.rotor_type == "asymmetric top"
 
 
 # Test the MolecularGeometry bureid_volume_fraction method
