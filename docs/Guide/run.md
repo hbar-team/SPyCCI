@@ -30,6 +30,7 @@ Generic calculations are implemented as class methods in the various `engines`. 
 |  Relaxed surface scan  |  `scan` |  Orca  |
 |  Transition state optimization  |  `opt_ts` |  Orca  |
 |  Transition state search via relaxed surface scan  |  `scan_ts` |  Orca  |
+|  Intrinsic Reaction Coordinate  |  `irc` |  Orca  |
 |  Nudged Elastic Band method  |  `neb` |  Orca  |
 |  COSMO-RS calculation of solvation energy | `cosmors` | Orca |
 |  NVT Molecular Dynamics  |  `md_nvt` |  DFTB+  |

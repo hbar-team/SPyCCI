@@ -170,7 +170,7 @@ Please notice how this approach is the only one relaying directly on the `__init
 (reactionpath-section)=
 ## ReactionPath
 
-A `ReactionPath` object is defined as an ordered collection of related `System` objects representing consecutive geometries along a reaction coordinate, for example the images of a NEB calculation. To initialise an `ReactionPath` object you need to provide an `iterable` (such as a list) yielding `System` objects:
+A `ReactionPath` object is defined as an ordered collection of related `System` objects representing consecutive geometries along a reaction coordinate, for example the images of a NEB or IRC calculation. To initialise an `ReactionPath` object you need to provide an `iterable` (such as a list) yielding `System` objects:
 
 ```python
 from spycci.systems import System
