@@ -32,7 +32,7 @@ ARG ORCA_REPO=orca-binaries
 ARG ORCA_TAG=v6.1.0-f.0
 ARG ORCA_ASSET=orca-6.1.0-f.0_linux_x86-64_openmpi41.tar.xz
 ARG ORCA_LOCAL_ARCHIVE=
-COPY ${ORCA_LOCAL_ARCHIVE} /tmp/orca.tar.xz
+COPY ${ORCA_LOCAL_ARCHIVE}* /tmp/orca.tar.xz
 RUN --mount=type=secret,id=gh_token,required=0 \
     set -euo pipefail; \
     TOKEN_FILE="/run/secrets/gh_token"; \
