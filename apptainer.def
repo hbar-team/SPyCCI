@@ -1,0 +1,90 @@
+Bootstrap: docker
+From: condaforge/mambaforge:24.9.2-0
+
+%labels
+    Author hbar-team
+    Description SPyCCI Apptainer image with ORCA, XTB, CREST, and DFTB parameters
+
+%files
+    environment.yml /workspace/environment.yml
+    spycci /workspace/spycci
+    tests /workspace/tests
+    pyproject.toml /workspace/pyproject.toml
+    {{ ORCA_LOCAL_ARCHIVE }} /workspace/orca.tar.xz
+
+%post
+    set -e
+
+    # Install system dependencies
+    apt-get update && \
+        apt-get install -y --no-install-recommends wget ca-certificates tar zip xz-utils curl jq && \
+        rm -rf /var/lib/apt/lists/*
+
+    # Set up conda environment and install SPyCCI
+    mamba env create -f /workspace/environment.yml
+    mamba clean -afy
+    conda run -n spycci python -m pip install --no-cache-dir -e /workspace
+    rm /workspace/environment.yml
+
+    # Install DFTB+ parameters
+    DFTBPLUS_PARAM_DIR=/opt/dftbplus/slakos
+    mkdir -p "${DFTBPLUS_PARAM_DIR}"
+    wget -q https://github.com/dftbparams/3ob/releases/download/v3.1.0/3ob-3-1.tar.xz -O /tmp/3ob.tar.xz
+    tar -xf /tmp/3ob.tar.xz -C "${DFTBPLUS_PARAM_DIR}"
+    rm /tmp/3ob.tar.xz
+
+    # Install ORCA
+    ORCA_TMP="/tmp/orca.tar.xz"
+    mkdir -p /opt/orca
+    tar -xf "${ORCA_TMP}" -C /opt/orca --strip-components=1 2>/dev/null || \
+        tar -xf "${ORCA_TMP}" -C /opt/orca
+    rm "${ORCA_TMP}"
+    chmod -R a+rx /opt/orca
+    find /opt/orca -maxdepth 2 -type f -name orca -perm -u+x -print -quit || { echo "ORCA binary not found in /opt/orca"; exit 1; }
+
+    # Install XTB
+    XTBHOME=/opt/xtb
+    wget -q https://github.com/grimme-lab/xtb/releases/download/v6.7.0/xtb-6.7.0-linux-x86_64.tar.xz
+    tar -xf xtb-6.7.0-linux-x86_64.tar.xz
+    mv xtb-dist "${XTBHOME}"
+    rm xtb-6.7.0-linux-x86_64.tar.xz
+
+    # Install CREST
+    CREST_BIN=/opt/crest
+    wget -q https://github.com/crest-lab/crest/releases/download/v3.0.2/crest-gnu-12-ubuntu-latest.tar.xz
+    tar -xf crest-gnu-12-ubuntu-latest.tar.xz
+    mv crest "${CREST_BIN}"
+    rm crest-gnu-12-ubuntu-latest.tar.xz
+    chmod +x "${CREST_BIN}/crest"
+
+    # Create user and set permissions
+    ORCA_ROOT=/opt/orca
+    useradd -m -s /bin/bash spyccitest || true
+    mkdir -p /workspace
+    chown -R spyccitest:spyccitest \
+        /workspace \
+        /opt/conda/envs/spycci \
+        "${ORCA_ROOT}" "${XTBHOME}" "${CREST_BIN}" "${DFTBPLUS_PARAM_DIR}"
+
+%environment
+    export CONDA_DEFAULT_ENV=spycci
+    export ORCA_ROOT=/opt/orca
+    export XTBHOME=/opt/xtb
+    export CREST_BIN=/opt/crest
+    export DFTBPLUS_PARAM_DIR=/opt/dftbplus/slakos
+    export PATH=/opt/orca:/opt/orca/bin:${XTBHOME}/bin:${CREST_BIN}:/opt/conda/envs/spycci/bin:${PATH}
+    export LD_LIBRARY_PATH=/opt/conda/envs/spycci/lib:/opt/orca/lib:${LD_LIBRARY_PATH}
+    export OMPI_MCA_plm=isolated
+    export OMPI_MCA_rmaps_base_oversubscribe=1
+    export OMPI_MCA_btl_vader_single_copy_mechanism=none
+    export OMPI_MCA_btl='^openib'
+    export PYTHONUNBUFFERED=1
+    export SPYCCI_VERSION_MATCH=minor
+
+%runscript
+    set -e
+    cd /workspace
+    if [ $# -eq 0 ]; then
+        set -- pytest -vvv --color=yes -ra --maxfail=0
+    fi
+    exec "$@"
