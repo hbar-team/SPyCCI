@@ -177,14 +177,29 @@ To build the container:
 singularity build --sandbox --build-arg ORCA_LOCAL_ARCHIVE=orca-6.1.0-f.0_linux_x86-64_openmpi41.tar.xz spycci.sif apptainer.def
 ```
 
-This will produce the **read-only** `spycci.sif` container file. When running, the work directory (usually the same directory containing the container file) must be bound to `/workspace` via the `--bind` flag:
+This will produce the `spycci.sif` container file, which can be run as:
 
 ```shell
-singularity run --bind ./:/workspace spycci.sif
+singularity run spycci.sif
 ```
+
+:::{admonition} Bind Paths
+:class: warning
+Singularity container are by default read-only, therefore calculations will normally fail as the container cannot write the results anywhere. For normal operations, the current directory should be mapped to `/workspace`; it is also recommended to mount the default scratch folder for your HPC environment. The following command runs the SPyCCI Singularity container, with write access to both the current directory and `/scratch_local`.
+
+```shell
+singularity run --bind ./:/workspace,/scratch_local spycci.sif
+```
+
+:::
+
+:::{admonition} Bind Paths
+:class: warning
+Be aware that unlike Docker, modifications to bind paths are **permanent** and occur on the actual filesystem running the container.
+:::
 
 As with Docker, it is also possible to run only a subset of tests and pass specific flags to the `pytest` command:
 
 ```bash
-singularity run spycci.sif pytest -vvv --color=yes tests/integration/test_xtb*
+singularity run --bind ./:/workspace,/scratch_local spycci.sif pytest -vvv --color=yes tests/integration/test_xtb*
 ```
