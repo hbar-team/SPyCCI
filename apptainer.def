@@ -34,7 +34,7 @@ From: condaforge/mambaforge:24.9.2-0
     rm /tmp/3ob.tar.xz
 
     # Install ORCA
-    ORCA_TMP="/tmp/orca.tar.xz"
+    ORCA_TMP="/workspace/orca.tar.xz"
     mkdir -p /opt/orca
     tar -xf "${ORCA_TMP}" -C /opt/orca --strip-components=1 2>/dev/null || \
         tar -xf "${ORCA_TMP}" -C /opt/orca
