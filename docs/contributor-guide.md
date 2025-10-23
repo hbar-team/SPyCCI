@@ -174,13 +174,13 @@ Here we provide the Singularity counterparts for the Docker commands explained a
 To build the container:
 
 ```shell
-singularity build --build-arg ORCA_LOCAL_ARCHIVE=orca-6.1.0-f.0_linux_x86-64_openmpi41.tar.xz spycci.sif apptainer.def
+singularity build --sandbox --build-arg ORCA_LOCAL_ARCHIVE=orca-6.1.0-f.0_linux_x86-64_openmpi41.tar.xz spycci.sif apptainer.def
 ```
 
-This will produce the `spycci.sif` file, which can be copied to HPC and run with:
+This will produce the **read-only** `spycci.sif` container file. When running, the work directory (usually the same directory containing the container file) must be bound to `/workspace` via the `--bind` flag:
 
 ```shell
-singularity run spycci.sif
+singularity run --bind ./:/workspace spycci.sif
 ```
 
 As with Docker, it is also possible to run only a subset of tests and pass specific flags to the `pytest` command:
