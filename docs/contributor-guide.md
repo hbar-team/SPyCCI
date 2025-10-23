@@ -174,7 +174,7 @@ Here we provide the Singularity counterparts for the Docker commands explained a
 To build the container:
 
 ```shell
-singularity build --sandbox --build-arg ORCA_LOCAL_ARCHIVE=orca-6.1.0-f.0_linux_x86-64_openmpi41.tar.xz spycci.sif apptainer.def
+singularity build --build-arg ORCA_LOCAL_ARCHIVE=orca-6.1.0-f.0_linux_x86-64_openmpi41.tar.xz spycci.sif apptainer.def
 ```
 
 This will produce the `spycci.sif` container file, which can be run as:
