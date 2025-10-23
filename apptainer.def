@@ -73,7 +73,7 @@ From: condaforge/mambaforge:24.9.2-0
     export CREST_BIN=/opt/crest
     export DFTBPLUS_PARAM_DIR=/opt/dftbplus/slakos
     export PATH=/opt/orca:/opt/orca/bin:${XTBHOME}/bin:${CREST_BIN}:/opt/conda/envs/spycci/bin:${PATH}
-    export LD_LIBRARY_PATH=/opt/conda/envs/spycci/lib:/opt/orca/lib:${LD_LIBRARY_PATH}
+    export LD_LIBRARY_PATH=/opt/conda/envs/spycci/lib:/opt/orca/lib
     export OMPI_MCA_plm=isolated
     export OMPI_MCA_rmaps_base_oversubscribe=1
     export OMPI_MCA_btl_vader_single_copy_mechanism=none
