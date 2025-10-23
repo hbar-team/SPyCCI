@@ -15,7 +15,9 @@ ENV PATH=/opt/conda/envs/spycci/bin:$PATH
 
 # --- project sources ---------------------------------------------------------
 WORKDIR /workspace
-COPY . /workspace
+COPY ./spycci /workspace/spycci
+COPY ./tests /workspace/tests
+COPY ./pyproject.toml /workspace/
 RUN pip install --no-cache-dir -e .
 
 # --- DFTB+ parameters --------------------------------------------------------
@@ -30,6 +32,7 @@ ARG ORCA_REPO=orca-binaries
 ARG ORCA_TAG=v6.1.0-f.0
 ARG ORCA_ASSET=orca-6.1.0-f.0_linux_x86-64_openmpi41.tar.xz
 ARG ORCA_LOCAL_ARCHIVE=
+COPY ${ORCA_LOCAL_ARCHIVE} /tmp/orca.tar.xz
 RUN --mount=type=secret,id=gh_token,required=0 \
     set -euo pipefail; \
     TOKEN_FILE="/run/secrets/gh_token"; \
@@ -45,11 +48,7 @@ RUN --mount=type=secret,id=gh_token,required=0 \
     else \
     [ -n "${ORCA_LOCAL_ARCHIVE}" ] || { \
     echo "Provide ORCA_PAT (for CI) or --build-arg ORCA_LOCAL_ARCHIVE=<path-in-context>"; exit 1; }; \
-    LOCAL_SRC="/workspace/${ORCA_LOCAL_ARCHIVE}"; \
-    [ -f "$LOCAL_SRC" ] || { echo "Local ORCA archive not found at $LOCAL_SRC"; exit 1; }; \
-    echo "Using local ORCA archive $LOCAL_SRC"; \
-    cp "$LOCAL_SRC" "$ORCA_TMP"; \
-    rm -f "$LOCAL_SRC"; \
+    [ -f "$ORCA_TMP" ] || { echo "ORCA archive not found at $ORCA_TMP"; exit 1; }; \
     fi; \
     mkdir -p /opt/orca && \
     tar -xf "$ORCA_TMP" -C /opt/orca --strip-components=1 2>/dev/null; \
@@ -72,10 +71,13 @@ RUN wget -q https://github.com/crest-lab/crest/releases/download/v3.0.2/crest-gn
     rm crest-gnu-12-ubuntu-latest.tar.xz && \
     chmod +x ${CREST_BIN}/crest
 
+# --- cleanup -----------------------------------------------------------------
+RUN rm -rf /tmp/*
+
 # --- runtime env + user ------------------------------------------------------
 ENV ORCA_ROOT=/opt/orca
 ENV PATH=/opt/orca:/opt/orca/bin:${XTBHOME}/bin:${CREST_BIN}:/opt/conda/envs/spycci/bin:$PATH
-ENV LD_LIBRARY_PATH=/opt/conda/envs/spycci/lib:/opt/orca/lib:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH=/opt/conda/envs/spycci/lib:/opt/orca/lib
 ENV OMPI_MCA_plm=isolated
 ENV OMPI_MCA_rmaps_base_oversubscribe=1
 ENV OMPI_MCA_btl_vader_single_copy_mechanism=none
