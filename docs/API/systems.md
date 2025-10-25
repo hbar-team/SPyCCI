@@ -22,6 +22,7 @@ kernelspec:
     :private-members:
 ```
 
+(API-systems-listener)=
 ### `System` synchronization with `MolecularGeometry` and `Properties` members
 
 The `System` class implements a listener mechanism between each `System` instance and its `MolecularGeometry` (`self.geometry`) and `Properties` (`self.properties`) attribues. The goal is to ensure that the `System` instance is automatically notified whenever the associated attribute changes requiring updates not limited to the attribute itself. This mechanism is used under two circumstances:

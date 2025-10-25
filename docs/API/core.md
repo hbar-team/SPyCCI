@@ -1,5 +1,19 @@
+---
+jupytext:
+  formats: md:myst
+  text_representation:
+    extension: .md
+    format_name: myst
+kernelspec:
+  display_name: Python 3
+  language: python
+  name: python3
+---
+
 (API-core)=
 # `spycci.core` module
+
+The `spycci.core` module is comprised of many different submodules used to define the inner workings and basic components of the `spycci` library.
 
 ## The `spycci.core.base` sub-module
 
