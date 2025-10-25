@@ -132,7 +132,7 @@ def test_XtbInput_opt():
             np.array([0.47712970895806, 6.01670697903511, 4.32319081549932]),
             np.array([0.16900193748757, 3.55540746889578, 4.52165211842273]),
         ]
-        assert_array_almost_equal(expected_geometry, mol.geometry.coordinates, decimal=3)
+        assert_array_almost_equal(expected_geometry, mol.geometry.get_coordinates(), decimal=3)
 
         rmtree("output_files")
         rmtree("error_files")
@@ -175,7 +175,7 @@ def test_XtbInput_opt_no_inplace():
             np.array([0.47712970895806, 6.01670697903511, 4.32319081549932]),
             np.array([0.16900193748757, 3.55540746889578, 4.52165211842273]),
         ]
-        assert_array_almost_equal(expected_geometry, newmol.geometry.coordinates, decimal=3)
+        assert_array_almost_equal(expected_geometry, newmol.geometry.get_coordinates(), decimal=3)
 
         rmtree("output_files")
         rmtree("error_files")

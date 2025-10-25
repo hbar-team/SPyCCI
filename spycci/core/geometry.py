@@ -137,6 +137,89 @@ class MolecularGeometry:
         self.__atomcount += 1
         self.__atoms.append(atom)
         self.__coordinates.append(np.array(coordinates))
+    
+
+    def get_atoms(self) -> List[str]:
+        """
+        The list of atoms/elements in the molecule. Please beware that the obtained
+        atoms list is provided as a deepcopy and not as a reference. If you want to
+        set new atoms names, please use the `set_atoms()` function.
+
+        Returns
+        -------
+        List[str]
+            The list of strings representing, in order, the symbols of the atoms in the molecule
+        """
+        return deepcopy(self.__atoms)
+    
+    def set_atoms(self, atoms: List[str]) -> None:
+        """
+        Set a new list of atoms composing the molecule. Please beware that the new
+        atom list length must match the number of atoms/coordinates already stored.
+
+        Arguments
+        ---------
+        List[str]
+            The list element symbols encoding the atoms in the molecule.
+        
+        Raises
+        ------
+        ValueError
+            Exception raised if the number of atoms does not match the one currently stored.
+        """
+        # Check that the length of the newly provided atom list is coherent with the stored coordinates.
+        if len(atoms) != self.atomcount:
+            raise ValueError(f"The new length of the atom list ({len(atoms)}) cannot be different from the current atomcount ({self.atomcount}).")
+
+        # Clear all stored properties and call the `System` class listener and update atoms list
+        self.__clear_properties()
+        self.__call_system_reset()
+        self.__atoms = atoms
+
+    def get_coordinates(self) -> List[np.ndarray]:
+        """
+        The list of coordinates of each atom in the molecule. Please beware that the obtained
+        coordinates list is provided as a deepcopy and not as a reference. If you want to
+        set new coordinates values please use the `set_coordinates()` function.
+
+        Returns
+        -------
+        List[np.ndarray]
+            The list of numpy arrays representing, in order, the 3D position of each atom
+            in the molecule
+        """
+        return deepcopy(self.__coordinates)
+    
+    def set_coordinates(self, coordinates: List[np.ndarray]) -> None:
+        """
+        Set a new list of coordinates for the atoms in the molecule. Please beware that the new
+        coordinates must match the number of atoms already stored.
+
+        Arguments
+        ---------
+        List[np.ndarray]
+            The list of numpy arrays encoding the 3D position of each atom in the molecule.
+        
+        Raises
+        ------
+        ValueError
+            Exception raised if the number of coordinates does not match the number of atoms in the
+            molecule or if the length of each position vector is different from 3.
+        """
+        # Check that the length of the newly provided coordinate list is coherent with the stored atoms.
+        if len(coordinates) != self.atomcount:
+            raise ValueError(f"The new length of the coorinates list ({len(coordinates)}) cannot be different from the current atomcount ({self.atomcount}).")
+        
+        # Convert the input as a List[np.ndarray] to account for the user passing a list of lists
+        coords = [np.array(v) for v in coordinates]
+        for v in coords:
+            if len(v) != 3:
+                raise ValueError("Atomic coordinate vectors must be of length 3.")
+
+        # Clear all stored properties and call the `System` class listener
+        self.__clear_properties()
+        self.__call_system_reset()
+        self.__coordinates = coords
 
     @classmethod
     def from_xyz(cls, path: str) -> MolecularGeometry:
@@ -406,18 +489,6 @@ class MolecularGeometry:
         return self.__atomcount
 
     @property
-    def atoms(self) -> List[str]:
-        """
-        The list of atoms/elements in the molecule
-
-        Returns
-        -------
-        List[str]
-            The list of strings representing, in order, the symbols of the atoms in the molecule
-        """
-        return self.__atoms
-
-    @property
     def atomic_numbers(self) -> List[int]:
         """
         The ordered list of the atomic numbers of each atom in the molecule
@@ -429,20 +500,7 @@ class MolecularGeometry:
         """
 
         ATOMIC_NUMBERS = {v: k for k, v in atoms_dict.items()}
-        return [ATOMIC_NUMBERS[element] for element in self.atoms]
-
-    @property
-    def coordinates(self) -> List[np.ndarray]:
-        """
-        The list of coordinates of the atoms in the molecule
-
-        Returns
-        -------
-        List[np.ndarray]
-            The list of numpy arrays representing, in order, the 3D position of each atom
-            in the molecule
-        """
-        return self.__coordinates
+        return [ATOMIC_NUMBERS[element] for element in self.__atoms]
 
     @property
     def mass(self) -> float:
@@ -703,8 +761,8 @@ class MolecularGeometry:
                 raise ValueError("The length of the radii list must match the number of atoms in the molecule")
 
         bv = BuriedVolume(
-            self.atoms,
-            self.coordinates,
+            deepcopy(self.__atoms),
+            deepcopy(self.__coordinates),
             site + 1,
             excluded_atoms=(
                 [idx + 1 for idx in excluded_atoms]

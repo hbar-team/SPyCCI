@@ -41,7 +41,7 @@ def test_System_geometry___init__():
     assert mol.is_periodic == False
 
     for i, coord in enumerate(WATER):
-        assert_array_almost_equal(mol.geometry.coordinates[i], coord[1::], decimal=6)
+        assert_array_almost_equal(mol.geometry.get_coordinates()[i], coord[1::], decimal=6)
 
 
 # Test the System class constructor when loading data from an XYZ file
@@ -69,7 +69,7 @@ def test_System_from_xyz():
     assert mol.is_periodic == False
 
     for i, coord in enumerate(expected_coordinates):
-        assert_array_almost_equal(mol.geometry.coordinates[i], coord, decimal=6)
+        assert_array_almost_equal(mol.geometry.get_coordinates()[i], coord, decimal=6)
 
 
 # Test the System class constructor when loading data from a JSON file
@@ -97,7 +97,7 @@ def test_System_from_json():
     assert mol.is_periodic == False
 
     for i, coord in enumerate(expected_coordinates):
-        assert_array_almost_equal(mol.geometry.coordinates[i], coord, decimal=6)
+        assert_array_almost_equal(mol.geometry.get_coordinates()[i], coord, decimal=6)
 
 
 # Test the System class from_smiles classmethod using a valid SMILES input
@@ -119,7 +119,7 @@ def test_System_from_smiles():
     # Check molecular geometry
     geom = system.geometry
     assert geom.atomcount == 9, "Expected 9 atoms for the ethanol molecule"
-    assert geom.atoms == ["C", "C", "O", "H", "H", "H", "H", "H", "H"]
+    assert geom.get_atoms() == ["C", "C", "O", "H", "H", "H", "H", "H", "H"]
 
     # Check geometry coordinates (with fixed seed)
     expected = [
@@ -135,7 +135,7 @@ def test_System_from_smiles():
     ]
 
     for i in range(9):
-        assert_array_almost_equal(geom.coordinates[i], expected[i], decimal=6)
+        assert_array_almost_equal(geom.get_coordinates()[i], expected[i], decimal=6)
 
 
 # Test the System class method to save all the system data to a JSON file

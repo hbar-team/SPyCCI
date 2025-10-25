@@ -287,7 +287,7 @@ def test_OrcaInput_opt():
             np.array([-2.244057, -0.623863,  0.023939]),
             np.array([-3.481302, -1.249902,  0.635063]),
         ]
-        assert_array_almost_equal(mol.geometry.coordinates, expected_geometry, decimal=6)
+        assert_array_almost_equal(mol.geometry.get_coordinates(), expected_geometry, decimal=6)
 
         rmtree("output_files")
 
@@ -319,7 +319,7 @@ def test_OrcaInput_opt_no_inplace():
             np.array([-2.244057, -0.623863,  0.023939]),
             np.array([-3.481302, -1.249902,  0.635063]),
         ]
-        assert_array_almost_equal(expected_geometry, newmol.geometry.coordinates, decimal=6)
+        assert_array_almost_equal(expected_geometry, newmol.geometry.get_coordinates(), decimal=6)
 
         rmtree("output_files")
 
@@ -343,7 +343,7 @@ def test_OrcaInput_opt_ts():
         assert_almost_equal(mol.properties.free_energy_correction, 0.00555767, decimal=6)
         assert_almost_equal(mol.properties.gibbs_free_energy, -3073.19178819, decimal=6)
 
-        assert mol.geometry.atoms == ["C", "Br", "H", "H", "H", "Cl"]
+        assert mol.geometry.get_atoms() == ["C", "Br", "H", "H", "H", "Cl"]
 
         expected_geometry = [
             np.array([-4.346202, 1.272711, -0.022700]),
@@ -354,7 +354,7 @@ def test_OrcaInput_opt_ts():
             np.array([-6.790102, 1.313545,  0.315858]),
         ]
         
-        assert_array_almost_equal(mol.geometry.coordinates, expected_geometry, decimal=6)
+        assert_array_almost_equal(mol.geometry.get_coordinates(), expected_geometry, decimal=6)
 
         rmtree("output_files")
 
@@ -378,7 +378,7 @@ def test_OrcaInput_opt_ts_no_inplace():
         assert_almost_equal(newmol.properties.free_energy_correction, 0.00555767, decimal=6)
         assert_almost_equal(newmol.properties.gibbs_free_energy, -3073.19178819, decimal=6)
 
-        assert newmol.geometry.atoms == ["C", "Br", "H", "H", "H", "Cl"]
+        assert newmol.geometry.get_atoms() == ["C", "Br", "H", "H", "H", "Cl"]
 
         expected_geometry = [
             np.array([-4.346202, 1.272711, -0.022700]),
@@ -389,7 +389,7 @@ def test_OrcaInput_opt_ts_no_inplace():
             np.array([-6.790102, 1.313545,  0.315858]),
         ]
 
-        assert_array_almost_equal(expected_geometry, newmol.geometry.coordinates, decimal=6)
+        assert_array_almost_equal(expected_geometry, newmol.geometry.get_coordinates(), decimal=6)
 
         rmtree("output_files")
 
@@ -719,7 +719,7 @@ def test_OrcaInput_scan_ts():
         assert_almost_equal(newmol.properties.free_energy_correction, 0.00552476, decimal=6)
         assert_almost_equal(newmol.properties.gibbs_free_energy, -3073.18790075, decimal=6)
 
-        assert newmol.geometry.atoms == ["C", "Br", "H", "H", "H", "Cl"]
+        assert newmol.geometry.get_atoms() == ["C", "Br", "H", "H", "H", "Cl"]
 
         expected_geometry = [
             np.array([-4.35874488484770, 1.26841036623343,  0.00792242330803]),
@@ -730,7 +730,7 @@ def test_OrcaInput_scan_ts():
             np.array([-6.80553871276793, 1.36562226858136,  0.33814164269744]),
         ]
 
-        assert_array_almost_equal(expected_geometry, newmol.geometry.coordinates, decimal=6)
+        assert_array_almost_equal(expected_geometry, newmol.geometry.get_coordinates(), decimal=6)
 
         rmtree("output_files")
 
@@ -751,7 +751,7 @@ def test_OrcaInput_scan_ts_inplace():
         assert_almost_equal(mol.properties.free_energy_correction, 0.00552476, decimal=6)
         assert_almost_equal(mol.properties.gibbs_free_energy, -3073.18790075, decimal=6)
 
-        assert mol.geometry.atoms == ["C", "Br", "H", "H", "H", "Cl"]
+        assert mol.geometry.get_atoms() == ["C", "Br", "H", "H", "H", "Cl"]
 
         expected_geometry = [
             np.array([-4.35874488484770, 1.26841036623343,  0.00792242330803]),
@@ -762,7 +762,7 @@ def test_OrcaInput_scan_ts_inplace():
             np.array([-6.80553871276793, 1.36562226858136,  0.33814164269744]),
         ]
 
-        assert_array_almost_equal(expected_geometry, mol.geometry.coordinates, decimal=6)
+        assert_array_almost_equal(expected_geometry, mol.geometry.get_coordinates(), decimal=6)
 
         rmtree("output_files")
 
@@ -805,7 +805,7 @@ def test_OrcaInput_neb_ci():
 
     for obtained, expected in zip(obtained_systems, expected_systems):
         assert obtained.geometry.atomcount == expected.geometry.atomcount
-        assert_array_almost_equal(obtained.geometry.coordinates, expected.geometry.coordinates, decimal=6)
+        assert_array_almost_equal(obtained.geometry.get_coordinates(), expected.geometry.get_coordinates(), decimal=6)
 
 
 # Test the OrcaInput NEB-TS function
@@ -846,7 +846,7 @@ def test_OrcaInput_neb_ts():
 
     for obtained, expected in zip(obtained_systems, expected_systems):
         assert obtained.geometry.atomcount == expected.geometry.atomcount
-        assert_array_almost_equal(obtained.geometry.coordinates, expected.geometry.coordinates, decimal=6)
+        assert_array_almost_equal(obtained.geometry.get_coordinates(), expected.geometry.get_coordinates(), decimal=6)
 
     expected_TS_geometry = [
         [-0.66317307347966,  0.28018194152757, -0.09615186292715],
@@ -858,7 +858,7 @@ def test_OrcaInput_neb_ts():
         [-1.66625206053970,  0.10736571319260, -0.54551319609099],
     ]
 
-    assert_array_almost_equal(transition_state.geometry.coordinates, expected_TS_geometry, decimal=6)
+    assert_array_almost_equal(transition_state.geometry.get_coordinates(), expected_TS_geometry, decimal=6)
     assert_almost_equal(transition_state.properties.electronic_energy, -153.434523050378, decimal=6)
 
     rmtree("output_files")
@@ -903,7 +903,7 @@ def test_OrcaInput_neb_ts_with_guess():
 
     for obtained, expected in zip(obtained_systems, expected_systems):
         assert obtained.geometry.atomcount == expected.geometry.atomcount
-        assert_array_almost_equal(obtained.geometry.coordinates, expected.geometry.coordinates, decimal=6)
+        assert_array_almost_equal(obtained.geometry.get_coordinates(), expected.geometry.get_coordinates(), decimal=6)
 
     expected_TS_geometry = [
         [-0.66311684773243,  0.28017480246899, -0.09690384446646],
@@ -916,7 +916,7 @@ def test_OrcaInput_neb_ts_with_guess():
 
     ]
 
-    assert_array_almost_equal(transition_state.geometry.coordinates, expected_TS_geometry, decimal=6)
+    assert_array_almost_equal(transition_state.geometry.get_coordinates(), expected_TS_geometry, decimal=6)
     assert_almost_equal(transition_state.properties.electronic_energy, -153.434522627235, decimal=6)
 
     rmtree("output_files")

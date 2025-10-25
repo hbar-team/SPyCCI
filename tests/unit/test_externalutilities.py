@@ -25,7 +25,7 @@ def test_split_multixyz_default():
 
     assert len(systems) == 4
 
-    obtained_coordinates = [s.geometry.coordinates for s in systems]
+    obtained_coordinates = [s.geometry.get_coordinates() for s in systems]
 
     expected_coordinates = [
         [[-3.50000, -0.58504, -0.01395], [-2.24247, -0.61827, 0.01848], [-3.48920, -1.24911, 0.63429]],
@@ -53,7 +53,7 @@ def test_split_multixyz_with_suffix():
 
     assert len(systems) == 4
 
-    obtained_coordinates = [s.geometry.coordinates for s in systems]
+    obtained_coordinates = [s.geometry.get_coordinates() for s in systems]
 
     expected_coordinates = [
         [[-3.50000, -0.58504, -0.01395], [-2.24247, -0.61827, 0.01848], [-3.48920, -1.24911, 0.63429]],
@@ -81,7 +81,7 @@ def test_split_multixyz_with_remove():
 
     assert len(systems) == 4
 
-    obtained_coordinates = [s.geometry.coordinates for s in systems]
+    obtained_coordinates = [s.geometry.get_coordinates() for s in systems]
 
     expected_coordinates = [
         [[-3.50000, -0.58504, -0.01395], [-2.24247, -0.61827, 0.01848], [-3.48920, -1.24911, 0.63429]],
@@ -110,7 +110,7 @@ def test_split_multixyz_with_parsing_NEB_CI():
 
     assert len(systems) == 4
 
-    obtained_coordinates = [s.geometry.coordinates for s in systems]
+    obtained_coordinates = [s.geometry.get_coordinates() for s in systems]
     expected_coordinates = [
         [[-3.50000, -0.58504, -0.01395], [-2.24247, -0.61827, 0.01848], [-3.48920, -1.24911, 0.63429]],
         [[-3.40000, -0.58504, -0.01395], [-2.24247, -0.61827, 0.01848], [-3.48920, -1.24911, 0.63429]],

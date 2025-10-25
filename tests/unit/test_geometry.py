@@ -43,7 +43,7 @@ def test_MolecularGeometry_from_smiles():
 
     assert geom.atomcount == 9, "9 atoms expected for the ethanol molecule"
 
-    assert geom.atoms == ["C", "C", "O", "H", "H", "H", "H", "H", "H"]
+    assert geom.get_atoms() == ["C", "C", "O", "H", "H", "H", "H", "H", "H"]
     
     expected = [
         np.array([-0.88340023, -0.17904132, -0.07267199]),
@@ -57,7 +57,7 @@ def test_MolecularGeometry_from_smiles():
         np.array([ 1.49192808, -1.12477959, -0.05347481])
     ]
     
-    assert_array_almost_equal(expected, geom.coordinates, decimal=6)
+    assert_array_almost_equal(expected, geom.get_coordinates(), decimal=6)
 
 
 # Test the MolecularGeometry class from_smiles classmethod with ring torsions
@@ -113,8 +113,8 @@ def test_MolecularGeometry_load_xyz():
         ]
 
         assert mol.atomcount == 3
-        assert mol.atoms == ["O", "H", "H"]
-        assert_array_almost_equal(expected, mol.coordinates, decimal=6)
+        assert mol.get_atoms() == ["O", "H", "H"]
+        assert_array_almost_equal(expected, mol.get_coordinates(), decimal=6)
 
 # Test the MolecularGeometry class __getitem__, __iter__ and __len__ methods
 def test_MolecularGeometry_special_methods():
@@ -167,7 +167,7 @@ def test_MolecularGeometry_append():
 
     assert len(mol) == 4
     assert mol.atomcount == 4
-    assert mol.atoms == ["O", "H", "H", "Am"]
+    assert mol.get_atoms() == ["O", "H", "H", "Am"]
     assert mol[3][0] == "Am"
     assert_array_almost_equal(mol[3][1], [0, 1, 2], decimal=6)
 
@@ -338,7 +338,7 @@ def test_stored_properties_clearing_on_load_xyz():
     mol.load_xyz(xyzfile)
 
     # Check that the molecule has been loaded correctly
-    mol.atoms[0] = "O"
+    mol.get_atoms()[0] = "O"
 
     # Check that the stored variable has internally been cleared
     assert mol._MolecularGeometry__rotor_type == None

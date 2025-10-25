@@ -140,7 +140,7 @@ class MogliViewer:
         self.__title = mol.name
         self.__width = width
         self.__height = height
-        self.__mogli_mol = mogli.Molecule(mol.geometry.atomic_numbers, mol.geometry.coordinates)
+        self.__mogli_mol = mogli.Molecule(mol.geometry.atomic_numbers, mol.geometry.get_coordinates())
 
     def apply_coloring(self, data: List[float], cmap: Callable = RdBu, kwargs: Dict[str, Any] = {}) -> None:
         """
