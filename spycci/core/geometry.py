@@ -16,6 +16,7 @@ from rdkit.Chem.rdForceFieldHelpers import (
     MMFFHasAllMoleculeParams,
 )
 
+from spycci.core.decorators import protect
 from spycci.constants import atoms_dict, atomic_masses, h, c, amu_to_kg
 
 if TYPE_CHECKING:
@@ -24,7 +25,15 @@ if TYPE_CHECKING:
 class MolecularGeometry:
     """
     The `MolecularGeometry` class implements all the functions required to operate on the
-    geometric properties of a given molecule or molecular aggregate.
+    geometric properties of a given molecule or molecular aggregate. The function is equipped
+    with `__getitem__` and `__iter__` methods providing direct read-only access to atoms and
+    their coordinates. The `MolecularGeometry` class implements various classmethods capable
+    of constructing an instance of the class from `.xyz` files (`from_xyz()`) from SMILES strings
+    (`from_smiles()`) or from a dictionary (`from_dict()`). The coordinates of a molecule or its
+    composition can be altered throug `append` operations of through the setter of the `atoms` 
+    and `coordinates` properties. BEWARE: any attempt of setting the coordinate by reference (e.g.
+    by using the `__getitem__`, `__iter__` methods or the direct acces to properties) will result
+    in an exception.
 
     Attributes
     ----------
@@ -77,13 +86,13 @@ class MolecularGeometry:
 
         self.level_of_theory_geometry = None
 
+    @protect
     def __getitem__(self, index: int) -> Tuple[str, np.ndarray]:
         if index < 0 or index >= self.atomcount:
-            raise ValueError(
-                f"The index {index} is not valid (atomcount: {self.atomcount})"
-            )
+            raise ValueError(f"The index {index} is not valid (atomcount: {self.atomcount})")         
         return self.__atoms[index], self.__coordinates[index]
 
+    @protect
     def __iter__(self) -> Generator[str, np.ndarray]:
         for atom, coordinates in zip(self.__atoms, self.__coordinates):
             yield atom, coordinates
@@ -498,7 +507,6 @@ class MolecularGeometry:
         List[int]
             The list of integers atomic numbers associated with each atom in the molecule
         """
-
         ATOMIC_NUMBERS = {v: k for k, v in atoms_dict.items()}
         return [ATOMIC_NUMBERS[element] for element in self.__atoms]
 

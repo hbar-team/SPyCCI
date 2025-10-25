@@ -122,7 +122,7 @@ def test_System_from_smiles():
     assert geom.get_atoms() == ["C", "C", "O", "H", "H", "H", "H", "H", "H"]
 
     # Check geometry coordinates (with fixed seed)
-    expected = [
+    expected = (
         [-0.88340023, -0.17904132, -0.07267199],
         [0.4497649 , 0.51104444, 0.12851809],
         [ 1.48578755, -0.2490953 , -0.47625408],
@@ -132,7 +132,7 @@ def test_System_from_smiles():
         [ 0.44081839,  1.50296775, -0.33251669],
         [0.6749398 , 0.62724095, 1.19298181],
         [ 1.49192808, -1.12477959, -0.05347481],
-    ]
+    )
 
     for i in range(9):
         assert_array_almost_equal(geom.get_coordinates()[i], expected[i], decimal=6)
@@ -302,7 +302,6 @@ def test_MolecularGeometry_listener___init__():
     mol = System("methane", geom)
     assert mol.geometry._MolecularGeometry__system_reset == mol._System__on_geometry_change
 
-
 # Test assignment of the listener of the MolecularGeometry class on from_xyz
 def test_MolecularGeometry_listener_from_xyz():
 
@@ -370,13 +369,77 @@ def test___on_geometry_change_System():
 def test_System_clearing_geometry_append():
 
     mol = System.from_smiles("mathane", "C")
+    
+    # Set one of the properties of the `Property` class
     dummy = Engine("dummy engine")
-
     mol.properties.set_electronic_energy(-1.25, dummy)
     assert_almost_equal(mol.properties.electronic_energy, -1.25, decimal=6)
 
+    # Change the geometry
     mol.geometry.append("H", [0., 0., 0.])
+
+    # Check that the properties have been cleared
     assert mol.properties.electronic_energy == None
+
+
+# Test properties clearing on geometry load_xyz
+def test_System_clearing_geometry_load_xyz():
+
+    mol = System.from_smiles("methane", "C")
+    
+    # Set one of the properties of the `Property` class
+    dummy = Engine("dummy engine")
+    mol.properties.set_electronic_energy(-1.25, dummy)
+    assert_almost_equal(mol.properties.electronic_energy, -1.25, decimal=6)
+
+    # Change the geometry
+    xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
+    mol.geometry.load_xyz(xyzfile)
+
+    # Check that the properties have been cleared
+    assert mol.properties.electronic_energy == None
+
+# Test property setters
+def test_System_clearing_geometry_atoms_setter():
+
+    mol = System.from_smiles("methane", "C")
+
+    # Set one of the properties of the `Property` class
+    dummy = Engine("dummy engine")
+    mol.properties.set_electronic_energy(-1.25, dummy)
+    assert_almost_equal(mol.properties.electronic_energy, -1.25, decimal=6)
+
+    # Change atoms list
+    mol.geometry.atoms = ["Sn", "H", "H", "H", "H"]
+
+    assert mol.geometry.atoms == ("Sn", "H", "H", "H", "H"), "Set of the atom list failed"
+    assert mol.properties.electronic_energy == None, "Properties not cleared after molecular geometry changed"
+
+
+# Test property setters
+def System_clearing_geometry_coordinates_setter():
+
+    xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
+    mol = System.from_xyz(xyzfile)
+
+    # Set one of the properties of the `Property` class
+    dummy = Engine("dummy engine")
+    mol.properties.set_electronic_energy(-1.25, dummy)
+    assert_almost_equal(mol.properties.electronic_energy, -1.25, decimal=6)
+
+    # Change coordinates using the setter
+    new_coordinates = [
+        [-10., -0.58504, -0.01395],
+        [-2.24247, -0.61827, 0.01848],
+        [-3.48920, -1.24911, 0.63429]
+    ]
+
+    mol.geometry.coordinates = new_coordinates
+
+    # Check if the coordinates have been set
+    assert_array_almost_equal(mol.geometry.coordinates, new_coordinates, decimal=6)
+    assert mol.properties.electronic_energy == None, "Properties not cleared after molecular geometry changed"
+   
 
 
 # ----------------------------------------------------------------
