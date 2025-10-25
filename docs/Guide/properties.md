@@ -91,6 +91,8 @@ print(f"Electronic energy: {el_energy} Eh")
 print(f"Electronic level of theory: {el_lot}")
 ```
 
+Beware that, even in the case of mutable objects, the properties are returned as a `deepcopy` of the protected attributes. As such, trying to modify protected values by reference, (e.g. using the property getter), will be ineffective as the edit will be applied only to the returned temporary copy and not the stored data. To edit the data the user must pass through the defined setter functions.
+
 ### Use of the `STRICTNESS_LEVEL` option
 As anticipated before, when setting properties, sanity checks are enforced to ensure that properties coming from different calculations have been computed at a consistent level of theory.
 
