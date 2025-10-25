@@ -59,10 +59,6 @@ def test_MolecularGeometry_from_smiles():
     
     assert_array_almost_equal(expected, geom.get_coordinates(), decimal=6)
 
-    assert type(geom.coordinates) == tuple, "The coordinates must be contained within a tuple"
-    for c in geom.coordinates:
-        assert c.flags.writeable == False, "The coordinates return should be not writable"
-
 
 # Test the MolecularGeometry class from_smiles classmethod with ring torsions
 def test_from_smiles_small_ring_torsions_enabled():
@@ -120,122 +116,17 @@ def test_MolecularGeometry_load_xyz():
         assert mol.get_atoms() == ["O", "H", "H"]
         assert_array_almost_equal(expected, mol.get_coordinates(), decimal=6)
 
-        assert type(mol.coordinates) == tuple, "The coordinates must be contained within a tuple"
-        for c in mol.coordinates:
-            assert c.flags.writeable == False, "The coordinates return should be not writable"
-
-# Test the MolecularGeometry class __getitem__, __iter__ and __len__ methods
-def test_MolecularGeometry_special_methods_read_only():
-    
-    xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
-    mol = MolecularGeometry.from_xyz(xyzfile)
-
-    # Test the len method
-    assert len(mol) == 3
-
-    # Test the getitem method   
-    atom, coord = mol[1]
-    assert atom == "H"
-    assert_array_almost_equal(coord, np.array([-2.24247, -0.61827, 0.01848]), decimal=6)
-
-    # Test the failure of the getitem method when calling an invalid index
-    try:
-        _, _ = mol[3]
-    except:
-        assert True
-    else:
-        assert False, "An exception was expected when trying to access index 3"
-    
-    try:
-        _, _ = mol[-1]
-    except:
-        assert True
-    else:
-        assert False, "An exception was expected when trying to access index -1"
-    
-    # Test the iterator method
-    expected_atoms = ("O", "H", "H")
-    expected_coordinates = (
-        np.array([-3.21035, -0.58504, -0.01395]),
-        np.array([-2.24247, -0.61827, 0.01848]),
-        np.array([-3.48920, -1.24911, 0.63429])
-    )
-
-    for i, (atom, coord) in enumerate(mol):
-        assert expected_atoms[i] == atom
-        assert_array_almost_equal(expected_coordinates[i], coord, decimal=6)
-
-
-def test_MolecularGeometry_write_with___getitem__():
-    
-    geom = MolecularGeometry.from_smiles("C")
-
-    try:
-        _, coords = geom[0]
-        coords[0] = -100.
-    
-    except:
-        assert True
-    
-    else:
-        assert False, "Exception was expected when trying write coordinates using __getitem__"
-
-
-def test_MolecularGeometry_write_with___iter__():
-    
-    geom = MolecularGeometry.from_smiles("C")
-
-    try:
-        for _, coords in geom:
-            coords[0] = -100.
-    
-    except:
-        assert True
-    
-    else:
-        assert False, "Exception was expected when trying write coordinates using __iter__"
-
-
-def test_MolecularGeometry_write_via_atoms_getter():
-
-    geom = MolecularGeometry.from_smiles("C")
-
-    try:
-        atoms = geom.atoms
-        atoms[0] = "Sn"
-    
-    except:
-        assert True
-    
-    else:
-        assert False, "Exception was expected when trying write coordinates via the atom porperties getter"
-
-
-def test_MolecularGeometry_write_via_coordinates_getter():
-
-    geom = MolecularGeometry.from_smiles("C")
-
-    try:
-        coords = geom.coordinates
-        coords[0][0] = [-100.]
-    
-    except:
-        assert True
-    
-    else:
-        assert False, "Exception was expected when trying write coordinates via the atom porperties getter"
-
 
 # Test property setters
-def test_MolecularGeometry_write_via_atoms_setter():
+def test_MolecularGeometry_write_via_set_atoms():
 
     geom = MolecularGeometry.from_smiles("C")
-    geom.atoms = ["Sn", "H", "H", "H", "H"]
-
-    assert geom.atoms == ("Sn", "H", "H", "H", "H")
+    geom.set_atoms(["Sn", "H", "H", "H", "H"])
+    
+    assert geom.get_atoms() == ["Sn", "H", "H", "H", "H"]
 
     try:
-        geom.atoms = ["Pb", "H", "H", "H"]
+        geom.set_atoms(["Pb", "H", "H", "H"])
     
     except:
         assert True
@@ -245,7 +136,7 @@ def test_MolecularGeometry_write_via_atoms_setter():
 
 
 # Test property setters
-def test_MolecularGeometry_write_via_coordinates_setter():
+def test_MolecularGeometry_write_via_set_coordinates():
 
     xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
     geom = MolecularGeometry.from_xyz(xyzfile)
@@ -256,11 +147,11 @@ def test_MolecularGeometry_write_via_coordinates_setter():
         np.array([-3.48920, -1.24911, 0.63429])
     )
 
-    geom.coordinates = expected_coordinates
-    assert_array_almost_equal(geom.coordinates, expected_coordinates, decimal=6)
+    geom.set_coordinates(expected_coordinates)
+    assert_array_almost_equal(geom.get_coordinates(), expected_coordinates, decimal=6)
 
     try:
-        geom.coordinates = expected_coordinates[1::]
+        geom.set_coordinates(expected_coordinates[1::])
     
     except:
         assert True
@@ -280,8 +171,7 @@ def test_MolecularGeometry_append():
     assert len(mol) == 4
     assert mol.atomcount == 4
     assert mol.get_atoms() == ["O", "H", "H", "Am"]
-    assert mol[3][0] == "Am"
-    assert_array_almost_equal(mol[3][1], [0, 1, 2], decimal=6)
+    assert_array_almost_equal(mol.get_coordinates()[3], [0, 1, 2], decimal=6)
 
 
 # Test the write_xyz method

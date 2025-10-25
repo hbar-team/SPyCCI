@@ -208,7 +208,7 @@ def test_System_geometry_property():
     mol.properties.set_electronic_energy(1.5, Engine("Dummy"))
 
     assert mol.properties.electronic_energy == 1.5
-    for i, (_, coord) in enumerate(mol.geometry):
+    for i, coord in enumerate(mol.geometry.get_coordinates()):
         assert_array_almost_equal(coord, expected_coordinates[i], decimal=6)
 
     mol.geometry = MolecularGeometry().from_xyz(xyzfile)
@@ -400,7 +400,7 @@ def test_System_clearing_geometry_load_xyz():
     assert mol.properties.electronic_energy == None
 
 # Test property setters
-def test_System_clearing_geometry_atoms_setter():
+def test_System_clearing_geometry_set_atoms():
 
     mol = System.from_smiles("methane", "C")
 
@@ -410,14 +410,14 @@ def test_System_clearing_geometry_atoms_setter():
     assert_almost_equal(mol.properties.electronic_energy, -1.25, decimal=6)
 
     # Change atoms list
-    mol.geometry.atoms = ["Sn", "H", "H", "H", "H"]
+    mol.geometry.set_atoms(["Sn", "H", "H", "H", "H"])
 
-    assert mol.geometry.atoms == ("Sn", "H", "H", "H", "H"), "Set of the atom list failed"
+    assert mol.geometry.get_atoms() == ["Sn", "H", "H", "H", "H"], "Set of the atom list failed"
     assert mol.properties.electronic_energy == None, "Properties not cleared after molecular geometry changed"
 
 
 # Test property setters
-def System_clearing_geometry_coordinates_setter():
+def test_System_clearing_geometry_coordinates_setter():
 
     xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
     mol = System.from_xyz(xyzfile)
@@ -434,10 +434,10 @@ def System_clearing_geometry_coordinates_setter():
         [-3.48920, -1.24911, 0.63429]
     ]
 
-    mol.geometry.coordinates = new_coordinates
+    mol.geometry.set_coordinates(new_coordinates)
 
     # Check if the coordinates have been set
-    assert_array_almost_equal(mol.geometry.coordinates, new_coordinates, decimal=6)
+    assert_array_almost_equal(mol.geometry.get_coordinates(), new_coordinates, decimal=6)
     assert mol.properties.electronic_energy == None, "Properties not cleared after molecular geometry changed"
    
 
