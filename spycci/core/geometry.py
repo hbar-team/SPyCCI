@@ -544,7 +544,7 @@ class MolecularGeometry:
         """
         if self.__inertia_tensor is None:
             self.__calculate_inertia()
-        return self.__inertia_tensor
+        return deepcopy(self.__inertia_tensor)
 
     @property
     def inertia_eigvals(self) -> np.ndarray:
@@ -559,7 +559,7 @@ class MolecularGeometry:
         """
         if self.__inertia_eigvals is None:
             self.__calculate_inertia()
-        return self.__inertia_eigvals
+        return deepcopy(self.__inertia_eigvals)
 
     @property
     def inertia_eigvecs(self) -> np.ndarray:
@@ -573,7 +573,7 @@ class MolecularGeometry:
         """
         if self.__inertia_eigvecs is None:
             self.__calculate_inertia()
-        return self.__inertia_eigvecs
+        return deepcopy(self.__inertia_eigvecs)
 
     @property
     def rotor_type(self) -> str:
@@ -613,7 +613,7 @@ class MolecularGeometry:
         """
         if self.__rotational_constants is None:
             self.__calculate_inertia()
-        return self.__rotational_constants
+        return deepcopy(self.__rotational_constants)
 
     def __calculate_inertia(self) -> None:
         """

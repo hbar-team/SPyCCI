@@ -444,7 +444,7 @@ class Properties:
         float
             The pKa the system.
         """
-        return self.__pka
+        return deepcopy(self.__pka)
 
     def set_pka(
         self,
@@ -492,7 +492,7 @@ class Properties:
         List[float]
             The list of Mulliken charges associated to each atom in the system.
         """
-        return self.__mulliken_charges
+        return deepcopy(self.__mulliken_charges)
 
     def set_mulliken_charges(self, value: List[float], electronic_engine: Union[Engine, str]) -> None:
         """
@@ -519,7 +519,7 @@ class Properties:
         List[float]
             The list of Mulliken spin populations associated to each atom in the system.
         """
-        return self.__mulliken_spin_populations
+        return deepcopy(self.__mulliken_spin_populations)
 
     def set_mulliken_spin_populations(self, value: List[float], electronic_engine: Union[Engine, str]) -> None:
         """
@@ -548,7 +548,7 @@ class Properties:
             atom in the system starting from the values of the Mulliken charges. The functions
             are stored in the dictionary according to the `f+`, `f-` and `f0` keys.
         """
-        return self.__condensed_fukui_mulliken
+        return deepcopy(self.__condensed_fukui_mulliken)
 
     def set_condensed_fukui_mulliken(
         self, value: Dict[str, List[float]], electronic_engine: Union[Engine, str]
@@ -579,7 +579,7 @@ class Properties:
         List[float]
             The list of Hirshfeld charges associated to each atom in the system.
         """
-        return self.__hirshfeld_charges
+        return deepcopy(self.__hirshfeld_charges)
 
     def set_hirshfeld_charges(self, value: List[float], electronic_engine: Union[Engine, str]) -> None:
         """
@@ -606,7 +606,7 @@ class Properties:
         List[float]
             The list of Hirshfeld spin populations associated to each atom in the system.
         """
-        return self.__hirshfeld_spin_populations
+        return deepcopy(self.__hirshfeld_spin_populations)
 
     def set_hirshfeld_spin_populations(self, value: List[float], electronic_engine: Union[Engine, str]) -> None:
         """
@@ -635,7 +635,7 @@ class Properties:
             atom in the system starting from the values of the Hirshfeld charges. The functions
             are stored in the dictionary according to the `f+`, `f-` and `f0` keys.
         """
-        return self.__condensed_fukui_hirshfeld
+        return deepcopy(self.__condensed_fukui_hirshfeld)
 
     def set_condensed_fukui_hirshfeld(
         self, value: Dict[str, List[float]], electronic_engine: Union[Engine, str]
@@ -666,7 +666,7 @@ class Properties:
         VibrationalData
             The class containing all the available vibrational data
         """
-        return self.__vibrational_data
+        return deepcopy(self.__vibrational_data)
 
     def set_vibrational_data(
         self,
