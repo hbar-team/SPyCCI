@@ -43,7 +43,7 @@ def test_MolecularGeometry_from_smiles():
 
     assert geom.atomcount == 9, "9 atoms expected for the ethanol molecule"
 
-    assert geom.get_atoms() == ["C", "C", "O", "H", "H", "H", "H", "H", "H"]
+    assert geom.atoms == ["C", "C", "O", "H", "H", "H", "H", "H", "H"]
     
     expected = (
         np.array([-0.88340023, -0.17904132, -0.07267199]),
@@ -57,7 +57,7 @@ def test_MolecularGeometry_from_smiles():
         np.array([ 1.49192808, -1.12477959, -0.05347481])
     )
     
-    assert_array_almost_equal(expected, geom.get_coordinates(), decimal=6)
+    assert_array_almost_equal(expected, geom.coordinates, decimal=6)
 
 
 # Test the MolecularGeometry class from_smiles classmethod with ring torsions
@@ -113,8 +113,8 @@ def test_MolecularGeometry_load_xyz():
         )
 
         assert mol.atomcount == 3
-        assert mol.get_atoms() == ["O", "H", "H"]
-        assert_array_almost_equal(expected, mol.get_coordinates(), decimal=6)
+        assert mol.atoms == ["O", "H", "H"]
+        assert_array_almost_equal(expected, mol.coordinates, decimal=6)
 
 
 # Test property setters
@@ -123,7 +123,7 @@ def test_MolecularGeometry_write_via_set_atoms():
     geom = MolecularGeometry.from_smiles("C")
     geom.set_atoms(["Sn", "H", "H", "H", "H"])
     
-    assert geom.get_atoms() == ["Sn", "H", "H", "H", "H"]
+    assert geom.atoms == ["Sn", "H", "H", "H", "H"]
 
     try:
         geom.set_atoms(["Pb", "H", "H", "H"])
@@ -148,7 +148,7 @@ def test_MolecularGeometry_write_via_set_coordinates():
     )
 
     geom.set_coordinates(expected_coordinates)
-    assert_array_almost_equal(geom.get_coordinates(), expected_coordinates, decimal=6)
+    assert_array_almost_equal(geom.coordinates, expected_coordinates, decimal=6)
 
     try:
         geom.set_coordinates(expected_coordinates[1::])
@@ -170,8 +170,8 @@ def test_MolecularGeometry_append():
 
     assert len(mol) == 4
     assert mol.atomcount == 4
-    assert mol.get_atoms() == ["O", "H", "H", "Am"]
-    assert_array_almost_equal(mol.get_coordinates()[3], [0, 1, 2], decimal=6)
+    assert mol.atoms == ["O", "H", "H", "Am"]
+    assert_array_almost_equal(mol.coordinates[3], [0, 1, 2], decimal=6)
 
 
 # Test the write_xyz method
@@ -340,7 +340,7 @@ def test_stored_properties_clearing_on_load_xyz():
     mol.load_xyz(xyzfile)
 
     # Check that the molecule has been loaded correctly
-    mol.get_atoms()[0] = "O"
+    mol.atoms[0] = "O"
 
     # Check that the stored variable has internally been cleared
     assert mol._MolecularGeometry__rotor_type == None

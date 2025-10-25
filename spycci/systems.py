@@ -364,7 +364,7 @@ class System:
         info += "----------------------------------------------\n"
         info += " index  atom    x (Å)      y (Å)      z (Å)   \n"
         info += "----------------------------------------------\n"
-        atoms, coordinates = self.geometry.get_atoms(), self.geometry.get_coordinates()
+        atoms, coordinates = self.geometry.atoms, self.geometry.coordinates
         for idx, (atom, coord) in enumerate(zip(atoms, coordinates)):
             info += f" {idx:<6}{atom:^6}"
             for c in coord:
@@ -430,7 +430,7 @@ class System:
             info += "----------------------------------------------\n"
             for idx, (atom, charge, spin) in enumerate(
                 zip(
-                    self.geometry.get_atoms(),
+                    self.geometry.atoms,
                     self.properties.mulliken_charges,
                     self.properties.mulliken_spin_populations,
                 )
@@ -450,7 +450,7 @@ class System:
             info += "----------------------------------------------\n"
             for idx, (atom, fplus, fminus, fzero) in enumerate(
                 zip(
-                    self.geometry.get_atoms(),
+                    self.geometry.atoms,
                     self.properties.condensed_fukui_mulliken["f+"],
                     self.properties.condensed_fukui_mulliken["f-"],
                     self.properties.condensed_fukui_mulliken["f0"],
@@ -472,7 +472,7 @@ class System:
             info += "----------------------------------------------\n"
             for idx, (atom, charge, spin) in enumerate(
                 zip(
-                    self.geometry.get_atoms(),
+                    self.geometry.atoms,
                     self.properties.hirshfeld_charges,
                     self.properties.hirshfeld_spin_populations,
                 )
@@ -492,7 +492,7 @@ class System:
             info += "----------------------------------------------\n"
             for idx, (atom, fplus, fminus, fzero) in enumerate(
                 zip(
-                    self.geometry.get_atoms(),
+                    self.geometry.atoms,
                     self.properties.condensed_fukui_hirshfeld["f+"],
                     self.properties.condensed_fukui_hirshfeld["f-"],
                     self.properties.condensed_fukui_hirshfeld["f0"],
@@ -534,7 +534,7 @@ class System:
             file.write("S\n" if self.is_periodic else "C\n")
 
             atom_types = []
-            for element in self.geometry.get_atoms():
+            for element in self.geometry.atoms:
                 if element not in atom_types:
                     atom_types.append(element)
 
@@ -543,7 +543,7 @@ class System:
             file.write("\n")
 
             i = 1
-            for atom, coordinates in zip(self.geometry.get_atoms(), self.geometry.get_coordinates()):
+            for atom, coordinates in zip(self.geometry.atoms, self.geometry.coordinates):
                 line = (
                     f"{atom}\t"
                     + f"{coordinates[0]}\t"
@@ -635,7 +635,7 @@ class Ensemble:
         if len(systems) == 0:
             raise ValueError("Cannot operate on an empty systems array")
 
-        if any(system.geometry.get_atoms() != systems[0].geometry.get_atoms() for system in systems):
+        if any(system.geometry.atoms != systems[0].geometry.atoms for system in systems):
             raise RuntimeError("Different systems encountered in list")
 
         self.name: str = systems[0].name
@@ -676,7 +676,7 @@ class Ensemble:
         systems : List[System]
             The list of systems to be added to the ensamble
         """
-        if any(system.geometry.get_atoms() != systems[0].geometry.get_atoms() for system in systems):
+        if any(system.geometry.atoms != systems[0].geometry.atoms for system in systems):
             raise RuntimeError("Different systems encountered in list")
 
         for system in systems:

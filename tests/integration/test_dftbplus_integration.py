@@ -94,7 +94,7 @@ def test_DFTBInput_opt():
             np.array([-2.23356419, -0.59872469, -0.00060078]),
             np.array([-3.51774330, -1.24864231, 0.63383386]),
         ]
-        assert_array_almost_equal(expected_geometry, mol.geometry.get_coordinates(), decimal=6)
+        assert_array_almost_equal(expected_geometry, mol.geometry.coordinates, decimal=6)
 
         rmtree("output_files")
         rmtree("error_files")
@@ -121,7 +121,7 @@ def test_DFTBInput_opt_no_inplace():
             np.array([-2.23356419, -0.59872469, -0.00060078]),
             np.array([-3.51774330, -1.24864231, 0.63383386]),
         ]
-        assert_array_almost_equal(expected_geometry, newmol.geometry.get_coordinates(), decimal=6)
+        assert_array_almost_equal(expected_geometry, newmol.geometry.coordinates, decimal=6)
 
         rmtree("output_files")
         rmtree("error_files")
@@ -175,7 +175,7 @@ def test_DFTBInput_simulated_annealing():
         ]
 
         # Assertion here is VERY lax due to the nature of the simulation...
-        assert_array_almost_equal(expected_geometry, mol.geometry.get_coordinates(), decimal=1)
+        assert_array_almost_equal(expected_geometry, mol.geometry.coordinates, decimal=1)
 
         rmtree("output_files")
         rmtree("error_files")
@@ -210,7 +210,7 @@ def test_DFTBInput_simulated_annealing_no_inplace():
         ]
 
         # Assertion here is VERY lax due to the nature of the simulation...
-        assert_array_almost_equal(expected_geometry, newmol.geometry.get_coordinates(), decimal=1)
+        assert_array_almost_equal(expected_geometry, newmol.geometry.coordinates, decimal=1)
 
         rmtree("output_files")
         rmtree("error_files")

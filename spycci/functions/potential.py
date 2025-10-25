@@ -53,8 +53,8 @@ def calculate_reduction_potential(
             "Calculating pKa for Ensemble instead of System. Currently not supported."
         )
 
-    oxidised_protons = oxidised.geometry.get_atoms().count("H")
-    reduced_protons = reduced.geometry.get_atoms().count("H")
+    oxidised_protons = oxidised.geometry.atoms.count("H")
+    reduced_protons = reduced.geometry.atoms.count("H")
     exchanged_protons = reduced_protons - oxidised_protons
 
     exchanged_electrons = (oxidised.charge - reduced.charge) + exchanged_protons

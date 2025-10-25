@@ -133,8 +133,8 @@ class MolecularGeometry:
         self.__atoms.append(atom)
         self.__coordinates.append(np.array(coordinates))
     
-
-    def get_atoms(self) -> List[str]:
+    @property
+    def atoms(self) -> List[str]:
         """
         The list of atoms/elements in the molecule. Please beware that the obtained
         atoms list is provided as a deepcopy and not as a reference. If you want to
@@ -171,7 +171,8 @@ class MolecularGeometry:
         self.__call_system_reset()
         self.__atoms = atoms
 
-    def get_coordinates(self) -> List[np.ndarray]:
+    @property
+    def coordinates(self) -> List[np.ndarray]:
         """
         The list of coordinates of each atom in the molecule. Please beware that the obtained
         coordinates list is provided as a deepcopy and not as a reference. If you want to
