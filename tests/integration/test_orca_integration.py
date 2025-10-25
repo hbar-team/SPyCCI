@@ -770,11 +770,11 @@ def test_OrcaInput_scan_ts_inplace():
 # Test the OrcaInput IRC function
 @pytest.mark.skipif(check_orca_version(), reason="Test designed for orca==6.1.0")
 def test_OrcaInput_irc():
-    engine = OrcaInput(method="XTB", basis_set=None, aux_basis=None, solvent=None)
+    engine = OrcaInput(method="PBE", basis_set="def2-SV(P)", aux_basis="def2/J", solvent=None)
     ts = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/IRC_ts.xyz", charge=0, spin=1)
 
     try:
-        MEP_reaction_path: ReactionPath = engine.irc(ts, maxiter=80, ncores=8, remove_tdir=False)
+        MEP_reaction_path: ReactionPath = engine.irc(ts, maxiter=80, ncores=8)
     except:
         assert False, "Exception raised during IRC calculation"
 
@@ -786,71 +786,66 @@ def test_OrcaInput_irc():
         remove_xyz_files=True,
     )
 
-    assert len(MEP_reaction_path) == 60
+    assert len(MEP_reaction_path) == 55
 
     assert_array_almost_equal(
         [s.properties.electronic_energy for s in obtained_systems],
         [
-            -5.50405733798,
-            -5.50405519744,
-            -5.50405207625,
-            -5.50404837535,
-            -5.50404303482,
-            -5.50403567055,
-            -5.50400966895,
-            -5.50397912716,
-            -5.50395757058,
-            -5.50392842942,
-            -5.50390084003,
-            -5.50383375283,
-            -5.50194484338,
-            -5.49812133236,
-            -5.49250998786,
-            -5.48494117056,
-            -5.47604902876,
-            -5.46481816246,
-            -5.45187512479,
-            -5.43768543786,
-            -5.42336307734,
-            -5.40888576764,
-            -5.39797321358,
-            -5.38953169449,
-            -5.38737353284,
-            -5.38912339936,
-            -5.39387673834,
-            -5.3957326628,
-            -5.39837076059,
-            -5.4012282672,
-            -5.40416017223,
-            -5.40742643131,
-            -5.41078633723,
-            -5.4144948711,
-            -5.4182854366,
-            -5.42234317369,
-            -5.42645817628,
-            -5.43069532499,
-            -5.43493716449,
-            -5.43916304913,
-            -5.4433016944,
-            -5.4472874496,
-            -5.4510549611,
-            -5.45451037445,
-            -5.45773319916,
-            -5.46058190147,
-            -5.4631697892,
-            -5.46536573374,
-            -5.46728497649,
-            -5.46883948406,
-            -5.470107979,
-            -5.47105291979,
-            -5.47171045302,
-            -5.47207278335,
-            -5.47209142903,
-            -5.47210934633,
-            -5.47211515787,
-            -5.47211934186,
-            -5.4721351475,
-            -5.47214775497,
+            -93.234931086174,
+            -93.234715689525,
+            -93.234085328672,
+            -93.233075450423,
+            -93.231649855452,
+            -93.229916218706,
+            -93.227758734533,
+            -93.225365490212,
+            -93.222552922065,
+            -93.219538130938,
+            -93.216159648625,
+            -93.212609473634,
+            -93.208767976946,
+            -93.204711358681,
+            -93.200488461055,
+            -93.19614573822,
+            -93.191726700195,
+            -93.187283809532,
+            -93.182887565714,
+            -93.178547546395,
+            -93.174430249522,
+            -93.170501348335,
+            -93.16700046278,
+            -93.164366355071,
+            -93.159560753036,
+            -93.157492617042,
+            -93.159255419283,
+            -93.162530378344,
+            -93.165941462282,
+            -93.169793757655,
+            -93.173983097401,
+            -93.178458363128,
+            -93.183207557559,
+            -93.187959434411,
+            -93.192513587715,
+            -93.196696892814,
+            -93.200388723194,
+            -93.203398652314,
+            -93.20551817494,
+            -93.20600795614,
+            -93.206255562756,
+            -93.206711248824,
+            -93.207164718983,
+            -93.207561747714,
+            -93.207901865197,
+            -93.208194214661,
+            -93.208428793535,
+            -93.208609767243,
+            -93.208724920311,
+            -93.208742123482,
+            -93.208748485273,
+            -93.208758527026,
+            -93.208777198823,
+            -93.208793533783,
+            -93.208805654133
         ],
         decimal=6,
     )
@@ -863,7 +858,7 @@ def test_OrcaInput_irc():
 # Test the OrcaInput NEB function
 @pytest.mark.skipif(check_orca_version(), reason="Test designed for orca==6.1.0")
 def test_OrcaInput_neb():
-    engine = OrcaInput(method="XTB", basis_set=None, aux_basis=None, solvent=None)
+    engine = OrcaInput(method="PBE", basis_set="def2-SV(P)", aux_basis="def2/J", solvent=None)
     reactant = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_reactant.xyz", charge=0, spin=1)
     product = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_product.xyz", charge=0, spin=1)
 
@@ -885,13 +880,13 @@ def test_OrcaInput_neb():
     assert_array_almost_equal(
         [s.properties.electronic_energy for s in obtained_systems],
         [
-            -5.50147524875,
-            -5.44325614459,
-            -5.39665301458,
-            -5.39018494028,
-            -5.40804951546,
-            -5.43984642618,
-            -5.47060506582
+            -93.234931842405,
+            -93.190886806001,
+            -93.163342205696,
+            -93.158977733645,
+            -93.170574202888,
+            -93.189129223789,
+            -93.208823954532
         ],
         decimal=6,
     )
@@ -904,7 +899,7 @@ def test_OrcaInput_neb():
 # Test the OrcaInput NEB-CI function
 @pytest.mark.skipif(check_orca_version(), reason="Test designed for orca==6.1.0")
 def test_OrcaInput_neb_ci():
-    engine = OrcaInput(method="XTB", basis_set=None, aux_basis=None, solvent=None)
+    engine = OrcaInput(method="PBE", basis_set="def2-SV(P)", aux_basis="def2/J", solvent=None)
     reactant = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_reactant.xyz", charge=0, spin=1)
     product = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_product.xyz", charge=0, spin=1)
 
@@ -926,13 +921,13 @@ def test_OrcaInput_neb_ci():
     assert_array_almost_equal(
         [s.properties.electronic_energy for s in obtained_systems],
         [
-            -5.50147524875,
-            -5.44839640432,
-            -5.40375292601,
-            -5.38737452175,
-            -5.40313292603,
-            -5.43623847898,
-            -5.47060506582
+            -93.234931842405,
+            -93.193763691212,
+            -93.166987209618,
+            -93.157492938933,
+            -93.167762528503,
+            -93.187195751543,
+            -93.208823954532
         ],
         decimal=6,
     )
@@ -945,7 +940,7 @@ def test_OrcaInput_neb_ci():
 # Test the OrcaInput NEB-TS function
 @pytest.mark.skipif(check_orca_version(), reason="Test designed for orca==6.1.0")
 def test_OrcaInput_neb_ts():
-    engine = OrcaInput(method="XTB", basis_set=None, aux_basis=None, solvent=None)
+    engine = OrcaInput(method="PBE", basis_set="def2-SV(P)", aux_basis="def2/J", solvent=None)
     reactant = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_reactant.xyz", charge=0, spin=1)
     product = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_product.xyz", charge=0, spin=1)
 
@@ -967,13 +962,13 @@ def test_OrcaInput_neb_ts():
     assert_array_almost_equal(
         [s.properties.electronic_energy for s in obtained_systems],
         [
-            -5.50147524875,
-            -5.44849122882,
-            -5.40401984931,
-            -5.38737498635,
-            -5.40307178747,
-            -5.43603462219, 
-            -5.47060506582
+            -93.234931842405,
+            -93.19370968548,
+            -93.166774914454,
+            -93.157488172185,
+            -93.168108627705,
+            -93.187581273557,
+            -93.208823954532
         ],
         decimal=6,
     )
@@ -983,13 +978,13 @@ def test_OrcaInput_neb_ts():
         assert_array_almost_equal(obtained.geometry.coordinates, expected.geometry.coordinates, decimal=6)
 
     expected_TS_geometry = [
-        [-0.63631476,  0.2459732 , -0.24597168],
-        [-0.04570402, -0.46159428,  0.46159142],
-        [ 0.68201877,  0.21562108, -0.21561974]
+        [-0.675206,  0.25325 , -0.25325 ],
+        [-0.01204 , -0.471865,  0.471865],
+        [ 0.687246,  0.218615, -0.218615]
     ]
 
     assert_array_almost_equal(transition_state.geometry.coordinates, expected_TS_geometry, decimal=6)
-    assert_almost_equal(transition_state.properties.electronic_energy, -5.38737352917, decimal=6)
+    assert_almost_equal(transition_state.properties.electronic_energy, -93.157494167231, decimal=6)
 
     rmtree("output_files")
 
@@ -997,7 +992,7 @@ def test_OrcaInput_neb_ts():
 # Test the OrcaInput NEB-TS function when providing a transition state guess
 @pytest.mark.skipif(check_orca_version(), reason="Test designed for orca==6.1.0")
 def test_OrcaInput_neb_ts_with_guess():
-    engine = OrcaInput(method="XTB", basis_set=None, aux_basis=None, solvent=None)
+    engine = OrcaInput(method="PBE", basis_set="def2-SV(P)", aux_basis="def2/J", solvent=None)
     reactant = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_reactant.xyz", charge=0, spin=1)
     product = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_product.xyz", charge=0, spin=1)
     guess = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_ts_guess.xyz", charge=0, spin=1)
@@ -1020,13 +1015,13 @@ def test_OrcaInput_neb_ts_with_guess():
     assert_array_almost_equal(
         [s.properties.electronic_energy for s in obtained_systems],
         [
-            -5.50147524875,
-            -5.44627296019,
-            -5.40096383254,
-            -5.38740698109,
-            -5.40474443625,
-            -5.43707487198,
-            -5.47060506582
+            -93.234931842405,
+            -93.193066667152,
+            -93.165784079262,
+            -93.157572965648,
+            -93.168481128046,
+            -93.187719020744,
+            -93.208823554365
         ],
         decimal=6,
     )
@@ -1036,13 +1031,13 @@ def test_OrcaInput_neb_ts_with_guess():
         assert_array_almost_equal(obtained.geometry.coordinates, expected.geometry.coordinates, decimal=6)
 
     expected_TS_geometry = [
-        [-0.63661709,  0.24573605, -0.24573612],
-        [-0.04514099, -0.46170049,  0.46170061],
-        [ 0.68175808,  0.21596443, -0.21596449]
+        [-0.675432,  0.25299 , -0.25299 ],
+        [-0.011656, -0.471892,  0.471892],
+        [ 0.687088,  0.218902, -0.218902]
     ]
 
     assert_array_almost_equal(transition_state.geometry.coordinates, expected_TS_geometry, decimal=6)
-    assert_almost_equal(transition_state.properties.electronic_energy, -5.38737353027, decimal=6)
+    assert_almost_equal(transition_state.properties.electronic_energy, -93.157494180856, decimal=6)
 
     rmtree("output_files")
 
@@ -1050,7 +1045,7 @@ def test_OrcaInput_neb_ts_with_guess():
 # Test the OrcaInput ZOOM-NEB-CI function
 @pytest.mark.skipif(check_orca_version(), reason="Test designed for orca==6.1.0")
 def test_OrcaInput_zoom_neb_ci():
-    engine = OrcaInput(method="XTB", basis_set=None, aux_basis=None, solvent=None)
+    engine = OrcaInput(method="PBE", basis_set="def2-SV(P)", aux_basis="def2/J", solvent=None)
     reactant = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_reactant.xyz", charge=0, spin=1)
     product = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_product.xyz", charge=0, spin=1)
 
@@ -1072,15 +1067,15 @@ def test_OrcaInput_zoom_neb_ci():
     assert_array_almost_equal(
         [s.properties.electronic_energy for s in obtained_systems],
         [
-            -5.50147524875,
-            -5.44839640432,
-            -5.40398336609,
-            -5.39081409257,
-            -5.38737356275,
-            -5.39157618473,
-            -5.40325479011,
-            -5.43623847898,
-            -5.47060506582
+            -93.234931842405,
+            -93.193561143932,
+            -93.166914668434,
+            -93.159178005995,
+            -93.157496674268,
+            -93.160285514359,
+            -93.167860833205,
+            -93.187365956064,
+            -93.208823954532
         ],
         decimal=6,
     )
@@ -1093,7 +1088,7 @@ def test_OrcaInput_zoom_neb_ci():
 # Test the OrcaInput ZOOM-NEB-TS function
 @pytest.mark.skipif(check_orca_version(), reason="Test designed for orca==6.1.0")
 def test_OrcaInput_zoom_neb_ts():
-    engine = OrcaInput(method="XTB", basis_set=None, aux_basis=None, solvent=None)
+    engine = OrcaInput(method="PBE", basis_set="def2-SV(P)", aux_basis="def2/J", solvent=None)
     reactant = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_reactant.xyz", charge=0, spin=1)
     product = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_product.xyz", charge=0, spin=1)
 
@@ -1115,15 +1110,15 @@ def test_OrcaInput_zoom_neb_ts():
     assert_array_almost_equal(
         [s.properties.electronic_energy for s in obtained_systems],
         [
-            -5.50147524875,
-            -5.4467725244,
-            -5.40295295201,
-            -5.38962102183,
-            -5.38747838043,
-            -5.39297088624,
-            -5.40386690821,
-            -5.4382761978,
-            -5.47060506582
+            -93.234931842405,
+            -93.190205440982,
+            -93.164472109938,
+            -93.158445338898,
+            -93.157622796219,
+            -93.160646528653,
+            -93.168047143114,
+            -93.187373358876,
+            -93.208823954532
         ],
         decimal=6,
     )
@@ -1133,13 +1128,13 @@ def test_OrcaInput_zoom_neb_ts():
         assert_array_almost_equal(obtained.geometry.coordinates, expected.geometry.coordinates, decimal=6)
 
     expected_TS_geometry = [
-        [-0.63619908,  0.24614718, -0.24614619],
-        [-0.04589013, -0.46161113,  0.46160927],
-        [ 0.68208922,  0.21546394, -0.21546308]
+        [-0.674865,  0.253747, -0.253747],
+        [-0.012723, -0.471869,  0.471869],
+        [ 0.687588,  0.218122, -0.218122]
     ]
 
     assert_array_almost_equal(transition_state.geometry.coordinates, expected_TS_geometry, decimal=6)
-    assert_almost_equal(transition_state.properties.electronic_energy, -5.38737353069, decimal=6)
+    assert_almost_equal(transition_state.properties.electronic_energy, -93.157494154183, decimal=6)
 
     rmtree("output_files")
 
@@ -1147,7 +1142,7 @@ def test_OrcaInput_zoom_neb_ts():
 # Test the OrcaInput NEB-IDPP function
 @pytest.mark.skipif(check_orca_version(), reason="Test designed for orca==6.1.0")
 def test_OrcaInput_neb_idpp():
-    engine = OrcaInput(method="XTB", basis_set=None, aux_basis=None, solvent=None)
+    engine = OrcaInput(method="PBE", basis_set="def2-SV(P)", aux_basis="def2/J", solvent=None)
     reactant = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_reactant.xyz", charge=0, spin=1)
     product = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/NEB_product.xyz", charge=0, spin=1)
 
