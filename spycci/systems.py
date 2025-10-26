@@ -4,11 +4,12 @@ import os, json
 import numpy as np
 import logging
 
-from typing import List, Generator, Optional
+from typing import List, Generator, Optional, Union
 from copy import deepcopy
 
 from spycci.constants import kB
 from spycci.config import __JSON_VERSION__
+from spycci.core.base import Engine
 from spycci.core.geometry import MolecularGeometry
 from spycci.core.properties import Properties
 
@@ -47,18 +48,53 @@ class System:
         spin: int = 1,
         box_side: Optional[float] = None,
     ) -> None:
-        
         if type(geometry) != MolecularGeometry:
                 raise TypeError("The `geometry` argument must be of type `MolecularGeometry`.")
             
         self.name = str(name)
+
         self.__geometry: MolecularGeometry = deepcopy(geometry)
+        self.__geometry._MolecularGeometry__add_system_reset(self.__on_geometry_change)    # Set listener in MolecularGeometry class using mangled name
+
         self.__charge: int = charge
         self.__spin: int = spin
         self.__box_side = box_side
-        self.properties: Properties = Properties()
+
+        self.__properties: Properties = Properties()
+        self.__properties._Properties__add_check_geometry_level_of_theory(self.__check_geometry_level_of_theory)   # Set listener in Properties class using mangled name
+
         self.flags: list = []
+        logger.debug(f"CREATED: System object {self.name} at ID: {hex(id(self))}.")
     
+    def __on_geometry_change(self) -> None:
+        """
+        Function used by the `MolecularGeometry` listener to clear properties when molecular geometry has been changed.
+        """
+        logger.debug(f"CLEARED: Properties of {self.name} system (ID: {hex(id(self))}) due to molecular geometry change.")
+        self.properties = Properties()
+    
+    def __check_geometry_level_of_theory(self, level_of_theory: str) -> None:
+        """
+        Function used by the `Properties` class listener to check compatibility of a newly provided
+        level of theory with the currently adopted geometric level of theory. If the level of theory
+        provided is different exception is raised. If the geometry level of theory is `None` the check
+        is skipped silently.
+
+        Argument
+        --------
+        level_of_theory: str
+            The level of theory to be checked agains the geometry level of theory.
+        
+        Raises
+        ------
+        RuntimeError
+            Exception raised if the proposed level of theory is different from the one set
+            as the geometry level of theory.
+        """
+        if self.geometry.level_of_theory_geometry is not None:
+            if level_of_theory != self.geometry.level_of_theory_geometry:
+                raise RuntimeError("Mismatch between the user-provided level of theory and the one used to set geometry")
+        
     @classmethod
     def from_xyz(
         cls, 
@@ -216,7 +252,7 @@ class System:
         data["Charge"] = self.__charge
         data["Spin"] = self.__spin
         data["Box Side"] = self.__box_side
-        data["Geometry"] = self.__geometry.to_dict()
+        data["Geometry"] = self.geometry.to_dict()
         data["Properties"] = self.properties.to_dict()
         data["Flags"] = self.flags
 
@@ -225,6 +261,9 @@ class System:
 
     @property
     def geometry(self) -> MolecularGeometry:
+        """
+        The `MolecularGeometry` object encoding the geometry of the system       
+        """
         return self.__geometry
 
     @geometry.setter
@@ -237,11 +276,31 @@ class System:
             raise ValueError("The geometry object cannot be empty or not initialized")
 
         self.__geometry = new_geometry
+        self.__geometry._MolecularGeometry__add_system_reset(self.__on_geometry_change)
         logger.info(f"Geometry changed: clearing properties for {self.name}")
         self.properties = Properties()
+    
+    @property
+    def properties(self) -> Properties:
+        """
+        The `Properties` class object storing the computed system properties.       
+        """
+        return self.__properties
+    
+    @properties.setter
+    def properties(self, new_properties: Properties) -> None:
+        
+        if type(new_properties) != Properties:
+            raise TypeError("The properties attribute must be of type `Properties`")
+
+        self.__properties = new_properties
+        self.__properties._Properties__add_check_geometry_level_of_theory(self.__check_geometry_level_of_theory)
 
     @property
     def charge(self) -> int:
+        """
+        The total charge of the molecular system       
+        """
         return self.__charge
 
     @charge.setter
@@ -257,6 +316,9 @@ class System:
 
     @property
     def spin(self) -> int:
+        """
+        The spin multiplicity of the molecular system       
+        """
         return self.__spin
 
     @spin.setter
@@ -272,6 +334,10 @@ class System:
 
     @property
     def box_side(self) -> float:
+        """
+        The length of the side of the simulation box (in Å) used to define periodic boundary conditions.
+        If set to `None`, the system is treated as non-periodic.
+        """
         return self.__box_side
 
     @box_side.setter
@@ -298,11 +364,51 @@ class System:
         info += "----------------------------------------------\n"
         info += " index  atom    x (Å)      y (Å)      z (Å)   \n"
         info += "----------------------------------------------\n"
-        for idx, (atom, coordinates) in enumerate(self.geometry):
+        atoms, coordinates = self.geometry.atoms, self.geometry.coordinates
+        for idx, (atom, coord) in enumerate(zip(atoms, coordinates)):
             info += f" {idx:<6}{atom:^6}"
-            for c in coordinates:
+            for c in coord:
                 info += "{0:^11}".format(f"{c:.5f}")
             info += "\n"
+        info += "----------------------------------------------\n\n"
+
+        info += "Center of mass:\n"
+        info += "----------------------------------------------\n"
+        info += "                x (Å)      y (Å)      z (Å)   \n"
+        info += "----------------------------------------------\n"
+        info += f" {'':<6}{'':^6}"
+        for c in self.geometry.center_of_mass:
+            info += "{0:^11}".format(f"{c:.5f}")
+        info += "\n"
+        info += "----------------------------------------------\n\n"
+
+        info += "Inertia tensor (amu·Å²):\n"
+        info += "----------------------------------------------\n"
+        info += "                  x          y          z     \n"
+        info += "----------------------------------------------\n"
+        for column, row in zip(["x", "y", "z"], self.geometry.inertia_tensor):
+            info += f" {column:<10}"
+            for val in row:
+                info += f"{val:>11.5f}"
+            info += "\n"
+        info += "----------------------------------------------\n\n"
+        info += "Principal axes of rotation:\n"
+        info += "----------------------------------------------\n"
+        info += "                  x          y          z     \n"
+        info += "----------------------------------------------\n"
+        for column, row in zip(["A", "B", "C"], self.geometry.inertia_eigvecs):
+            info += f" {column:<10}"
+            for val in row:
+                info += f"{val:>11.5f}"
+            info += "\n"
+        info += "----------------------------------------------\n\n"
+        info += f"Rotor type: {self.geometry.rotor_type}\n"
+        eigvals = self.geometry.inertia_eigvals
+        info += f"Principal moments (amu·Å²):\t{eigvals[0]:.5f}  {eigvals[1]:.5f}  {eigvals[2]:.5f}\n\n"
+        rot_const = self.geometry.rotational_constants[0]
+        info += f"Rotational constants (cm⁻¹):\t{rot_const[0]:.5f}  {rot_const[1]:.5f}  {rot_const[2]:.5f}\n"
+        rot_const = self.geometry.rotational_constants[1]
+        info += f"Rotational constants (MHz):\t{rot_const[0]:.5f}  {rot_const[1]:.5f}  {rot_const[2]:.5f}\n\n"
         info += "----------------------------------------------\n\n"
 
         info += "********************** PROPERTIES *************************\n\n"
@@ -437,7 +543,7 @@ class System:
             file.write("\n")
 
             i = 1
-            for atom, coordinates in self.geometry:
+            for atom, coordinates in zip(self.geometry.atoms, self.geometry.coordinates):
                 line = (
                     f"{atom}\t"
                     + f"{coordinates[0]}\t"

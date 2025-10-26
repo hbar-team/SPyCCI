@@ -3,11 +3,14 @@ from __future__ import annotations
 import logging
 import spycci.config
 
-from typing import Dict, List, Union
+from copy import deepcopy
+from typing import Dict, List, Union, Callable, TYPE_CHECKING
 from spycci.config import StrictnessLevel
 from spycci.core.base import Engine
 from spycci.core.spectroscopy import VibrationalData
 
+if TYPE_CHECKING:
+    from spycci.systems import System
 
 logger = logging.getLogger(__name__)
 
@@ -120,6 +123,39 @@ class Properties:
         self.__condensed_fukui_hirshfeld: Dict[str, List[float]] = {}
         self.__vibrational_data: VibrationalData = None
 
+        # Define a listener to validate geometry level of theory stored in System
+        self.__check_geometry_level_of_theory: System.__check_geometry_level_of_theory = None
+    
+    def __add_check_geometry_level_of_theory(self, listener: System.__check_geometry_level_of_theory) -> None:
+        """
+        Add a reference to a `System` function accepting as argument the geometry
+        level of theory to be checked. (implemented as `__check_geometry_level_of_theory`)
+
+        Argument
+        --------
+        listener: System.__check_geometry_level_of_theory
+            The method `__check_geometry_level_of_theory` of the `System` handling the level of theory check
+        """
+        self.__check_geometry_level_of_theory = listener
+    
+    def __call_check_geometry_level_of_theory(self, level_of_theory: str) -> None:
+        "If set, send to the system (owner) the engine to be checked"
+        if self.__check_geometry_level_of_theory is not None:
+            self.__check_geometry_level_of_theory(level_of_theory)
+    
+    def __deepcopy__(self, memo) -> Properties:
+        "Overload of the deepcopy funtion to safely remove listener reference"
+        cls = self.__class__
+        obj = cls.__new__(cls)
+        memo[id(self)] = obj
+
+        for attr_name, attr_value in self.__dict__.items():
+            setattr(obj, attr_name, deepcopy(attr_value, memo))
+        
+        obj.__check_geometry_level_of_theory = None
+
+        return obj
+
     def __clear_electronic(self):
         self.__level_of_theory_electronic = None
         self.__electronic_energy = None
@@ -138,9 +174,10 @@ class Properties:
         self.__vibrational_data = None
 
     def __check_engine(self, engine: Union[Engine, str]) -> None:
-
+        
+        level_of_theory = None
         logger.debug(f"Engine type: {type(engine)}")
-
+        
         if type(engine) == str:
             if not any(
                 [
@@ -153,13 +190,19 @@ class Properties:
                     "The engine argument string does not match any valid level of theory"
                 )
             else:
-                return engine
+                level_of_theory = engine
 
         elif isinstance(engine, Engine):
-            return engine.level_of_theory
+            level_of_theory = engine.level_of_theory
 
         else:
             raise TypeError("The engine argument must be derived from `Engine`")
+        
+        if spycci.config.STRICTNESS_LEVEL == spycci.config.StrictnessLevel.VERY_STRICT:
+            self.__call_check_geometry_level_of_theory(level_of_theory)
+        
+        return level_of_theory
+        
 
     def __validate_electronic(self, engine: Union[Engine, str]) -> None:
 
@@ -401,7 +444,7 @@ class Properties:
         float
             The pKa the system.
         """
-        return self.__pka
+        return deepcopy(self.__pka)
 
     def set_pka(
         self,
@@ -449,7 +492,7 @@ class Properties:
         List[float]
             The list of Mulliken charges associated to each atom in the system.
         """
-        return self.__mulliken_charges
+        return deepcopy(self.__mulliken_charges)
 
     def set_mulliken_charges(self, value: List[float], electronic_engine: Union[Engine, str]) -> None:
         """
@@ -476,7 +519,7 @@ class Properties:
         List[float]
             The list of Mulliken spin populations associated to each atom in the system.
         """
-        return self.__mulliken_spin_populations
+        return deepcopy(self.__mulliken_spin_populations)
 
     def set_mulliken_spin_populations(self, value: List[float], electronic_engine: Union[Engine, str]) -> None:
         """
@@ -505,7 +548,7 @@ class Properties:
             atom in the system starting from the values of the Mulliken charges. The functions
             are stored in the dictionary according to the `f+`, `f-` and `f0` keys.
         """
-        return self.__condensed_fukui_mulliken
+        return deepcopy(self.__condensed_fukui_mulliken)
 
     def set_condensed_fukui_mulliken(
         self, value: Dict[str, List[float]], electronic_engine: Union[Engine, str]
@@ -536,7 +579,7 @@ class Properties:
         List[float]
             The list of Hirshfeld charges associated to each atom in the system.
         """
-        return self.__hirshfeld_charges
+        return deepcopy(self.__hirshfeld_charges)
 
     def set_hirshfeld_charges(self, value: List[float], electronic_engine: Union[Engine, str]) -> None:
         """
@@ -563,7 +606,7 @@ class Properties:
         List[float]
             The list of Hirshfeld spin populations associated to each atom in the system.
         """
-        return self.__hirshfeld_spin_populations
+        return deepcopy(self.__hirshfeld_spin_populations)
 
     def set_hirshfeld_spin_populations(self, value: List[float], electronic_engine: Union[Engine, str]) -> None:
         """
@@ -592,7 +635,7 @@ class Properties:
             atom in the system starting from the values of the Hirshfeld charges. The functions
             are stored in the dictionary according to the `f+`, `f-` and `f0` keys.
         """
-        return self.__condensed_fukui_hirshfeld
+        return deepcopy(self.__condensed_fukui_hirshfeld)
 
     def set_condensed_fukui_hirshfeld(
         self, value: Dict[str, List[float]], electronic_engine: Union[Engine, str]
@@ -623,7 +666,7 @@ class Properties:
         VibrationalData
             The class containing all the available vibrational data
         """
-        return self.__vibrational_data
+        return deepcopy(self.__vibrational_data)
 
     def set_vibrational_data(
         self,

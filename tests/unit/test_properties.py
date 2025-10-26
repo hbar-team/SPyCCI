@@ -9,7 +9,7 @@ from spycci.core.base import Engine
 from spycci.core.properties import Properties, pKa
 
 from spycci.engines.xtb import XtbInput
-
+from spycci.systems import System
 
 class FakeProc:
     def __init__(self, stdout=""):
@@ -186,6 +186,101 @@ def test_level_of_theory_consistency_strict_different_electronic():
     
     finally:
         spycci.config.STRICTNESS_LEVEL = spycci.config.StrictnessLevel.NORMAL
+
+
+def test_level_of_theory_different_geometry_normal():
+
+    try:
+        first = Engine("FirstMethod")
+        second = Engine("SecondMethod")
+
+        assert spycci.config.STRICTNESS_LEVEL == spycci.config.StrictnessLevel.NORMAL
+        assert first.level_of_theory != second.level_of_theory
+
+        mol = System.from_smiles("methane", "C")
+        mol.geometry.level_of_theory_geometry = first.level_of_theory
+
+        mol.properties.set_electronic_energy(0.1, second)
+    
+    except Exception as e:
+        assert False, f"Unexcepted exception raised on conflicting geometry level of theory in NORMAL mode: {e}"
+
+
+def test_level_of_theory_different_geometry_strict():
+
+    spycci.config.STRICTNESS_LEVEL = spycci.config.StrictnessLevel.STRICT
+
+    try:
+        first = Engine("FirstMethod")
+        second = Engine("SecondMethod")
+
+        assert spycci.config.STRICTNESS_LEVEL == spycci.config.StrictnessLevel.STRICT
+        assert first.level_of_theory != second.level_of_theory
+
+        mol = System.from_smiles("methane", "C")
+        mol.geometry.level_of_theory_geometry = first.level_of_theory
+
+        mol.properties.set_electronic_energy(0.1, second)
+    
+    except Exception as e:
+        assert False, f"Unexcepted exception raised on conflicting geometry level of theory in NORMAL mode: {e}"
+    
+    finally:
+        spycci.config.STRICTNESS_LEVEL = spycci.config.StrictnessLevel.NORMAL
+
+
+
+def test_level_of_theory_consistency_very_strict_different_electronic():
+
+    spycci.config.STRICTNESS_LEVEL = spycci.config.StrictnessLevel.VERY_STRICT
+
+    try:
+        first = Engine("FirstMethod")
+        second = Engine("SecondMethod")
+
+        assert spycci.config.STRICTNESS_LEVEL == spycci.config.StrictnessLevel.VERY_STRICT
+        assert first.level_of_theory != second.level_of_theory
+
+        mol = System.from_smiles("methane", "C")
+        mol.geometry.level_of_theory_geometry = first.level_of_theory
+
+        mol.properties.set_electronic_energy(0.1, second)
+    
+    except:
+        assert True
+    
+    else:
+        assert False, "Exception was not raised when expected"
+    
+    finally:
+        spycci.config.STRICTNESS_LEVEL = spycci.config.StrictnessLevel.NORMAL
+
+
+def test_level_of_theory_consistency_very_strict_different_vibrational():
+
+    spycci.config.STRICTNESS_LEVEL = spycci.config.StrictnessLevel.VERY_STRICT
+
+    try:
+        first = Engine("FirstMethod")
+        second = Engine("SecondMethod")
+
+        assert spycci.config.STRICTNESS_LEVEL == spycci.config.StrictnessLevel.VERY_STRICT
+        assert first.level_of_theory != second.level_of_theory
+
+        mol = System.from_smiles("methane", "C")
+        mol.geometry.level_of_theory_geometry = first.level_of_theory
+
+        mol.properties.set_free_energy_correction(0.1, second)
+    
+    except:
+        assert True
+    
+    else:
+        assert False, "Exception was not raised when expected"
+    
+    finally:
+        spycci.config.STRICTNESS_LEVEL = spycci.config.StrictnessLevel.NORMAL
+
 
 
 def test_pka_vibrational_addition():

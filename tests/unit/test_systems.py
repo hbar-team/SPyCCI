@@ -1,12 +1,14 @@
 import pytest, pathlib, json
 
-from numpy.testing import assert_array_almost_equal
+from numpy.testing import assert_array_almost_equal, assert_almost_equal
 from os.path import abspath, dirname, join
+from copy import copy, deepcopy
 
 from spycci.config import __JSON_VERSION__
 from spycci.systems import System
 from spycci.core.base import Engine
 from spycci.core.geometry import MolecularGeometry
+from spycci.core.properties import Properties
 
 # Get the path of the tests directory
 TEST_DIR = dirname(abspath(__file__))
@@ -120,7 +122,7 @@ def test_System_from_smiles():
     assert geom.atoms == ["C", "C", "O", "H", "H", "H", "H", "H", "H"]
 
     # Check geometry coordinates (with fixed seed)
-    expected = [
+    expected = (
         [-0.88340023, -0.17904132, -0.07267199],
         [0.4497649 , 0.51104444, 0.12851809],
         [ 1.48578755, -0.2490953 , -0.47625408],
@@ -130,7 +132,7 @@ def test_System_from_smiles():
         [ 0.44081839,  1.50296775, -0.33251669],
         [0.6749398 , 0.62724095, 1.19298181],
         [ 1.49192808, -1.12477959, -0.05347481],
-    ]
+    )
 
     for i in range(9):
         assert_array_almost_equal(geom.coordinates[i], expected[i], decimal=6)
@@ -206,7 +208,7 @@ def test_System_geometry_property():
     mol.properties.set_electronic_energy(1.5, Engine("Dummy"))
 
     assert mol.properties.electronic_energy == 1.5
-    for i, (_, coord) in enumerate(mol.geometry):
+    for i, coord in enumerate(mol.geometry.coordinates):
         assert_array_almost_equal(coord, expected_coordinates[i], decimal=6)
 
     mol.geometry = MolecularGeometry().from_xyz(xyzfile)
@@ -285,3 +287,264 @@ def test_System_box_side_property():
     assert mol.box_side == 10.4
     assert mol.is_periodic == True
     assert mol.properties.electronic_energy == None
+
+
+# ----------------------------------------------------------------
+#       TEST LISTENER OF THE MOLECULAR GEOMETRY CLASS
+# ----------------------------------------------------------------
+
+# Test assignment of the listener of the MolecularGeometry class on __init__
+def test_MolecularGeometry_listener___init__():
+
+    geom = MolecularGeometry.from_smiles("C")
+    assert geom._MolecularGeometry__system_reset == None
+
+    mol = System("methane", geom)
+    assert mol.geometry._MolecularGeometry__system_reset == mol._System__on_geometry_change
+
+# Test assignment of the listener of the MolecularGeometry class on from_xyz
+def test_MolecularGeometry_listener_from_xyz():
+
+    xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
+    mol = System.from_xyz(xyzfile)
+    assert mol.geometry._MolecularGeometry__system_reset == mol._System__on_geometry_change
+
+
+# Test assignment of the listener of the MolecularGeometry class on from_json
+def test_MolecularGeometry_listener_from_json():
+
+    jsonfile = join(TEST_DIR, "utils/json_examples/water.json")
+    mol = System.from_json(jsonfile)
+    assert mol.geometry._MolecularGeometry__system_reset == mol._System__on_geometry_change
+
+
+# Test assignment of the listener of the MolecularGeometry class on from_smiles
+def test_MolecularGeometry_listener_from_smiles():
+
+    mol = System.from_smiles("methane", "C")
+    assert mol.geometry._MolecularGeometry__system_reset == mol._System__on_geometry_change
+
+
+# Test assignment of the listener of the MolecularGeometry class on geometry property assignment
+def test_MolecularGeometry_listener_geometry_setter():
+
+    new_geom = MolecularGeometry.from_smiles("c1ccccc1")
+    assert new_geom._MolecularGeometry__system_reset == None
+
+    mol = System.from_smiles("methane", "C")
+    mol.geometry = new_geom
+    assert mol.geometry._MolecularGeometry__system_reset == mol._System__on_geometry_change
+
+
+# Test the clearing of the listener of the MolecularGeometry class on deepcopy
+def test_MolecularGeometry_listener_deepcopy():
+
+    mol = System.from_smiles("methane", "C")
+    assert mol.geometry._MolecularGeometry__system_reset == mol._System__on_geometry_change
+
+    geom = mol.geometry
+    assert geom._MolecularGeometry__system_reset == mol._System__on_geometry_change
+
+    copy_geom = copy(mol.geometry)
+    assert copy_geom._MolecularGeometry__system_reset == mol._System__on_geometry_change
+
+    deepcopy_geom = deepcopy(mol.geometry)
+    assert deepcopy_geom._MolecularGeometry__system_reset == None
+
+
+# Test the __on_geometry_change method of the System class
+def test___on_geometry_change_System():
+
+    mol = System.from_smiles("mathane", "C")
+    dummy = Engine("dummy engine")
+    mol.properties.set_electronic_energy(-1.25, dummy)
+
+    assert_almost_equal(mol.properties.electronic_energy, -1.25, decimal=6)
+
+    mol._System__on_geometry_change()
+    assert mol.properties.electronic_energy == None
+
+
+# Test properties clearing on geometry append
+def test_System_clearing_geometry_append():
+
+    mol = System.from_smiles("mathane", "C")
+    
+    # Set one of the properties of the `Property` class
+    dummy = Engine("dummy engine")
+    mol.properties.set_electronic_energy(-1.25, dummy)
+    assert_almost_equal(mol.properties.electronic_energy, -1.25, decimal=6)
+
+    # Change the geometry
+    mol.geometry.append("H", [0., 0., 0.])
+
+    # Check that the properties have been cleared
+    assert mol.properties.electronic_energy == None
+
+
+# Test properties clearing on geometry load_xyz
+def test_System_clearing_geometry_load_xyz():
+
+    mol = System.from_smiles("methane", "C")
+    
+    # Set one of the properties of the `Property` class
+    dummy = Engine("dummy engine")
+    mol.properties.set_electronic_energy(-1.25, dummy)
+    assert_almost_equal(mol.properties.electronic_energy, -1.25, decimal=6)
+
+    # Change the geometry
+    xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
+    mol.geometry.load_xyz(xyzfile)
+
+    # Check that the properties have been cleared
+    assert mol.properties.electronic_energy == None
+
+# Test property setters
+def test_System_clearing_geometry_set_atoms():
+
+    mol = System.from_smiles("methane", "C")
+
+    # Set one of the properties of the `Property` class
+    dummy = Engine("dummy engine")
+    mol.properties.set_electronic_energy(-1.25, dummy)
+    assert_almost_equal(mol.properties.electronic_energy, -1.25, decimal=6)
+
+    # Change atoms list
+    mol.geometry.set_atoms(["Sn", "H", "H", "H", "H"])
+
+    assert mol.geometry.atoms == ["Sn", "H", "H", "H", "H"], "Set of the atom list failed"
+    assert mol.properties.electronic_energy == None, "Properties not cleared after molecular geometry changed"
+
+
+# Test property setters
+def test_System_clearing_geometry_coordinates_setter():
+
+    xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
+    mol = System.from_xyz(xyzfile)
+
+    # Set one of the properties of the `Property` class
+    dummy = Engine("dummy engine")
+    mol.properties.set_electronic_energy(-1.25, dummy)
+    assert_almost_equal(mol.properties.electronic_energy, -1.25, decimal=6)
+
+    # Change coordinates using the setter
+    new_coordinates = [
+        [-10., -0.58504, -0.01395],
+        [-2.24247, -0.61827, 0.01848],
+        [-3.48920, -1.24911, 0.63429]
+    ]
+
+    mol.geometry.set_coordinates(new_coordinates)
+
+    # Check if the coordinates have been set
+    assert_array_almost_equal(mol.geometry.coordinates, new_coordinates, decimal=6)
+    assert mol.properties.electronic_energy == None, "Properties not cleared after molecular geometry changed"
+   
+
+
+# ----------------------------------------------------------------
+#           TEST LISTENER OF THE PROPERTIES CLASS
+# ----------------------------------------------------------------
+
+# Test assignment of the listener of the Properties class on __init__
+def test_Properties_listener___init__():
+
+    geom = MolecularGeometry.from_smiles("C")
+    mol = System("methane", geom)
+    assert mol.properties._Properties__check_geometry_level_of_theory == mol._System__check_geometry_level_of_theory
+
+
+# Test assignment of the listener of the Properties class on from_xyz
+def test_Properties_listener_from_xyz():
+
+    xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
+    mol = System.from_xyz(xyzfile)
+    assert mol.properties._Properties__check_geometry_level_of_theory == mol._System__check_geometry_level_of_theory
+
+
+# Test assignment of the listener of the Properties class on from_json
+def test_Properties_listener_from_json():
+
+    jsonfile = join(TEST_DIR, "utils/json_examples/water.json")
+    mol = System.from_json(jsonfile)
+    assert mol.properties._Properties__check_geometry_level_of_theory == mol._System__check_geometry_level_of_theory
+
+
+# Test assignment of the listener of the Properties class on from_smiles
+def test_Properties_listener_from_smiles():
+
+    mol = System.from_smiles("methane", "C")
+    assert mol.properties._Properties__check_geometry_level_of_theory == mol._System__check_geometry_level_of_theory
+
+
+# Test assignment of the listener of the Properties class on properties assignment
+def test_Properties_listener_properties_setter():
+
+    p = Properties()
+    assert p._Properties__check_geometry_level_of_theory == None
+
+    mol = System.from_smiles("methane", "C")
+    mol.properties = p
+    assert mol.properties._Properties__check_geometry_level_of_theory == mol._System__check_geometry_level_of_theory
+
+
+# Test the clearing of the listener of the Properties class on deepcopy
+def test_Properties_listener_deepcopy():
+
+    mol = System.from_smiles("methane", "C")
+    assert mol.properties._Properties__check_geometry_level_of_theory == mol._System__check_geometry_level_of_theory
+
+    p = mol.properties
+    assert p._Properties__check_geometry_level_of_theory == mol._System__check_geometry_level_of_theory
+
+    copy_p = copy(mol.properties)
+    assert copy_p._Properties__check_geometry_level_of_theory == mol._System__check_geometry_level_of_theory
+
+    deepcopy_p = deepcopy(mol.properties)
+    assert deepcopy_p._Properties__check_geometry_level_of_theory == None
+
+
+# Test the __check_geometry_level_of_theory method of the System class in case of level of theory None 
+def test___check_geometry_level_of_theory_System_None():
+
+    mol = System.from_smiles("mathane", "C")
+    dummy = Engine("Dummy engine")
+
+    try:
+        mol._System__check_geometry_level_of_theory(dummy.level_of_theory)
+    
+    except Exception as e:
+        assert False, f"Unexpected exception raised when checking geometry level of theory with None state: {e}"
+
+
+# Test the __check_geometry_level_of_theory method of the System class in case of same level of theory
+def test___check_geometry_level_of_theory_System_match():
+
+    mol = System.from_smiles("mathane", "C")
+    dummy = Engine("Dummy engine")
+    mol.geometry.level_of_theory_geometry = dummy.level_of_theory
+
+    try:
+        mol._System__check_geometry_level_of_theory(dummy.level_of_theory)
+    
+    except Exception as e:
+        assert False, f"Unexpected exception raised when checking matching geometry levels of theory: {e}"
+
+
+# Test the __check_geometry_level_of_theory method of the System class in case of different level of theory
+def test___check_geometry_level_of_theory_System_mismatch():
+
+    mol = System.from_smiles("mathane", "C")
+
+    first = Engine("first engine")
+    mol.geometry.level_of_theory_geometry = first.level_of_theory
+
+    second = Engine("second engine")
+
+    try:
+        mol._System__check_geometry_level_of_theory(second.level_of_theory)
+    
+    except:
+        assert True
+    else:
+        assert False, "An exception was not raised when checking mismatching geometry levels of theory."
