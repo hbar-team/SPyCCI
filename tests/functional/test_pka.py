@@ -2,7 +2,7 @@ import pytest
 
 from spycci.engines.xtb import XtbInput
 from spycci.engines.orca import OrcaInput
-from spycci.systems import System, Ensemble
+from spycci.systems import System
 from spycci.functions.pka import (
     calculate_pka,
     calculate_pka_oxonium_scheme,

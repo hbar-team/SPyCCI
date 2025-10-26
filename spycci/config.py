@@ -35,11 +35,13 @@ if VERSION_MATCH not in ["strict", "minor", "major", "disabled"]:
     )
 
 # Strictness of the Level of theory check performed by the properties.py module
-# Options: "NORMAL", "STRICT"
+# Options: "NORMAL", "STRICT", "VERY_STRICT"
 # "NORMAL" : The electronic and vibrational levels of theory can be different
-# "STRICT" : The electronic and vibrational levels of theory cannot differ within a property object
+# "STRICT" : The electronic and vibrational levels of theory cannot differ within a Properties object
+# "VERY_STRICT" : The geometry, electronic and vibrational levels of theory cannot differ within a System object
 class StrictnessLevel(IntEnum):
     NORMAL = 0
     STRICT = 1
+    VERY_STRICT = 2
 
 STRICTNESS_LEVEL = StrictnessLevel.NORMAL

@@ -3,7 +3,8 @@ from __future__ import annotations
 import logging
 import spycci.config
 
-from typing import Dict, List, Union
+from copy import deepcopy
+from typing import Dict, List, Union, Callable
 from spycci.config import StrictnessLevel
 from spycci.core.base import Engine
 from spycci.core.spectroscopy import VibrationalData
@@ -120,6 +121,39 @@ class Properties:
         self.__condensed_fukui_hirshfeld: Dict[str, List[float]] = {}
         self.__vibrational_data: VibrationalData = None
 
+        # Define a listener to validate geometry level of theory stored in System
+        self.__check_geometry_level_of_theory: Callable = None
+    
+    def __add_check_geometry_level_of_theory(self, listener: Callable) -> None:
+        """
+        Add a reference to a `System` function accepting as argument the geometry
+        level of theory to be checked. (implemented as `__check_geometry_level_of_theory`)
+
+        Argument
+        --------
+        listener: Callable
+            The method `__check_geometry_level_of_theory` of the `System` handling the level of theory check
+        """
+        self.__check_geometry_level_of_theory = listener
+    
+    def __call_check_geometry_level_of_theory(self, engine: Union[Engine, str]) -> None:
+        "If set, send to the system (owner) the engine to be checked"
+        if self.__check_geometry_level_of_theory is not None:
+            self.__check_geometry_level_of_theory(engine)
+    
+    def __deepcopy__(self, memo) -> Properties:
+        "Overload of the deepcopy funtion to safely remove listener reference"
+        cls = self.__class__
+        obj = cls.__new__(cls)
+        memo[id(self)] = obj
+
+        for attr_name, attr_value in self.__dict__.items():
+            setattr(obj, attr_name, deepcopy(attr_value, memo))
+        
+        obj.__check_geometry_level_of_theory = None
+
+        return obj
+
     def __clear_electronic(self):
         self.__level_of_theory_electronic = None
         self.__electronic_energy = None
@@ -138,9 +172,10 @@ class Properties:
         self.__vibrational_data = None
 
     def __check_engine(self, engine: Union[Engine, str]) -> None:
-
+        
+        level_of_theory = None
         logger.debug(f"Engine type: {type(engine)}")
-
+        
         if type(engine) == str:
             if not any(
                 [
@@ -153,13 +188,19 @@ class Properties:
                     "The engine argument string does not match any valid level of theory"
                 )
             else:
-                return engine
+                level_of_theory = engine
 
         elif isinstance(engine, Engine):
-            return engine.level_of_theory
+            level_of_theory = engine.level_of_theory
 
         else:
             raise TypeError("The engine argument must be derived from `Engine`")
+        
+        if spycci.config.STRICTNESS_LEVEL == spycci.config.StrictnessLevel.VERY_STRICT:
+            self.__call_check_geometry_level_of_theory(level_of_theory)
+        
+        return level_of_theory
+        
 
     def __validate_electronic(self, engine: Union[Engine, str]) -> None:
 

@@ -26,12 +26,11 @@ Generic calculations are implemented as class methods in the various `engines`. 
 |  Single point energy  |  `spe`  |  xTB, Orca, DFTB+  |
 |  Geometry optimisation + Frequency analysis  |  `opt`  |  xTB, Orca, DFTB+  |
 |  Frequency analysis  |  `freq` |  xTB, Orca  |
-|  Numerical frequency analysis  |  `nfreq` |  Orca  |
 |  Relaxed surface scan  |  `scan` |  Orca  |
 |  Transition state optimization  |  `opt_ts` |  Orca  |
 |  Transition state search via relaxed surface scan  |  `scan_ts` |  Orca  |
-|  Climbing Image Nudged Elastic Band method  |  `neb_ci` |  Orca  |
-|  Transition state search via Nudged Elastic Band method  |  `neb_ts` |  Orca  |
+|  Intrinsic Reaction Coordinate  |  `irc` |  Orca  |
+|  Nudged Elastic Band method  |  `neb` |  Orca  |
 |  COSMO-RS calculation of solvation energy | `cosmors` | Orca |
 |  NVT Molecular Dynamics  |  `md_nvt` |  DFTB+  |
 |  Simulated annealing  |  `simulated_annealing` |  DFTB+  |
