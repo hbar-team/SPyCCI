@@ -26,7 +26,6 @@ Generic calculations are implemented as class methods in the various `engines`. 
 |  Single point energy  |  `spe`  |  xTB, Orca, DFTB+  |
 |  Geometry optimisation + Frequency analysis  |  `opt`  |  xTB, Orca, DFTB+  |
 |  Frequency analysis  |  `freq` |  xTB, Orca  |
-|  Numerical frequency analysis  |  `nfreq` |  Orca  |
 |  Relaxed surface scan  |  `scan` |  Orca  |
 |  Transition state optimization  |  `opt_ts` |  Orca  |
 |  Transition state search via relaxed surface scan  |  `scan_ts` |  Orca  |

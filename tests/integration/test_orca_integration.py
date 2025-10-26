@@ -475,14 +475,14 @@ def test_OrcaInput_freq_no_inplace():
         rmtree("output_files")
 
 
-# Test the nfreq() function on a water molecule in ethanol
+# Test the freq() function (numerical) on a water molecule in ethanol
 @pytest.mark.skipif(check_orca_version(), reason="Test designed for orca==6.1.0")
-def test_OrcaInput_nfreq():
+def test_OrcaInput_freq_numerical():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis="def2/J", solvent="ethanol")
     mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
-        engine.nfreq(mol, ncores=8, inplace=True)
+        engine.freq(mol, numerical=True, ncores=8, inplace=True, remove_tdir=False)
     except:
         assert False, "Unexpected exception raised during numerical frequency analysis"
 
@@ -531,14 +531,14 @@ def test_OrcaInput_nfreq():
         rmtree("output_files")
 
 
-# Test the nfreq() function on a water molecule in ethanol with no inplace option
+# Test the freq() function (numerical) on a water molecule in ethanol with no inplace option
 @pytest.mark.skipif(check_orca_version(), reason="Test designed for orca==6.1.0")
-def test_OrcaInput_nfreq_no_inplace():
+def test_OrcaInput_freq_numerical_no_inplace():
     engine = OrcaInput(method="PBE", basis_set="def2-SVP", aux_basis="def2/J", solvent="ethanol")
     mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
-        newmol = engine.nfreq(mol, ncores=8)
+        newmol = engine.freq(mol, numerical=True, ncores=8)
     except:
         assert False, "Unexpected exception raised during numerical frequency analysis"
 
@@ -594,7 +594,7 @@ def test_OrcaInput_raman_nearir():
     mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/CO2.xyz")
 
     engine.opt(mol, ncores=8, optimization_level="TIGHTOPT", inplace=True)
-    engine.nfreq(mol, ncores=8, raman=True, overtones=True, inplace=True)
+    engine.freq(mol, numerical=True, ncores=8, raman=True, overtones=True, inplace=True)
 
     expected_frequencies = [0.00, 0.00, 0.00, 0.00, 0.00, 622.46, 624.16, 1339.45, 2422.18] 
     assert_array_almost_equal(expected_frequencies, mol.properties.vibrational_data.frequencies, decimal=1)

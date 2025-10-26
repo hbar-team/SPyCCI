@@ -36,9 +36,7 @@ class OrcaJobInfo:
     opt_ts: bool
         If set to True, will trigger a transition-state optimization calculation.
     freq: bool
-        If set to True, will trigger a frequency analysis (with analytical frequencies if not in solvent).
-    nfreq: bool
-        If set to True, will trigger a numerical frequency analysis.
+        If set to True, will trigger a frequency analysis (with analytical/numerical frequencies).
     scan: Optional[str]
         If not None, will encode the scan parameters in string format.
     scan_ts: Optional[str]
@@ -79,7 +77,6 @@ class OrcaJobInfo:
         self.opt: bool = False
         self.opt_ts: bool = False
         self.freq: bool = False
-        self.nfreq: bool = False
         self.scan: Optional[str] = None
         self.scan_ts: Optional[str] = None
         self.irc: bool = False
@@ -95,6 +92,8 @@ class OrcaJobInfo:
         self.hirshfeld: bool = False
         self.nearir: bool = False
         self.raman: bool = False
+
+        self.freq_numeric: bool = False
 
         self.irc_maxiter: int = 20
         self.irc_direction: str = 'both'
@@ -619,11 +618,6 @@ class OrcaInput(Engine):
         if job_info.print_level is not None:
             input += f"! {job_info.print_level}\n\n"
 
-        if (job_info.opt is True or job_info.opt_ts is True) and job_info.freq is True and self.solvent is not None:
-            logger.warning("Optimization with frequency in solvent was requested. Switching to numerical frequencies.")
-            job_info.freq = False
-            job_info.nfreq = True
-
         if job_info.opt is True:
             input += "! Opt\n" if job_info.optimization_level is None else f"! {job_info.optimization_level}\n"
 
@@ -637,13 +631,10 @@ class OrcaInput(Engine):
             input += "! ScanTS\n"
 
         if job_info.freq is True:
-            if self.solvent:
-                logger.warning("Analytical frequencies are not supported for the SMD solvent model.")
-
-            input += "! Freq\n"
-
-        if job_info.nfreq is True:
-            input += "! NumFreq\n"
+            if job_info.freq_numeric:
+                input += "! NumFreq\n"
+            else:
+                input += "! Freq\n"
 
         if job_info.nearir is True:
             input += "! NearIR\n"
@@ -1042,6 +1033,7 @@ class OrcaInput(Engine):
     def freq(
         self,
         mol: System,
+        numerical: bool = False,
         ncores: int = None,
         maxcore: int = 750,
         inplace: bool = False,
@@ -1060,6 +1052,9 @@ class OrcaInput(Engine):
         ----------
         mol : System object
             input molecule to use in the calculation
+        numerical : bool, optional
+            If set to True will compute the vibrationa analysis using numerical
+            (one or two-sided) differentiation of analytical gradients (default: False)
         ncores : int, optional
             number of cores, by default all available cores
         maxcore : int, optional
@@ -1116,6 +1111,7 @@ class OrcaInput(Engine):
             job_info.is_singlet = True if mol.spin == 1 else False
             job_info.solvent = self.solvent
             job_info.freq = True
+            job_info.freq_numeric = numerical
             job_info.raman = raman
             job_info.nearir = overtones
             job_info.user_blocks = blocks if blocks else self.blocks
@@ -1136,103 +1132,6 @@ class OrcaInput(Engine):
 
             process_output(mol, self.__output_suffix, "freq", mol.charge, mol.spin)
 
-            if remove_tdir:
-                shutil.rmtree(tdir)
-
-            if inplace is False:
-                return newmol
-
-    def nfreq(
-        self,
-        mol: System,
-        ncores: int = None,
-        maxcore: int = 750,
-        inplace: bool = False,
-        remove_tdir: bool = True,
-        raman: bool = False,
-        overtones: bool = False,
-        blocks: Optional[Dict[str, Dict[str, Any]]] = None,
-    ):
-        """
-        Frequency analysis (numerical frequencies).
-
-        Parameters
-        ----------
-        mol : System object
-            input molecule to use in the calculation
-        ncores : int, optional
-            number of cores, by default all available cores
-        maxcore : int, optional
-            memory per core, in MB, by default 750
-        inplace : bool, optional
-            updates info for the input molecule instead of outputting a new molecule object,
-            by default False
-        remove_tdir : bool, optional
-            temporary work directory will be removed, by default True
-        raman: bool
-            If set to True will compute the Raman spectrum.
-        overtones: bool
-            Is set to True will enable the computation of infrared overtones and combination
-            bands.
-        blocks : Optional[Dict[str, Dict[str, Any]]]
-            The dictionary of dictionaries encoding a series of custom blocks defined by the user. If set to a non-empty
-            value, will overvrite the block option eventually set on the `OrcaInput` class construction
-
-        Returns
-        -------
-        newmol : System object
-            Output molecule containing the new energies.
-
-        Examples
-        --------
-        Starting from an initialized instance ``orca`` of the ``OrcaInput`` class, a numerical frequency analysis of
-        the molecule ``mol`` can be run using the command:
-
-        >>> newmol = orca.nfreq(mol)
-
-        The ``newmol`` object will contain the same geometry of the molecule ``mol`` together with all the vibrational data
-        computed during the frequency analysis process. If a new instance of the molecule ``mol`` is not wanted. The
-        properties of the molecule can be set using the flag ``inplace``.
-
-        >>> orca.nfreq(mol, inplace=True)
-
-        In doing so, the molecule ``mol`` will be updated with the computed properties without returning anything.
-        """
-
-        logger.info(f"{mol.name}, charge {mol.charge} spin {mol.spin} - {self.method} NFREQ")
-
-        tdir = mkdtemp(
-            prefix=mol.name + "_",
-            suffix=f"_{self.__output_suffix}_nfreq",
-            dir=os.getcwd(),
-        )
-
-        with sh.pushd(tdir):
-            job_info = OrcaJobInfo()
-            job_info.ncores = ncores
-            job_info.maxcore = maxcore
-            job_info.is_singlet = True if mol.spin == 1 else False
-            job_info.solvent = self.solvent
-            job_info.nfreq = True
-            job_info.raman = raman
-            job_info.nearir = overtones
-            job_info.user_blocks = blocks if blocks else self.blocks
-
-            self.write_input(mol=mol, job_info=job_info)
-
-            cmd = f"{self.__ORCAPATH} input.inp > output.out '{cfg.MPI_FLAGS}'"
-            logger.debug(f"Running Orca with command: {cmd}")
-            os.system(cmd)
-
-            if inplace is False:
-                newmol = System.from_xyz(f"{mol.name}.xyz", charge=mol.charge, spin=mol.spin)
-                newmol.properties = copy.copy(mol.properties)
-                self.parse_output(newmol)
-
-            else:
-                self.parse_output(mol)
-
-            process_output(mol, self.__output_suffix, "numfreq", mol.charge, mol.spin)
             if remove_tdir:
                 shutil.rmtree(tdir)
 
