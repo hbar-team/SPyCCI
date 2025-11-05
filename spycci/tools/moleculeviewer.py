@@ -17,10 +17,66 @@ def show_molecule(
         molecule: Union[MolecularGeometry, System],
         atom_scale : float = 0.4,
         bond_radius : float = 0.075,
-        background : str = "#000000",
-        title : str = ""
+        background : str = "#222222",
+        only_single_bonds: bool = False,
+        title : str = "",
+        title_color: str = "#FFFFFF",
+        title_size: int = 18,
     ) -> None:
+    """
+    Display a 3D ball-and-stick representation of a molecular structure using PyVista. This function
+    creates an interactive three-dimensional visualization of a molecule, where atoms are rendered as
+    spheres and chemical bonds as cylinders. It supports single, double, triple, and aromatic bonds 
+    (bond order = 1.5), with bond topology and geometry automatically inferred from a `MolecularGeometry`
+    or `System` object.
 
+    Parameters
+    ----------
+    molecule : Union[MolecularGeometry, System]
+        The molecular structure to visualize.  
+    atom_scale : float
+        Scaling factor (default=0.4) applied to covalent radii when drawing atomic spheres. Increasing
+        this value enlarges the atoms relative to bond lengths.
+    bond_radius : float
+        Radius of the cylindrical meshes used to represent bonds. (default=0.075)
+    background : str
+        Background color of the 3D scene in hexadecimal RGB format. (default="#222222")
+    only_single_bonds : bool
+        If `True`, all bonds with a nonzero bond order are displayed as single bonds, ignoring multiple
+        bond representations. Useful for simplified or schematic visualizations. (default=False)
+    title : str
+        Optional title text displayed in the 3D scene. (default="")
+    title_color : str
+        Title text color, specified as a hexadecimal RGB string. (default="#FFFFFF")
+    title_size : int 
+        Font size for the title text. (default=18)
+
+    Notes
+    -----
+    - Atoms are rendered as spheres (`pv.Sphere`), with radii derived from the covalent radii scaled
+      by `atom_scale`.
+    - Bonds are rendered as cylinders (`pv.Cylinder`) positioned and oriented along the vector connecting
+      two bonded atoms. Bond orders are represented as follows:
+
+        * **1.0 (single bond)** → one central cylinder  
+        * **2.0 (double bond)** → two parallel cylinders  
+        * **3.0 (triple bond)** → three parallel cylinders  
+        * **1.5 (aromatic bond)** → one solid cylinder plus one dashed line made of segments  
+
+      For multiple bonds, a perpendicular vector is computed using a cross product
+      (`np.cross`) to laterally offset the cylinders so that they do not overlap.
+
+    - Very short interatomic distances (`< 1e-6`) are ignored to prevent
+      degenerate or numerically unstable bond geometries.
+
+    - The visualization uses smooth shading and balanced mesh resolution
+      for both high-quality rendering and interactive performance.
+
+    Raises
+    ------
+    TypeError
+        If `molecule` is not an instance of `MolecularGeometry` or `System`.
+    """
     plotter = pv.Plotter(window_size=(800, 700))
     plotter.set_background(background)
 
@@ -33,7 +89,7 @@ def show_molecule(
     else:
         raise TypeError("The `molecule` arguent must be either of type `MolecularGeometry` of `System`.")
 
-    #
+    # Obtain connectivity
     bond_type_matrix = geometry.bond_type_matrix
 
     # Draw atoms as spheres
@@ -46,22 +102,78 @@ def show_molecule(
     # Disegna i legami come cilindri
     for i, coord_i in enumerate(geometry.coordinates):
         for j, coord_j in enumerate(geometry.coordinates[i+1:], start=i+1):
+
+            bond_order = bond_type_matrix[i, j]
+
+            if only_single_bonds is True:
+                bond_order = 1. if bond_order > 0. else 0.
             
-            if bond_type_matrix[i, j] > 0.:
+            # Check if the atoms are connected by a bond if not skip the iteration
+            if bond_order == 0.:
+                continue
 
-                direction = coord_i - coord_j
-                center = (coord_i + coord_j) / 2
-                height = np.linalg.norm(direction)
-                
-                if height < 1e-6:
-                    continue
+            direction = coord_i - coord_j
+            center = (coord_i + coord_j) / 2
+            height = np.linalg.norm(direction)
+            
+            # If the bond is too short skip the iteration
+            if height < 1e-6:
+                continue
 
-                cyl = pv.Cylinder(center=center, direction=direction, radius=bond_radius, height=height, resolution=20)
+            # Generate a vector perpendicular to the bond direction using the cross product
+            # with an arbitrary axis vector. If the vectors are almost parallel to the `z`
+            # axis, switch to the `y` one 
+
+            direction /= height         # Normalize the direction vector
+            if abs(direction[2]) < 0.9:
+                ortho = np.cross(direction, [0, 0, 1])
+            else:
+                ortho = np.cross(direction, [0, 1, 0])
+
+            ortho /= np.linalg.norm(ortho)
+
+            # Set the spacing between cylinders representing multiple bonds
+            offset = bond_radius * 1.5 
+
+            # Plot bonds according to the computed bond order 
+            # 3.0: Triple bond
+            if abs(bond_order - 3) < 0.1: 
+                offsets = [-offset, 0, offset]
+                for k in offsets:
+                    p_shift = ortho * k
+                    cyl = pv.Cylinder(center=center + p_shift, direction=direction, radius=bond_radius, height=height, resolution=24)
+                    plotter.add_mesh(cyl, color='lightgray', smooth_shading=True)
+
+            # 2.0: Double bond
+            elif abs(bond_order - 2) < 0.1:
+                offsets = [-offset/1.5, offset/1.5]
+                for k in offsets:
+                    p_shift = ortho * k
+                    cyl = pv.Cylinder(center=center + p_shift, direction=direction, radius=bond_radius, height=height, resolution=24)
+                    plotter.add_mesh(cyl, color='lightgray', smooth_shading=True)
+
+            # 1.5: Aromatic bond
+            elif abs(bond_order - 1.5) < 0.1:
+                p_shift = ortho * (offset/1.5)
+
+                cyl = pv.Cylinder(center=center - p_shift, direction=direction, radius=bond_radius, height=height, resolution=24)
+                plotter.add_mesh(cyl, color='lightgray', smooth_shading=True)
+
+                n_segments = 6
+                segment_gap = height / (2 * n_segments)
+                for s in range(n_segments):
+                    # centro del mini-cilindro
+                    frac = (s + 0.5) / n_segments
+                    segment_center = coord_i - direction * (height * frac)
+                    cyl = pv.Cylinder(center=segment_center + p_shift, direction=direction, radius=bond_radius, height=segment_gap, resolution=24)
+                    plotter.add_mesh(cyl, color='lightgray', smooth_shading=True)
+
+            # 1.0: Single bond
+            else:
+                cyl = pv.Cylinder(center=center, direction=direction, radius=bond_radius, height=height, resolution=24)
                 plotter.add_mesh(cyl, color='lightgray', smooth_shading=True)
 
 
-    plotter.add_title(title, color='white', font_size=10)
+    plotter.add_title(title, color=title_color, font_size=title_size)
     plotter.show_axes()
     plotter.show()
-
-
