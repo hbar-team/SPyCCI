@@ -1,7 +1,7 @@
 import numpy as np
 import pyvista as pv
 
-from typing import Union
+from typing import Union, Optional
 
 from spycci.core.geometry import MolecularGeometry
 from spycci.systems import System
@@ -22,6 +22,8 @@ def show_molecule(
         title : str = "",
         title_color: str = "#FFFFFF",
         title_size: int = 18,
+        camera_position : Optional[pv.CameraPosition] = None,
+        export_path : Optional[str] = None,
     ) -> None:
     """
     Display a 3D ball-and-stick representation of a molecular structure using PyVista. This function
@@ -50,6 +52,11 @@ def show_molecule(
         Title text color, specified as a hexadecimal RGB string. (default="#FFFFFF")
     title_size : int 
         Font size for the title text. (default=18)
+    camera_position : Optional[pv.CameraPosition]
+        A valid camera position compatible with the `pyvista.CameraPosition` class.
+    export_path: Optional[str]
+        If not `None`, will run the plotter in off-screen render mode and save a screenshot of the current view
+        at the user specified path. If `None` (default) will run the viewer in interactive mode.
 
     Notes
     -----
@@ -173,7 +180,17 @@ def show_molecule(
                 cyl = pv.Cylinder(center=center, direction=direction, radius=bond_radius, height=height, resolution=24)
                 plotter.add_mesh(cyl, color='lightgray', smooth_shading=True)
 
+    if camera_position is not None:
+        plotter.camera_position = camera_position
+    else:
+        plotter.view_isometric()
 
     plotter.add_title(title, color=title_color, font_size=title_size)
     plotter.show_axes()
-    plotter.show()
+    
+    if export_path:
+        plotter.show(auto_close=False, interactive=False)
+        plotter.screenshot(export_path)
+        plotter.close()
+    else:
+        plotter.show()
