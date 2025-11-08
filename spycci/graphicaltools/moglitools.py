@@ -5,6 +5,8 @@ from typing import List, Tuple, Callable, Dict, Any, Optional
 from spycci.constants import atoms_dict
 from spycci.systems import System
 
+from spycci.graphicaltools.colormaps import RdBu
+
 
 # Set default values of bond radius and gray shade
 mogli.BOND_RADIUS = 0.05
