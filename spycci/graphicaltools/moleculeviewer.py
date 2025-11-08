@@ -1,7 +1,7 @@
 import numpy as np
 import pyvista as pv
 
-from typing import Union, Optional
+from typing import Union, Optional, List
 
 from spycci.core.geometry import MolecularGeometry
 from spycci.systems import System
@@ -15,12 +15,13 @@ ATOM_COLORS = {"H": "#FFFFFF", "He": "#D9FFFF", "Li": "#CC80FF", "Be": "#C2FF00"
 
 def show_molecule(
         molecule: Union[MolecularGeometry, System],
+        atoms_colors: Optional[List[str]] = None,
         atom_scale : float = 0.4,
         bond_radius : float = 0.075,
-        background : str = "#222222",
+        background : str = "#FFFFFF",
         only_single_bonds: bool = False,
         title : str = "",
-        title_color: str = "#FFFFFF",
+        title_color: str = "#000000",
         title_size: int = 18,
         camera_position : Optional[pv.CameraPosition] = None,
         export_path : Optional[str] = None,
@@ -35,7 +36,10 @@ def show_molecule(
     Parameters
     ----------
     molecule : Union[MolecularGeometry, System]
-        The molecular structure to visualize.  
+        The molecular structure to visualize.
+    atoms_colors : Optional[List[str]]
+        The ordered list of HEX color values to be used to color the atoms in the structure. If `None`
+        (default), will use the standard JMOL coloring scheme to represent the molecule.
     atom_scale : float
         Scaling factor (default=0.4) applied to covalent radii when drawing atomic spheres. Increasing
         this value enlarges the atoms relative to bond lengths.
@@ -99,9 +103,16 @@ def show_molecule(
     # Obtain connectivity
     bond_type_matrix = geometry.bond_type_matrix
 
+    # Validate `atoms_color` input
+    if atoms_colors is not None and len(atoms_colors) != geometry.atomcount:
+        raise ValueError("The list of atoms colors must have the same length as the list of atoms in the structure.")
+
     # Draw atoms as spheres
-    for atom, coordinates in zip(geometry.atoms, geometry.coordinates):
-        color = ATOM_COLORS.get(atom, '#888888')
+    for idx, (atom, coordinates) in enumerate(zip(geometry.atoms, geometry.coordinates)):
+        if atoms_colors is None:
+            color = ATOM_COLORS.get(atom, '#888888')
+        else:
+            color = atoms_colors[idx]
         radius = COVALENT_RADII.get(atom, 0.7) * atom_scale
         sphere = pv.Sphere(radius=radius, center=coordinates, theta_resolution=24, phi_resolution=24)
         plotter.add_mesh(sphere, color=color, smooth_shading=True)
