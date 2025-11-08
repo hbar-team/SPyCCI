@@ -1,7 +1,7 @@
 import numpy as np
 import pyvista as pv
 
-from typing import Union, Optional, List
+from typing import Union, Optional, List, Tuple
 
 from spycci.core.geometry import MolecularGeometry
 from spycci.systems import System
@@ -15,7 +15,7 @@ ATOM_COLORS = {"H": "#FFFFFF", "He": "#D9FFFF", "Li": "#CC80FF", "Be": "#C2FF00"
 
 def show_molecule(
         molecule: Union[MolecularGeometry, System],
-        atoms_colors: Optional[List[str]] = None,
+        atoms_colors: Optional[Union[List[str], List[Tuple[float, float, float]]]] = None,
         atom_scale : float = 0.4,
         bond_radius : float = 0.075,
         background : str = "#FFFFFF",
@@ -37,9 +37,9 @@ def show_molecule(
     ----------
     molecule : Union[MolecularGeometry, System]
         The molecular structure to visualize.
-    atoms_colors : Optional[List[str]]
-        The ordered list of HEX color values to be used to color the atoms in the structure. If `None`
-        (default), will use the standard JMOL coloring scheme to represent the molecule.
+    atoms_colors : Optional[Union[List[str], List[Tuple[float, float, float]]]]
+        The ordered list of HEX color values or RGB triplets to be used to color the atoms in the structure.
+        If `None` (default), will use the standard JMOL coloring scheme to represent the molecule.
     atom_scale : float
         Scaling factor (default=0.4) applied to covalent radii when drawing atomic spheres. Increasing
         this value enlarges the atoms relative to bond lengths.
