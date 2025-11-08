@@ -62,17 +62,3 @@
 ```{eval-rst}
 .. autofunction:: spycci.tools.reorder_energies
 ```
-
-## `spycci.tools.vmdtools` sub-module 
-
-```{eval-rst}
-.. automodule:: spycci.tools.vmdtools
-    :members:
-```
-
-## `spycci.tools.moglitools` sub-module 
-
-```{eval-rst}
-.. automodule:: spycci.tools.moglitools
-    :members:
-```
