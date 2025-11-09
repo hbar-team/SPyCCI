@@ -358,11 +358,14 @@ def test___on_geometry_change_System():
     mol = System.from_smiles("mathane", "C")
     dummy = Engine("dummy engine")
     mol.properties.set_electronic_energy(-1.25, dummy)
+    assert mol.adjacency_matrix is not None
 
     assert_almost_equal(mol.properties.electronic_energy, -1.25, decimal=6)
 
     mol._System__on_geometry_change()
     assert mol.properties.electronic_energy == None
+    assert mol._System__adjacency_matrix is None
+    assert mol._System__bond_type_matrix is None
 
 
 # Test properties clearing on geometry append
@@ -440,6 +443,45 @@ def test_System_clearing_geometry_coordinates_setter():
     assert_array_almost_equal(mol.geometry.coordinates, new_coordinates, decimal=6)
     assert mol.properties.electronic_energy == None, "Properties not cleared after molecular geometry changed"
    
+
+def test_System_connectivity_simple():
+
+    mol = System.from_smiles("formaldehyde", "C=O")
+
+    adj = mol.adjacency_matrix
+    bt = mol.bond_type_matrix
+
+    expected_adj = [
+        [0., 1., 1., 1.],
+        [1., 0., 0., 0.],
+        [1., 0., 0., 0.],
+        [1., 0., 0., 0.]
+    ]
+
+    expected_bt = [
+        [0., 2., 1., 1.],
+        [2., 0., 0., 0.],
+        [1., 0., 0., 0.],
+        [1., 0., 0., 0.]
+    ]
+
+    assert_array_almost_equal(adj, expected_adj, decimal=6)
+    assert_array_almost_equal(bt, expected_bt, decimal=6) 
+
+
+def test_System_connectivity_charged():
+
+    geom = MolecularGeometry()
+    geom.append("C", [-0.5, 0., 0.])
+    geom.append("N", [0.5, 0., 0.])
+
+    mol = System("cyanide", geom, charge=-1)
+
+    adj = mol.adjacency_matrix
+    bt = mol.bond_type_matrix
+
+    assert_array_almost_equal(adj, [[0., 1.], [1., 0.]], decimal=6)
+    assert_array_almost_equal(bt, [[0., 3.], [3., 0.] ], decimal=6) 
 
 
 # ----------------------------------------------------------------
