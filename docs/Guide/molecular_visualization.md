@@ -19,7 +19,7 @@ The SPyCCI library provides an internal molecular viewer and wrappers around thi
 ## Molecular visualization using the internal viewer
 The SPyCCI library provides a simple molecular viewer based on pyvista. The tool can be found in the `spycci.graphicaltools.moleculeviewer` sub-module in the form of the `show_molecule` function.
 
-To use the `show_molecule` function the user needs to simply provide the function with the geometry to be visualized in the form of either a `System` or `MolecularGeometry` object. The tool will automatically open a window allowing the user to interact and rotate the molecule. As an example, the following script can be used to visualize the acetone molecule:
+To use the `show_molecule` function the user needs to simply provide the function with the geometry to be visualized in the form of a `System` object. The tool will automatically open a window allowing the user to interact and rotate the molecule. As an example, the following script can be used to visualize the acetone molecule:
 
 ```python
 from spycci.systems import System

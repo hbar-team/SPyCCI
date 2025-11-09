@@ -14,7 +14,7 @@ ATOM_COLORS = {"H": "#FFFFFF", "He": "#D9FFFF", "Li": "#CC80FF", "Be": "#C2FF00"
 
 
 def show_molecule(
-        molecule: Union[MolecularGeometry, System],
+        molecule: System,
         atoms_colors: Optional[Union[List[str], List[Tuple[float, float, float]]]] = None,
         atom_scale : float = 0.4,
         bond_radius : float = 0.075,
@@ -35,13 +35,12 @@ def show_molecule(
     Display a 3D ball-and-stick representation of a molecular structure using PyVista. This function
     creates an interactive three-dimensional visualization of a molecule, where atoms are rendered as
     spheres and chemical bonds as cylinders. It supports single, double, triple, and aromatic bonds 
-    (bond order = 1.5), with bond topology and geometry automatically inferred from a `MolecularGeometry`
-    or `System` object.
+    (bond order = 1.5), with bond topology and geometry automatically inferred from a `System` object.
 
     Parameters
     ----------
-    molecule : Union[MolecularGeometry, System]
-        The molecular structure to visualize.
+    molecule : System
+        The molecular system to visualize.
     atoms_colors : Optional[Union[List[str], List[Tuple[float, float, float]]]]
         The ordered list of HEX color values or RGB triplets to be used to color the atoms in the structure.
         If `None` (default), will use the standard JMOL coloring scheme to represent the molecule.
@@ -106,23 +105,18 @@ def show_molecule(
     TypeError
         If `molecule` is not an instance of `MolecularGeometry` or `System`.
     """
+    if isinstance(molecule, System) is False:
+        raise TypeError("The `molecule` arguent must be of type `System`.")
+    
     plotter = pv.Plotter(
         window_size = window_size,
         off_screen = True if export_path is not None else False
     )
     plotter.set_background(background)
-
-    # Obtain the molecular geometry from the user input
-    geometry : MolecularGeometry = None
-    if isinstance(molecule, MolecularGeometry):
-        geometry = molecule
-    elif isinstance(molecule, System):
-        geometry = molecule.geometry
-    else:
-        raise TypeError("The `molecule` arguent must be either of type `MolecularGeometry` of `System`.")
-
-    # Obtain connectivity
-    bond_type_matrix = geometry.bond_type_matrix
+       
+    # Obtain connectivity and extract geometry
+    bond_type_matrix = molecule.bond_type_matrix
+    geometry = molecule.geometry
 
     # Validate `atoms_color` input
     if atoms_colors is not None and len(atoms_colors) != geometry.atomcount:
