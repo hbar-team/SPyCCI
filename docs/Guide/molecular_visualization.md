@@ -97,7 +97,7 @@ To help the user in visualizing scalar data, a small collection of colormap func
 import numpy as np
 import inspect
 import matplotlib.pyplot as plt
-from spycci.graphicaltools.colormaps import RdBu, Jet, Turbo, Viridis, Plasma, PiYG
+from spycci.graphicaltools.colormaps import RdBu, RdYlBu, PiYG, Jet, Turbo, Viridis, Plasma
 
 def show_colormaps(cmaps, n=256, clims=None):
     """
@@ -148,6 +148,7 @@ def show_colormaps(cmaps, n=256, clims=None):
 
 cmaps = [
     (RdBu, "RdBu"),
+    (RdYlBu, "RdYlBu"),
     (PiYG, "PiYG"),
     (Jet, "Jet"),
     (Turbo, "Turbo"),

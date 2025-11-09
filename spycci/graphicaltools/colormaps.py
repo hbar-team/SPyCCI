@@ -40,6 +40,7 @@ def DivergingColormap(
         data: List[float],
         ctop: Tuple[float, float, float],
         cbottom: Tuple[float, float, float],
+        cmiddle: Tuple[float, float, float] = (1., 1., 1.),
         reversed: bool = False,
         symmetric: bool = True
     ) -> List[Tuple[float, float, float]]:
@@ -55,6 +56,8 @@ def DivergingColormap(
         The triplet of RGB values encoding the top color.
     cbottom: Tuple[float, float, float],
         The triplet of RGB values encoding the bottom color.
+    cmiddle: Tuple[float, float, float],
+        The triplet of RGB values encoding the middle color. (default: (1., 1., 1.))
     reversed: bool
         If `True`, will invert the order of the colors (red for low values and blue for high ones)
     symmetric: bool
@@ -78,6 +81,7 @@ def DivergingColormap(
     
     ctop = np.clip(np.asarray(ctop, dtype=float), 0.0, 1.0)
     cbottom = np.clip(np.asarray(cbottom, dtype=float), 0.0, 1.0)
+    cmiddle = np.clip(np.asarray(cmiddle, dtype=float), 0.0, 1.0)
 
     # Set upper and lower colors based on `reversed` state
     cupper = ctop if reversed is False else cbottom
@@ -105,14 +109,14 @@ def DivergingColormap(
         # Conversion for the upper part of the data
         if value >= middle:
             x = (value - middle) / (top - middle)
-            color = (1.-x) * np.array([1., 1., 1.]) + x * cupper
+            color = (1.-x) * cmiddle + x * cupper
             color = tuple(np.clip(color, 0., 1.))
             colors.append(color)
 
         # Conversion for the lower part of the data
         else:
             x = (middle - value) / (middle - bottom)
-            color = (1.-x) * np.array([1., 1., 1.]) + x * clower
+            color = (1.-x) * cmiddle + x * clower
             color = tuple(np.clip(color, 0., 1.))
             colors.append(color)
 
@@ -250,6 +254,39 @@ def PiYG(data: List[float], reversed: bool = False, symmetric: bool = True) -> L
         data=data,
         ctop=(0.890, 0.008, 0.969),
         cbottom=(0.008, 0.969, 0.137),
+        reversed=reversed,
+        symmetric=symmetric,
+    )
+
+    return cmap
+
+
+def RdYlBu(data: List[float], reversed: bool = False, symmetric: bool = True) -> List[Tuple[float, float, float]]:
+    """
+    Simple diverging colormap going from blue (low values) to red (high values) using yellow as the central color.
+
+    Arguments
+    ---------
+    data: List[float]
+        The list containing all the scalar values to be mapped to colors.
+    reversed: bool
+        If `True`, will invert the order of the colors (red for low values and blue for high ones)
+    symmetric: bool
+        If set to `True` (default) will adopt a symmetric color range with respect to zero. The
+        values near zero will be colored in white, negative values in blue and positive ones
+        in red (if reversed is `False`). If set to `False` will set the range of the colormap 
+        based on the minimum and maximum values.
+
+    Returns
+    -------
+    List[Tuple[float, float, float]]
+        The list containing the RGB triplets (as tuples of float) encoding the RGB coloring of each point
+    """
+    cmap = DivergingColormap(
+        data=data,
+        ctop=(1., 0., 0.),
+        cbottom=(0., 0., 1.),
+        cmiddle=(1.0, 0.933, 0.443),
         reversed=reversed,
         symmetric=symmetric,
     )
