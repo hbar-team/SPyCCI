@@ -588,20 +588,24 @@ class ReactionPath:
     represent a physical ensemble or thermal distribution. In that case, check
     the `Ensemble` class.
 
-    Parameters
+    Arguments
     ----------
-    steps : List[System]
+    systems : List[System]
         The list of System objects to be included in the ReactionPath.
+    name: Optional[str]
+        Name of the reaction path. If set to `None` (default) will take the name of the
+        first `System` frame as the name of the whole path.
 
     Attributes
     ----------
+    systems : List[System]
+        The list of System objects in the ReactionPath.
     name : str
         Name of the reaction path.
-    steps : List[System]
-        The list of System objects in the ReactionPath.
+    
     """
 
-    def __init__(self, systems: List[System]) -> None:
+    def __init__(self, systems: List[System], name: Optional[str] = None) -> None:
 
         if len(systems) == 0:
             raise ValueError("Cannot operate on an empty systems array")
@@ -609,18 +613,23 @@ class ReactionPath:
         if any(system.geometry.atoms != systems[0].geometry.atoms for system in systems):
             raise RuntimeError("Different systems encountered in list")
 
-        self.name: str = systems[0].name
         self.systems: List[System] = systems
+        self.name: str = systems[0].name if name is None else name
 
     def __iter__(self) -> Generator[System]:
         for item in self.systems:
             yield item
 
     def __getitem__(self, index: int) -> System:
-        if index < 0 or index >= len(self.systems):
-            raise ValueError("Index out of bounds")
-
-        return self.systems[index]
+        if isinstance(index, int):
+            if index < 0 or index >= len(self.systems):
+                raise ValueError("Index out of bounds")
+            return self.systems[index]
+        elif isinstance(index, slice):
+            return self.systems[index]
+        else:
+            raise TypeError("Invalid argument type")
+        
 
     def __len__(self) -> int:
         return len(self.systems)
@@ -690,12 +699,12 @@ class ReactionPath:
             new_coords[:, i] = np.interp(rc, S, coords[:, i])
 
         # Build new systems
-        template_sys = self.systems[0]
         new_systems = []
-        for arr in new_coords:
-            new_sys = deepcopy(template_sys)
+        for i, arr in enumerate(new_coords):
+            new_sys = deepcopy(self.systems[0])
             reshaped = arr.reshape(n_atoms, 3)
             new_sys.geometry.coordinates = reshaped
+            new_sys.name = self.name + f"_interp_{i}"
             new_systems.append(new_sys)
 
         return ReactionPath(new_systems)
@@ -711,13 +720,13 @@ class ReactionPath:
 
         Returns
         -------
-        Tuple[np.ndarray, np.ndarray]
-            A tuple containing:
-            - std : np.ndarray of shape (N atoms, 3)
-                The standard deviation (in Å) of the x, y, z coordinates for each atom.
-            - norm : np.ndarray of shape (N atoms,)
-                The total spatial standard deviation (in Å) for each atom, computed as
-                the Euclidean norm of the x, y, z standard deviations.
+        np.ndarray 
+            The `np.ndarray` of shape (N atoms, 3) containing the standard deviation (in Å)
+            of the x, y, z coordinates for each atom.
+        np.ndarray
+            The `np.ndarray` of shape (N atoms) containing the total spatial standard 
+            deviation (in Å) for each atom, computed as the Euclidean norm of the x, y,
+            z standard deviations.
         """
         n_steps = len(self.systems)
         n_atoms = self.systems[0].geometry.atomcount
