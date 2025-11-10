@@ -787,6 +787,7 @@ def test_OrcaInput_irc():
     )
 
     assert len(MEP_reaction_path) == 61
+    assert MEP_reaction_path.name == "IRC_Full_IRC_ts"
 
     assert_array_almost_equal(
         [s.properties.electronic_energy for s in obtained_systems],
@@ -882,6 +883,7 @@ def test_OrcaInput_neb():
     )
 
     assert len(MEP_reaction_path) == 7
+    assert MEP_reaction_path.name == "NEB_NEB_reactant_NEB_product"
 
     assert_array_almost_equal(
         [s.properties.electronic_energy for s in obtained_systems],
@@ -899,6 +901,7 @@ def test_OrcaInput_neb():
 
     for obtained, expected in zip(obtained_systems, expected_systems):
         assert obtained.geometry.atomcount == expected.geometry.atomcount
+        assert obtained.properties.level_of_theory_electronic == engine.level_of_theory
         assert_array_almost_equal(obtained.geometry.coordinates, expected.geometry.coordinates, decimal=6)
 
 
@@ -923,6 +926,7 @@ def test_OrcaInput_neb_ci():
     )
 
     assert len(MEP_reaction_path) == 7
+    assert MEP_reaction_path.name == "NEB-CI_NEB_reactant_NEB_product"
 
     assert_array_almost_equal(
         [s.properties.electronic_energy for s in obtained_systems],
@@ -940,6 +944,7 @@ def test_OrcaInput_neb_ci():
 
     for obtained, expected in zip(obtained_systems, expected_systems):
         assert obtained.geometry.atomcount == expected.geometry.atomcount
+        assert obtained.properties.level_of_theory_electronic == engine.level_of_theory
         assert_array_almost_equal(obtained.geometry.coordinates, expected.geometry.coordinates, decimal=6)
 
 
@@ -964,6 +969,7 @@ def test_OrcaInput_neb_ts():
     )
 
     assert len(MEP_reaction_path) == 7
+    assert MEP_reaction_path.name == "NEB-TS_NEB_reactant_NEB_product"
 
     assert_array_almost_equal(
         [s.properties.electronic_energy for s in obtained_systems],
@@ -981,6 +987,7 @@ def test_OrcaInput_neb_ts():
 
     for obtained, expected in zip(obtained_systems, expected_systems):
         assert obtained.geometry.atomcount == expected.geometry.atomcount
+        assert obtained.properties.level_of_theory_electronic == engine.level_of_theory
         assert_array_almost_equal(obtained.geometry.coordinates, expected.geometry.coordinates, decimal=6)
 
     expected_TS_geometry = [
@@ -993,6 +1000,7 @@ def test_OrcaInput_neb_ts():
         [-1.64527952,  0.10538884, -0.56246871]
     ]
 
+    assert transition_state.properties.level_of_theory_electronic == engine.level_of_theory
     assert_array_almost_equal(transition_state.geometry.coordinates, expected_TS_geometry, decimal=6)
     assert_almost_equal(transition_state.properties.electronic_energy, -10.24940232477, decimal=6)
 
@@ -1021,6 +1029,7 @@ def test_OrcaInput_neb_ts_with_guess():
     )
 
     assert len(MEP_reaction_path) == 7
+    assert MEP_reaction_path.name == "NEB-TS_NEB_reactant_NEB_product"
 
     assert_array_almost_equal(
         [s.properties.electronic_energy for s in obtained_systems],
@@ -1038,6 +1047,7 @@ def test_OrcaInput_neb_ts_with_guess():
 
     for obtained, expected in zip(obtained_systems, expected_systems):
         assert obtained.geometry.atomcount == expected.geometry.atomcount
+        assert obtained.properties.level_of_theory_electronic == engine.level_of_theory
         assert_array_almost_equal(obtained.geometry.coordinates, expected.geometry.coordinates, decimal=6)
 
     expected_TS_geometry = [
@@ -1078,6 +1088,7 @@ def test_OrcaInput_zoom_neb_ci():
     )
 
     assert len(MEP_reaction_path) == 9
+    assert MEP_reaction_path.name == "NEB-ZOOM-CI_NEB_reactant_NEB_product"
 
     assert_array_almost_equal(
         [s.properties.electronic_energy for s in obtained_systems],
@@ -1097,6 +1108,7 @@ def test_OrcaInput_zoom_neb_ci():
 
     for obtained, expected in zip(obtained_systems, expected_systems):
         assert obtained.geometry.atomcount == expected.geometry.atomcount
+        assert obtained.properties.level_of_theory_electronic == engine.level_of_theory
         assert_array_almost_equal(obtained.geometry.coordinates, expected.geometry.coordinates, decimal=6)
 
 
@@ -1121,6 +1133,7 @@ def test_OrcaInput_zoom_neb_ts():
     )
 
     assert len(MEP_reaction_path) == 9
+    assert MEP_reaction_path.name == "NEB-ZOOM-TS_NEB_reactant_NEB_product"
 
     assert_array_almost_equal(
         [s.properties.electronic_energy for s in obtained_systems],
@@ -1140,6 +1153,7 @@ def test_OrcaInput_zoom_neb_ts():
 
     for obtained, expected in zip(obtained_systems, expected_systems):
         assert obtained.geometry.atomcount == expected.geometry.atomcount
+        assert obtained.properties.level_of_theory_electronic == engine.level_of_theory
         assert_array_almost_equal(obtained.geometry.coordinates, expected.geometry.coordinates, decimal=6)
 
     expected_TS_geometry = [
@@ -1179,9 +1193,12 @@ def test_OrcaInput_neb_idpp():
     )
 
     assert len(MEP_reaction_path) == 5
+    assert MEP_reaction_path.name == "NEB-IDPP_NEB_reactant_NEB_product"
 
     for obtained, expected in zip(obtained_systems, expected_systems):
         assert obtained.geometry.atomcount == expected.geometry.atomcount
+        assert obtained.properties.level_of_theory_electronic == None
+        assert obtained.properties.level_of_theory_vibrational == None
         assert_array_almost_equal(obtained.geometry.coordinates, expected.geometry.coordinates, decimal=6)
 
 

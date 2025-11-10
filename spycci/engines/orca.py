@@ -1297,7 +1297,7 @@ class OrcaInput(Engine):
                 system.properties.set_electronic_energy(energies.pop(0), self)
                 mol_list.append(system)
 
-            reaction_path = ReactionPath(mol_list)
+            reaction_path = ReactionPath(mol_list, name = f"Scan_{mol.name}")
 
             process_output(mol, self.__output_suffix, "scan", mol.charge, mol.spin)
             if remove_tdir:
@@ -1453,7 +1453,7 @@ class OrcaInput(Engine):
                     indexed_mol_list.append([index, system])
 
                 indexed_mol_list.sort(key=lambda v: v[0])
-                reaction_path = ReactionPath([x[1] for x in indexed_mol_list])
+                reaction_path = ReactionPath([x[1] for x in indexed_mol_list], name = f"Scan-TS_{mol.name}")
 
                 shutil.move("input.xyz", f"{mol.name}_TS.xyz")
                 newmol = System.from_xyz(f"{mol.name}_TS.xyz", charge=mol.charge, spin=mol.spin)
@@ -1599,13 +1599,22 @@ class OrcaInput(Engine):
             logger.debug(f"Running Orca with command: {cmd}")
             os.system(cmd)
 
+            path_name = "IRC_"
             if direction == 'both':
                 MEP_systems = split_multixyz(transition_state, "input_IRC_Full_trj.xyz", suffix="IRC_Full", engine=self)
+                path_name += "Full"
+
             elif direction == 'forward':
                 MEP_systems = split_multixyz(transition_state, "input_IRC_F_trj.xyz", suffix="IRC_Fwd", engine=self)
+                path_name += "Fwd"
+
             elif direction == 'backward':
                 MEP_systems = split_multixyz(transition_state, "input_IRC_B_trj.xyz", suffix="IRC_Bwd", engine=self)
-            MEP_reaction_path = ReactionPath(MEP_systems)
+                path_name += "Bwd"
+            
+            path_name += "_" + transition_state.name
+            
+            MEP_reaction_path = ReactionPath(MEP_systems, name=path_name)
 
             if remove_tdir:
                 shutil.rmtree(tdir)
@@ -1742,9 +1751,13 @@ class OrcaInput(Engine):
             logger.error("NEB mode must be either '', 'CI', 'TS', 'ZOOM-CI', 'ZOOM-TS', 'IDPP'")
             raise RuntimeError("NEB mode must be either '', 'CI', 'TS', 'ZOOM-CI', 'ZOOM-TS', 'IDPP'")
 
+        # Generate a specific folder suffix to distinguish between different type of NEB
+        mode_name = "NEB" + "" if mode == '' else f"NEB-{mode}"
+        folder_suffix = f"_{self.__output_suffix}_{mode_name}"
+
         tdir = mkdtemp(
             prefix=reactant.name + "_" + product.name + "_",
-            suffix=f"_{self.__output_suffix}_NEB",
+            suffix=folder_suffix,
             dir=os.getcwd(),
         )
 
@@ -1776,10 +1789,13 @@ class OrcaInput(Engine):
             os.system(cmd)
 
             if mode == 'IDPP':
-                MEP_systems = split_multixyz(reactant, "input_initial_path_trj.xyz", suffix="IDPP", engine=self)
+                # In IDPP mode set engine to `None` to avoid parsing zeros as converged electronic energies
+                MEP_systems = split_multixyz(reactant, "input_initial_path_trj.xyz", suffix="IDPP", engine=None)
             else:
                 MEP_systems = split_multixyz(reactant, "input_MEP_trj.xyz", suffix="MEP", engine=self)
-            MEP_reaction_path = ReactionPath(MEP_systems)
+            
+            path_name = mode_name + "_" + reactant.name + "_" + product.name
+            MEP_reaction_path = ReactionPath(MEP_systems, name=path_name)
 
             if 'TS' in mode:
                 transition_state = System.from_xyz("input.xyz", charge=reactant.charge, spin=reactant.spin)
