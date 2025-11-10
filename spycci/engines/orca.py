@@ -96,16 +96,13 @@ class OrcaJobInfo:
         self.freq_numeric: bool = False
 
         self.irc_maxiter: int = 20
-        self.irc_direction: str = 'both'
         self.irc_hess_mode: int = 0
-        self.irc_init_hess: str = 'calc_anfreq'
         self.irc_hess_filename: str = None
 
         self.neb_product: Optional[str] = None
         self.neb_ts_guess: Optional[str] = None
         self.neb_images: Optional[int] = None
         self.neb_preopt: bool = False
-        self.neb_mode: str = ''
 
         self.__user_blocks: Dict[str, Dict[str, Any]] = {}
 
@@ -113,6 +110,10 @@ class OrcaJobInfo:
         self.__optimization_level: Optional[str] = None
         self.__scf_convergence_level: Optional[str] = None
         self.__scf_convergence_strategy: Optional[str] = None
+        self.__neb_mode: str = ''
+        self.__irc_direction: str = 'both'
+        self.__irc_init_hess: str = 'calc_anfreq'
+
 
     @property
     def user_blocks(self) -> Dict[str, Dict[str, Any]]:
@@ -518,6 +519,53 @@ class OrcaJobInfo:
 
         else:
             self.__print_level = None
+    
+    @property
+    def neb_mode(self) -> str:
+        return self.__neb_mode
+    
+    @neb_mode.setter
+    def neb_mode(self, mode: str) -> None:
+        # Convert to upper and check if the user input corresponds to a valid option
+        mode = mode.upper()
+        if mode not in ['', 'CI', 'TS', 'ZOOM-CI', 'ZOOM-TS', 'IDPP']:
+            logger.error("NEB mode must be either '', 'CI', 'TS', 'ZOOM-CI', 'ZOOM-TS', 'IDPP'")
+            raise RuntimeError("NEB mode must be either '', 'CI', 'TS', 'ZOOM-CI', 'ZOOM-TS', 'IDPP'")
+        
+        # Set a validated NEB mode
+        self.__neb_mode = mode
+
+    @property
+    def irc_direction(self) -> str:
+        return self.__irc_direction
+
+    @irc_direction.setter
+    def irc_direction(self, direction: str) -> None:
+        # Convert to lower and check if the user input corresponds to a valid option
+        direction = direction.lower()
+        if direction not in ['both', 'forward', 'backward', 'down']:
+            logger.error("IRC direction must be either: 'both', 'forward', 'backward', 'down'")
+            raise RuntimeError("IRC direction must be either: 'both', 'forward', 'backward', 'down'")
+
+        # Set a validated IRC direction
+        self.__irc_direction = direction
+    
+    @property
+    def irc_init_hess(self) -> str:
+        return self.__irc_init_hess
+
+    @irc_init_hess.setter
+    def irc_init_hess(self, init_hess: str) -> None:
+
+        # Convert to lower and check if the user input corresponds to a valid option
+        init_hess = init_hess.lower()
+        if init_hess not in ['calc_anfreq', 'calc_numfreq', 'read']:
+            logger.error("IRC Hessian initialization mode must be either: 'calc_anfreq', 'calc_numfreq', 'read'")
+            raise RuntimeError("IRC Hessian initialization mode must be either: 'calc_anfreq', 'calc_numfreq', 'read'")
+        
+        # Set a validated IRC Hessian initialization mode
+        self.__irc_init_hess = init_hess
+
 
 
 class OrcaInput(Engine):
@@ -1512,9 +1560,14 @@ class OrcaInput(Engine):
         one imaginary frequency, and its charge, spin multiplicity, and atom ordering
         must be consistent with the expected reaction path.
         """
-
+        direction = direction.lower()
         logger.info(f"Running a IRC calculation - {self.method}")
         logger.info(f"Transition State: {transition_state.name}, charge {transition_state.charge} spin {transition_state.spin}")
+
+        if hess_filename is not None:
+            if isfile(hess_filename) is False:
+                logger.error(f"The Hessian initialization file provided for IRC ({hess_filename}) cannot be found")
+                raise FileNotFoundError(f"The Hessian initialization file provided for IRC ({hess_filename}) cannot be found")
 
         tdir = mkdtemp(
             prefix=transition_state.name + "_" + transition_state.name + "_",
@@ -1653,7 +1706,7 @@ class OrcaInput(Engine):
         **Note:** All the structures (``reactant``, ``product``, ``guess``) should have the same charge, spin multiplicity but
         different names.
         """
-
+        mode = mode.upper()
         logger.info(f"Running a NEB {mode} calculation - {self.method}")
         logger.info(f"Reactant: {reactant.name}, charge {reactant.charge} spin {reactant.spin}")
         logger.info(f"Product:  {product.name}, charge {product.charge} spin {product.spin}")
