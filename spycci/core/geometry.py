@@ -4,7 +4,7 @@ import numpy as np
 
 from os.path import isfile
 from copy import deepcopy
-from typing import Tuple, List, Union, Generator, Optional, Iterator, Callable
+from typing import Tuple, List, Union, Generator, Optional, Iterator, Callable, TYPE_CHECKING
 from morfeus import BuriedVolume
 
 from rdkit.Chem import Mol, Atom, MolFromSmiles, AddHs
@@ -18,11 +18,19 @@ from rdkit.Chem.rdForceFieldHelpers import (
 
 from spycci.constants import atoms_dict, atomic_masses, h, c, amu_to_kg
 
+if TYPE_CHECKING:
+    from spycci.systems import System
 
 class MolecularGeometry:
     """
     The `MolecularGeometry` class implements all the functions required to operate on the
-    geometric properties of a given molecule or molecular aggregate.
+    geometric properties of a given molecule or molecular aggregate. The `MolecularGeometry` class
+    implements various classmethods capable of constructing an instance of the class from `.xyz`
+    files (`from_xyz()`), from SMILES strings (`from_smiles()`) or from a dictionary (`from_dict()`).
+    The coordinates of a molecule or its composition can be altered throug `append` operations or
+    through the setter `set_atoms()` and `set_coordinates()` methods. Coordinates and atom list can
+    be accessed, in the form of a read-only deepcopy using the `get_atoms()` and `get_coordinates()`
+    methods.
 
     Attributes
     ----------
@@ -44,15 +52,15 @@ class MolecularGeometry:
         self.level_of_theory_geometry: Optional[str] = None
 
         # Define a listener to reset System on geometry change
-        self.__system_reset: Callable = None
+        self.__system_reset: System.__on_geometry_change = None
     
-    def __add_system_reset(self, listener: Callable) -> None:
+    def __add_system_reset(self, listener: System.__on_geometry_change) -> None:
         """
         Add a reference to a System reset function
 
         Argument
         --------
-        listener: Callable
+        listener: System.__on_geometry_change
             The method of the `System` object handling a change in geometry
         """
         self.__system_reset = listener
@@ -74,17 +82,6 @@ class MolecularGeometry:
         self.__rotational_constants = None
 
         self.level_of_theory_geometry = None
-
-    def __getitem__(self, index: int) -> Tuple[str, np.ndarray]:
-        if index < 0 or index >= self.atomcount:
-            raise ValueError(
-                f"The index {index} is not valid (atomcount: {self.atomcount})"
-            )
-        return self.__atoms[index], self.__coordinates[index]
-
-    def __iter__(self) -> Generator[str, np.ndarray]:
-        for atom, coordinates in zip(self.__atoms, self.__coordinates):
-            yield atom, coordinates
 
     def __len__(self) -> int:
         return self.__atomcount
@@ -135,6 +132,90 @@ class MolecularGeometry:
         self.__atomcount += 1
         self.__atoms.append(atom)
         self.__coordinates.append(np.array(coordinates))
+    
+    @property
+    def atoms(self) -> List[str]:
+        """
+        The list of atoms/elements in the molecule. Please beware that the obtained
+        atoms list is provided as a deepcopy and not as a reference. If you want to
+        set new atoms names, please use the `set_atoms()` function.
+
+        Returns
+        -------
+        List[str]
+            The list of strings representing, in order, the symbols of the atoms in the molecule
+        """
+        return deepcopy(self.__atoms)
+    
+    def set_atoms(self, atoms: List[str]) -> None:
+        """
+        Set a new list of atoms composing the molecule. Please beware that the new
+        atom list length must match the number of atoms/coordinates already stored.
+
+        Arguments
+        ---------
+        List[str]
+            The list element symbols encoding the atoms in the molecule.
+        
+        Raises
+        ------
+        ValueError
+            Exception raised if the number of atoms does not match the one currently stored.
+        """
+        # Check that the length of the newly provided atom list is coherent with the stored coordinates.
+        if len(atoms) != self.atomcount:
+            raise ValueError(f"The new length of the atom list ({len(atoms)}) cannot be different from the current atomcount ({self.atomcount}).")
+
+        # Clear all stored properties and call the `System` class listener and update atoms list
+        self.__clear_properties()
+        self.__call_system_reset()
+        self.__atoms = atoms
+
+    @property
+    def coordinates(self) -> List[np.ndarray]:
+        """
+        The list of coordinates of each atom in the molecule. Please beware that the obtained
+        coordinates list is provided as a deepcopy and not as a reference. If you want to
+        set new coordinates values please use the `set_coordinates()` function.
+
+        Returns
+        -------
+        List[np.ndarray]
+            The list of numpy arrays representing, in order, the 3D position of each atom
+            in the molecule
+        """
+        return deepcopy(self.__coordinates)
+    
+    def set_coordinates(self, coordinates: List[np.ndarray]) -> None:
+        """
+        Set a new list of coordinates for the atoms in the molecule. Please beware that the new
+        coordinates must match the number of atoms already stored.
+
+        Arguments
+        ---------
+        List[np.ndarray]
+            The list of numpy arrays encoding the 3D position of each atom in the molecule.
+        
+        Raises
+        ------
+        ValueError
+            Exception raised if the number of coordinates does not match the number of atoms in the
+            molecule or if the length of each position vector is different from 3.
+        """
+        # Check that the length of the newly provided coordinate list is coherent with the stored atoms.
+        if len(coordinates) != self.atomcount:
+            raise ValueError(f"The new length of the coorinates list ({len(coordinates)}) cannot be different from the current atomcount ({self.atomcount}).")
+        
+        # Convert the input as a List[np.ndarray] to account for the user passing a list of lists
+        coords = [np.array(v) for v in coordinates]
+        for v in coords:
+            if len(v) != 3:
+                raise ValueError("Atomic coordinate vectors must be of length 3.")
+
+        # Clear all stored properties and call the `System` class listener
+        self.__clear_properties()
+        self.__call_system_reset()
+        self.__coordinates = coords
 
     @classmethod
     def from_xyz(cls, path: str) -> MolecularGeometry:
@@ -293,6 +374,10 @@ class MolecularGeometry:
         self.__atoms = []
         self.__coordinates = []
 
+        # Clear all stored properties and call the `System` class listener
+        self.__clear_properties()
+        self.__call_system_reset()
+
         # Check if the given path points to a valid file
         if not isfile(path):
             raise ValueError(f"The path {path} does not point to a valid file.")
@@ -400,18 +485,6 @@ class MolecularGeometry:
         return self.__atomcount
 
     @property
-    def atoms(self) -> List[str]:
-        """
-        The list of atoms/elements in the molecule
-
-        Returns
-        -------
-        List[str]
-            The list of strings representing, in order, the symbols of the atoms in the molecule
-        """
-        return self.__atoms
-
-    @property
     def atomic_numbers(self) -> List[int]:
         """
         The ordered list of the atomic numbers of each atom in the molecule
@@ -421,30 +494,8 @@ class MolecularGeometry:
         List[int]
             The list of integers atomic numbers associated with each atom in the molecule
         """
-
         ATOMIC_NUMBERS = {v: k for k, v in atoms_dict.items()}
-        return [ATOMIC_NUMBERS[element] for element in self.atoms]
-
-    @property
-    def coordinates(self) -> List[np.ndarray]:
-        """
-        The list of coordinates of the atoms in the molecule
-
-        Returns
-        -------
-        List[np.ndarray]
-            The list of numpy arrays representing, in order, the 3D position of each atom
-            in the molecule
-        """
-        return self.__coordinates
-    
-    @coordinates.setter
-    def coordinates(self, new_coordinates: List[np.ndarray]) -> None:
-        if len(new_coordinates) != self.atomcount:
-            raise ValueError( f"The new coordinates list must contain {self.atomcount} atoms")
-        self.__clear_properties()
-        self.__call_system_reset()
-        self.__coordinates = new_coordinates
+        return [ATOMIC_NUMBERS[element] for element in self.__atoms]
 
     @property
     def mass(self) -> float:
@@ -460,6 +511,179 @@ class MolecularGeometry:
         for atom in self.__atoms:
             mass += atomic_masses[atom]
         return mass
+
+    @property
+    def center_of_mass(self) -> np.ndarray:
+        """
+        The center of mass of the molecule in Angstrom.
+
+        Returns
+        -------
+        np.ndarray
+            The numpy array containing the 3 cartesian coordinates of the center of mass
+            of the molecule in Angstrom.
+        """
+        com = np.zeros(3)
+        for atom, position in zip(self.__atoms, self.__coordinates):
+            mass = atomic_masses[atom]
+            com += mass * position
+        com /= self.mass
+        return com
+
+    @property
+    def inertia_tensor(self) -> np.ndarray:
+        """
+        The inertia tensor of the molecule (in amu·Å²) calculated relative to the
+        molecular center of mass, using atomic masses (in atomic mass units) and
+        cartesian coordinates (in Ångström).
+
+        Returns
+        -------
+        np.ndarray
+            The inertia tensor of the molecule in amu·Å² as a numpy array of shape (3, 3).
+        """
+        if self.__inertia_tensor is None:
+            self.__calculate_inertia()
+        return deepcopy(self.__inertia_tensor)
+
+    @property
+    def inertia_eigvals(self) -> np.ndarray:
+        """
+        The principal moments of inertia (IA, IB, IC) (in amu·Å²) computed as eigenvalues
+        of the inertia tensor.
+
+        Returns
+        -------
+        np.ndarray
+            The principal moments of inertia (IA, IB, IC) in amu·Å² as a numpy array of shape (3).
+        """
+        if self.__inertia_eigvals is None:
+            self.__calculate_inertia()
+        return deepcopy(self.__inertia_eigvals)
+
+    @property
+    def inertia_eigvecs(self) -> np.ndarray:
+        """
+        The principal axes of rotation computed as eigenvectors of the inertia tensor.
+
+        Returns
+        -------
+        np.ndarray
+            The principal axes of rotation as a numpy array of shape (3, 3).
+        """
+        if self.__inertia_eigvecs is None:
+            self.__calculate_inertia()
+        return deepcopy(self.__inertia_eigvecs)
+
+    @property
+    def rotor_type(self) -> str:
+        """
+        The type of molecular rigid rotor determined based on the relative magnitudes of the
+        principal moments of inertia:
+
+            * Linear rotor:           IA ≈ 0 and IB ≈ IC
+            * Spherical top:          IA ≈ IB ≈ IC
+            * Oblate symmetric top:   IA ≈ IB < IC (disc-shaped)
+            * Prolate symmetric top:  IA < IB ≈ IC (cigar-shaped)
+            * Asymmetric top:         all moments different
+
+        Returns
+        -------
+        str
+            Type of molecular rigid rotor.
+        """
+        if self.__rotor_type is None:
+            self.__calculate_inertia()
+        return self.__rotor_type
+
+    @property
+    def rotational_constants(self) -> Tuple[np.ndarray, np.ndarray]:
+        r"""
+        The rotational constants (A, B, C)  of the molecule in cm⁻¹ and MHz defined as:
+
+        .. math::
+            B_\alpha := \frac{\hbar^2}{2 I_\alpha}
+
+        
+        Returns
+        -------
+        Tuple[np.ndarray, np.ndarray]
+            A tuple of two numpy arrays of shape (3) containing the rotational constants (A, B, C)
+            of the molecule expressed in cm⁻¹ (first) and in MHz (second).
+        """
+        if self.__rotational_constants is None:
+            self.__calculate_inertia()
+        return deepcopy(self.__rotational_constants)
+
+    def __calculate_inertia(self) -> None:
+        """
+        Calculate and set the inertia tensor, its eigenvalues and eigenvectors, rotor type,
+        and rotational constants of the molecule.
+
+        The inertia tensor is calculated relative to the molecular center of mass,
+        using atomic masses (in atomic mass units) and cartesian coordinates
+        (in Ångström). The eigenvalues of the tensor correspond to the principal
+        moments of inertia (IA, IB, IC).
+
+        The rotor type is determined based on the relative magnitudes of the
+        principal moments:
+
+            * Linear rotor:           IA ≈ 0 and IB ≈ IC
+            * Spherical top:          IA ≈ IB ≈ IC
+            * Oblate symmetric top:   IA ≈ IB < IC (disc-shaped)
+            * Prolate symmetric top:  IA < IB ≈ IC (cigar-shaped)
+            * Asymmetric top:         all moments different
+        
+        The rotational constants are provided in both cm⁻¹ and MHz.
+        """
+        xyz_centered = np.subtract(self.__coordinates, self.center_of_mass)
+        masses = np.array([atomic_masses[atom] for atom in self.__atoms])
+
+        x, y, z = xyz_centered.T
+
+        Ixx = np.sum(masses * (y**2 + z**2))
+        Iyy = np.sum(masses * (x**2 + z**2))
+        Izz = np.sum(masses * (x**2 + y**2))
+        Ixy = -np.sum(masses * x * y)
+        Iyz = -np.sum(masses * y * z)
+        Ixz = -np.sum(masses * x * z)
+
+        self.__inertia_tensor = np.array([
+            [Ixx, Ixy, Ixz],
+            [Ixy, Iyy, Iyz],
+            [Ixz, Iyz, Izz]
+        ])
+
+        self.__inertia_eigvals, self.__inertia_eigvecs = np.linalg.eigh(self.__inertia_tensor)
+
+        eigvals_kgm2 = self.__inertia_eigvals * amu_to_kg / 1.0e20
+        
+        rot_const_cm, rot_const_mhz = [], []
+        for eigval in eigvals_kgm2:
+
+            if eigval == 0.:
+                rot_const_cm.append(None)
+                rot_const_mhz.append(None)
+
+            else:
+                value = h / (8 * np.pi**2 * c * 100 * eigval)
+                rot_const_cm.append(value)
+                rot_const_mhz.append(value * c / 1.0e4)           
+                
+        self.__rotational_constants = (np.array(rot_const_cm), np.array(rot_const_mhz))
+
+        tol=1e-3
+        IA, IB, IC = self.__inertia_eigvals
+        if IA < tol and abs(IB - IC) < tol:
+            self.__rotor_type = "linear rotor"
+        elif abs(IA - IB) < tol and abs(IB - IC) < tol:
+            self.__rotor_type = "spherical top"
+        elif abs(IA - IB) < tol and abs(IC - IB) > tol:
+            self.__rotor_type = "oblate symmetric top"
+        elif abs(IB - IC) < tol and abs(IA - IB) > tol:
+            self.__rotor_type = "prolate symmetric top"
+        else:
+            self.__rotor_type = "asymmetric top"
 
     @property
     def center_of_mass(self) -> np.ndarray:
@@ -705,8 +929,8 @@ class MolecularGeometry:
                 raise ValueError("The length of the radii list must match the number of atoms in the molecule")
 
         bv = BuriedVolume(
-            self.atoms,
-            self.coordinates,
+            deepcopy(self.__atoms),
+            deepcopy(self.__coordinates),
             site + 1,
             excluded_atoms=(
                 [idx + 1 for idx in excluded_atoms]

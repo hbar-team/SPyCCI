@@ -45,7 +45,7 @@ def test_MolecularGeometry_from_smiles():
 
     assert geom.atoms == ["C", "C", "O", "H", "H", "H", "H", "H", "H"]
     
-    expected = [
+    expected = (
         np.array([-0.88340023, -0.17904132, -0.07267199]),
         np.array([0.4497649 , 0.51104444, 0.12851809]),
         np.array([ 1.48578755, -0.2490953 , -0.47625408]),
@@ -55,7 +55,7 @@ def test_MolecularGeometry_from_smiles():
         np.array([ 0.44081839,  1.50296775, -0.33251669]),
         np.array([0.6749398 , 0.62724095, 1.19298181]),
         np.array([ 1.49192808, -1.12477959, -0.05347481])
-    ]
+    )
     
     assert_array_almost_equal(expected, geom.coordinates, decimal=6)
 
@@ -106,56 +106,59 @@ def test_MolecularGeometry_load_xyz():
         except:
             assert False, f"Exception raised when loading the {xyzfile} file"
 
-        expected = [
+        expected = (
             np.array([-3.21035, -0.58504, -0.01395]),
             np.array([-2.24247, -0.61827, 0.01848]),
             np.array([-3.48920, -1.24911, 0.63429])
-        ]
+        )
 
         assert mol.atomcount == 3
         assert mol.atoms == ["O", "H", "H"]
         assert_array_almost_equal(expected, mol.coordinates, decimal=6)
 
-# Test the MolecularGeometry class __getitem__, __iter__ and __len__ methods
-def test_MolecularGeometry_special_methods():
+
+# Test property setters
+def test_MolecularGeometry_write_via_set_atoms():
+
+    geom = MolecularGeometry.from_smiles("C")
+    geom.set_atoms(["Sn", "H", "H", "H", "H"])
     
+    assert geom.atoms == ["Sn", "H", "H", "H", "H"]
+
+    try:
+        geom.set_atoms(["Pb", "H", "H", "H"])
+    
+    except:
+        assert True
+    
+    else:
+        assert False, "Exception was expected when trying write atom list of wrong length"
+
+
+# Test property setters
+def test_MolecularGeometry_write_via_set_coordinates():
+
     xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
-    mol = MolecularGeometry.from_xyz(xyzfile)
+    geom = MolecularGeometry.from_xyz(xyzfile)
 
-    # Test the len method
-    assert len(mol) == 3
-
-    # Test the getitem method
-    atom, coord = mol[1]
-    assert atom == "H"
-    assert_array_almost_equal(coord, np.array([-2.24247, -0.61827, 0.01848]), decimal=6)
-
-    # Test the failure of the getitem method when calling an invalid index
-    try:
-        _, _ = mol[3]
-    except:
-        assert True
-    else:
-        assert False, "An exception was expected when trying to access index 3"
-    
-    try:
-        _, _ = mol[-1]
-    except:
-        assert True
-    else:
-        assert False, "An exception was expected when trying to access index -1"
-    
-    # Test the iterator method
-    expected_atoms = ["O", "H", "H"]
-    expected_coordinates = [
-        np.array([-3.21035, -0.58504, -0.01395]),
+    expected_coordinates = (
+        np.array([-10., -0.58504, -0.01395]),
         np.array([-2.24247, -0.61827, 0.01848]),
         np.array([-3.48920, -1.24911, 0.63429])
-    ]
+    )
 
-    for i, (atom, coord) in enumerate(mol):
-        assert expected_atoms[i] == atom
-        assert_array_almost_equal(expected_coordinates[i], coord, decimal=6)
+    geom.set_coordinates(expected_coordinates)
+    assert_array_almost_equal(geom.coordinates, expected_coordinates, decimal=6)
+
+    try:
+        geom.set_coordinates(expected_coordinates[1::])
+    
+    except:
+        assert True
+    
+    else:
+        assert False, "Exception was expected when trying write coordinates of wrong length"
+
 
 # Test the append method
 def test_MolecularGeometry_append():
@@ -168,8 +171,7 @@ def test_MolecularGeometry_append():
     assert len(mol) == 4
     assert mol.atomcount == 4
     assert mol.atoms == ["O", "H", "H", "Am"]
-    assert mol[3][0] == "Am"
-    assert_array_almost_equal(mol[3][1], [0, 1, 2], decimal=6)
+    assert_array_almost_equal(mol.coordinates[3], [0, 1, 2], decimal=6)
 
 
 # Test the write_xyz method
@@ -196,8 +198,8 @@ def test_MolecularGeometry_write_xyz(tmp_path_factory):
     assert lines[5] == "N    0.0000000000    0.0000000000    0.0000000000\n"
 
 
-# Test the remaining MolecularGeometry class properties
-def test_MolecularGeometry_properties():
+# Test the remaining MolecularGeometry class general properties
+def test_MolecularGeometry_general_properties():
 
     xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
     mol = MolecularGeometry.from_xyz(xyzfile)
@@ -311,17 +313,40 @@ def test_MolecularGeometry_rotor_types():
     assert mol.rotor_type == "asymmetric top"
 
 
-def test_stored_properties_clearing():
+def test_stored_properties_clearing_on_append():
     
     mol = MolecularGeometry()
     mol.append("C", [-1., 0., 0.])
     mol.append("N", [1., 0., 0.])
-
     assert mol.rotor_type == "linear rotor"
 
+    # Call append to trigger clearing of stored properties
     mol.append("H", [0., 1., 0.5])
+
+    # Test that the variable has internally been cleared
+    assert mol._MolecularGeometry__rotor_type == None
+
+    # Trigger a new computation calling the property getter
     assert mol.rotor_type == "asymmetric top"
 
+
+def test_stored_properties_clearing_on_load_xyz():
+    
+    mol = MolecularGeometry.from_smiles("C")
+    assert mol.rotor_type == "spherical top"
+
+    # Change the coordinates through the `load_xyz`
+    xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
+    mol.load_xyz(xyzfile)
+
+    # Check that the molecule has been loaded correctly
+    mol.atoms[0] = "O"
+
+    # Check that the stored variable has internally been cleared
+    assert mol._MolecularGeometry__rotor_type == None
+
+    # Trigger a new computation calling the property getter
+    assert mol.rotor_type == "asymmetric top"
 
 
 # Test the MolecularGeometry bureid_volume_fraction method
