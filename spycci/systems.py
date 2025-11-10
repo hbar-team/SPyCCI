@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import os, json, sh, shutil
+import os, json, sh, shutil, math
 import numpy as np
 import logging
 
@@ -637,7 +637,10 @@ class System:
         """
         Generates `rdkit.Chem.Mol` object from the stored molecular geometry and system charge.
         Connectivity is automatically generated using the `rdkit.Chem.rdDetermineBonds.DetermineBonds`
-        function.
+        function. In the case of systems with unpaired electrons, the bond determination is run
+        considering a corrected charge value obtained by adding or removing a number of electron
+        sufficient to bring the molecule to an hypotetical singlet state. Beware that the generated
+        `Mol` object will NOT take into account spin.
 
         Returns
         -------
@@ -655,7 +658,11 @@ class System:
 
             shutil.rmtree(tdir)
 
-        DetermineBonds(mol, charge=self.charge, embedChiral=True, allowChargedFragments=True)
+        if self.spin == 1:
+            DetermineBonds(mol, charge=self.charge, embedChiral=True, allowChargedFragments=True)
+        else:
+            newcharge = self.charge - int(math.copysign(self.spin-1, self.charge))
+            DetermineBonds(mol, charge=newcharge, embedChiral=True, allowChargedFragments=True)
 
         return mol
     
