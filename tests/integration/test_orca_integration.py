@@ -787,7 +787,7 @@ def test_OrcaInput_irc():
     )
 
     assert len(MEP_reaction_path) == 61
-    assert MEP_reaction_path.name == "IRC_Full_IRC_ts"
+    assert MEP_reaction_path.name == "IRC_full_IRC_ts"
 
     assert_array_almost_equal(
         [s.properties.electronic_energy for s in obtained_systems],

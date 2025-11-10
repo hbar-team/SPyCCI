@@ -1600,20 +1600,24 @@ class OrcaInput(Engine):
             os.system(cmd)
 
             path_name = "IRC_"
+
             if direction == 'both':
                 MEP_systems = split_multixyz(transition_state, "input_IRC_Full_trj.xyz", suffix="IRC_Full", engine=self)
-                path_name += "Full"
+                path_name += "full"
 
             elif direction == 'forward':
                 MEP_systems = split_multixyz(transition_state, "input_IRC_F_trj.xyz", suffix="IRC_Fwd", engine=self)
-                path_name += "Fwd"
+                path_name += "forward"
 
             elif direction == 'backward':
                 MEP_systems = split_multixyz(transition_state, "input_IRC_B_trj.xyz", suffix="IRC_Bwd", engine=self)
-                path_name += "Bwd"
+                path_name += "backward"
             
-            path_name += "_" + transition_state.name
+            elif direction == 'down':
+                MEP_systems = split_multixyz(transition_state, "input_IRC_D_trj.xyz", suffix="IRC_Down", engine=self)
+                path_name += "down"
             
+            path_name += f"_{transition_state.name}"
             MEP_reaction_path = ReactionPath(MEP_systems, name=path_name)
 
             if remove_tdir:
