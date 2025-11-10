@@ -482,7 +482,7 @@ def test_OrcaInput_freq_numerical():
     mol = System.from_xyz(f"{TEST_DIR}/utils/xyz_files/water.xyz")
 
     try:
-        engine.freq(mol, numerical=True, ncores=8, inplace=True, remove_tdir=False)
+        engine.freq(mol, numerical=True, ncores=8, inplace=True)
     except:
         assert False, "Unexpected exception raised during numerical frequency analysis"
 
