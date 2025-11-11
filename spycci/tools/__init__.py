@@ -9,5 +9,3 @@ from spycci.tools.externalutilities import compress_dftb_trajectory
 from spycci.tools.xyz2mol import maxdist
 
 from spycci.tools.reorderenergies import reorder_energies
-
-from spycci.tools.vmdtools import VMDRenderer

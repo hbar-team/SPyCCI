@@ -4,7 +4,7 @@ import numpy as np
 
 from os.path import isfile
 from copy import deepcopy
-from typing import Tuple, List, Union, Generator, Optional, Iterator, Callable, TYPE_CHECKING
+from typing import Tuple, List, Union, Optional, Iterator, TYPE_CHECKING
 from morfeus import BuriedVolume
 
 from rdkit.Chem import Mol, Atom, MolFromSmiles, AddHs
@@ -54,34 +54,6 @@ class MolecularGeometry:
         # Define a listener to reset System on geometry change
         self.__system_reset: System.__on_geometry_change = None
     
-    def __add_system_reset(self, listener: System.__on_geometry_change) -> None:
-        """
-        Add a reference to a System reset function
-
-        Argument
-        --------
-        listener: System.__on_geometry_change
-            The method of the `System` object handling a change in geometry
-        """
-        self.__system_reset = listener
-    
-    def __call_system_reset(self) -> None:
-        "If set, call the system (owner) reset listener"
-        if self.__system_reset is not None:
-            self.__system_reset()
-
-    def __clear_properties(self) -> None:
-        """
-        Clears the level of theory and all the structure related properties
-        that may have been cached for a previously defined molecular structure.
-        """
-        self.__inertia_tensor = None
-        self.__inertia_eigvals = None
-        self.__inertia_eigvecs = None
-        self.__rotor_type = None
-        self.__rotational_constants = None
-
-        self.level_of_theory_geometry = None
 
     def __len__(self) -> int:
         return self.__atomcount
@@ -614,76 +586,7 @@ class MolecularGeometry:
         if self.__rotational_constants is None:
             self.__calculate_inertia()
         return deepcopy(self.__rotational_constants)
-
-    def __calculate_inertia(self) -> None:
-        """
-        Calculate and set the inertia tensor, its eigenvalues and eigenvectors, rotor type,
-        and rotational constants of the molecule.
-
-        The inertia tensor is calculated relative to the molecular center of mass,
-        using atomic masses (in atomic mass units) and cartesian coordinates
-        (in Ångström). The eigenvalues of the tensor correspond to the principal
-        moments of inertia (IA, IB, IC).
-
-        The rotor type is determined based on the relative magnitudes of the
-        principal moments:
-
-            * Linear rotor:           IA ≈ 0 and IB ≈ IC
-            * Spherical top:          IA ≈ IB ≈ IC
-            * Oblate symmetric top:   IA ≈ IB < IC (disc-shaped)
-            * Prolate symmetric top:  IA < IB ≈ IC (cigar-shaped)
-            * Asymmetric top:         all moments different
-        
-        The rotational constants are provided in both cm⁻¹ and MHz.
-        """
-        xyz_centered = np.subtract(self.__coordinates, self.center_of_mass)
-        masses = np.array([atomic_masses[atom] for atom in self.__atoms])
-
-        x, y, z = xyz_centered.T
-
-        Ixx = np.sum(masses * (y**2 + z**2))
-        Iyy = np.sum(masses * (x**2 + z**2))
-        Izz = np.sum(masses * (x**2 + y**2))
-        Ixy = -np.sum(masses * x * y)
-        Iyz = -np.sum(masses * y * z)
-        Ixz = -np.sum(masses * x * z)
-
-        self.__inertia_tensor = np.array([
-            [Ixx, Ixy, Ixz],
-            [Ixy, Iyy, Iyz],
-            [Ixz, Iyz, Izz]
-        ])
-
-        self.__inertia_eigvals, self.__inertia_eigvecs = np.linalg.eigh(self.__inertia_tensor)
-
-        eigvals_kgm2 = self.__inertia_eigvals * amu_to_kg / 1.0e20
-        
-        rot_const_cm, rot_const_mhz = [], []
-        for eigval in eigvals_kgm2:
-
-            if eigval == 0.:
-                rot_const_cm.append(None)
-                rot_const_mhz.append(None)
-
-            else:
-                value = h / (8 * np.pi**2 * c * 100 * eigval)
-                rot_const_cm.append(value)
-                rot_const_mhz.append(value * c / 1.0e4)           
-                
-        self.__rotational_constants = (np.array(rot_const_cm), np.array(rot_const_mhz))
-
-        tol=1e-3
-        IA, IB, IC = self.__inertia_eigvals
-        if IA < tol and abs(IB - IC) < tol:
-            self.__rotor_type = "linear rotor"
-        elif abs(IA - IB) < tol and abs(IB - IC) < tol:
-            self.__rotor_type = "spherical top"
-        elif abs(IA - IB) < tol and abs(IC - IB) > tol:
-            self.__rotor_type = "oblate symmetric top"
-        elif abs(IB - IC) < tol and abs(IA - IB) > tol:
-            self.__rotor_type = "prolate symmetric top"
-        else:
-            self.__rotor_type = "asymmetric top"
+    
 
     def buried_volume_fraction(
         self,
@@ -773,3 +676,107 @@ class MolecularGeometry:
         )
 
         return bv.fraction_buried_volume
+    
+    ####################################################################################
+    #                                 HELPER FUNCTIONS                                 #
+    ####################################################################################
+
+    def __add_system_reset(self, listener: System.__on_geometry_change) -> None:
+        """
+        Add a reference to a System reset function
+
+        Argument
+        --------
+        listener: System.__on_geometry_change
+            The method of the `System` object handling a change in geometry
+        """
+        self.__system_reset = listener
+    
+    def __call_system_reset(self) -> None:
+        "If set, call the system (owner) reset listener"
+        if self.__system_reset is not None:
+            self.__system_reset()
+
+    def __clear_properties(self) -> None:
+        """
+        Clears the level of theory and all the structure related properties
+        that may have been cached for a previously defined molecular structure.
+        """
+        self.__inertia_tensor = None
+        self.__inertia_eigvals = None
+        self.__inertia_eigvecs = None
+        self.__rotor_type = None
+        self.__rotational_constants = None
+
+        self.level_of_theory_geometry = None
+            
+
+    def __calculate_inertia(self) -> None:
+        """
+        Calculate and set the inertia tensor, its eigenvalues and eigenvectors, rotor type,
+        and rotational constants of the molecule.
+
+        The inertia tensor is calculated relative to the molecular center of mass,
+        using atomic masses (in atomic mass units) and cartesian coordinates
+        (in Ångström). The eigenvalues of the tensor correspond to the principal
+        moments of inertia (IA, IB, IC).
+
+        The rotor type is determined based on the relative magnitudes of the
+        principal moments:
+
+            * Linear rotor:           IA ≈ 0 and IB ≈ IC
+            * Spherical top:          IA ≈ IB ≈ IC
+            * Oblate symmetric top:   IA ≈ IB < IC (disc-shaped)
+            * Prolate symmetric top:  IA < IB ≈ IC (cigar-shaped)
+            * Asymmetric top:         all moments different
+        
+        The rotational constants are provided in both cm⁻¹ and MHz.
+        """
+        xyz_centered = np.subtract(self.__coordinates, self.center_of_mass)
+        masses = np.array([atomic_masses[atom] for atom in self.__atoms])
+
+        x, y, z = xyz_centered.T
+
+        Ixx = np.sum(masses * (y**2 + z**2))
+        Iyy = np.sum(masses * (x**2 + z**2))
+        Izz = np.sum(masses * (x**2 + y**2))
+        Ixy = -np.sum(masses * x * y)
+        Iyz = -np.sum(masses * y * z)
+        Ixz = -np.sum(masses * x * z)
+
+        self.__inertia_tensor = np.array([
+            [Ixx, Ixy, Ixz],
+            [Ixy, Iyy, Iyz],
+            [Ixz, Iyz, Izz]
+        ])
+
+        self.__inertia_eigvals, self.__inertia_eigvecs = np.linalg.eigh(self.__inertia_tensor)
+
+        eigvals_kgm2 = self.__inertia_eigvals * amu_to_kg / 1.0e20
+        
+        rot_const_cm, rot_const_mhz = [], []
+        for eigval in eigvals_kgm2:
+
+            if eigval == 0.:
+                rot_const_cm.append(None)
+                rot_const_mhz.append(None)
+
+            else:
+                value = h / (8 * np.pi**2 * c * 100 * eigval)
+                rot_const_cm.append(value)
+                rot_const_mhz.append(value * c / 1.0e4)           
+                
+        self.__rotational_constants = (np.array(rot_const_cm), np.array(rot_const_mhz))
+
+        tol=1e-3
+        IA, IB, IC = self.__inertia_eigvals
+        if IA < tol and abs(IB - IC) < tol:
+            self.__rotor_type = "linear rotor"
+        elif abs(IA - IB) < tol and abs(IB - IC) < tol:
+            self.__rotor_type = "spherical top"
+        elif abs(IA - IB) < tol and abs(IC - IB) > tol:
+            self.__rotor_type = "oblate symmetric top"
+        elif abs(IB - IC) < tol and abs(IA - IB) > tol:
+            self.__rotor_type = "prolate symmetric top"
+        else:
+            self.__rotor_type = "asymmetric top"

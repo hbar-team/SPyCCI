@@ -11,7 +11,155 @@ kernelspec:
 ---
 
 (Guide-Molecular-Visualization)=
-# Molecular visualization using VMD
+# Molecular visualization 
+Beyond allowing the user to run computational chemistry calculations, the SPyCCI package also provides the user with a simple interface to some visualization tools that can be used to examine molecular structures, computed values and also volumetric data.
+
+The SPyCCI library provides an internal molecular viewer and wrappers around third party softwares like VMD and mogli. All the molecular visualization tools are available under the `spycci.graphicaltools` sub-module.
+
+## Molecular visualization using the internal viewer
+The SPyCCI library provides a simple molecular viewer based on pyvista. The tool can be found in the `spycci.graphicaltools.moleculeviewer` sub-module in the form of the `show_molecule` function.
+
+To use the `show_molecule` function the user needs to simply provide the function with the geometry to be visualized in the form of a `System` object. The tool will automatically open a window allowing the user to interact and rotate the molecule. As an example, the following script can be used to visualize the acetone molecule:
+
+```python
+from spycci.systems import System
+from spycci.graphicaltools.moleculeviewer import show_molecule
+
+mol = System.from_smiles("acetone", "CC(=O)C")
+show_molecule(mol)
+```
+
+```{image} ./images/acetone.png
+:alt: water.bmp
+:width: 600px
+:align: center
+```
+
+Camera orientation can be set via the `azimuth` and `elevation` arguments while the zoom can set using the `zoom` keyword. As an example, the previous view can be modified as follows:
+
+```python
+from spycci.systems import System
+from spycci.graphicaltools.moleculeviewer import show_molecule
+
+mol = System.from_smiles("acetone", "CC(=O)C")
+show_molecule(mol, azimuth=10, elevation=180, zoom=1.4)
+```
+
+```{image} ./images/acetone_rotated.png
+:alt: water.bmp
+:width: 600px
+:align: center
+```
+
+Besides visualizing structures, the internal viewer can also be used to represent scalar properties associated with each atom in the molecule. This can be done automatically by passing to the function a list of colors to be used in the representation of each atoms. To do so, the user can define a colormap function or, more conveniently, use one of the colormaps provided in the `spycci.graphicaltools.colormaps` sub-module. The colormap will handle the conversion of scalar values to colors that can be directly used by the viewer. As an example, conisder the following code in which Mulliken charges are computed using orca, converted in colorscale using the `RdBu` colormap and represented by the viewer. The obtained scene is finally rendered and saved to a `.png` image file:
+
+```python
+from spycci.systems import System
+from spycci.engines.orca import OrcaInput
+from spycci.graphicaltools.colormaps import RdBu
+from spycci.graphicaltools.moleculeviewer import show_molecule
+
+# Define a System representing the acetone molecule
+mol = System.from_smiles("acetone", "CC(=O)C")
+
+# Run a geometry optimization using orca
+orca = OrcaInput()
+orca.opt(mol, ncores=4, inplace=True)
+
+# Convert Mulliken charges values to color scale usinf the RdBu colormap
+colors = RdBu(mol.properties.mulliken_charges)
+
+# Render the molecule using the RdBu diverging colormap
+show_molecule(
+    mol,
+    atoms_colors = colors,
+    azimuth=10,
+    elevation=180,
+    zoom=1.4,
+    title="Acetone - Mulliken charges",
+    export_path="acetone_charges.png",
+)
+```
+
+```{image} ./images/acetone_charges.png
+:alt: water.bmp
+:width: 600px
+:align: center
+```
+
+### Built-in colormaps 
+
+To help the user in visualizing scalar data, a small collection of colormap function has been defined in the `spycci.graphicaltools.colormaps` sub-module. The module is built around two type of colormaps: A `DivergingColormap` function that provides linearly diverging color shades centered around a central value, and a `PolynomialColormap` implementing a polynomial representation of each RGB channel value based on the input variable. From these two basic definition a series of built-in colormaps has been defined and represented in what follows:
+
+```{code-cell} python
+:tags: ["remove-input"]
+
+import numpy as np
+import inspect
+import matplotlib.pyplot as plt
+from spycci.graphicaltools.colormaps import RdBu, RdYlBu, PiYG, Jet, Turbo, Viridis, Plasma
+
+def show_colormaps(cmaps, n=256, clims=None):
+    """
+    Display multiple custom colormaps stacked vertically.
+
+    Parameters
+    ----------
+    cmaps : list of tuples
+        A list of (colormap_function, title) pairs.
+    n : int
+        Number of discrete samples for visualization.
+    clims : tuple or None
+        Min/max range of the colormap. If None, automatically selected:
+        - (-1, 1) for diverging colormaps (e.g. RdBu)
+        - (0, 1) for sequential colormaps
+    """
+    fig, axes = plt.subplots(len(cmaps), 1, figsize=(8, 1. * len(cmaps)))
+
+    if len(cmaps) == 1:
+        axes = [axes]
+
+    for ax, (cmap_func, title) in zip(axes, cmaps):
+        # Automatically detect diverging colormaps
+        if clims is None:
+            if "symmetric" in inspect.signature(cmap_func).parameters:
+                vmin, vmax = -1, 1
+            else:
+                vmin, vmax = 0, 1
+        else:
+            vmin, vmax = clims
+
+        values = np.linspace(vmin, vmax, n)
+        colors = np.array(cmap_func(values))
+        colors = np.clip(colors, 0, 1)
+
+        ax.imshow([colors], aspect='auto', extent=[vmin, vmax, 0, 1])
+        ax.set_yticks([])
+        ax.set_xlabel(title, fontsize=11)
+        ax.tick_params(axis='x', labelsize=9)
+
+        # Centered x-axis for diverging maps
+        if vmin < 0 < vmax:
+            ax.axvline(0, color='white', linewidth=0.8, linestyle='--', alpha=0.5)
+
+    plt.tight_layout()
+    plt.show()
+
+
+cmaps = [
+    (RdBu, "RdBu"),
+    (RdYlBu, "RdYlBu"),
+    (PiYG, "PiYG"),
+    (Jet, "Jet"),
+    (Turbo, "Turbo"),
+    (Viridis, "Viridis"),
+    (Plasma, "Plasma"),
+]
+
+show_colormaps(cmaps)
+```
+
+## Molecular visualization using VMD
 Beyond allowing the user to run computational chemistry calculations, the SPyCCI package also provides a simple interface to the [Visual Molecular Dynamics (VMD) software](https://www.ks.uiuc.edu/Research/vmd/) enabling the user to render molecular structures and cube files directly from a python script. The interface is constantly updated with new features and, at the moment, supports the rendering of both molecular structures, provided either in the form of `System` objects, `.xyz` or `pdb` files, and volumetric data in the form of `.cube` files or `Cube` objects.
 
 The core of the interface is represented by the `VMDRenderer` class. The class represents a generic rendering tool that can be created setting a resolution value, system position, orientation and zoom, graphical effects such as shadows, ambientocclusion and depth of field (DoF). Once created the class provides specific methods capable of generating the required renders.
@@ -33,7 +181,7 @@ The body of volumetric data is represented by a series of lines listing floating
 The structure of a molecule can be rendered starting from a `.xyz` file by using the `render_system_file()` function. As an example, the following script can be used to render a simple `water.xyz` file:
 
 ```python
-from spycci.tools.vmdtools import VMDRenderer
+from spycci.graphicaltools.vmdtools import VMDRenderer
 
 vmd = VMDRenderer(resolution=1200)
 vmd.render_system_file("./water.xyz")
@@ -53,7 +201,7 @@ Similarly from what shown in the case of a `.xyz` file, the `VMDRenderer` class 
 
 ```python
 from spycci.systems import System
-from spycci.tools.vmdtools import VMDRenderer
+from spycci.graphicaltools.vmdtools import VMDRenderer
 
 mol = System.from_smiles("benzene", "c1ccccc1")
 
@@ -85,7 +233,7 @@ Rendering of a generic cube file can be achieved using the `render_cube_file()` 
 As an example, the 6th molecular orbital for the formaldehyde molecule, generated by orca as a `input.mo6a.cube` file. Can be simply rendered using the code:
 
 ```python
-from spycci.tools.vmdtools import VMDRenderer
+from spycci.graphicaltools.vmdtools import VMDRenderer
 
 renderer = VMDRenderer(resolution=1200)
 renderer.scale = 1.0
@@ -120,7 +268,7 @@ As an example, the previous example about plotting the 6th molecular orbital of 
 
 ```python
 from spycci.tools.cubetools import Cube
-from spycci.tools.vmdtools import VMDRenderer
+from spycci.graphicaltools.vmdtools import VMDRenderer
 
 renderer = VMDRenderer(resolution=400)
 renderer.scale = 1.0
@@ -146,7 +294,7 @@ A spin density cube generated from orca (having the `.spindens.cube` extension) 
 ```python
 from spycci.systems import System
 from spycci.engines.orca import OrcaInput
-from spycci.tools.vmdtools import VMDRenderer
+from spycci.graphicaltools.vmdtools import VMDRenderer
 
 mol = System.from_smiles("benzene", "c1ccccc1", charge=1, spin=2)
 
@@ -181,7 +329,7 @@ rom spycci.engines.xtb import XtbInput
 from spycci.engines.orca import OrcaInput
 from spycci.functions.fukui import calculate_fukui, CubeGrids
 
-from spycci.tools.vmdtools import VMDRenderer
+from spycci.graphicaltools.vmdtools import VMDRenderer
 
 mol = System.from_smiles("propionaldehyde", "CCC=O")
 xtb = XtbInput()

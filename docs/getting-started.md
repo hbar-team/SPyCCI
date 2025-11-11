@@ -169,7 +169,7 @@ Et voilà! You have successfully carried out a geometry optimization for the wat
 The `SPyCCI` library also offers simple tools to visualize the structure of the molecules encoded by a `System` object. As an example, the distorted structure of the input molecule, loaded into the `water` object, can be visualized using the built in [`mogli`](https://github.com/sciapp/mogli) interface using the commands:
 
 ```python
-from spycci.tools.moglitools import MogliViewer
+from spycci.graphicaltools.moglitools import MogliViewer
 
 viewer = MogliViewer(water)
 viewer.show()

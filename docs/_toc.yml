@@ -28,6 +28,7 @@ chapters:
         - file: API/wrappers/packmol
     - file: API/functions
     - file: API/tools
+    - file: API/graphicaltools
 
 - file: contributor-guide
 - file: release-notes

@@ -1,17 +1,21 @@
 from __future__ import annotations
 
-import os, json
+import os, json, sh, shutil, math
 import numpy as np
 import logging
 
 from typing import List, Generator, Optional, Union
 from copy import deepcopy
+from tempfile import mkdtemp
 
 from spycci.constants import kB
 from spycci.config import __JSON_VERSION__
 from spycci.core.base import Engine
 from spycci.core.geometry import MolecularGeometry
 from spycci.core.properties import Properties
+
+from rdkit.Chem import Mol, Atom, Bond, MolFromXYZFile, GetAdjacencyMatrix
+from rdkit.Chem.rdDetermineBonds import DetermineBonds
 
 logger = logging.getLogger(__name__)
 
@@ -63,37 +67,12 @@ class System:
         self.__properties: Properties = Properties()
         self.__properties._Properties__add_check_geometry_level_of_theory(self.__check_geometry_level_of_theory)   # Set listener in Properties class using mangled name
 
-        self.flags: list = []
-        logger.debug(f"CREATED: System object {self.name} at ID: {hex(id(self))}.")
-    
-    def __on_geometry_change(self) -> None:
-        """
-        Function used by the `MolecularGeometry` listener to clear properties when molecular geometry has been changed.
-        """
-        logger.debug(f"CLEARED: Properties of {self.name} system (ID: {hex(id(self))}) due to molecular geometry change.")
-        self.properties = Properties()
-    
-    def __check_geometry_level_of_theory(self, level_of_theory: str) -> None:
-        """
-        Function used by the `Properties` class listener to check compatibility of a newly provided
-        level of theory with the currently adopted geometric level of theory. If the level of theory
-        provided is different exception is raised. If the geometry level of theory is `None` the check
-        is skipped silently.
+        self.__adjacency_matrix: Optional[np.ndarray] = None
+        self.__bond_type_matrix: Optional[np.ndarray] = None
 
-        Argument
-        --------
-        level_of_theory: str
-            The level of theory to be checked agains the geometry level of theory.
-        
-        Raises
-        ------
-        RuntimeError
-            Exception raised if the proposed level of theory is different from the one set
-            as the geometry level of theory.
-        """
-        if self.geometry.level_of_theory_geometry is not None:
-            if level_of_theory != self.geometry.level_of_theory_geometry:
-                raise RuntimeError("Mismatch between the user-provided level of theory and the one used to set geometry")
+        self.flags: list = []
+        logger.debug(f"CREATED: System object '{self.name}' at ID: {hex(id(self))}.")
+    
         
     @classmethod
     def from_xyz(
@@ -573,6 +552,163 @@ class System:
             True if the system is periodic (the `box_side` is not None), False otherwise.
         """
         return True if self.box_side is not None else False
+    
+    @property
+    def adjacency_matrix(self) -> np.ndarray:
+        """
+        The adjacency matrix encoding the molecular connectivity. The generated matrix is a N x N square
+        and symmetrical matrix (with N the total number of atoms in the geometry) encoding wherher two 
+        atoms are bonded or not. If the atom i and j are connected, the [i,j] and [j, i] matrix elements
+        will be set to one, otherwise zero.
+
+        The matrix is internally obtained using RDKit that, in turn, applies heuristic rules for connectivity
+        determination. To allow the function to work with open-shell systems, conversion to an hypotetical
+        singlet state (reducing charge for cations, increasing for anions) is automatically applied. USE THE
+        MATRIX WITH CARE expecially for metal complexes, open-shell system or unusual hypervalent states since
+        the generated matrix MAY BE INCORRECT. PLEASE USE QUANTUM CHEMICALLY DERIVED BOND ORDERS IF EXACT
+        BONDING SCHEME IS NEEDED.
+
+        Returns
+        -------
+        np.ndarray
+            The NxN (with N the total number of atoms) symmetrical matrix encoding the connectivity
+            of the molecule
+        """
+        if self.__adjacency_matrix is None:
+            self.__generate_connectivity()
+        
+        return deepcopy(self.__adjacency_matrix)
+    
+    @property
+    def bond_type_matrix(self) -> np.ndarray:
+        """
+        The bond type matrix encoding the molecular connectivity and the order/type of the bonds
+        connecting each pair of atoms. The matrix is a N x N square and symmetrical matrix (with N
+        the total number of atoms in the geometry) encoding whether two atoms are bonded or not and
+        the order/type of the bond between them. If the atom i and j are connected, the [i,j] and 
+        [j, i] matrix elements will be set to the float value representing the bond order/type (i.e.
+        1.0 for single, 2.0 for double, 3.0 for triple, 1.5 for aromatic bonds), otherwise zero if they
+        are not connected. Note that the bond orders represented here are purely topological and 
+        do NOT correspond to quantum-chemically derived bond indices (e.g., Wiberg or Mayer bond orders).
+        
+        The matrix is internally generated using the adjacency matrix and bond types generated by RDKit
+        that, in turn, applies heuristic rules for connectivity determination. To allow the function to work
+        with open-shell systems, conversion to an hypotetical singlet state (reducing charge for cations,
+        increasing for anions) is automatically applied. USE THE MATRIX WITH CARE expecially for metal
+        complexes, open-shell system or unusual hypervalent states since the generated matrix MAY BE 
+        INCORRECT. PLEASE USE QUANTUM CHEMICALLY DERIVED BOND ORDERS IF EXACT BONDING SCHEME IS NEEDED.
+
+        Returns
+        -------
+        np.ndarray
+            The NxN (with N the total number of atoms) symmetrical matrix encoding the connectivity
+            of the molecule
+        """
+        if self.__bond_type_matrix is None:
+            self.__generate_connectivity()
+        
+        return deepcopy(self.__bond_type_matrix)
+
+
+    ####################################################################################
+    #                                 HELPER FUNCTIONS                                 #
+    ####################################################################################
+    
+
+    def __on_geometry_change(self) -> None:
+        """
+        Function used by the `MolecularGeometry` listener to clear properties when molecular geometry has been changed.
+        """
+        logger.debug(f"CLEARED: Properties of {self.name} system (ID: {hex(id(self))}) due to molecular geometry change.")
+        self.properties = Properties()
+        self.__adjacency_matrix = None
+        self.__bond_type_matrix = None
+    
+    def __check_geometry_level_of_theory(self, level_of_theory: str) -> None:
+        """
+        Function used by the `Properties` class listener to check compatibility of a newly provided
+        level of theory with the currently adopted geometric level of theory. If the level of theory
+        provided is different exception is raised. If the geometry level of theory is `None` the check
+        is skipped silently.
+
+        Argument
+        --------
+        level_of_theory: str
+            The level of theory to be checked agains the geometry level of theory.
+        
+        Raises
+        ------
+        RuntimeError
+            Exception raised if the proposed level of theory is different from the one set
+            as the geometry level of theory.
+        """
+        if self.geometry.level_of_theory_geometry is not None:
+            if level_of_theory != self.geometry.level_of_theory_geometry:
+                raise RuntimeError("Mismatch between the user-provided level of theory and the one used to set geometry")
+
+    def __generate_mol(self) -> Mol:
+        """
+        Generates `rdkit.Chem.Mol` object from the stored molecular geometry and system charge.
+        Connectivity is automatically generated using the `rdkit.Chem.rdDetermineBonds.DetermineBonds`
+        function. In the case of systems with unpaired electrons, the bond determination is run
+        considering a corrected charge value obtained by adding or removing a number of electron
+        sufficient to bring the molecule to an hypotetical singlet state. Beware that the generated
+        `Mol` object will NOT take into account spin.
+
+        Returns
+        -------
+        rdkit.Chem.Mol
+            The `Mol` object of the RDKit library representing the molecular object.
+        """
+        mol = None
+        tdir = mkdtemp(prefix="RDKitWorkdir_", suffix=f"_MolGen", dir=os.getcwd() )
+
+        with sh.pushd(tdir):
+
+            try:
+                self.geometry.write_xyz(f"molecule.xyz")
+                raw_mol = MolFromXYZFile("molecule.xyz")
+                mol = Mol(raw_mol)
+            
+            finally:
+                shutil.rmtree(tdir)
+
+        if mol is None:
+            raise RuntimeError("The conversion from XYZ to RDKit Mol has failed.")
+
+        if self.spin == 1:
+            DetermineBonds(mol, charge=self.charge, embedChiral=True, allowChargedFragments=True)
+        else:
+            # Adjust charge to a hypothetical singlet state: reduce charge for cations, increase for anions
+            newcharge = (self.charge - (self.spin - 1)) if self.charge>=0 else (self.charge + (self.spin - 1))
+            logger.info(f"Charge correction (from {self.charge} to {newcharge}) has been applied to generate heuristic connectivity in open shell system {self.name} (S={self.spin})")
+            DetermineBonds(mol, charge=newcharge, embedChiral=True, allowChargedFragments=True)
+
+        return mol
+    
+    def __generate_connectivity(self) -> None:
+        """
+        Given the current molecular geometry and system charge, generate connectivity data using
+        RDKit. The function internally sets the `self.__adjacency_matrix` and the 
+        `self.__bond_type_matrix` variables. The function is based on the `self.__generate_mol()`
+        function; please refer to the docstring of `__generate_mol` for further details.
+        """
+        mol = self.__generate_mol()
+        self.__adjacency_matrix = GetAdjacencyMatrix(mol)
+
+        dim = self.geometry.atomcount
+        btype_matrix = np.zeros((dim, dim), dtype=float)
+
+        bond: Bond = None
+        for bond in mol.GetBonds():
+            i = bond.GetBeginAtomIdx()
+            j = bond.GetEndAtomIdx()
+            order = bond.GetBondTypeAsDouble()
+            btype_matrix[i, j] = order
+            btype_matrix[j, i] = order
+        
+        self.__bond_type_matrix = btype_matrix
+
 
 
 

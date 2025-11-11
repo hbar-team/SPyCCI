@@ -351,7 +351,7 @@ print(mol)
 The volumetric fukui functions can then be plotted using the built in `vmd` based rendering tool. As an example the following code can be used to render the the $f^+(r)$ Fukui function.
 
 ```python
-from spycci.tools.vmdtools import VMDRenderer
+from spycci.graphicaltools.vmdtools import VMDRenderer
 
 renderer = VMDRenderer(resolution=1200)
 renderer.scale = 1.1
