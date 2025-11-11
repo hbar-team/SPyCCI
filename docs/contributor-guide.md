@@ -129,7 +129,7 @@ By default, the `spycci` library requires an exact match for version dependency,
 
 To simplify the testing procedure, we provide a Dockerfile with all the required third-party software in the specific versions used for development. The only current exception is Orca, for which users need to provide their own archive, downloaded from the [FACCTs](https://www.faccts.de) website or the [Orca Forums](https://orcaforum.kofo.mpg.de/app.php/portal).
 
-To build the container, copy the `.tar.xz` archive with Orca (we recommend using version `6.1.0`) in the `SPyCCI` folder (the archive must be in the same location from which you launch the `docker build` command), and run:
+To build the container, copy the `.tar.xz` archive with Orca (we recommend using version `6.1.0-f.0`) in the `SPyCCI` folder (the archive must be in the same location from which you launch the `docker build` command), and run:
 
 :::{admonition} Note
 :class: info
@@ -163,4 +163,52 @@ It is also possible to run only a subset of tests and pass specific flags to the
 
 ```bash
 docker run --rm spycci:test pytest -vvv --color=yes tests/integration/test_xtb*
+```
+
+Note that these test files are those included in the container image at build time. If you wish to use the container as a "software stack layer" during development, for example when writing new tests, you must bind the SPyCCI directory in which you are working to `/workspace`, so that the container is able to see the "updated" test versions:
+
+```bash
+docker run --mount type=bind,src=.,dst=/workspace --rm spycci:test pytest -vvv --color=yes tests/
+```
+
+With this command, bind path will overwrite the `/workspace` files with the ones on your filesystem and the container will work on those, instead of the ones included at build time.
+
+:::{admonition} Bind Paths
+:class: warning
+Modifications to bind paths are **permanent** and occur on the actual filesystem running the container.
+:::
+
+### Using Singularity instead of Docker
+
+In HPC environments, Docker is often not available as it requires root privileges for building images. In its stead, Singularity (or its open-source version Apptainer) are usually found. The concept is identical, meaning that a containerized image containing the necessary software stack is produced, and that can be used to ensure reproducibility during development or in production environment.
+
+Here we provide the Singularity counterparts for the Docker commands explained above. The explanations and comments can be used for either versions.
+
+To build the container:
+
+```shell
+singularity build --build-arg ORCA_LOCAL_ARCHIVE=orca-6.1.0-f.0_linux_x86-64_openmpi41.tar.xz spycci.sif apptainer.def
+```
+
+This will produce the `spycci.sif` container file, which can be run as:
+
+```shell
+singularity run spycci.sif
+```
+
+:::{admonition} Bind Paths
+:class: warning
+Singularity container are by default read-only, therefore calculations will normally fail as the container cannot write the results anywhere. For normal operations, the current directory should be mapped to `/workspace` similarly to Docker; it is also recommended to mount the default scratch folder for your HPC environment as some functions use that as a temporary work directory. 
+:::
+
+The following command runs the SPyCCI Singularity container, with write access to both the current directory and `/scratch_local`.
+
+```shell
+singularity run --bind ./:/workspace,/scratch_local spycci.sif
+```
+
+As with Docker, it is also possible to run only a subset of tests and pass specific flags to the `pytest` command:
+
+```bash
+singularity run --bind ./:/workspace,/scratch_local spycci.sif pytest -vvv --color=yes tests/integration/test_xtb*
 ```
