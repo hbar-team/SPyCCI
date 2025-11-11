@@ -685,6 +685,179 @@ class MolecularGeometry:
         else:
             self.__rotor_type = "asymmetric top"
 
+    @property
+    def center_of_mass(self) -> np.ndarray:
+        """
+        The center of mass of the molecule in Angstrom.
+
+        Returns
+        -------
+        np.ndarray
+            The numpy array containing the 3 cartesian coordinates of the center of mass
+            of the molecule in Angstrom.
+        """
+        com = np.zeros(3)
+        for atom, position in zip(self.__atoms, self.__coordinates):
+            mass = atomic_masses[atom]
+            com += mass * position
+        com /= self.mass
+        return com
+
+    @property
+    def inertia_tensor(self) -> np.ndarray:
+        """
+        The inertia tensor of the molecule (in amu·Å²) calculated relative to the
+        molecular center of mass, using atomic masses (in atomic mass units) and
+        cartesian coordinates (in Ångström).
+
+        Returns
+        -------
+        np.ndarray
+            The inertia tensor of the molecule in amu·Å² as a numpy array of shape (3, 3).
+        """
+        if self.__inertia_tensor is None:
+            self.__calculate_inertia()
+        return self.__inertia_tensor
+
+    @property
+    def inertia_eigvals(self) -> np.ndarray:
+        """
+        The principal moments of inertia (IA, IB, IC) (in amu·Å²) computed as eigenvalues
+        of the inertia tensor.
+
+        Returns
+        -------
+        np.ndarray
+            The principal moments of inertia (IA, IB, IC) in amu·Å² as a numpy array of shape (3).
+        """
+        if self.__inertia_eigvals is None:
+            self.__calculate_inertia()
+        return self.__inertia_eigvals
+
+    @property
+    def inertia_eigvecs(self) -> np.ndarray:
+        """
+        The principal axes of rotation computed as eigenvectors of the inertia tensor.
+
+        Returns
+        -------
+        np.ndarray
+            The principal axes of rotation as a numpy array of shape (3, 3).
+        """
+        if self.__inertia_eigvecs is None:
+            self.__calculate_inertia()
+        return self.__inertia_eigvecs
+
+    @property
+    def rotor_type(self) -> str:
+        """
+        The type of molecular rigid rotor determined based on the relative magnitudes of the
+        principal moments of inertia:
+
+            * Linear rotor:           IA ≈ 0 and IB ≈ IC
+            * Spherical top:          IA ≈ IB ≈ IC
+            * Oblate symmetric top:   IA ≈ IB < IC (disc-shaped)
+            * Prolate symmetric top:  IA < IB ≈ IC (cigar-shaped)
+            * Asymmetric top:         all moments different
+
+        Returns
+        -------
+        str
+            Type of molecular rigid rotor.
+        """
+        if self.__rotor_type is None:
+            self.__calculate_inertia()
+        return self.__rotor_type
+
+    @property
+    def rotational_constants(self) -> Tuple[np.ndarray, np.ndarray]:
+        r"""
+        The rotational constants (A, B, C)  of the molecule in cm⁻¹ and MHz defined as:
+
+        .. math::
+            B_\alpha := \frac{\hbar^2}{2 I_\alpha}
+
+        
+        Returns
+        -------
+        Tuple[np.ndarray, np.ndarray]
+            A tuple of two numpy arrays of shape (3) containing the rotational constants (A, B, C)
+            of the molecule expressed in cm⁻¹ (first) and in MHz (second).
+        """
+        if self.__rotational_constants is None:
+            self.__calculate_inertia()
+        return self.__rotational_constants
+
+    def __calculate_inertia(self) -> None:
+        """
+        Calculate and set the inertia tensor, its eigenvalues and eigenvectors, rotor type,
+        and rotational constants of the molecule.
+
+        The inertia tensor is calculated relative to the molecular center of mass,
+        using atomic masses (in atomic mass units) and cartesian coordinates
+        (in Ångström). The eigenvalues of the tensor correspond to the principal
+        moments of inertia (IA, IB, IC).
+
+        The rotor type is determined based on the relative magnitudes of the
+        principal moments:
+
+            * Linear rotor:           IA ≈ 0 and IB ≈ IC
+            * Spherical top:          IA ≈ IB ≈ IC
+            * Oblate symmetric top:   IA ≈ IB < IC (disc-shaped)
+            * Prolate symmetric top:  IA < IB ≈ IC (cigar-shaped)
+            * Asymmetric top:         all moments different
+        
+        The rotational constants are provided in both cm⁻¹ and MHz.
+        """
+        xyz_centered = np.subtract(self.__coordinates, self.center_of_mass)
+        masses = np.array([atomic_masses[atom] for atom in self.__atoms])
+
+        x, y, z = xyz_centered.T
+
+        Ixx = np.sum(masses * (y**2 + z**2))
+        Iyy = np.sum(masses * (x**2 + z**2))
+        Izz = np.sum(masses * (x**2 + y**2))
+        Ixy = -np.sum(masses * x * y)
+        Iyz = -np.sum(masses * y * z)
+        Ixz = -np.sum(masses * x * z)
+
+        self.__inertia_tensor = np.array([
+            [Ixx, Ixy, Ixz],
+            [Ixy, Iyy, Iyz],
+            [Ixz, Iyz, Izz]
+        ])
+
+        self.__inertia_eigvals, self.__inertia_eigvecs = np.linalg.eigh(self.__inertia_tensor)
+
+        eigvals_kgm2 = self.__inertia_eigvals * amu_to_kg / 1.0e20
+        
+        rot_const_cm, rot_const_mhz = [], []
+        for eigval in eigvals_kgm2:
+
+            if eigval == 0.:
+                rot_const_cm.append(None)
+                rot_const_mhz.append(None)
+
+            else:
+                value = h / (8 * np.pi**2 * c * 100 * eigval)
+                rot_const_cm.append(value)
+                rot_const_mhz.append(value * c / 1.0e4)           
+                
+        self.__rotational_constants = (np.array(rot_const_cm), np.array(rot_const_mhz))
+
+        tol=1e-3
+        IA, IB, IC = self.__inertia_eigvals
+        if IA < tol and abs(IB - IC) < tol:
+            self.__rotor_type = "linear rotor"
+        elif abs(IA - IB) < tol and abs(IB - IC) < tol:
+            self.__rotor_type = "spherical top"
+        elif abs(IA - IB) < tol and abs(IC - IB) > tol:
+            self.__rotor_type = "oblate symmetric top"
+        elif abs(IB - IC) < tol and abs(IA - IB) > tol:
+            self.__rotor_type = "prolate symmetric top"
+        else:
+            self.__rotor_type = "asymmetric top"
+
     def buried_volume_fraction(
         self,
         site: int,

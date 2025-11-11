@@ -115,6 +115,15 @@ Also in this case, a `__deepcopy__` overload is implemented in `Properties` to r
 
 ---
 
+## `ReactionPath` class
+
+```{eval-rst}
+.. autoclass:: spycci.systems.ReactionPath
+    :members:
+```
+
+---
+
 ## `Ensemble` class
 
 ```{eval-rst}

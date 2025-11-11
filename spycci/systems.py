@@ -4,7 +4,7 @@ import os, json
 import numpy as np
 import logging
 
-from typing import List, Generator, Optional, Union
+from typing import List, Generator, Optional, Tuple, Union
 from copy import deepcopy
 
 from spycci.constants import kB
@@ -608,10 +608,181 @@ def json_parser(input: dict) -> dict:
     return output
 
 
+class ReactionPath:
+    """
+    ReactionPath object, containing a series of System objects representing the
+    different steps along a reaction path.
+
+    Its primary function is to define the geometric path from reactants to products,
+    often representing **transition states** or intermediate geometries. 
+    
+    The ReactionPath is a collection of molecular geometries: it does not inherently 
+    represent a physical ensemble or thermal distribution. In that case, check
+    the `Ensemble` class.
+
+    Arguments
+    ----------
+    systems : List[System]
+        The list of System objects to be included in the ReactionPath.
+    name: Optional[str]
+        Name of the reaction path. If set to `None` (default) will take the name of the
+        first `System` frame as the name of the whole path.
+
+    Attributes
+    ----------
+    systems : List[System]
+        The list of System objects in the ReactionPath.
+    name : str
+        Name of the reaction path.
+    
+    """
+
+    def __init__(self, systems: List[System], name: Optional[str] = None) -> None:
+
+        if len(systems) == 0:
+            raise ValueError("Cannot operate on an empty systems array")
+
+        if any(system.geometry.atoms != systems[0].geometry.atoms for system in systems):
+            raise RuntimeError("Different systems encountered in list")
+
+        self.systems: List[System] = systems
+        self.name: str = systems[0].name if name is None else name
+
+    def __iter__(self) -> Generator[System]:
+        for item in self.systems:
+            yield item
+
+    def __getitem__(self, index: int) -> System:
+        if isinstance(index, int):
+            if index < 0 or index >= len(self.systems):
+                raise ValueError("Index out of bounds")
+            return self.systems[index]
+        elif isinstance(index, slice):
+            return self.systems[index]
+        else:
+            raise TypeError("Invalid argument type")
+        
+
+    def __len__(self) -> int:
+        return len(self.systems)
+    
+    def __str__(self) -> str:
+        return f"Reaction path: {self.name}, Number of steps: {len(self.systems)}"
+
+    def add(self, systems: List[System]):
+        """
+        Append more Systems to the ensemble
+
+        Parameters
+        ----------
+        systems : List[System]
+            The list of systems to be added to the ensamble
+        """
+        if any(system.geometry.atoms != systems[0].geometry.atoms for system in systems):
+            raise RuntimeError("Different systems encountered in list")
+
+        for system in systems:
+            self.systems.append(system)
+
+    def interpolate(self, n_points: int) -> ReactionPath:
+        """
+        Linearly interpolate the reaction path to redistribute, extend, or reduce
+        the number of steps (systems) along the path.
+
+        Parameters
+        ----------
+        n_points : int
+            The desired number of systems (images) in the new interpolated path.
+
+        Returns
+        -------
+        ReactionPath
+            A new ReactionPath object containing `n_points` interpolated systems.
+        """
+        if len(self.systems) < 2:
+            raise ValueError("Cannot interpolate a path with fewer than two systems.")
+        if n_points < 2:
+            raise ValueError("The new path must contain at least two points.")
+
+        # Number of atoms and dimensionality
+        n_atoms = self.systems[0].geometry.atomcount
+        n_dim = n_atoms * 3
+
+        # Stack all coordinates into a 2D array where the shape of the 
+        # coordinates for each step is (x1,y1,z1,x2,y2,z2,...)
+        coords = np.array([
+            np.array(sys.geometry.coordinates).reshape(-1)
+            for sys in self.systems
+        ])
+
+        # Compute vector difference and Euclidean distance along path
+        vec_diff = np.diff(coords, axis=0)
+        eucl_dist = np.linalg.norm(vec_diff, axis=1)
+
+        # Compute cumulative distance used as reaction coordinate
+        S = np.concatenate(([0.0], np.cumsum(eucl_dist)))
+
+        # Create a evenly spaced reaction coordinate
+        rc = np.linspace(S[0], S[-1], n_points)
+
+        # Interpolate each coordinate
+        new_coords = np.zeros((n_points, n_dim))
+        for i in range(n_dim):
+            new_coords[:, i] = np.interp(rc, S, coords[:, i])
+
+        # Build new systems
+        new_systems = []
+        for i, arr in enumerate(new_coords):
+            new_sys = deepcopy(self.systems[0])
+            reshaped = arr.reshape(n_atoms, 3)
+            new_sys.geometry.coordinates = reshaped
+            new_sys.name = self.name + f"_interp_{i}"
+            new_systems.append(new_sys)
+
+        return ReactionPath(new_systems)
+
+    def analyze_active_atoms(self) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Analyze atomic displacements along the reaction path.
+
+        This method computes, for each atom, the standard deviation of its cartesian
+        coordinates (x, y, z) across all steps in the reaction path. It also evaluates
+        the total spatial displacement of each atom as the Euclidean norm of the
+        coordinate standard deviations.
+
+        Returns
+        -------
+        np.ndarray 
+            The `np.ndarray` of shape (N atoms, 3) containing the standard deviation (in Å)
+            of the x, y, z coordinates for each atom.
+        np.ndarray
+            The `np.ndarray` of shape (N atoms) containing the total spatial standard 
+            deviation (in Å) for each atom, computed as the Euclidean norm of the x, y,
+            z standard deviations.
+        """
+        n_steps = len(self.systems)
+        n_atoms = self.systems[0].geometry.atomcount
+
+        all_coords = np.zeros((n_steps, n_atoms, 3))
+
+        for i, system in enumerate(self.systems):
+            coords = np.array(system.geometry.coordinates)
+            all_coords[i, :, :] = coords
+
+        std = np.std(all_coords, axis=0) # Calculate standard deviation
+        norm = np.linalg.norm(std, axis=1) # Calculate norm. Total displacement marker
+
+        return std, norm
 
 class Ensemble:
     """
-    Ensemble object, containing a series of System objects.
+    A statistical collection of molecular systems representing a **physical 
+    ensemble** (e.g., canonical NVT, microcanonical NVE) typically generated 
+    from molecular dynamics (MD) or Monte Carlo (MC) simulations.
+
+    The Ensemble represents a physical collection of states corresponding to a thermal distribution;
+    it does not inherently describe a single reaction pathway or sequence of geometries.
+    In that case, check the ReactionPath class.
 
     Parameters
     ----------

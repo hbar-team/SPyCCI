@@ -1,8 +1,7 @@
 import pytest
 
-from spycci.engines.xtb import XtbInput
 from spycci.engines.orca import OrcaInput
-from spycci.systems import System, Ensemble
+from spycci.systems import System
 from spycci.functions.fukui import calculate_fukui, CubeGrids
 from os.path import dirname, abspath
 from numpy.testing import assert_array_almost_equal
