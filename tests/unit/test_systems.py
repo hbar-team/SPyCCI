@@ -468,6 +468,9 @@ def test_System_clearing_geometry_coordinates_setter():
         mol.properties.electronic_energy == None
     ), "Properties not cleared after molecular geometry changed"
 
+#####################################################################################################
+#                    TESTS RELATED TO RDKIT INTERFACE AND CONNECTIVITY ROUTINES                     #
+#####################################################################################################
 
 def test_System_connectivity_simple():
 
@@ -599,6 +602,55 @@ def test_System_connectivity_carbene():
         [0.0, 1.0, 1.0],
         [1.0, 0.0, 0.0],
         [1.0, 0.0, 0.0],
+    ]
+
+    assert_array_almost_equal(adj, expected_adj, decimal=6)
+    assert_array_almost_equal(bt, expected_bt, decimal=6)
+
+
+def test_System_connectivity_fragments():
+
+    geom = MolecularGeometry()
+    geom.append("C", [-4.21089,  1.17290, 0.00000])
+    geom.append("O", [-3.80998,  0.01973, 0.00000])
+    geom.append("O", [-3.38675,  2.23147, 0.00000])
+    geom.append("H", [-2.45844,  1.87823, 0.00000])
+    geom.append("O", [-1.07460,  1.00027, 0.00000])
+    geom.append("C", [-0.67368, -0.15290, 0.00000])
+    geom.append("O", [-1.49782, -1.21147, 0.00000])
+    geom.append("H", [ 0.37934, -0.47119, 0.00000])
+    geom.append("H", [-2.42614, -0.85823, 0.00000])
+    geom.append("H", [-5.26392,  1.49119, 0.00000])
+
+    mol = System("dimer", geom)
+
+    adj = mol.adjacency_matrix
+    bt = mol.bond_type_matrix
+
+    expected_adj = [
+        [0, 1, 1, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [1, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+        [0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+        [0, 0, 0, 0, 1, 0, 1, 1, 0, 0],
+        [0, 0, 0, 0, 0, 1, 0, 0, 1, 0],
+        [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ]
+
+    expected_bt = [
+        [0., 2., 1., 0., 0., 0., 0., 0., 0., 1.,],
+        [2., 0., 0., 0., 0., 0., 0., 0., 0., 0.,],
+        [1., 0., 0., 1., 0., 0., 0., 0., 0., 0.,],
+        [0., 0., 1., 0., 0., 0., 0., 0., 0., 0.,],
+        [0., 0., 0., 0., 0., 2., 0., 0., 0., 0.,],
+        [0., 0., 0., 0., 2., 0., 1., 1., 0., 0.,],
+        [0., 0., 0., 0., 0., 1., 0., 0., 1., 0.,],
+        [0., 0., 0., 0., 0., 1., 0., 0., 0., 0.,],
+        [0., 0., 0., 0., 0., 0., 1., 0., 0., 0.,],
+        [1., 0., 0., 0., 0., 0., 0., 0., 0., 0.,],
     ]
 
     assert_array_almost_equal(adj, expected_adj, decimal=6)
