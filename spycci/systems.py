@@ -1,21 +1,32 @@
 from __future__ import annotations
 
-import os, json, sh, shutil, math
+import os, json
 import numpy as np
 import logging
 
 from typing import List, Generator, Optional, Union
 from copy import deepcopy
-from tempfile import mkdtemp
+from os.path import isfile
 
-from spycci.constants import kB
+from spycci.constants import kB, atoms_dict
 from spycci.config import __JSON_VERSION__
-from spycci.core.base import Engine
 from spycci.core.geometry import MolecularGeometry
 from spycci.core.properties import Properties
 
-from rdkit.Chem import Mol, Atom, Bond, MolFromXYZFile, GetAdjacencyMatrix
 from rdkit.Chem.rdDetermineBonds import DetermineBonds
+
+from rdkit.Chem import (
+    Mol,
+    RWMol,
+    Atom,
+    Conformer,
+    Bond,
+    GetAdjacencyMatrix,
+    SDWriter,
+    SDMolSupplier,
+    SanitizeMol,
+    SanitizeFlags,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -212,7 +223,109 @@ class System:
 
         obj = System(name, geometry, charge=charge, spin=spin, box_side=box_side)
         return obj
-               
+    
+
+    @classmethod
+    def from_sdf(
+        cls,
+        path:str,
+        index: int = 0,
+        name: Optional[str] = None,
+        charge: Union[int, None] = 0,
+        spin: int = 1,
+        box_side: Optional[float] = None,
+    ) -> System:
+        """
+        The function returns a fully initialized `System` object from an `.sdf` molecular file.
+        The function reads an `.sdf` file and extracts atom symbols and 3D coordinates using the
+        `rdkit.Chem.SDMolSupplier` class. If the `.sdf` file encodes the structure of more than
+        one entry, an `index` can be specified to select the molecule to be loaded (by default,
+        if no index is specified, the function loads the first structure in the file). Similarly to
+        other `classmethods` of the `System` class, charge and spin multiplicity can be set manually
+        by the user using the arguments `charge` and `spin`. If no explicit arguments are provided
+        the system is created as neutral (`charge = 0`) and in a singlet state (`spin = 0`). Beside
+        this "standard" mode of operation, the user can also set the `charge` to `None`. This will
+        trigger the automatic determination of the charge from the `.sdf` file. In this mode, the
+        charge of the system will be set as the sum of the formal charges of the molecule (Please
+        notice how the formal charges MUST be encoded in the `M CHG` format).
+
+        Arguments
+        ----------
+        path : str
+            The path of the `.sdf` file.
+        index : int
+            In `.sdf` files econding more than one molecule, the index of the molecule to load (default: 0)
+        name : Optional[str]
+            The name of the system. I set to `None` will adopt the name of the `.sdf` file by removing the
+            file extensions.
+        charge : Union[int, None]
+            The total charge of the system. If set to `None` will set the system charge as the sum
+            of formal charges encoded in the `.sdf` file. (default: 0 neutral)
+        spin : int
+            The total spin multiplicity of the system. (default: 1 singlet)
+        box_side : Optional[float]
+            For periodic systems, defines the length (in Å) of the box side (default: None).
+        
+        Raises
+        ------
+        FileNotFoundError
+            Exception raised if the file specified by the user cannot be found.
+        RuntimeError
+            Exception raised if an error is encountered while reading the molecule from the `.sdf` file
+            or if the provided index is not valid for the provided file (index out of bounds).
+        
+        Returns
+        -------
+        System
+            The `System` object containing the coordinates encoded in the `.sdf` file
+        """
+        # Check if the given path points to a valid file
+        if not isfile(path):
+            raise FileNotFoundError(f"The path {path} does not point to a valid `.sdf` file.")
+        
+        # If not explicitly provided, define the name of the system based on the `.sdf` filename
+        if name is None:
+            name = os.path.basename(path).split(".")[0]
+        
+        # Read the `.sdf` file using the `SDMolSupplier` and obtain the molecule at the provided index
+        sdfsupplier = SDMolSupplier(path, removeHs=False)
+
+        if len(sdfsupplier) == 0:
+            raise RuntimeError(f"The file '{path}' contains no valid SDF molecular data.")
+
+        if index >= len(sdfsupplier):
+            raise RuntimeError(f"Index out of bounds: the `.sdf` file contains only {len(sdfsupplier)} entries (index {index} was requested).")
+        
+        mol: Mol = sdfsupplier[index]
+
+        if mol is None:
+            raise RuntimeError(f"Could not read a valid molecule from '{path}' using the index '{index}'.")
+
+        # Get the first conformer form the RDKit Mol object
+        conformer: Conformer = mol.GetConformer(id=0)
+
+        # Obtain rdkit atom list from RDKit Mol object and extact atom symbols
+        rdkit_atoms : List[Atom] = [a for a in mol.GetAtoms()]
+        atoms: List[str] = [atom.GetSymbol() for atom in rdkit_atoms]
+
+        # Create an empty molecular geometry object and append all the atoms and coordinates
+        geometry = MolecularGeometry()
+        for i, atom in enumerate(atoms):
+            coords = [float(x) for x in conformer.GetAtomPosition(i)]
+            geometry.append(atom, coords)
+
+        # If the charge and spin multiplicity are set use them directly
+        if charge is not None:
+            obj = System(name, geometry, charge=charge, spin=spin, box_side=box_side)
+        
+        # If charge are set to `None` use the sum of formal charges to set the final system charge
+        else:
+            formal_charges = [atom.GetFormalCharge() for atom in rdkit_atoms]
+            total_charge = sum(formal_charges)
+            obj = System(name, geometry, charge=total_charge, spin=spin, box_side=box_side)
+
+        return obj
+
 
     def save_json(self, path: str) -> None:
         """
@@ -237,6 +350,27 @@ class System:
 
         with open(path, "w") as jsonfile:
             json.dump(data, jsonfile)
+    
+
+    def save_sdf(self, path: str) -> None:
+        """
+        Saves the current molecular representation to an SDF file.
+
+        The method internally generates an `rdkit.Chem.Mol` object from the stored data and 
+        uses `rdkit.Chem.SDWriter` to generate the output file. Connectivity data is generated
+        heuristically (please read the documentation before using the generated SDF file).
+
+        Parameters
+        ----------
+        path : str
+            The full path to the output SDF file. If the file already exists, it
+            will be overwritten.
+        """
+        mol = self.__generate_mol()
+        writer = SDWriter(path)
+        writer.write(mol)
+        writer.close()
+
 
     @property
     def geometry(self) -> MolecularGeometry:
@@ -562,11 +696,10 @@ class System:
         will be set to one, otherwise zero.
 
         The matrix is internally obtained using RDKit that, in turn, applies heuristic rules for connectivity
-        determination. To allow the function to work with open-shell systems, conversion to an hypotetical
-        singlet state (reducing charge for cations, increasing for anions) is automatically applied. USE THE
-        MATRIX WITH CARE expecially for metal complexes, open-shell system or unusual hypervalent states since
-        the generated matrix MAY BE INCORRECT. PLEASE USE QUANTUM CHEMICALLY DERIVED BOND ORDERS IF EXACT
-        BONDING SCHEME IS NEEDED.
+        determination (see documentation). USE THEMATRIX WITH CARE expecially for metal complexes, open-shell
+        system or unusual hypervalent states since the generated matrix MAY BE INCORRECT.
+        
+        PLEASE USE QUANTUM CHEMICALLY DERIVED BOND ORDERS IF EXACT BONDING SCHEME IS NEEDED.
 
         Returns
         -------
@@ -592,11 +725,11 @@ class System:
         do NOT correspond to quantum-chemically derived bond indices (e.g., Wiberg or Mayer bond orders).
         
         The matrix is internally generated using the adjacency matrix and bond types generated by RDKit
-        that, in turn, applies heuristic rules for connectivity determination. To allow the function to work
-        with open-shell systems, conversion to an hypotetical singlet state (reducing charge for cations,
-        increasing for anions) is automatically applied. USE THE MATRIX WITH CARE expecially for metal
-        complexes, open-shell system or unusual hypervalent states since the generated matrix MAY BE 
-        INCORRECT. PLEASE USE QUANTUM CHEMICALLY DERIVED BOND ORDERS IF EXACT BONDING SCHEME IS NEEDED.
+        that, in turn, applies heuristic rules for connectivity determination (see documentation).
+        USE THEMATRIX WITH CARE expecially for metal complexes, open-shell system or unusual hypervalent
+        states since the generated matrix MAY BE INCORRECT.
+        
+        PLEASE USE QUANTUM CHEMICALLY DERIVED BOND ORDERS IF EXACT BONDING SCHEME IS NEEDED
 
         Returns
         -------
@@ -646,43 +779,120 @@ class System:
             if level_of_theory != self.geometry.level_of_theory_geometry:
                 raise RuntimeError("Mismatch between the user-provided level of theory and the one used to set geometry")
 
-    def __generate_mol(self) -> Mol:
+    def __generate_mol(self, catch_errors: bool = True) -> Mol:
         """
-        Generates `rdkit.Chem.Mol` object from the stored molecular geometry and system charge.
-        Connectivity is automatically generated using the `rdkit.Chem.rdDetermineBonds.DetermineBonds`
-        function. In the case of systems with unpaired electrons, the bond determination is run
-        considering a corrected charge value obtained by adding or removing a number of electron
-        sufficient to bring the molecule to an hypotetical singlet state. Beware that the generated
-        `Mol` object will NOT take into account spin.
+        Generates an `rdkit.Chem.Mol` object from the stored molecular geometry, system charge, and spin.
+        The connectivity is automatically assigned using `rdkit.Chem.rdDetermineBonds.DetermineBonds`. For
+        closed-shell systems (spin = 1), bonds are determined directly using the system charge. For open-shell
+        systems (spin > 1), a heuristic approach is used: the bond determination may temporarily adjust the
+        total charge of the system by adding or removing electrons to create a hypothetical singlet (closed-shell) 
+        configuration. The obtained connectivity is then copied back to the original molecule, and radical electrons
+        and formal charges are assigned and sanitized using the `SANITIZE_PROPERTIES` and `SANITIZE_FINDRADICALS`
+        options. Implicit hydrogens are not added by default, so radical sites and hydrogen counts are explicit. 
+
+        BEWARE that this function is highly experimental and can fail with open-shell systems or non-standard
+        valences. The user MUST carefully review the function output.
+
+        Arguments
+        ---------
+        catch_errors: bool
+            If set to `True` (default), will not rise an exception if sanitization fails due to non-standard
+            valences. If `False` exception is raised.
 
         Returns
         -------
         rdkit.Chem.Mol
-            The `Mol` object of the RDKit library representing the molecular object.
+            An RDKit `Mol` object representing the molecule with explicit hydrogens, 
+            connectivity, formal charges, and radical electrons (if any).
         """
-        mol = None
-        tdir = mkdtemp(prefix="RDKitWorkdir_", suffix=f"_MolGen", dir=os.getcwd() )
+        logger.info(f"Generating RDKit Mol object from {self.name} system (charge: {self.charge}, spin: {self.spin})")
+        rwmol = RWMol()
 
-        with sh.pushd(tdir):
+        atomic_numbers = {a: i for i, a in atoms_dict.items()}
 
-            try:
-                self.geometry.write_xyz(f"molecule.xyz")
-                raw_mol = MolFromXYZFile("molecule.xyz")
-                mol = Mol(raw_mol)
-            
-            finally:
-                shutil.rmtree(tdir)
+        for atom in self.geometry.atoms:
+            rd_atom = Atom(atomic_numbers[atom])
+            rd_atom.SetNoImplicit(True)
+            rwmol.AddAtom(rd_atom)
 
-        if mol is None:
-            raise RuntimeError("The conversion from XYZ to RDKit Mol has failed.")
+        mol = rwmol.GetMol()
+
+        conf = Conformer(self.geometry.atomcount)
+        for i, coords in enumerate(self.geometry.coordinates):
+            conf.SetAtomPosition(i, coords)
+
+        mol.AddConformer(conf, assignId=True)
 
         if self.spin == 1:
+            logger.debug("System is closed-shell: running connectivity determination as is.")
             DetermineBonds(mol, charge=self.charge, embedChiral=True, allowChargedFragments=True)
+
         else:
-            # Adjust charge to a hypothetical singlet state: reduce charge for cations, increase for anions
-            newcharge = (self.charge - (self.spin - 1)) if self.charge>=0 else (self.charge + (self.spin - 1))
-            logger.info(f"Charge correction (from {self.charge} to {newcharge}) has been applied to generate heuristic connectivity in open shell system {self.name} (S={self.spin})")
-            DetermineBonds(mol, charge=newcharge, embedChiral=True, allowChargedFragments=True)
+            logger.debug("System is open-shell: running heuristic connectivity determination.")
+
+            try:
+                # Try to assign connectivity as a closed-shell system: useful for excited electronic
+                # states where the electron count is not different from the non-excited system.
+                logger.debug("-> Trying: direct connectivity assignmet")
+                newmol = deepcopy(mol)
+                DetermineBonds(newmol, charge=self.charge, embedChiral=True, allowChargedFragments=True)
+                mol = newmol
+
+            except:
+                # Try to assign connectivity using a new system where the charge is shifted to generate
+                # an hypotetical singlet system: useful for radicals
+                try:
+                    # Try shifting the charge by removing electrons (useful for free radical and radical anions)
+                    newmol = deepcopy(mol)
+                    newcharge = self.charge + (self.spin - 1)
+                    logger.debug(f"-> Fallback: running connectivity assignmet shifting charge upward (new charge: {newcharge})")
+                    DetermineBonds(newmol, charge=newcharge, embedChiral=True, allowChargedFragments=True)
+
+                except:
+                    # Try shifting the charge by removing electrons (useful for radical cations)
+                    newmol = deepcopy(mol)
+                    newcharge = self.charge - (self.spin - 1)
+                    logger.debug(f"-> Fallback: running connectivity assignmet shifting charge downward (new charge: {newcharge})")
+                    DetermineBonds(newmol, charge=newcharge, embedChiral=True, allowChargedFragments=True)
+
+                logger.debug("-> Connectivity assignment was succesful.")
+
+                # Copy obtained connectivity to the original `mol` object
+                bond: Bond = None
+                tmp_rwmol = RWMol(mol)
+
+                for bond in newmol.GetBonds():
+                    tmp_rwmol.AddBond(bond.GetBeginAtomIdx(), bond.GetEndAtomIdx(), bond.GetBondType())
+
+                mol = tmp_rwmol.GetMol()
+
+                # Sanitize the molecule setting charges and radicals
+                SanitizeMol(
+                    mol,
+                    sanitizeOps=SanitizeFlags.SANITIZE_PROPERTIES | SanitizeFlags.SANITIZE_FINDRADICALS,
+                    catchErrors=catch_errors
+                )
+
+        # Check the number of unpaired electrons and warn the user if something looks strange
+        unpaired_electrons = [atom.GetNumRadicalElectrons() for atom in mol.GetAtoms()]
+        if self.spin == 1:
+
+            if sum(unpaired_electrons) % 2 != 0:
+                logger.warning("An odd number of radical electrons has been assigned in singlet system.")
+            
+            else:
+                for i, s in enumerate(unpaired_electrons):
+                    if s == 2:
+                        logger.warning(f"{s} unpaired electrons assigned to site {i} (possibly a carbene)")
+                    elif s > 0:
+                        logger.warning(f"Non-zero ({s}) unpaired electron assigned to site {i} in a singlet system")
+        
+        else:
+            if all([s == 0 for s in unpaired_electrons]):
+                logger.warning("None of the atoms in the generated Mol object have radical electrons.")
+            
+            elif sum(unpaired_electrons) != self.spin-1:
+                logger.warning("The sum of unpaired electrons is different from the one expected from spin multiplicity.")
 
         return mol
     
