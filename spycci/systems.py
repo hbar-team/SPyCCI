@@ -805,7 +805,7 @@ class System:
             An RDKit `Mol` object representing the molecule with explicit hydrogens, 
             connectivity, formal charges, and radical electrons (if any).
         """
-        logger.info(f"Generating RDKit Mol object from {self.name} system (charge: {self.charge}, spin: {self.spin})")
+        logger.info(f"Generating RDKit Mol object from '{self.name}' system (charge: {self.charge}, spin: {self.spin})")
         rwmol = RWMol()
 
         atomic_numbers = {a: i for i, a in atoms_dict.items()}
@@ -883,13 +883,16 @@ class System:
             else:
                 for i, s in enumerate(unpaired_electrons):
                     if s == 2:
-                        logger.warning(f"{s} unpaired electrons assigned to site {i} (possibly a carbene)")
+                        logger.info(f"{s} unpaired electrons assigned to site {i} in singlet system: converting carbene to singlet")                       
+                        carbene_atom = mol.GetAtomWithIdx(i)
+                        carbene_atom.SetNumRadicalElectrons(0)
+
                     elif s > 0:
-                        logger.warning(f"Non-zero ({s}) unpaired electron assigned to site {i} in a singlet system")
+                        logger.info(f"Non-zero ({s}) unpaired electron assigned to site {i} in a singlet system")
         
         else:
             if all([s == 0 for s in unpaired_electrons]):
-                logger.warning("None of the atoms in the generated Mol object have radical electrons.")
+                logger.warning("None of the atoms in the generated Mol object have radical electrons even if the system is open-shell.")
             
             elif sum(unpaired_electrons) != self.spin-1:
                 logger.warning("The sum of unpaired electrons is different from the one expected from spin multiplicity.")
