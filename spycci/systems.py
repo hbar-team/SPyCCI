@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import os, json
+import os, json, math
 import numpy as np
 import logging
 
@@ -814,6 +814,30 @@ class System:
             rd_atom = Atom(atomic_numbers[atom])
             rd_atom.SetNoImplicit(True)
             rwmol.AddAtom(rd_atom)
+        
+        spin_populations = self.properties.mulliken_spin_populations
+        if spin_populations is not None and self.spin>1:
+            logger.debug("- Spin populations available: Using spin populations to help in radical site determination.")
+
+            ordered = [(i, s) for i, s in enumerate(spin_populations)]
+            ordered.sort(key=lambda x: x[1], reverse=True)
+
+            radicals = [0 for _ in range(self.geometry.atomcount)]
+            for i, s in ordered:
+                radicals[i] = math.ceil(s)
+
+                if sum(radicals) + 1 > self.spin:
+                    radicals[i] -= sum(radicals) + 1 - self.spin
+                
+                if sum(radicals) + 1 == self.spin:
+                    break
+            
+            logger.debug(f"    -> Radicals assignment: {radicals}")
+
+            for i, s in enumerate(radicals):
+                if s>0:
+                    atom = rwmol.GetAtomWithIdx(i)
+                    atom.SetNumRadicalElectrons(s)
 
         mol = rwmol.GetMol()
 
@@ -824,54 +848,49 @@ class System:
         mol.AddConformer(conf, assignId=True)
 
         if self.spin == 1:
-            logger.debug("System is closed-shell: running connectivity determination as is.")
+            logger.debug("- System is closed-shell: running connectivity determination as is.")
             DetermineBonds(mol, charge=self.charge, embedChiral=True, allowChargedFragments=True)
 
         else:
-            logger.debug("System is open-shell: running heuristic connectivity determination.")
-
-            try:
-                # Try to assign connectivity as a closed-shell system: useful for excited electronic
-                # states where the electron count is not different from the non-excited system.
-                logger.debug("-> Trying: direct connectivity assignmet")
-                newmol = deepcopy(mol)
-                DetermineBonds(newmol, charge=self.charge, embedChiral=True, allowChargedFragments=True)
-                mol = newmol
-
-            except:
-                # Try to assign connectivity using a new system where the charge is shifted to generate
-                # an hypotetical singlet system: useful for radicals
+            newmol: Mol = None
+            logger.debug("- System is open-shell: running heuristic connectivity determination by charge shift.")
+            
+            for charge_shift in [0, self.spin - 1, -(self.spin - 1)]:
+                
                 try:
-                    # Try shifting the charge by removing electrons (useful for free radical and radical anions)
                     newmol = deepcopy(mol)
-                    newcharge = self.charge + (self.spin - 1)
-                    logger.debug(f"-> Fallback: running connectivity assignmet shifting charge upward (new charge: {newcharge})")
+                    newcharge = self.charge + charge_shift
+                    logger.debug(f"- Trying : connectivity assignmet with charge: {newcharge}")
                     DetermineBonds(newmol, charge=newcharge, embedChiral=True, allowChargedFragments=True)
-
+                
                 except:
-                    # Try shifting the charge by removing electrons (useful for radical cations)
-                    newmol = deepcopy(mol)
-                    newcharge = self.charge - (self.spin - 1)
-                    logger.debug(f"-> Fallback: running connectivity assignmet shifting charge downward (new charge: {newcharge})")
-                    DetermineBonds(newmol, charge=newcharge, embedChiral=True, allowChargedFragments=True)
+                    logger.debug("    -> Connectivity assignment FAILED")
+                    continue
 
-                logger.debug("-> Connectivity assignment was succesful.")
+                else:
+                    logger.debug("    -> Connectivity assignment SUCCESS")
+                    break
+            
+            else:
+                msg = f"Connectivity assignment failed for open-shell system `{self.name}`"
+                logger.error(msg)
+                raise RuntimeError(msg)
 
-                # Copy obtained connectivity to the original `mol` object
-                bond: Bond = None
-                tmp_rwmol = RWMol(mol)
+            # Copy obtained connectivity to the original `mol` object
+            bond: Bond = None
+            tmp_rwmol = RWMol(mol)
 
-                for bond in newmol.GetBonds():
-                    tmp_rwmol.AddBond(bond.GetBeginAtomIdx(), bond.GetEndAtomIdx(), bond.GetBondType())
+            for bond in newmol.GetBonds():
+                tmp_rwmol.AddBond(bond.GetBeginAtomIdx(), bond.GetEndAtomIdx(), bond.GetBondType())
 
-                mol = tmp_rwmol.GetMol()
+            mol = tmp_rwmol.GetMol()
 
-                # Sanitize the molecule setting charges and radicals
-                SanitizeMol(
-                    mol,
-                    sanitizeOps=SanitizeFlags.SANITIZE_PROPERTIES | SanitizeFlags.SANITIZE_FINDRADICALS,
-                    catchErrors=catch_errors
-                )
+            # Sanitize the molecule setting charges and radicals
+            SanitizeMol(
+                mol,
+                sanitizeOps=SanitizeFlags.SANITIZE_PROPERTIES | SanitizeFlags.SANITIZE_FINDRADICALS,
+                catchErrors=catch_errors
+            )
 
         # Check the number of unpaired electrons and warn the user if something looks strange
         unpaired_electrons = [atom.GetNumRadicalElectrons() for atom in mol.GetAtoms()]
