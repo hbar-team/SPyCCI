@@ -31,7 +31,6 @@ from rdkit.Chem import (
 
 logger = logging.getLogger(__name__)
 
-
 class System:
     """
     The System object describes a generic molecular system described at a given level of
@@ -828,7 +827,7 @@ class System:
         # If Mulliken spin populations are available, use them to set the position of radicals
         radicals = [0 for _ in range(self.geometry.atomcount)]
         spin_populations = self.properties.mulliken_spin_populations
-        if spin_populations is not None and self.spin>1:
+        if spin_populations != [] and self.spin>1:
             logger.debug("- Mulliken spin populations available: Using spin populations to help in radical site determination.")
 
             ordered = [(i, s) for i, s in enumerate(spin_populations)]
@@ -923,107 +922,143 @@ class System:
             
             # If no radical was set (with spin populations), directly convert to `Mol` object
             if sum(radicals) == 0:
+                logger.debug("- Success: Radical assignment not found, using RDKit to find radicals.")
+                
                 mol = tmp_rwmol.GetMol()
 
-            # If radicals were set (with spin populations) check if they are compatible with singlet connectivity
-            else:
-                
-                logger.debug("Radical assignment FOUND: checking compatibility with singlet-based connectivity.")
-
-                # Create a copy of the temporary read-write `Mol` object and sanitize it.
-                sanitized_mol = tmp_rwmol.GetMol()
-
+                # Sanitize the molecule setting charges and radicals
                 SanitizeMol(
-                    sanitized_mol,
+                    mol,
                     sanitizeOps=SanitizeFlags.SANITIZE_PROPERTIES | SanitizeFlags.SANITIZE_FINDRADICALS,
                     catchErrors=catch_errors
                 )
 
-                # Check if the originally set radicals have been removed
-                radical_cleared = False
-                for i, nrad in enumerate(radicals):
-                    sanitized_atom = sanitized_mol.GetAtomWithIdx(i)
-                    sanitized_spin = sanitized_atom.GetNumRadicalElectrons()
-                    if sanitized_spin < nrad:
-                        radical_cleared = True
-                        break
+            # If radicals were set (with spin populations) check if they are compatible with singlet connectivity
+            else:
+                logger.debug("- Radical assignment FOUND:")
+                logger.debug("    -> Checking if system is compatible with direct copy and PROPERTIES sanitization.")
+
+                sanitized_mol = tmp_rwmol.GetMol()
                 
-                # If the radicals have been maintained, simply copy the molecule
-                if radical_cleared is False:
-                    logger.debug("    -> Singlet-based connectivity is VALID")
+                SanitizeMol(
+                    sanitized_mol,
+                    sanitizeOps=SanitizeFlags.SANITIZE_PROPERTIES,
+                    catchErrors=catch_errors
+                )
+
+                charge, spin = 0, 0
+                for atom in sanitized_mol.GetAtoms():
+                    charge += atom.GetFormalCharge()
+                    spin += atom.GetNumRadicalElectrons()
+
+                if charge == self.charge and spin + 1 == self.spin:
+                    logger.debug("- Success: Directly adopting singlet connectivity with radical assignment.")
                     mol = sanitized_mol
                 
-                # If radicals would be cleared by sanitization, try to adjust the bond order of the radical site
                 else:
-                    logger.debug("    -> Singlet-based connectivity is INVALID")
+                    logger.debug("    -> Checking compatibility with singlet-based connectivity.")
 
-                    # If one of the radicals is set on an aromatic system kekulize the singlet geometry
-                    if radical_on_aromatic is True:
-                        logger.debug("        * Radical found on aromatic system: KEKULIZING")
+                    # Create a copy of the temporary read-write `Mol` object and sanitize it.
+                    sanitized_mol = tmp_rwmol.GetMol()
 
-                        # Kekulize the singlet geometry
-                        SanitizeMol(
-                            newmol,
-                            sanitizeOps=SanitizeFlags.SANITIZE_KEKULIZE,
-                            #catchErrors=catch_errors
-                        )
+                    SanitizeMol(
+                        sanitized_mol,
+                        sanitizeOps=SanitizeFlags.SANITIZE_PROPERTIES | SanitizeFlags.SANITIZE_FINDRADICALS,
+                        catchErrors=catch_errors
+                    )
 
-                        # Copy the new kekulized connectivity to the temporary read-write `Mol` object  
-                        tmp_rwmol = RWMol(mol)
-                        for bond in newmol.GetBonds():
-                            tmp_rwmol.AddBond(bond.GetBeginAtomIdx(), bond.GetEndAtomIdx(), bond.GetBondType())
-
-                    # Adjust the connectivity of the radical site by breaking multiple bonds and setting charges
-                    for i, s in enumerate(radicals):
-                        
-                        if s==0:
-                            continue
-                        
-                        atom: Atom = tmp_rwmol.GetAtomWithIdx(i)
-                        current_charge = sum(atom.GetFormalCharge() for atom in tmp_rwmol.GetAtoms())
-                        
-                        for bond in atom.GetBonds():
-                            bt = bond.GetBondType()
-
-                            idx = bond.GetBeginAtomIdx() if bond.GetBeginAtomIdx() != i else bond.GetEndAtomIdx()
-                            other = tmp_rwmol.GetAtomWithIdx(idx)
-                            other_charge = other.GetFormalCharge()
-                            other_charge += 1 if current_charge < self.charge else -1
-
-                            if bt == BondType.TRIPLE:
-                                bond.SetBondType(BondType.DOUBLE)
-                                other.SetFormalCharge(other_charge)
-                                break
-                            
-                            elif bt == BondType.DOUBLE:
-                                bond.SetBondType(BondType.SINGLE)
-                                other.SetFormalCharge(other_charge)
-                                break
-                            
-                            elif bt == BondType.AROMATIC:
-                                msg = f"Bond type AROMATIC detected on site ({i}) after kekulization."
-                                logger.error(msg)
-                                raise RuntimeError(msg)
+                    # Check if the originally set radicals have been removed and which are affected
+                    affected_radicals = [False for _ in radicals]
+                    for i, nrad in enumerate(radicals):
+                        sanitized_atom = sanitized_mol.GetAtomWithIdx(i)
+                        sanitized_spin = sanitized_atom.GetNumRadicalElectrons()
+                        if sanitized_spin < nrad:
+                            affected_radicals[i] = True
                     
-                    # Convert to `Mol` object
-                    mol = tmp_rwmol.GetMol()           
+                    # If the radicals have been maintained, simply copy the molecule
+                    if all([b is False for b in affected_radicals]):
+                        logger.debug("- Success: Singlet-based connectivity is VALID.")
+                        mol = sanitized_mol
+                    
+                    # If radicals would be cleared by sanitization, try to adjust the bond order of the radical site
+                    else:
+                        logger.debug("- Failed: Singlet-based connectivity is INVALID.")
+                        
+                        affected_sites = [i for i, b in enumerate(affected_radicals) if b is True]
+                        logger.debug(f"    -> Affected sites: {affected_sites}")
 
-            # Sanitize the molecule setting charges and radicals
-            SanitizeMol(
-                mol,
-                sanitizeOps=SanitizeFlags.SANITIZE_PROPERTIES | SanitizeFlags.SANITIZE_FINDRADICALS,
-                catchErrors=catch_errors
-            )
+                        logger.debug("- Trying: Adjusting connectivity around affected radical sites.")
+
+                        # If one of the radicals is set on an aromatic system kekulize the singlet geometry
+                        if radical_on_aromatic is True:
+                            logger.debug("        * Radical found on aromatic system: KEKULIZING")
+
+                            # Kekulize the singlet geometry
+                            SanitizeMol(
+                                newmol,
+                                sanitizeOps=SanitizeFlags.SANITIZE_KEKULIZE,
+                                #catchErrors=catch_errors
+                            )
+
+                            # Copy the new kekulized connectivity to the temporary read-write `Mol` object  
+                            tmp_rwmol = RWMol(mol)
+                            for bond in newmol.GetBonds():
+                                tmp_rwmol.AddBond(bond.GetBeginAtomIdx(), bond.GetEndAtomIdx(), bond.GetBondType())
+
+                        # Adjust the connectivity of the radical site by breaking multiple bonds and setting charges
+                        for i, b in enumerate(affected_radicals):
+
+                            if b is False:
+                                continue
+                            
+                            atom: Atom = tmp_rwmol.GetAtomWithIdx(i)
+                            current_charge = sum(a.GetFormalCharge() for a in tmp_rwmol.GetAtoms())
+                            
+                            for bond in atom.GetBonds():
+                                bt = bond.GetBondType()
+
+                                idx = bond.GetBeginAtomIdx() if bond.GetBeginAtomIdx() != i else bond.GetEndAtomIdx()
+                                other = tmp_rwmol.GetAtomWithIdx(idx)
+                                other_charge = other.GetFormalCharge()
+                                other_charge += 1 if current_charge < self.charge else -1
+
+                                if bt == BondType.TRIPLE:
+                                    bond.SetBondType(BondType.DOUBLE)
+                                    other.SetFormalCharge(other_charge)
+                                    logger.debug(f"        * Radical site {i}: changing bond with atom {idx} from TRIPLE to DOUBLE.")
+                                    break
+                                
+                                elif bt == BondType.DOUBLE:
+                                    bond.SetBondType(BondType.SINGLE)
+                                    other.SetFormalCharge(other_charge)
+                                    logger.debug(f"        * Radical site {i}: changing bond with atom {idx} from DOUBLE to SINGLE.")
+                                    break
+                                
+                                elif bt == BondType.AROMATIC:
+                                    msg = f"Bond type AROMATIC detected on site ({i}) after kekulization."
+                                    logger.error(msg)
+                                    raise RuntimeError(msg)
+                        
+                        # Convert to `Mol` object
+                        mol = tmp_rwmol.GetMol()
+
+                    # Sanitize the molecule setting charges and radicals
+                    SanitizeMol(
+                        mol,
+                        sanitizeOps=SanitizeFlags.SANITIZE_PROPERTIES | SanitizeFlags.SANITIZE_FINDRADICALS,
+                        catchErrors=catch_errors
+                    )
 
         # Check the number of unpaired electrons and warn the user if something looks strange
-        unpaired_electrons = [atom.GetNumRadicalElectrons() for atom in mol.GetAtoms()]
+        radical_electrons = [atom.GetNumRadicalElectrons() for atom in mol.GetAtoms()]
+        num_radicals = sum(radical_electrons)
         if self.spin == 1:
 
-            if sum(unpaired_electrons) % 2 != 0:
+            if num_radicals % 2 != 0:
                 logger.warning("An odd number of radical electrons has been assigned in singlet system.")
             
             else:
-                for i, s in enumerate(unpaired_electrons):
+                for i, s in enumerate(radical_electrons):
                     if s == 2:
                         logger.info(f"{s} unpaired electrons assigned to site {i} in singlet system: converting carbene to singlet")                       
                         carbene_atom = mol.GetAtomWithIdx(i)
@@ -1033,13 +1068,13 @@ class System:
                         logger.info(f"Non-zero ({s}) unpaired electron assigned to site {i} in a singlet system")
         
         else:
-            if all([s == 0 for s in unpaired_electrons]):
+            if all([s == 0 for s in radical_electrons]):
                 msg = "None of the atoms in the generated `Mol` object have radical electrons even if the system is open-shell."
                 logger.error(msg)
                 raise RuntimeError(msg)
             
-            elif sum(unpaired_electrons) != self.spin-1:
-                msg = "The sum of unpaired electrons is different from the one expected from spin multiplicity."
+            elif num_radicals != self.spin-1:
+                msg = f"The sum of unpaired electrons ({num_radicals}) is different from the one ({self.spin-1}) expected from spin multiplicity."
                 logger.error(msg)
                 raise RuntimeError(msg)
         
