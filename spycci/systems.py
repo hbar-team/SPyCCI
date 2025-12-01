@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import os, json, math
+import os, json
 import numpy as np
 import logging
 
@@ -8,26 +8,12 @@ from typing import List, Generator, Optional, Union
 from copy import deepcopy
 from os.path import isfile
 
-from spycci.constants import kB, atoms_dict
+from spycci.constants import kB
 from spycci.config import __JSON_VERSION__
 from spycci.core.geometry import MolecularGeometry
 from spycci.core.properties import Properties
 
-from rdkit.Chem.rdDetermineBonds import DetermineBonds
-
-from rdkit.Chem import (
-    Mol,
-    RWMol,
-    Atom,
-    Conformer,
-    Bond,
-    GetAdjacencyMatrix,
-    SDWriter,
-    SDMolSupplier,
-    SanitizeMol,
-    SanitizeFlags,
-    BondType
-)
+from rdkit.Chem import rdchem, rdmolfiles
 
 logger = logging.getLogger(__name__)
 
@@ -78,9 +64,6 @@ class System:
         self.__properties: Properties = Properties()
         self.__properties._Properties__add_check_geometry_level_of_theory(self.__check_geometry_level_of_theory)   # Set listener in Properties class using mangled name
 
-        self.__adjacency_matrix: Optional[np.ndarray] = None
-        self.__bond_type_matrix: Optional[np.ndarray] = None
-
         self.flags: list = []
         logger.debug(f"CREATED: System object '{self.name}' at ID: {hex(id(self))}.")
     
@@ -120,6 +103,7 @@ class System:
 
         obj = System(name, geometry, charge=charge, spin=spin, box_side=box_side)
         return obj
+        
         
     @classmethod
     def from_json(cls, path: str) -> System:
@@ -288,7 +272,7 @@ class System:
             name = os.path.basename(path).split(".")[0]
         
         # Read the `.sdf` file using the `SDMolSupplier` and obtain the molecule at the provided index
-        sdfsupplier = SDMolSupplier(path, removeHs=False)
+        sdfsupplier = rdmolfiles.SDMolSupplier(path, removeHs=False)
 
         if len(sdfsupplier) == 0:
             raise RuntimeError(f"The file '{path}' contains no valid SDF molecular data.")
@@ -296,16 +280,16 @@ class System:
         if index >= len(sdfsupplier):
             raise RuntimeError(f"Index out of bounds: the `.sdf` file contains only {len(sdfsupplier)} entries (index {index} was requested).")
         
-        mol: Mol = sdfsupplier[index]
+        mol: rdchem.Mol = sdfsupplier[index]
 
         if mol is None:
             raise RuntimeError(f"Could not read a valid molecule from '{path}' using the index '{index}'.")
 
         # Get the first conformer form the RDKit Mol object
-        conformer: Conformer = mol.GetConformer(id=0)
+        conformer: rdchem.Conformer = mol.GetConformer(id=0)
 
         # Obtain rdkit atom list from RDKit Mol object and extact atom symbols
-        rdkit_atoms : List[Atom] = [a for a in mol.GetAtoms()]
+        rdkit_atoms : List[rdchem.Atom] = [a for a in mol.GetAtoms()]
         atoms: List[str] = [atom.GetSymbol() for atom in rdkit_atoms]
 
         # Create an empty molecular geometry object and append all the atoms and coordinates
@@ -351,26 +335,6 @@ class System:
         with open(path, "w") as jsonfile:
             json.dump(data, jsonfile)
     
-
-    def save_sdf(self, path: str) -> None:
-        """
-        Saves the current molecular representation to an SDF file.
-
-        The method internally generates an `rdkit.Chem.Mol` object from the stored data and 
-        uses `rdkit.Chem.SDWriter` to generate the output file. Connectivity data is generated
-        heuristically (please read the documentation before using the generated SDF file).
-
-        Parameters
-        ----------
-        path : str
-            The full path to the output SDF file. If the file already exists, it
-            will be overwritten.
-        """
-        mol = self.__generate_mol()
-        writer = SDWriter(path)
-        writer.write(mol)
-        writer.close()
-
 
     @property
     def geometry(self) -> MolecularGeometry:
@@ -687,75 +651,17 @@ class System:
         """
         return True if self.box_side is not None else False
     
-    @property
-    def adjacency_matrix(self) -> np.ndarray:
-        """
-        The adjacency matrix encoding the molecular connectivity. The generated matrix is a N x N square
-        and symmetrical matrix (with N the total number of atoms in the geometry) encoding wherher two 
-        atoms are bonded or not. If the atom i and j are connected, the [i,j] and [j, i] matrix elements
-        will be set to one, otherwise zero.
-
-        The matrix is internally obtained using RDKit that, in turn, applies heuristic rules for connectivity
-        determination (see documentation). USE THEMATRIX WITH CARE expecially for metal complexes, open-shell
-        system or unusual hypervalent states since the generated matrix MAY BE INCORRECT.
-        
-        PLEASE USE QUANTUM CHEMICALLY DERIVED BOND ORDERS IF EXACT BONDING SCHEME IS NEEDED.
-
-        Returns
-        -------
-        np.ndarray
-            The NxN (with N the total number of atoms) symmetrical matrix encoding the connectivity
-            of the molecule
-        """
-        if self.__adjacency_matrix is None:
-            self.__generate_connectivity()
-        
-        return deepcopy(self.__adjacency_matrix)
-    
-    @property
-    def bond_type_matrix(self) -> np.ndarray:
-        """
-        The bond type matrix encoding the molecular connectivity and the order/type of the bonds
-        connecting each pair of atoms. The matrix is a N x N square and symmetrical matrix (with N
-        the total number of atoms in the geometry) encoding whether two atoms are bonded or not and
-        the order/type of the bond between them. If the atom i and j are connected, the [i,j] and 
-        [j, i] matrix elements will be set to the float value representing the bond order/type (i.e.
-        1.0 for single, 2.0 for double, 3.0 for triple, 1.5 for aromatic bonds), otherwise zero if they
-        are not connected. Note that the bond orders represented here are purely topological and 
-        do NOT correspond to quantum-chemically derived bond indices (e.g., Wiberg or Mayer bond orders).
-        
-        The matrix is internally generated using the adjacency matrix and bond types generated by RDKit
-        that, in turn, applies heuristic rules for connectivity determination (see documentation).
-        USE THEMATRIX WITH CARE expecially for metal complexes, open-shell system or unusual hypervalent
-        states since the generated matrix MAY BE INCORRECT.
-        
-        PLEASE USE QUANTUM CHEMICALLY DERIVED BOND ORDERS IF EXACT BONDING SCHEME IS NEEDED
-
-        Returns
-        -------
-        np.ndarray
-            The NxN (with N the total number of atoms) symmetrical matrix encoding the connectivity
-            of the molecule
-        """
-        if self.__bond_type_matrix is None:
-            self.__generate_connectivity()
-        
-        return deepcopy(self.__bond_type_matrix)
-
 
     ####################################################################################
     #                                 HELPER FUNCTIONS                                 #
     ####################################################################################
     
-
     def __on_geometry_change(self) -> None:
         """
         Function used by the `MolecularGeometry` listener to clear properties when molecular geometry has been changed.
         """
         logger.debug(f"CLEARED: Properties of {self.name} system (ID: {hex(id(self))}) due to molecular geometry change.")
         self.properties = Properties()
-        self.__adjacency_matrix = None
-        self.__bond_type_matrix = None
     
     def __check_geometry_level_of_theory(self, level_of_theory: str) -> None:
         """
@@ -778,336 +684,6 @@ class System:
         if self.geometry.level_of_theory_geometry is not None:
             if level_of_theory != self.geometry.level_of_theory_geometry:
                 raise RuntimeError("Mismatch between the user-provided level of theory and the one used to set geometry")
-
-    def __generate_mol(self, catch_errors: bool = True) -> Mol:
-        """
-        Generates an `rdkit.Chem.Mol` object from the stored molecular geometry, system charge, and spin.
-        The function is based on RDKit and creates a `Mol` object by directly converting the stored system
-        geometry in memory throug an intermediate `RWMol` read-write molecule object. The connectivity of
-        the molecule is automatically assigned using a workflow based on the `DetermineBonds` function from the
-        `rdkit.Chem.rdDetermineBonds` module. The conversion process is higly heuristical and has been designed to
-        patch some of the limitations of the `DetermineBonds` function in the case of open-shell systems. In these
-        cases, bond determination may temporarily adjust the total charge of the system by adding or removing
-        electrons (charge-shifting) to create a hypothetical singlet (closed-shell) configuration. The obtained
-        connectivity is then copied back to the original molecule, and, for radical systens, radical electrons and
-        formal charges are assigned and sanitized using the `SANITIZE_PROPERTIES` and `SANITIZE_FINDRADICALS` options.
-        Implicit hydrogens are not added by default, so radical sites and hydrogen counts are explicit. If Mulliken
-        spin populations are available within the system properties, these are automatically used to help in the
-        connectivity determination. When spin populations are available, radical sites are set at the beginning
-        of the connectivity assignent procedure and are enforced, by adjusting bond orders, when copying the 
-        singlet connectivity generated by the charge-shifting approach.
-
-        BEWARE that this function is highly experimental and can fail with open-shell systems or non-standard
-        valences. The user MUST carefully review the function output.
-
-        Arguments
-        ---------
-        catch_errors: bool
-            If set to `True` (default), will not rise an exception if sanitization fails due to non-standard
-            valences. If `False` exception is raised.
-
-        Returns
-        -------
-        rdkit.Chem.Mol
-            An RDKit `Mol` object representing the molecule with explicit hydrogens, 
-            connectivity, formal charges, and radical electrons (if any).
-        """
-        logger.info(f"Generating RDKit Mol object from '{self.name}' system (charge: {self.charge}, spin: {self.spin})")
-        
-        # Create an empty instance of a read-write molecule object
-        rwmol = RWMol()
-
-        # Initialize the atom list of the `Mol` object with the system `atoms` list 
-        atomic_numbers = {a: i for i, a in atoms_dict.items()}
-        for atom in self.geometry.atoms:
-            rd_atom = Atom(atomic_numbers[atom])
-            rd_atom.SetNoImplicit(True)
-            rwmol.AddAtom(rd_atom)
-
-        # If Mulliken spin populations are available, use them to set the position of radicals
-        radicals = [0 for _ in range(self.geometry.atomcount)]
-        spin_populations = self.properties.mulliken_spin_populations
-        if spin_populations != [] and self.spin>1:
-            logger.debug("- Mulliken spin populations available: Using spin populations to help in radical site determination.")
-
-            ordered = [(i, s) for i, s in enumerate(spin_populations)]
-            ordered.sort(key=lambda x: x[1], reverse=True)
-            
-            for i, s in ordered:
-                radicals[i] = math.ceil(s)
-
-                if sum(radicals) + 1 > self.spin:
-                    radicals[i] -= sum(radicals) + 1 - self.spin
-                
-                if sum(radicals) + 1 == self.spin:
-                    break
-            
-            logger.debug(f"    -> Radicals assignment: {radicals}")
-
-            for i, s in enumerate(radicals):
-                if s>0:
-                    atom = rwmol.GetAtomWithIdx(i)
-                    atom.SetNumRadicalElectrons(s)
-
-        # Convert the read-write molecule object to a standard `Mol` object
-        mol = rwmol.GetMol()
-
-        # Assign a conformer to the `Mol` object holding the coordinates of the atoms in the system
-        conf = Conformer(self.geometry.atomcount)
-        for i, coords in enumerate(self.geometry.coordinates):
-            conf.SetAtomPosition(i, coords)
-
-        mol.AddConformer(conf, assignId=True)
-
-        # Connectivity assignment using the `DetermineBonds` function
-        # --------------------------------------------------------------------------------------------------------
-        # If system is singlet, try connectivity assignment as is or convert to triplet
-        # If system is multiplet, try connectivity assignment using charge shift
-        
-        if self.spin == 1:
-            try:
-                logger.debug("- System is in singlet state: running connectivity determination as is.")
-                DetermineBonds(mol, charge=self.charge, embedChiral=True, allowChargedFragments=True)
-            
-            except:
-                logger.debug("    -> Connectivity assignment FAILED")
-                
-                # Note: Triplet conversion is largely unused due to conversion to charge pair 
-                logger.warning("ASSUMING molecule is a di-radical in singlet state: running conversion using TRIPLET state.")
-                obj = deepcopy(self)
-                obj.spin = 3
-                mol = obj.__generate_mol(catch_errors)
-
-            else:
-                logger.debug("    -> Connectivity assignment SUCCESS")            
-        
-        else:
-            logger.debug("- System is open-shell: running heuristic connectivity determination by charge shift.")
-        
-            for charge_shift in [0, self.spin - 1, -(self.spin - 1)]:
-                
-                try:
-                    newmol = deepcopy(mol)
-                    newcharge = self.charge + charge_shift
-                    logger.debug(f"- Trying : connectivity assignmet with charge: {newcharge}")
-                    DetermineBonds(newmol, charge=newcharge, embedChiral=True, allowChargedFragments=True)
-                
-                except:
-                    logger.debug("    -> Connectivity assignment FAILED")
-                    continue
-
-                else:
-                    logger.debug("    -> Connectivity assignment SUCCESS")
-                    break
-            
-            else:
-                msg = f"Connectivity assignment failed for open-shell system `{self.name}`"
-                logger.error(msg)
-                raise RuntimeError(msg)
-            
-            # Copy the obtained connectivity to a temporary read-write `Mol` object  
-            tmp_rwmol = RWMol(mol)
-
-            bond: Bond = None
-            radical_on_aromatic = False
-            for bond in newmol.GetBonds():
-                i = bond.GetBeginAtomIdx()
-                j = bond.GetEndAtomIdx()
-                tmp_rwmol.AddBond(i, j, bond.GetBondType())
-
-                # Check if one of the radicals set using spin populations is set on an aromatic system
-                if bond.GetIsAromatic() is True:
-                    if radicals[i] > 0 or radicals[j] > 0:
-                        radical_on_aromatic = True
-            
-            # If no radical was set (with spin populations), directly convert to `Mol` object
-            if sum(radicals) == 0:
-                logger.debug("- Success: Radical assignment not found, using RDKit to find radicals.")
-                
-                mol = tmp_rwmol.GetMol()
-
-                # Sanitize the molecule setting charges and radicals
-                SanitizeMol(
-                    mol,
-                    sanitizeOps=SanitizeFlags.SANITIZE_PROPERTIES | SanitizeFlags.SANITIZE_FINDRADICALS,
-                    catchErrors=catch_errors
-                )
-
-            # If radicals were set (with spin populations) check if they are compatible with singlet connectivity
-            else:
-                logger.debug("- Radical assignment FOUND:")
-                logger.debug("    -> Checking if system is compatible with direct copy and PROPERTIES sanitization.")
-
-                sanitized_mol = tmp_rwmol.GetMol()
-                
-                SanitizeMol(
-                    sanitized_mol,
-                    sanitizeOps=SanitizeFlags.SANITIZE_PROPERTIES,
-                    catchErrors=catch_errors
-                )
-
-                charge, spin = 0, 0
-                for atom in sanitized_mol.GetAtoms():
-                    charge += atom.GetFormalCharge()
-                    spin += atom.GetNumRadicalElectrons()
-
-                if charge == self.charge and spin + 1 == self.spin:
-                    logger.debug("- Success: Directly adopting singlet connectivity with radical assignment.")
-                    mol = sanitized_mol
-                
-                else:
-                    logger.debug("    -> Checking compatibility with singlet-based connectivity.")
-
-                    # Create a copy of the temporary read-write `Mol` object and sanitize it.
-                    sanitized_mol = tmp_rwmol.GetMol()
-
-                    SanitizeMol(
-                        sanitized_mol,
-                        sanitizeOps=SanitizeFlags.SANITIZE_PROPERTIES | SanitizeFlags.SANITIZE_FINDRADICALS,
-                        catchErrors=catch_errors
-                    )
-
-                    # Check if the originally set radicals have been removed and which are affected
-                    affected_radicals = [False for _ in radicals]
-                    for i, nrad in enumerate(radicals):
-                        sanitized_atom = sanitized_mol.GetAtomWithIdx(i)
-                        sanitized_spin = sanitized_atom.GetNumRadicalElectrons()
-                        if sanitized_spin < nrad:
-                            affected_radicals[i] = True
-                    
-                    # If the radicals have been maintained, simply copy the molecule
-                    if all([b is False for b in affected_radicals]):
-                        logger.debug("- Success: Singlet-based connectivity is VALID.")
-                        mol = sanitized_mol
-                    
-                    # If radicals would be cleared by sanitization, try to adjust the bond order of the radical site
-                    else:
-                        logger.debug("- Failed: Singlet-based connectivity is INVALID.")
-                        
-                        affected_sites = [i for i, b in enumerate(affected_radicals) if b is True]
-                        logger.debug(f"    -> Affected sites: {affected_sites}")
-
-                        logger.debug("- Trying: Adjusting connectivity around affected radical sites.")
-
-                        # If one of the radicals is set on an aromatic system kekulize the singlet geometry
-                        if radical_on_aromatic is True:
-                            logger.debug("        * Radical found on aromatic system: KEKULIZING")
-
-                            # Kekulize the singlet geometry
-                            SanitizeMol(
-                                newmol,
-                                sanitizeOps=SanitizeFlags.SANITIZE_KEKULIZE,
-                                #catchErrors=catch_errors
-                            )
-
-                            # Copy the new kekulized connectivity to the temporary read-write `Mol` object  
-                            tmp_rwmol = RWMol(mol)
-                            for bond in newmol.GetBonds():
-                                tmp_rwmol.AddBond(bond.GetBeginAtomIdx(), bond.GetEndAtomIdx(), bond.GetBondType())
-
-                        # Adjust the connectivity of the radical site by breaking multiple bonds and setting charges
-                        for i, b in enumerate(affected_radicals):
-
-                            if b is False:
-                                continue
-                            
-                            atom: Atom = tmp_rwmol.GetAtomWithIdx(i)
-                            current_charge = sum(a.GetFormalCharge() for a in tmp_rwmol.GetAtoms())
-                            
-                            for bond in atom.GetBonds():
-                                bt = bond.GetBondType()
-
-                                idx = bond.GetBeginAtomIdx() if bond.GetBeginAtomIdx() != i else bond.GetEndAtomIdx()
-                                other = tmp_rwmol.GetAtomWithIdx(idx)
-                                other_charge = other.GetFormalCharge()
-                                other_charge += 1 if current_charge < self.charge else -1
-
-                                if bt == BondType.TRIPLE:
-                                    bond.SetBondType(BondType.DOUBLE)
-                                    other.SetFormalCharge(other_charge)
-                                    logger.debug(f"        * Radical site {i}: changing bond with atom {idx} from TRIPLE to DOUBLE.")
-                                    break
-                                
-                                elif bt == BondType.DOUBLE:
-                                    bond.SetBondType(BondType.SINGLE)
-                                    other.SetFormalCharge(other_charge)
-                                    logger.debug(f"        * Radical site {i}: changing bond with atom {idx} from DOUBLE to SINGLE.")
-                                    break
-                                
-                                elif bt == BondType.AROMATIC:
-                                    msg = f"Bond type AROMATIC detected on site ({i}) after kekulization."
-                                    logger.error(msg)
-                                    raise RuntimeError(msg)
-                        
-                        # Convert to `Mol` object
-                        mol = tmp_rwmol.GetMol()
-
-                    # Sanitize the molecule setting charges and radicals
-                    SanitizeMol(
-                        mol,
-                        sanitizeOps=SanitizeFlags.SANITIZE_PROPERTIES | SanitizeFlags.SANITIZE_FINDRADICALS,
-                        catchErrors=catch_errors
-                    )
-
-        # Check the number of unpaired electrons and warn the user if something looks strange
-        radical_electrons = [atom.GetNumRadicalElectrons() for atom in mol.GetAtoms()]
-        num_radicals = sum(radical_electrons)
-        if self.spin == 1:
-
-            if num_radicals % 2 != 0:
-                logger.warning("An odd number of radical electrons has been assigned in singlet system.")
-            
-            else:
-                for i, s in enumerate(radical_electrons):
-                    if s == 2:
-                        logger.info(f"{s} unpaired electrons assigned to site {i} in singlet system: converting carbene to singlet")                       
-                        carbene_atom = mol.GetAtomWithIdx(i)
-                        carbene_atom.SetNumRadicalElectrons(0)
-
-                    elif s > 0:
-                        logger.info(f"Non-zero ({s}) unpaired electron assigned to site {i} in a singlet system")
-        
-        else:
-            if all([s == 0 for s in radical_electrons]):
-                msg = "None of the atoms in the generated `Mol` object have radical electrons even if the system is open-shell."
-                logger.error(msg)
-                raise RuntimeError(msg)
-            
-            elif num_radicals != self.spin-1:
-                msg = f"The sum of unpaired electrons ({num_radicals}) is different from the one ({self.spin-1}) expected from spin multiplicity."
-                logger.error(msg)
-                raise RuntimeError(msg)
-        
-        # Check the sum of formal charges warn the user if something looks strange
-        if sum([atom.GetFormalCharge() for atom in mol.GetAtoms()]) != self.charge:
-            msg = "The sum of formal charges does not match the total charge of the system."
-            logger.error(msg)
-            raise RuntimeError(msg)
-
-        return mol
-    
-    def __generate_connectivity(self) -> None:
-        """
-        Given the current molecular geometry and system charge, generate connectivity data using
-        RDKit. The function internally sets the `self.__adjacency_matrix` and the 
-        `self.__bond_type_matrix` variables. The function is based on the `self.__generate_mol()`
-        function; please refer to the docstring of `__generate_mol` for further details.
-        """
-        mol = self.__generate_mol()
-        self.__adjacency_matrix = GetAdjacencyMatrix(mol)
-
-        dim = self.geometry.atomcount
-        btype_matrix = np.zeros((dim, dim), dtype=float)
-
-        bond: Bond = None
-        for bond in mol.GetBonds():
-            i = bond.GetBeginAtomIdx()
-            j = bond.GetEndAtomIdx()
-            order = bond.GetBondTypeAsDouble()
-            btype_matrix[i, j] = order
-            btype_matrix[j, i] = order
-        
-        self.__bond_type_matrix = btype_matrix
 
 
 

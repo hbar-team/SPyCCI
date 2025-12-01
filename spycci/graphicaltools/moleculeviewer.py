@@ -3,8 +3,8 @@ import pyvista as pv
 
 from typing import Union, Optional, List, Tuple
 
-from spycci.core.geometry import MolecularGeometry
 from spycci.systems import System
+from spycci.core.cheminformatics import determine_connectivity
 from spycci.tools.cubetools import Cube
 
 # Covalent radius (in Å) for single bonds from "Pekka Pyykkö and Michiko Atsumi. Molecular Single-Bond Covalent Radii for Elements 1-118. Chemistry - A European Journal, 15(1):186–197, jan 2009"
@@ -127,7 +127,7 @@ def show_molecule(
     plotter.set_background(background)
        
     # Obtain connectivity and extract geometry
-    bond_type_matrix = molecule.bond_type_matrix
+    _, bond_type_matrix = determine_connectivity(molecule)
     geometry = molecule.geometry
 
     # Validate `atoms_color` input
