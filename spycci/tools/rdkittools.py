@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from spycci.constants import atoms_dict
 
-from rdkit.Chem import rdchem, rdmolops, rdmolfiles, rdDetermineBonds
+from rdkit.Chem import rdchem, rdmolops, rdDetermineBonds
 
 if TYPE_CHECKING:
     from spycci.systems import System
@@ -371,3 +371,54 @@ def system_to_mol(system: "System", catch_errors: bool = True) -> rdchem.Mol:
         raise RuntimeError(msg)
 
     return mol
+
+
+def print_mol(mol: rdchem.Mol, connectivity: bool = True) -> None:
+    """
+    Given an `rdkit.Chem.rdchem.Mol` object, print a breaf summary of atom properties and connectivity.
+
+    Arguments
+    ---------
+    mol : rdkit.Chem.rdchem.Mol
+        The input `Mol` object
+    connectivity: bool
+        If set to `True` (default) will print a summary of the connectivity of each atom.
+    
+    Raises
+    ------
+    TypeError
+        Exception raised if the `mol` argument is not of type `rdkit.Chem.rdchem.Mol`.
+    """
+    if isinstance(mol, (rdchem.Mol, rdchem.RWMol)) is False:
+        raise TypeError(f"The `mol` argument must be of type `rdkit.Chem.rdchem.Mol`. Invalid type {type(mol)} was used.")
+    
+    atom: rdchem.Atom = None
+    print("ATOMS:")
+    for atom in mol.GetAtoms():
+        idx = atom.GetIdx()
+        sym = atom.GetSymbol()
+        charge = atom.GetFormalCharge()
+        spin = atom.GetNumRadicalElectrons()
+        impH = atom.GetTotalNumHs(includeNeighbors=True)
+        print(f"Atom {idx:2d}: {sym:2s}, formal charge = {charge}, spin={spin}, Hcount = {impH}")
+    
+    if connectivity is True:
+        print()
+        print("CONNECTIVITY:")
+        for atom in mol.GetAtoms():
+            i = atom.GetIdx()
+            neigh_info = []
+
+            for nbr in atom.GetNeighbors():
+                j = nbr.GetIdx()
+                bond = mol.GetBondBetweenAtoms(i, j)
+
+                # bond type as string
+                btype = str(bond.GetBondType())
+
+                neigh_info.append(f"{j} {btype}")
+
+            neigh_str = ", ".join(neigh_info) if neigh_info else "—"
+            print(f"{i:2d} to: {neigh_str}")
+
+    print("\n")
