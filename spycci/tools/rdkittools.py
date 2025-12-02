@@ -374,10 +374,9 @@ def _adjust_site_connectivity(mol: rdchem.Mol, guess: rdchem.Mol, affected_sites
 def _check_mol_consistency(mol: rdchem.Mol, charge: int, spin: int) -> None:
     """
     Given ad `rdchem.Mol` object, the function checks wheter the results matches expected charge and spin
-    target values. In the case of singlet sistem with two radical electrons on the same atom, the function
-    automatically converts the molecule to a singlet carbene. If an odd number of unpaired electrons is found
-    in singlet systems, no radical if found in open shell systems or the wrong spin multiplicity / charge is 
-    assigned, a `RuntimeError` excetpion is raised.
+    target values. If an odd number of unpaired electrons is found in singlet systems, no radical if found
+    in open shell systems or the wrong spin multiplicity / charge is assigned, a `RuntimeError` excetpion
+    is raised.
 
     Arguments
     ---------
@@ -404,12 +403,7 @@ def _check_mol_consistency(mol: rdchem.Mol, charge: int, spin: int) -> None:
             raise RuntimeError(msg)
         
         for i, s in enumerate(radicals):
-            if s == 2:
-                logger.info(f"{s} unpaired electrons assigned to site {i} in singlet system: converting carbene to singlet")                       
-                carbene_atom = mol.GetAtomWithIdx(i)
-                carbene_atom.SetNumRadicalElectrons(0)
-
-            elif s > 0:
+            if s > 0:
                 logger.info(f"Non-zero ({s}) unpaired electron assigned to site {i} in a singlet system")
     
     else:
@@ -478,8 +472,16 @@ def system_to_mol(system: "System", catch_errors: bool = True) -> rdchem.Mol:
 
         try:
             logger.debug("- System is in singlet state: running connectivity determination as is.")
+
             rdDetermineBonds.DetermineBonds(mol, charge=system.charge, embedChiral=True, allowChargedFragments=True)
-        
+
+            #Check for carbene sites and warn the user
+            for i, s in enumerate(get_radicals(mol)):
+                if s == 2:
+                    logger.warning(f"{s} unpaired electrons assigned to site {i} in singlet system: converting carbene to singlet")                       
+                    carbene_atom = mol.GetAtomWithIdx(i)
+                    carbene_atom.SetNumRadicalElectrons(0)
+
         except:
             logger.debug("    -> Connectivity assignment FAILED")
             
