@@ -44,7 +44,7 @@ def distance(p1: np.ndarray, p2: np.ndarray) -> float:
 
 def angle(p1: np.ndarray, p2: np.ndarray, p3: np.ndarray) -> float:
     """
-    Computes the angle (in radiants) formed by the points (`p1`, `p2` and `p3`) where
+    Computes the angle (in radians) formed by the points (`p1`, `p2` and `p3`) where
     `p2` represents the vertex point.
 
     Arguments
@@ -59,7 +59,7 @@ def angle(p1: np.ndarray, p2: np.ndarray, p3: np.ndarray) -> float:
     Returns
     -------
     float
-        The angle (in radiants).
+        The angle (in radians).
     """
     v1, v2 = p1 - p2, p3 - p2
     u1, u2 = unit_vector(v1), unit_vector(v2)
@@ -71,7 +71,7 @@ def angle(p1: np.ndarray, p2: np.ndarray, p3: np.ndarray) -> float:
 
 def dihedral(p1: np.ndarray, p2: np.ndarray, p3: np.ndarray, p4: np.ndarray) -> float:
     """
-    Computes the dihedral angle (in radiants) between the plane defined by the points `p1`-`p2`-`p3`
+    Computes the dihedral angle (in radians) between the plane defined by the points `p1`-`p2`-`p3`
     and the one defined by the points `p2`-`p3`-`p4`.
 
     Arguments
@@ -88,7 +88,7 @@ def dihedral(p1: np.ndarray, p2: np.ndarray, p3: np.ndarray, p4: np.ndarray) -> 
     Returns
     -------
     float
-        The dihedral angle (in radiants).
+        The dihedral angle (in radians).
     """
     # Compute the subsequent vectors connecting the four points
     v1, v2, v3 = p2-p1, p3-p2, p4-p3
@@ -103,18 +103,15 @@ def dihedral(p1: np.ndarray, p2: np.ndarray, p3: np.ndarray, p4: np.ndarray) -> 
     # Compute and normalize the vectors normal to the planes p1-p2-p3 and p2-p3-p4
     n1 = unit_vector(np.cross(v1, v2))
     n2 = unit_vector(np.cross(v2, v3))
-
-    # Normalize the vector along the central bond
-    u = unit_vector(v2)
-
-    # Define a vector normal to the plane formed by n1 and u
-    m = np.cross(n1, u)
+  
+    # Define a vector parallel to u from the cross product of the normals
+    m = np.cross(n1, n2)
 
     # Compute the cosine part (cosine of the angle between the normal to the two planes)
     x = np.dot(n1, n2)
 
-    # Compute the sine part (cosine of the angle between the normal to the second plane and
-    # the vector on the second plane perpendicular to n1)
-    y = np.dot(m, n2)
+    # Compute the sine part (positive sign if m and u point in the same direction)
+    u = unit_vector(v2)
+    y = np.dot(m, u)
 
     return np.arctan2(y, x)
