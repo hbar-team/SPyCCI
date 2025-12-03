@@ -58,11 +58,11 @@ def test_dihedral():
     p2 = np.array([1.0, 0.0, 0.0])
     p3 = np.array([1.0, 1.0, 0.0])
     p4 = np.array([1.0, 1.0, 1.0])
-    assert_almost_equal(dihedral(p1, p2, p3, p4), -np.pi/2, decimal=12)
+    assert_almost_equal(dihedral(p1, p2, p3, p4), np.pi/2, decimal=12)
 
     # Dihedral -90 degrees
     p4b = np.array([1.0, 1.0, -1.0])
-    assert_almost_equal(dihedral(p1, p2, p3, p4b), +np.pi/2, decimal=12)
+    assert_almost_equal(dihedral(p1, p2, p3, p4b), -np.pi/2, decimal=12)
 
     # Test exception raising with collinear points
     with pytest.raises(RuntimeError):

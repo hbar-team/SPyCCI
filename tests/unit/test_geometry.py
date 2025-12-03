@@ -349,6 +349,51 @@ def test_stored_properties_clearing_on_load_xyz():
     assert mol.rotor_type == "asymmetric top"
 
 
+# Test the MolecularGeometry distance method
+def test_MolecularGeometry_distance():
+
+    path = join(TEST_DIR, "utils/xyz_examples/ethane.xyz")
+    
+    mol = MolecularGeometry.from_xyz(path)
+    
+    d = mol.distance(0, 1)
+    assert_almost_equal(d, 1.51206, decimal=5)
+
+    d = mol.distance(1, 5)
+    assert_almost_equal(d, 1.09409, decimal=5)
+
+
+# Test the MolecularGeometry angle method
+def test_MolecularGeometry_angle():
+
+    path = join(TEST_DIR, "utils/xyz_examples/ethane.xyz")
+    
+    mol = MolecularGeometry.from_xyz(path)
+    
+    a = mol.angle(2, 0, 3)
+    assert_almost_equal(a, 108.352*(np.pi/180.), decimal=5)
+
+    a = mol.angle(7, 1, 0)
+    assert_almost_equal(a, 110.568*(np.pi/180.), decimal=5)
+
+
+# Test the MolecularGeometry dihedral method
+def test_MolecularGeometry_dihedral():
+
+    path = join(TEST_DIR, "utils/xyz_examples/ethane.xyz")
+    
+    mol = MolecularGeometry.from_xyz(path)
+    
+    d = mol.dihedral(2, 0, 1, 5)
+    assert_almost_equal(d, 60.*(np.pi/180.), decimal=5)
+
+    d = mol.dihedral(2, 0, 1, 6)
+    assert_almost_equal(d, -60.*(np.pi/180.), decimal=5)
+
+    d = mol.dihedral(3, 0, 1, 5)
+    assert_almost_equal(d, -60.*(np.pi/180.), decimal=5)
+
+
 # Test the MolecularGeometry bureid_volume_fraction method
 def test_MolecularGeometry_buried_volume_fraction():
 
@@ -371,7 +416,6 @@ def test_MolecularGeometry_buried_volume_fraction():
 
     bv = mol.buried_volume_fraction(0, include_hydrogens=False)
     assert_almost_equal(bv, 0.0, decimal=6)
-
 
 
 # Test the MolecularGeometry bureid_volume_fraction method with invalid parameters
