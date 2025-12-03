@@ -1,10 +1,11 @@
+import math
 import numpy as np
 import pyvista as pv
 
 from typing import Union, Optional, List, Tuple
 
 from spycci.systems import System
-from spycci.core.cheminformatics import determine_connectivity
+from spycci.core.cheminformatics import ChemInfo
 from spycci.tools.cubetools import Cube
 
 # Covalent radius (in Å) for single bonds from "Pekka Pyykkö and Michiko Atsumi. Molecular Single-Bond Covalent Radii for Elements 1-118. Chemistry - A European Journal, 15(1):186–197, jan 2009"
@@ -26,6 +27,10 @@ def show_molecule(
         bond_radius : float = 0.075,
         window_size: Tuple[int, int] = (1200, 1000),
         background : str = "#FFFFFF",
+        hydrogen_bonds: bool = False,
+        hbond_nspheres: int = 6,
+        hbond_sphere_radius: float = 0.04,
+        hbond_color: str = "#E1BF00",
         only_single_bonds: bool = False,
         title : str = "",
         title_color: str = "#000000",
@@ -65,6 +70,14 @@ def show_molecule(
         The tuple of two integer values encoding the window size. (default: (1200, 1000))
     background : str
         Background color of the 3D scene in hexadecimal RGB format. (default: "#222222")
+    hydrogen_bonds: bool
+        If set to `True` will visualize hydrogen bonds as dotted lines. (default: False)
+    hbond_nspheres: int
+        Number of spheres per Angstrom to be used in representing the hydrogen bond dotted line. (default: 6)
+    hbond_sphere_radius: float
+        The radius of the spheres used to represent the hydrogen bond dotted line. (default: 0.04)
+    hbond_color: str
+        The color to be used when representing hydrogen bonds. (default: "#E1BF00")
     only_single_bonds : bool
         If `True`, all bonds with a nonzero bond order are displayed as single bonds, ignoring multiple
         bond representations. Useful for simplified or schematic visualizations. (default: False)
@@ -127,7 +140,8 @@ def show_molecule(
     plotter.set_background(background)
        
     # Obtain connectivity and extract geometry
-    _, bond_type_matrix = determine_connectivity(molecule)
+    cheminfo = ChemInfo(molecule)
+    _, bond_type_matrix = cheminfo.get_connectivity()
     geometry = molecule.geometry
 
     # Validate `atoms_color` input
@@ -144,7 +158,7 @@ def show_molecule(
         sphere = pv.Sphere(radius=radius, center=coordinates, theta_resolution=24, phi_resolution=24)
         plotter.add_mesh(sphere, color=color, smooth_shading=True)
 
-    # Disegna i legami come cilindri
+    # Draw bonds as cylinders
     for i, coord_i in enumerate(geometry.coordinates):
         for j, coord_j in enumerate(geometry.coordinates[i+1:], start=i+1):
 
@@ -218,6 +232,40 @@ def show_molecule(
                 cyl = pv.Cylinder(center=center, direction=direction, radius=bond_radius, height=height, resolution=24)
                 plotter.add_mesh(cyl, color='lightgray', smooth_shading=True)
     
+    # If required draw hydrogen bonds as dotted lines
+    if hydrogen_bonds is True:
+        
+        # Obtain hydrogen bonds from the ChemInfo wrapper
+        hbonds = cheminfo.locate_hydrogen_bonds()
+
+        # Iterate over each 
+        for hbond in hbonds:
+            
+            # Obtain the coordinates of the involved atoms
+            pos1 = geometry.coordinates[hbond[0]]
+            pos2 = geometry.coordinates[hbond[1]]
+
+            # Find direction and bond length
+            direction = pos2 - pos1
+            total_len = np.linalg.norm(direction)
+
+            # Compute an appropriate number of spheres
+            nspheres = math.ceil(hbond_nspheres*total_len)
+            
+            if total_len < 1e-8:
+                continue
+            
+            # Normalize the direction vector an define a step size
+            direction /= total_len
+            step = total_len / (nspheres + 1)
+
+            # Place spheres between pos1 and pos2
+            for i in range(1, nspheres + 1):
+                center = pos1 + direction * (step * i)
+                sph = pv.Sphere(radius=hbond_sphere_radius, center=center)
+                plotter.add_mesh(sph, color=hbond_color, smooth_shading=True)
+
+
     # If specified render CUBE positive and negative isosurfaces
     if cube is not None:
 
