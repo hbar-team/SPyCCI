@@ -19,7 +19,7 @@ def test_split_multixyz_default():
     jsonfile = join(TEST_DIR, "utils/json_examples/water.json")
     mol = System.from_json(jsonfile)
 
-    multixyz = join(TEST_DIR, "utils/xyz_examples/multiple.xyz")
+    multixyz = join(TEST_DIR, "utils/xyz_format_samples/multiple.xyz")
 
     systems = split_multixyz(mol, multixyz)
 
@@ -47,7 +47,7 @@ def test_split_multixyz_with_suffix():
     jsonfile = join(TEST_DIR, "utils/json_examples/water.json")
     mol = System.from_json(jsonfile)
 
-    multixyz = join(TEST_DIR, "utils/xyz_examples/multiple.xyz")
+    multixyz = join(TEST_DIR, "utils/xyz_format_samples/multiple.xyz")
 
     systems = split_multixyz(mol, multixyz, suffix="TEST")
 
@@ -75,7 +75,7 @@ def test_split_multixyz_with_remove():
     jsonfile = join(TEST_DIR, "utils/json_examples/water.json")
     mol = System.from_json(jsonfile)
 
-    multixyz = join(TEST_DIR, "utils/xyz_examples/multiple.xyz")
+    multixyz = join(TEST_DIR, "utils/xyz_format_samples/multiple.xyz")
 
     systems = split_multixyz(mol, multixyz, remove_xyz_files=True)
 
@@ -104,7 +104,7 @@ def test_split_multixyz_with_parsing_NEB_CI():
 
     dummy_engine = Engine("dummy")
 
-    multixyz = join(TEST_DIR, "utils/xyz_examples/multiple_from_orca_trj.xyz")
+    multixyz = join(TEST_DIR, "utils/xyz_format_samples/multiple_from_orca_trj.xyz")
 
     systems = split_multixyz(mol, multixyz, engine=dummy_engine, remove_xyz_files=True)
 
