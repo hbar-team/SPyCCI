@@ -16,7 +16,7 @@ from rdkit.Chem.rdForceFieldHelpers import (
     MMFFHasAllMoleculeParams,
 )
 
-from spycci.constants import atoms_dict, atomic_masses, h, c, amu_to_kg
+from spycci.constants import atoms_dict, atomic_masses, atomic_numbers, h, c, amu_to_kg
 from spycci.core.math import distance, angle, dihedral
 
 if TYPE_CHECKING:
@@ -467,8 +467,7 @@ class MolecularGeometry:
         List[int]
             The list of integers atomic numbers associated with each atom in the molecule
         """
-        ATOMIC_NUMBERS = {v: k for k, v in atoms_dict.items()}
-        return [ATOMIC_NUMBERS[element] for element in self.__atoms]
+        return [atomic_numbers[element] for element in self.__atoms]
 
     @property
     def mass(self) -> float:

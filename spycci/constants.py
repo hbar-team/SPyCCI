@@ -228,6 +228,8 @@ atomic_masses = {
     "Cn": 285,
 }
 
+# Dictionary of atomic numbers
+atomic_numbers = {a: i for i, a in atoms_dict.items()}
 
 ## Tabulated constants
 kB = 3.167e-6  # Boltzmann constant in Eh/K

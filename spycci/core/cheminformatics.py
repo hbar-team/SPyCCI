@@ -5,7 +5,7 @@ import numpy as np
 from typing import Tuple, List
 
 from spycci.systems import System
-from spycci.constants import atoms_dict
+from spycci.constants import atomic_numbers
 from spycci.tools.rdkittools import system_to_mol, get_total_charge, get_total_number_of_radicals
 
 from rdkit.Chem import rdchem, rdmolops, rdmolfiles
@@ -147,7 +147,6 @@ class ChemInfo:
             that of the acceptor atom.
         """
         # Generate SMARTS string to search for donor and acceptor atoms
-        atomic_numbers = {a: i for i, a in atoms_dict.items()}
         donor_smarts = "[!H0;" + ",".join([f"#{atomic_numbers[s]}" for s in donor_list]) + "]"
         acceptor_smarts = "[" + ",".join([f"#{atomic_numbers[s]}" for s in acceptor_list]) + "]"
 
