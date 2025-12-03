@@ -12,15 +12,15 @@ from rdkit.Chem import rdchem, rdmolops, rdmolfiles
 logger = logging.getLogger(__name__)
 
 
-class CheminformaticWrapper:
+class ChemInfo:
     """
-    The `CheminformaticWrapper` represents a simple class designed to wrap a `System` object extending its application to
-    the field of cheminformatic. While a `System` object represents a container for atomic coordinates and "exact" properties
-    derived from computational chemistry calculations, the `CheminformaticWrapper` represent a broader container designed to
-    give to the user a set of tools to explore molecular connectivity, structural properties and cheminformatic descriptors
-    based on heuristic rules or data not derived from computational chemistry calculations. The core of the class is based on
-    the RDKit library that is tasked with the connectivity determination. To create an instance of the `CheminformaticWrapper`
-    an instance of a `System` class must be provided. The given system object is stored (deepcopied) in the private class
+    The `ChemInfo` represents a simple class designed to wrap a `System` object extending its application to the field
+    of cheminformatic. While a `System` object represents a container for atomic coordinates and "exact" properties
+    derived from computational chemistry calculations, the `ChemInfo` represent a broader container designed to give to
+    the user a set of tools to explore molecular connectivity, structural properties and cheminformatic descriptors based
+    on heuristic rules or data not derived from computational chemistry calculations. The core of the class is based on
+    the RDKit library that is tasked with the connectivity determination. To create an instance of the `ChemInfo` an 
+    instance of a `System` class must be provided. The given system object is stored (deepcopied) in the private class
     attributes and connectivity is determined using the built-in `spycci.tools.rdkittools.system_to_mol` function.
 
     Arguments
