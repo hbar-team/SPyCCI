@@ -1,15 +1,38 @@
 import math, logging
 
 from copy import deepcopy
-from typing import List
+from typing import List, Optional, Dict
 
 from spycci.systems import System
-from spycci.constants import atoms_dict
+from spycci.core.geometry import MolecularGeometry
+from spycci.constants import atomic_numbers
 
 from rdkit.Chem import rdchem, rdmolops, rdDetermineBonds
     
 
 logger = logging.getLogger(__name__)
+
+RDKIT_METALS = {
+    # s-block
+    3,  4,      # Li, Be
+    11, 12,     # Na, Mg
+    19, 20,     # K, Ca
+    37, 38,     # Rb, Sr
+    55, 56,     # Cs, Ba
+
+    # p-block
+    13, 31, 49, 50, 81, 82, 83,   # Al, Ga, In, Sn, Tl, Pb, Bi
+    32, 33, 52,                   # Ge, As, Te (possono rompere DetermineBonds)
+    
+    # d-block
+    21,22,23,24,25,26,27,28,29,30,
+    39,40,41,42,43,44,45,46,47,48,
+    57,72,73,74,75,76,77,78,79,80,
+    
+    # f-block (57–71) + (89–103)
+    57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71,
+    89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103,
+}
 
 
 def get_charges(mol: rdchem.Mol) -> List[int]:
@@ -152,6 +175,99 @@ def copy_connectivity(
     return rwdest.GetMol()
 
 
+def _process_metals(
+    system: System,
+    metal_ox_states: Dict[int, int],
+    ligand_spin: int = 1,
+    catch_errors: bool = True
+) -> rdchem.Mol:
+    """
+    Process a molecular `System` containing metals by separating the metal atoms from the organic 
+    backbone, generating a RDKit `Mol` for the ligand organic part, and then reinserting the metals 
+    with their specified oxidation states. The function ensures that the final RDKit Mol has the
+    same atom order as the original System and preserves the 3D coordinates of all atoms.
+
+    Parameters
+    ----------
+    system : System
+        The input molecular system containing both metals and organic atoms. 
+    metal_ox_states : Dict[int, int]
+        A dictionary mapping the indices of metal atoms in `system` to their formal oxidation states. 
+        Example: {1: 2, 5: 3} where keys are system atom indices and values are formal charges.
+    ligand_spin : int
+        The spin multiplicity to assign to the organic backbone (ligand) after removing metals.
+    catch_errors : bool
+        Whether to catch errors during the conversion of the organic backbone to RDKit Mol.
+
+    Returns
+    -------
+    rdchem.Mol
+        An RDKit `Mol` object containing all atoms.
+    """
+    logger.info("Metals detected with metal oxidation state: Running RDKit on the organic backbone.")
+
+    # Detect all the metals in the molecule
+    detected_metals = []
+    for i, atom in enumerate(system.geometry.atoms):
+        if atomic_numbers[atom] in RDKIT_METALS:
+            detected_metals.append(i)
+
+    # Check if the user provided oxidation states list matches the detected metal list
+    if len(detected_metals) != len(metal_ox_states):
+        raise RuntimeError("The number of detected metals is larger then the list of provided oxidation states.")
+
+    for i in detected_metals:
+        if i not in metal_ox_states.keys():
+            raise RuntimeError("Mismatch between the provided oxidation states and the list of detected metals.")
+    
+    # Define an indices list to keep track of the atom sequence
+    indices = []
+
+    # Define a `System` in which the metal atoms have been removed and the charge is
+    # lowered to take into account the charge brought to the system by the metal
+    geometry = MolecularGeometry()
+    atoms = system.geometry.atoms
+    coordinates = system.geometry.coordinates
+    for i, (atom, coordinates) in enumerate(zip(atoms, coordinates)):
+
+        if i in detected_metals:
+            continue
+
+        geometry.append(atom, coordinates)
+        indices.append(i)
+    
+    new_charge = system.charge - sum(metal_ox_states.values())
+    new_system = System(system.name, geometry, charge=new_charge, spin=ligand_spin)
+
+    # Run system to molecule conversion on the organic backbone
+    ligand = system_to_mol(new_system, catch_errors=catch_errors)
+
+    # Create a RWMol representation of the molecule and add the missing metals with their formal charges
+    rwmol = rdchem.RWMol(ligand)
+
+    for i in detected_metals:
+
+        indices.append(i)
+
+        # Add the atom to the molecule
+        symbol = system.geometry.atoms[i]
+        rd_atom = rdchem.Atom(atomic_numbers[symbol])
+        rd_atom.SetNoImplicit(True)
+        rd_atom.SetFormalCharge(metal_ox_states[i])
+        idx = rwmol.AddAtom(rd_atom)
+
+        # Update the coordinate of the atom in the conformer
+        conf = rwmol.GetConformer(id=0)
+        coordinates = system.geometry.coordinates[i]
+        conf.SetAtomPosition(idx, coordinates)
+
+    # Renumber the atoms to ensure the sequence is the same as the one of the original system
+    permutations = [indices.index(i) for i in range(system.geometry.atomcount)]
+    mol = rdmolops.RenumberAtoms(rwmol, permutations)
+    
+    return mol
+
+
 def _build_mol_from_system(system: System, use_mulliken: bool = True) -> rdchem.Mol:
     """
     Given a `System` object, the function generates an `rdkit.Chem.Mol` object encoding the molecular structure
@@ -179,7 +295,6 @@ def _build_mol_from_system(system: System, use_mulliken: bool = True) -> rdchem.
     rwmol = rdchem.RWMol()
 
     # Initialize the atom list of the `Mol` object with the system `atoms` list 
-    atomic_numbers = {a: i for i, a in atoms_dict.items()}
     for atom in system.geometry.atoms:
         rd_atom = rdchem.Atom(atomic_numbers[atom])
         rd_atom.SetNoImplicit(True)
@@ -425,7 +540,12 @@ def _check_mol_consistency(mol: rdchem.Mol, charge: int, spin: int) -> None:
 
 
 
-def system_to_mol(system: System, catch_errors: bool = True) -> rdchem.Mol:
+def system_to_mol(
+    system: System,
+    metal_ox_states: Optional[Dict[int, int]] = None,
+    ligand_spin : int = 1,
+    catch_errors: bool = True,
+) -> rdchem.Mol:
     """
     Given a `System` object, the function generates an `rdkit.Chem.Mol` object from the stored molecular
     geometry, system charge, and spin. The function is based on RDKit and creates a `Mol` object by directly
@@ -443,6 +563,15 @@ def system_to_mol(system: System, catch_errors: bool = True) -> rdchem.Mol:
     of the connectivity assignent procedure and are enforced, by adjusting bond orders, when copying the 
     singlet connectivity generated by the charge-shifting approach.
 
+    The case of systems containing metals is particularly problematic and tipically not well handled by the
+    standard connectivity determination workflow based on RDKit. To extend the use of the function to metal
+    containing systems, the user can provide a dictionary of oxidation states for the metals and a spin multiplicity
+    for the ligand backbone. When doing so, the function separates the metal atoms from the organic backbone
+    and generates an RDKit `Mol` for the ligand (organic) portion. The metals are then reinserted into the
+    molecule with the specified formal charges, ensuring that the final atom ordering matches the original System.
+    This approach avoids potential failures of RDKit's `DetermineBonds` function on metal atoms and preserves
+    the 3D coordinates of all atoms.
+
     BEWARE that this function is highly experimental and can fail with open-shell systems or non-standard
     valences. The user MUST carefully review the function output.
 
@@ -450,6 +579,11 @@ def system_to_mol(system: System, catch_errors: bool = True) -> rdchem.Mol:
     ---------
     system: System
         The input `System` object to be converted
+    metal_ox_states : Dict[int, int]
+        A dictionary mapping the indices of metal atoms in `system` to their formal oxidation states. 
+        Example: {1: 2, 5: 3} where keys are system atom indices and values are formal charges.
+    ligand_spin : int
+        The spin multiplicity to assign to the organic backbone (ligand) after removing metals.
     catch_errors: bool
         If set to `True` (default), will not rise an exception if sanitization fails due to non-standard
         valences. If `False` exception is raised.
@@ -460,6 +594,25 @@ def system_to_mol(system: System, catch_errors: bool = True) -> rdchem.Mol:
         An RDKit `Mol` object representing the molecule with explicit hydrogens, 
         connectivity, formal charges, and radical electrons (if any).
     """
+    # Check if metals are present in the system
+    metals_detected = False
+    if any([atomic_numbers[a] in RDKIT_METALS for a in system.geometry.atoms]):
+        metals_detected = True
+
+    if metals_detected is True and metal_ox_states is not None:
+        
+        mol = _process_metals(
+            system,
+            metal_ox_states,
+            ligand_spin=ligand_spin,
+            catch_errors=catch_errors
+        )
+
+        return mol
+
+    elif metals_detected is True:
+        logger.warning("Metals detected without informations about the metal oxidation state: Running RDKit anyways.")       
+
     # Build `rdchem.Mol` representation of the input system (no connectivity)
     mol = _build_mol_from_system(system)
 
