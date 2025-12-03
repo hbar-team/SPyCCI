@@ -2,9 +2,10 @@ import logging
 
 import numpy as np
 
-from typing import Tuple
+from typing import Tuple, List
 
 from spycci.systems import System
+from spycci.constants import atoms_dict
 from spycci.tools.rdkittools import system_to_mol, get_total_charge, get_total_number_of_radicals
 
 from rdkit.Chem import rdchem, rdmolops, rdmolfiles
@@ -38,7 +39,7 @@ class ChemInfo:
         self.__mol : rdchem.Mol = system_to_mol(system)
 
 
-    def determine_connectivity(self) -> Tuple[np.ndarray, np.ndarray]:
+    def get_connectivity(self) -> Tuple[np.ndarray, np.ndarray]:
         """
         Compute the  adjacency and bond type matrices. These are  N x N square and symmetrical matrix 
         (with N the total number of atoms in the geometry) encoding the molecular connectivity and the
@@ -95,3 +96,92 @@ class ChemInfo:
 
         finally:
             writer.close()
+    
+
+    def search_SMARTS(self, smarts: str) -> Tuple[Tuple[int]]:
+        """
+        Given a SMARTS string, query the molecular representation searching for matches. Once found all the matches,
+        the function returns a tuple of tuples encoding the indices of the molecule’s atoms that match the query.
+
+        Arguments
+        ---------
+        smarts: str
+            The SMARTS string to be used in the substructure search.
+        
+        Retruns
+        -------
+        Tuple[Tuple[int]]
+            The tuple of tuples encoding the indices of the molecule’s atoms that match the query
+        """
+        query = rdmolfiles.MolFromSmarts(smarts)
+        results = self.__mol.GetSubstructMatches(query)
+        return results
+    
+
+    def locate_hydrogen_bonds(
+        self,
+        donor_list: List[str] = ['N', 'O', 'F'],
+        acceptor_list: List[str] = ['N', 'O', 'F'],
+        hbond_max_distance: float = 2.5,
+        hbond_min_angle: float = 120.,
+    ) -> List[List[int]]:
+        """
+        The function locates all possible hydrogen bonds within the system. The function queries the molecular
+        structure searching for hydrogen donors and acceptors and, if found, checks whether an hydrogen bond is possible.
+
+        Arguments
+        ---------
+        donor_list: List[str]
+            The list of atoms that should be considered as possible hydrogen donors. (default: ['N', 'O', 'F'])
+        acceptor_list: List[str]
+            The list of atoms that should be considered as possible hydrogen acceptors. (default: ['N', 'O', 'F'])
+        hbond_max_distance: float
+            The maximum distance (in Angstrom) between the hydrogen and the acceptor atom. (default: 2.5)
+        hbond_min_angle: float
+            The minimum angle D-H-A (in degrees) formed by the donor (D), hydrogen (H) and acceptror (A). (default: 120°)
+        
+        Returns
+        -------
+        List[List[int]]
+            The list of lists encoding the detected hydrogen bonds. Each inner list contains the index of the hydrogen and
+            that of the acceptor atom.
+        """
+        # Generate SMARTS string to search for donor and acceptor atoms
+        atomic_numbers = {a: i for i, a in atoms_dict.items()}
+        donor_smarts = "[!H0;" + ",".join([f"#{atomic_numbers[s]}" for s in donor_list]) + "]"
+        acceptor_smarts = "[" + ",".join([f"#{atomic_numbers[s]}" for s in acceptor_list]) + "]"
+
+        # Query the molecule for donor and acceptor atoms
+        donors = self.search_SMARTS(donor_smarts)
+        acceptors = self.search_SMARTS(acceptor_smarts)
+
+        # Iterate on the donor atoms, find the connected hydrogens and probe all possible acceptor
+        hbonds = []
+        for d in [idx[0] for idx in donors]:
+
+            donor_atom = self.__mol.GetAtomWithIdx(d)
+            neighbors : List[rdchem.Atom] = donor_atom.GetNeighbors()
+
+            for neighbor in neighbors:
+                
+                if neighbor.GetAtomicNum() != 1:
+                    continue
+                
+                h = neighbor.GetIdx()
+
+                for a in [idx[0] for idx in acceptors]:
+
+                    if a == d:
+                        continue
+
+                    distance = self.__system.geometry.distance(h, a)
+                    if distance > hbond_max_distance:
+                        continue
+
+                    angle = self.__system.geometry.angle(d, h, a)
+                    if angle < (np.pi/180.)*hbond_min_angle:
+                        continue
+
+                    hbonds.append([h, a])
+        
+        return hbonds

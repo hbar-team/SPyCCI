@@ -11,7 +11,7 @@ from rdkit.Chem import rdchem
 
 # Get the path of the tests directory
 TEST_DIR = dirname(abspath(__file__))
-CHEMINFOXYZ = join(TEST_DIR, "utils/xyz_examples")
+XYZPATH = join(TEST_DIR, "utils/xyz_examples")
 
 ################################################################################################
 #                          TEST system_to_mol WITHOUT SPIN POPULAIONS                          #
@@ -19,7 +19,7 @@ CHEMINFOXYZ = join(TEST_DIR, "utils/xyz_examples")
 
 def test_system_to_mol_allyl_radical_no_spin():
 
-    xyz_file = f"{CHEMINFOXYZ}/allyl.xyz"
+    xyz_file = f"{XYZPATH}/allyl.xyz"
     system = System.from_xyz(xyz_file, charge=0, spin=2)
 
     try:
@@ -44,7 +44,7 @@ def test_system_to_mol_allyl_radical_no_spin():
 
 def test_system_to_mol_allyl_cation_no_spin():
 
-    xyz_file = f"{CHEMINFOXYZ}/allyl.xyz"
+    xyz_file = f"{XYZPATH}/allyl.xyz"
     system = System.from_xyz(xyz_file, charge=1, spin=1)
 
     try:
@@ -69,7 +69,7 @@ def test_system_to_mol_allyl_cation_no_spin():
 
 def test_system_to_mol_allyl_anion_no_spin():
 
-    xyz_file = f"{CHEMINFOXYZ}/allyl.xyz"
+    xyz_file = f"{XYZPATH}/allyl.xyz"
     system = System.from_xyz(xyz_file, charge=-1, spin=1)
 
     try:
@@ -94,7 +94,7 @@ def test_system_to_mol_allyl_anion_no_spin():
 @pytest.mark.xfail
 def test_system_to_mol_aryl_radical_no_spin():
 
-    xyz_file = f"{CHEMINFOXYZ}/aryl.xyz"
+    xyz_file = f"{XYZPATH}/aryl.xyz"
     system = System.from_xyz(xyz_file, charge=0, spin=2)
 
     try:
@@ -120,7 +120,7 @@ def test_system_to_mol_aryl_radical_no_spin():
 @pytest.mark.xfail
 def test_system_to_mol_aryl_cation_no_spin():
 
-    xyz_file = f"{CHEMINFOXYZ}/aryl.xyz"
+    xyz_file = f"{XYZPATH}/aryl.xyz"
     system = System.from_xyz(xyz_file, charge=1, spin=1)
 
     try:
@@ -147,7 +147,7 @@ def test_system_to_mol_aryl_cation_no_spin():
 
 def test_system_to_mol_aryl_anion_no_spin():
 
-    xyz_file = f"{CHEMINFOXYZ}/aryl.xyz"
+    xyz_file = f"{XYZPATH}/aryl.xyz"
     system = System.from_xyz(xyz_file, charge=-1, spin=1)
 
     try:
@@ -172,7 +172,7 @@ def test_system_to_mol_aryl_anion_no_spin():
 
 def test_system_to_mol_benzene_no_spin():
 
-    xyz_file = f"{CHEMINFOXYZ}/benzene.xyz"
+    xyz_file = f"{XYZPATH}/benzene.xyz"
     system = System.from_xyz(xyz_file, charge=0, spin=1)
 
     try:
@@ -198,7 +198,7 @@ def test_system_to_mol_benzene_no_spin():
 @pytest.mark.xfail
 def test_system_to_mol_benzene_radical_cation_no_spin():
 
-    xyz_file = f"{CHEMINFOXYZ}/benzene.xyz"
+    xyz_file = f"{XYZPATH}/benzene.xyz"
     system = System.from_xyz(xyz_file, charge=1, spin=2)
 
     try:
@@ -224,7 +224,7 @@ def test_system_to_mol_benzene_radical_cation_no_spin():
 @pytest.mark.xfail
 def test_system_to_mol_benzene_radical_anion_no_spin():
 
-    xyz_file = f"{CHEMINFOXYZ}/benzene.xyz"
+    xyz_file = f"{XYZPATH}/benzene.xyz"
     system = System.from_xyz(xyz_file, charge=-1, spin=2)
 
     try:
@@ -249,7 +249,7 @@ def test_system_to_mol_benzene_radical_anion_no_spin():
 
 def test_system_to_mol_carbene_singlet_no_spin():
 
-    xyz_file = f"{CHEMINFOXYZ}/carbene.xyz"
+    xyz_file = f"{XYZPATH}/carbene.xyz"
     system = System.from_xyz(xyz_file, charge=0, spin=1)
 
     try:
@@ -274,7 +274,7 @@ def test_system_to_mol_carbene_singlet_no_spin():
 
 def test_system_to_mol_carbene_triplet_no_spin():
 
-    xyz_file = f"{CHEMINFOXYZ}/carbene.xyz"
+    xyz_file = f"{XYZPATH}/carbene.xyz"
     system = System.from_xyz(xyz_file, charge=0, spin=3)
 
     try:
@@ -299,7 +299,7 @@ def test_system_to_mol_carbene_triplet_no_spin():
 
 def test_system_to_mol_diradical_triplet_no_spin():
 
-    xyz_file = f"{CHEMINFOXYZ}/diradical.xyz"
+    xyz_file = f"{XYZPATH}/diradical.xyz"
     system = System.from_xyz(xyz_file, charge=0, spin=3)
 
     try:
@@ -324,7 +324,7 @@ def test_system_to_mol_diradical_triplet_no_spin():
 
 def test_system_to_mol_methyl_radical_no_spin():
 
-    xyz_file = f"{CHEMINFOXYZ}/methyl.xyz"
+    xyz_file = f"{XYZPATH}/methyl.xyz"
     system = System.from_xyz(xyz_file, charge=0, spin=2)
 
     try:
@@ -349,7 +349,7 @@ def test_system_to_mol_methyl_radical_no_spin():
 
 def test_system_to_mol_methyl_cation_no_spin():
 
-    xyz_file = f"{CHEMINFOXYZ}/methyl.xyz"
+    xyz_file = f"{XYZPATH}/methyl.xyz"
     system = System.from_xyz(xyz_file, charge=1, spin=1)
 
     try:
@@ -374,7 +374,7 @@ def test_system_to_mol_methyl_cation_no_spin():
 
 def test_system_to_mol_methyl_anion_no_spin():
 
-    xyz_file = f"{CHEMINFOXYZ}/methyl.xyz"
+    xyz_file = f"{XYZPATH}/methyl.xyz"
     system = System.from_xyz(xyz_file, charge=-1, spin=1)
 
     try:
@@ -399,7 +399,7 @@ def test_system_to_mol_methyl_anion_no_spin():
 @pytest.mark.xfail
 def test_system_to_mol_nitric_oxide_no_spin():
 
-    xyz_file = f"{CHEMINFOXYZ}/nitric_oxide.xyz"
+    xyz_file = f"{XYZPATH}/nitric_oxide.xyz"
     system = System.from_xyz(xyz_file, charge=0, spin=2)
 
     try:
@@ -428,7 +428,7 @@ def test_system_to_mol_nitric_oxide_no_spin():
 
 def test_system_to_mol_allyl_radical_with_spin():
 
-    xyz_file = f"{CHEMINFOXYZ}/allyl.xyz"
+    xyz_file = f"{XYZPATH}/allyl.xyz"
     system = System.from_xyz(xyz_file, charge=0, spin=2)
 
     spin_populations = [0.0, 0.4996, 0.0, 0.0, 0.5004, 0.0, -0.0, 0.0]
@@ -456,7 +456,7 @@ def test_system_to_mol_allyl_radical_with_spin():
 
 def test_system_to_mol_aryl_radical_with_spin():
 
-    xyz_file = f"{CHEMINFOXYZ}/aryl.xyz"
+    xyz_file = f"{XYZPATH}/aryl.xyz"
     system = System.from_xyz(xyz_file, charge=0, spin=2)
 
     spin_populations = [0.0538, 0.0336, 0.0018, 0.0538, 0.0336, 0.7673, 0.0102, 0.0134, 0.0089, 0.0102, 0.0134]
@@ -484,7 +484,7 @@ def test_system_to_mol_aryl_radical_with_spin():
 
 def test_system_to_mol_benzene_radical_cation_with_spin():
 
-    xyz_file = f"{CHEMINFOXYZ}/benzene.xyz"
+    xyz_file = f"{XYZPATH}/benzene.xyz"
     system = System.from_xyz(xyz_file, charge=1, spin=2)
 
     spin_populations = [0.1612, 0.1612, 0.1612, 0.1612, 0.1612, 0.1612, 0.0055, 0.0055, 0.0055, 0.0055, 0.0055, 0.0055]
@@ -512,7 +512,7 @@ def test_system_to_mol_benzene_radical_cation_with_spin():
 
 def test_system_to_mol_benzene_radical_anion_with_spin():
 
-    xyz_file = f"{CHEMINFOXYZ}/benzene.xyz"
+    xyz_file = f"{XYZPATH}/benzene.xyz"
     system = System.from_xyz(xyz_file, charge=-1, spin=2)
 
     spin_populations = [0.1667, 0.1666, 0.1667, 0.1666, 0.1667, 0.1667, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
@@ -540,7 +540,7 @@ def test_system_to_mol_benzene_radical_anion_with_spin():
 
 def test_system_to_mol_carbene_triplet_with_spin():
 
-    xyz_file = f"{CHEMINFOXYZ}/carbene.xyz"
+    xyz_file = f"{XYZPATH}/carbene.xyz"
     system = System.from_xyz(xyz_file, charge=0, spin=3)
 
     spin_populations = [1.956, 0.022, 0.022]
@@ -568,7 +568,7 @@ def test_system_to_mol_carbene_triplet_with_spin():
 
 def test_system_to_mol_methyl_radical_with_spin():
 
-    xyz_file = f"{CHEMINFOXYZ}/methyl.xyz"
+    xyz_file = f"{XYZPATH}/methyl.xyz"
     system = System.from_xyz(xyz_file, charge=0, spin=2)
 
     spin_populations = [1.0, 0.0, 0.0, 0.0]
@@ -596,7 +596,7 @@ def test_system_to_mol_methyl_radical_with_spin():
 
 def test_system_to_mol_nitric_oxide_with_spin():
 
-    xyz_file = f"{CHEMINFOXYZ}/nitric_oxide.xyz"
+    xyz_file = f"{XYZPATH}/nitric_oxide.xyz"
     system = System.from_xyz(xyz_file, charge=0, spin=2)
 
     spin_populations = [0.4584, 0.2708, 0.2708]

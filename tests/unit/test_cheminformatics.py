@@ -12,7 +12,7 @@ from rdkit.Chem import rdchem
 
 # Get the path of the tests directory
 TEST_DIR = dirname(abspath(__file__))
-CHEMINFOXYZ = join(TEST_DIR, "utils/xyz_examples")
+XYZPATH = join(TEST_DIR, "utils/xyz_examples")
 
 #####################################################################################################
 #                    TESTS RELATED TO RDKIT INTERFACE AND CONNECTIVITY ROUTINES                     #
@@ -24,10 +24,10 @@ def test_System_connectivity_simple():
 
     try:
         wrapper = ChemInfo(mol)
-        adj, bt = wrapper.determine_connectivity()
+        adj, bt = wrapper.get_connectivity()
     
     except Exception as e:
-        assert False, f"Exception raised on `determine_connectivity` call: {e}"
+        assert False, f"Exception raised on `get_connectivity` call: {e}"
 
     expected_adj = [
         [0.0, 1.0, 1.0, 1.0],
@@ -57,10 +57,10 @@ def test_System_connectivity_charged():
 
     try:
         wrapper = ChemInfo(mol)
-        adj, bt = wrapper.determine_connectivity()
+        adj, bt = wrapper.get_connectivity()
     
     except Exception as e:
-        assert False, f"Exception raised on `determine_connectivity` call: {e}"
+        assert False, f"Exception raised on `get_connectivity` call: {e}"
 
     assert_array_almost_equal(adj, [[0.0, 1.0], [1.0, 0.0]], decimal=6)
     assert_array_almost_equal(bt, [[0.0, 3.0], [3.0, 0.0]], decimal=6)
@@ -72,10 +72,10 @@ def test_System_connectivity_localized_radical():
 
     try:
         wrapper = ChemInfo(mol)
-        adj, bt = wrapper.determine_connectivity()
+        adj, bt = wrapper.get_connectivity()
     
     except Exception as e:
-        assert False, f"Exception raised on `determine_connectivity` call: {e}"
+        assert False, f"Exception raised on `get_connectivity` call: {e}"
 
     expected_adj = [
         [0.0, 1.0, 1.0, 1.0],
@@ -101,10 +101,10 @@ def test_System_connectivity_delocalized_radical():
 
     try:
         wrapper = ChemInfo(mol)
-        adj, bt = wrapper.determine_connectivity()
+        adj, bt = wrapper.get_connectivity()
     
     except Exception as e:
-        assert False, f"Exception raised on `determine_connectivity` call: {e}"
+        assert False, f"Exception raised on `get_connectivity` call: {e}"
 
     expected_adj = [
         [0., 1., 0., 0., 0., 0., 0., 1., 1., 0., 0., 0., 0., 0.,],
@@ -150,10 +150,10 @@ def test_System_connectivity_delocalized_cation():
 
     try:
         wrapper = ChemInfo(mol)
-        adj, bt = wrapper.determine_connectivity()
+        adj, bt = wrapper.get_connectivity()
     
     except Exception as e:
-        assert False, f"Exception raised on `determine_connectivity` call: {e}"
+        assert False, f"Exception raised on `get_connectivity` call: {e}"
 
     expected_adj = [
         [0., 1., 0., 0., 0., 0., 0., 1., 1., 0., 0., 0., 0., 0.,],
@@ -199,10 +199,10 @@ def test_System_connectivity_carbene():
 
     try:
         wrapper = ChemInfo(mol)
-        adj, bt = wrapper.determine_connectivity()
+        adj, bt = wrapper.get_connectivity()
     
     except Exception as e:
-        assert False, f"Exception raised on `determine_connectivity` call: {e}"
+        assert False, f"Exception raised on `get_connectivity` call: {e}"
 
     expected_adj = [
         [0.0, 1.0, 1.0],
@@ -238,10 +238,10 @@ def test_System_connectivity_fragments():
 
     try:
         wrapper = ChemInfo(mol)
-        adj, bt = wrapper.determine_connectivity()
+        adj, bt = wrapper.get_connectivity()
     
     except Exception as e:
-        assert False, f"Exception raised on `determine_connectivity` call: {e}"
+        assert False, f"Exception raised on `get_connectivity` call: {e}"
 
     expected_adj = [
         [0, 1, 1, 0, 0, 0, 0, 0, 0, 1],
@@ -316,7 +316,7 @@ def test_save_sdf_simple_molecule():
 
 def test_save_sdf_carbene_singlet():
     
-    xyz_file = f"{CHEMINFOXYZ}/carbene.xyz"
+    xyz_file = f"{XYZPATH}/carbene.xyz"
     system = System.from_xyz(xyz_file, charge=0, spin=1)
 
     expected = []
@@ -349,7 +349,7 @@ def test_save_sdf_carbene_singlet():
 
 def test_save_sdf_carbene_triplet():
     
-    xyz_file = f"{CHEMINFOXYZ}/carbene.xyz"
+    xyz_file = f"{XYZPATH}/carbene.xyz"
     system = System.from_xyz(xyz_file, charge=0, spin=3)
 
     expected = []
@@ -383,7 +383,7 @@ def test_save_sdf_carbene_triplet():
 
 def test_save_sdf_methyl_radical():
     
-    xyz_file = f"{CHEMINFOXYZ}/methyl.xyz"
+    xyz_file = f"{XYZPATH}/methyl.xyz"
     system = System.from_xyz(xyz_file, charge=0, spin=2)
 
     expected = []
@@ -419,7 +419,7 @@ def test_save_sdf_methyl_radical():
 
 def test_save_sdf_methyl_cation():
     
-    xyz_file = f"{CHEMINFOXYZ}/methyl.xyz"
+    xyz_file = f"{XYZPATH}/methyl.xyz"
     system = System.from_xyz(xyz_file, charge=1, spin=1)
 
     expected = []
@@ -455,7 +455,7 @@ def test_save_sdf_methyl_cation():
 
 def test_save_sdf_methyl_anion():
     
-    xyz_file = f"{CHEMINFOXYZ}/methyl.xyz"
+    xyz_file = f"{XYZPATH}/methyl.xyz"
     system = System.from_xyz(xyz_file, charge=-1, spin=1)
 
     expected = []
@@ -491,7 +491,7 @@ def test_save_sdf_methyl_anion():
 
 def test_save_sdf_nitric_oxide():
     
-    xyz_file = f"{CHEMINFOXYZ}/nitric_oxide.xyz"
+    xyz_file = f"{XYZPATH}/nitric_oxide.xyz"
     system = System.from_xyz(xyz_file, charge=0, spin=2)
 
     spin_populations = [0.4584, 0.2708, 0.2708]
@@ -524,3 +524,22 @@ def test_save_sdf_nitric_oxide():
 
     finally:
         os.remove(sdf_path)
+
+
+#####################################################################################################
+#                        TESTS RELATED TO `locate_hydrogen_bonds` FUNCTION                          #
+#####################################################################################################
+
+def test_locate_hydrogen_bonds():
+    
+    xyz_file = f"{XYZPATH}/malondialdehyde.xyz"
+    system = System.from_xyz(xyz_file, charge=0, spin=1)
+
+    try:
+        wrapper = ChemInfo(system)
+        hbonds = wrapper.locate_hydrogen_bonds()
+    
+    except Exception as e:
+        assert False, f"Exception raised on `locate_hydrogen_bonds` call: {e}"
+    
+    assert hbonds == [[4, 5]], "Wrong hydrogen bond detected"
