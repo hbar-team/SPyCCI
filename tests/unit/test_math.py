@@ -3,7 +3,7 @@ import numpy as np
 
 from numpy.testing import assert_almost_equal, assert_array_almost_equal
 
-from spycci.tools.geometrytools import unit_vector, distance, angle, dihedral
+from spycci.core.math import unit_vector, distance, angle, dihedral
 
 
 def test_unit_vector():

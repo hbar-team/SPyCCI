@@ -17,6 +17,7 @@ from rdkit.Chem.rdForceFieldHelpers import (
 )
 
 from spycci.constants import atoms_dict, atomic_masses, h, c, amu_to_kg
+from spycci.core.math import distance, angle, dihedral
 
 if TYPE_CHECKING:
     from spycci.systems import System
@@ -587,6 +588,78 @@ class MolecularGeometry:
             self.__calculate_inertia()
         return deepcopy(self.__rotational_constants)
     
+    def distance(self, i: int, j: int) -> float:
+        """
+        Compute the Euclidian distance between the atoms labeled with indices `i` and `j`.
+
+        Arguments
+        ---------
+        i: int
+            The index of the first atom
+        j: int
+            The index of the second atom
+        
+        Returns
+        -------
+        float
+            The distance (in Angstrom) between the two selected atoms.
+        """
+        self.__check_indices(i, j)
+        p1, p2 = self.coordinates[i], self.coordinates[j]
+        return distance(p1, p2)
+    
+    def angle(self, i: int, j: int, k: int) -> float:
+        """
+        Compute the angle (in radiants) formed by the atoms labeled with indices `i`, `j` and `k`.
+        Where the `j`-th atom represents the vertex.
+
+        Arguments
+        ---------
+        i: int
+            The index of the first atom
+        j: int
+            The index of the second atom (vertex)
+        k: int
+            The index of the third atom
+        
+        Returns
+        -------
+        float
+            The angle (in radiants) between the selected atoms.
+        """
+        indices = [i, j, k]
+        self.__check_indices(*indices)
+        
+        p1, p2, p3 = [self.coordinates[idx] for idx in indices]
+        return angle(p1, p2, p3)
+    
+    def dihedral(self, i: int, j: int, k: int, l: int) -> float:
+        """
+        Compute the dihedral angle (in radians) defined by the atoms labeled with indices `i`, `j`, `k` and `l`.
+        The dihedral is the angle between the plane formed by atoms i-j-k and the plane formed by atoms j-k-l.
+
+        Arguments
+        ---------
+        i: int
+            The index of the first atom
+        j: int
+            The index of the second atom
+        k: int
+            The index of the third atom
+        l: int
+            The index of the fourth atom
+
+        Returns
+        -------
+        float
+            The dihedral angle (in radians) between the two planes.
+        """
+        indices = [i, j, k, l]
+        self.__check_indices(*indices)
+        
+        p1, p2, p3, p4 = [self.coordinates[idx] for idx in indices]
+        return dihedral(p1, p2, p3, p4)
+
 
     def buried_volume_fraction(
         self,
@@ -709,7 +782,28 @@ class MolecularGeometry:
         self.__rotational_constants = None
 
         self.level_of_theory_geometry = None
-            
+    
+    def __check_indices(self, *indices: int) -> None:
+        """
+        Validate that the provided atom indices are within bounds and all unique.
+
+        Parameters
+        ----------
+        *indices : int
+            One or more atom indices to validate.
+
+        Raises
+        ------
+        IndexError
+            If any index is out of the valid range [0, self.atomcount-1].
+        ValueError
+            If any indices are duplicated.
+        """
+        for idx in indices:
+            if idx < 0 or idx >= self.atomcount:
+                raise IndexError(f"Index {idx} is out of bounds [0, {self.atomcount-1}].")
+        if len(indices) != len(set(indices)):
+            raise ValueError("The provided indices must be different.")  
 
     def __calculate_inertia(self) -> None:
         """
