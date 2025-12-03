@@ -2,17 +2,17 @@ import logging
 
 import numpy as np
 
-from typing import TYPE_CHECKING, Tuple
+from typing import Tuple
 
+from spycci.systems import System
 from spycci.tools.rdkittools import system_to_mol
-from rdkit.Chem import rdchem, rdmolops, rdmolfiles
 
-if TYPE_CHECKING:
-    from spycci.systems import System
+from rdkit.Chem import rdchem, rdmolops, rdmolfiles
 
 logger = logging.getLogger(__name__)
 
-def determine_connectivity(system: "System") -> Tuple[np.ndarray, np.ndarray]:
+
+def determine_connectivity(system: System) -> Tuple[np.ndarray, np.ndarray]:
     """
     Given an input system object of type `System` the function determines the connectivity
     using the `sycci.tools.rdkittools.system_to_mol` function and returns the adjacency and
@@ -58,7 +58,7 @@ def determine_connectivity(system: "System") -> Tuple[np.ndarray, np.ndarray]:
     return adjacency_matrix, bond_type_matrix
 
 
-def save_sdf(system: "System", path: str) -> None:
+def save_sdf(system: System, path: str) -> None:
     """
     Given an input system object of type `System` the function determines the connectivity
     and radical sites using the `sycci.tools.rdkittools.system_to_mol` function and saves the molecular 

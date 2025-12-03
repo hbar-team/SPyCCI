@@ -1,14 +1,13 @@
 import math, logging
 
 from copy import deepcopy
-from typing import TYPE_CHECKING, List, Union
+from typing import List
 
+from spycci.systems import System
 from spycci.constants import atoms_dict
 
 from rdkit.Chem import rdchem, rdmolops, rdDetermineBonds
-
-if TYPE_CHECKING:
-    from spycci.systems import System
+    
 
 logger = logging.getLogger(__name__)
 
@@ -153,7 +152,7 @@ def copy_connectivity(
     return rwdest.GetMol()
 
 
-def _build_mol_from_system(system: "System", use_mulliken: bool = True) -> rdchem.Mol:
+def _build_mol_from_system(system: System, use_mulliken: bool = True) -> rdchem.Mol:
     """
     Given a `System` object, the function generates an `rdkit.Chem.Mol` object encoding the molecular structure
     of the given system. A single conformer is created encoding the system geometry. If Mulliken spin populations
@@ -259,15 +258,15 @@ def _guess_connectivity_by_charge_shifting(mol: rdchem.Mol, charge: int, spin: i
         try:
             newmol = deepcopy(mol)
             newcharge = charge + charge_shift
-            logger.debug(f"- Trying : connectivity assignmet with charge: {newcharge}")
+            logger.info(f"- Trying : connectivity assignmet with charge: {newcharge}")
             rdDetermineBonds.DetermineBonds(newmol, charge=newcharge, embedChiral=True, allowChargedFragments=True)
         
         except:
-            logger.debug("    -> Connectivity assignment FAILED")
+            logger.info("    -> Connectivity assignment FAILED")
             continue
 
         else:
-            logger.debug("    -> Connectivity assignment SUCCESS")
+            logger.info("    -> Connectivity assignment SUCCESS")
             break
     
     else:
@@ -302,7 +301,7 @@ def _adjust_site_connectivity(mol: rdchem.Mol, guess: rdchem.Mol, affected_sites
     rdchem.Mol
         The `rdchem.Mol` object with adjusted molecular connectivity.
     """
-    logger.debug("- Trying: Adjusting connectivity around affected radical sites.")
+    logger.info("- Trying: Adjusting connectivity around affected radical sites.")
 
     # Create a writable copy of the original (open-shell) molecule to adjust the connectivity
     rwmol = rdchem.RWMol(mol)
@@ -319,7 +318,7 @@ def _adjust_site_connectivity(mol: rdchem.Mol, guess: rdchem.Mol, affected_sites
         
     # If one of the radicals is set on an aromatic system kekulize the singlet connectivity guess
     if radical_on_aromatic is True:
-        logger.debug("        * Radical found on aromatic system: KEKULIZING")
+        logger.info("        * Radical found on aromatic system: KEKULIZING")
 
         # Copy the singlet guess geometry and Kekulize it
         newmol = deepcopy(guess)
@@ -359,13 +358,13 @@ def _adjust_site_connectivity(mol: rdchem.Mol, guess: rdchem.Mol, affected_sites
             if bt == rdchem.BondType.TRIPLE:
                 bond.SetBondType(rdchem.BondType.DOUBLE)
                 other.SetFormalCharge(other_charge)
-                logger.debug(f"        * Radical site {i}: changing bond with atom {idx} from TRIPLE to DOUBLE.")
+                logger.info(f"        * Radical site {i}: changing bond with atom {idx} from TRIPLE to DOUBLE.")
                 break
             
             elif bt == rdchem.BondType.DOUBLE:
                 bond.SetBondType(rdchem.BondType.SINGLE)
                 other.SetFormalCharge(other_charge)
-                logger.debug(f"        * Radical site {i}: changing bond with atom {idx} from DOUBLE to SINGLE.")
+                logger.info(f"        * Radical site {i}: changing bond with atom {idx} from DOUBLE to SINGLE.")
                 break
             
     return rwmol.GetMol()
@@ -426,7 +425,7 @@ def _check_mol_consistency(mol: rdchem.Mol, charge: int, spin: int) -> None:
 
 
 
-def system_to_mol(system: "System", catch_errors: bool = True) -> rdchem.Mol:
+def system_to_mol(system: System, catch_errors: bool = True) -> rdchem.Mol:
     """
     Given a `System` object, the function generates an `rdkit.Chem.Mol` object from the stored molecular
     geometry, system charge, and spin. The function is based on RDKit and creates a `Mol` object by directly
@@ -471,7 +470,7 @@ def system_to_mol(system: "System", catch_errors: bool = True) -> rdchem.Mol:
     if system.spin == 1:
 
         try:
-            logger.debug("- System is in singlet state: running connectivity determination as is.")
+            logger.info("- System is in singlet state: running connectivity determination as is.")
 
             rdDetermineBonds.DetermineBonds(mol, charge=system.charge, embedChiral=True, allowChargedFragments=True)
 
@@ -483,7 +482,7 @@ def system_to_mol(system: "System", catch_errors: bool = True) -> rdchem.Mol:
                     carbene_atom.SetNumRadicalElectrons(0)
 
         except:
-            logger.debug("    -> Connectivity assignment FAILED")
+            logger.info("    -> Connectivity assignment FAILED")
             
             # Note: Triplet conversion is largely unused due to conversion to charge pair 
             logger.warning("ASSUMING molecule is a di-radical in singlet state: running conversion using TRIPLET state.")
@@ -492,18 +491,18 @@ def system_to_mol(system: "System", catch_errors: bool = True) -> rdchem.Mol:
             mol = system_to_mol(obj, catch_errors)
 
         else:
-            logger.debug("    -> Connectivity assignment SUCCESS")            
+            logger.info("    -> Connectivity assignment SUCCESS")            
     
     # If system is multiplet, try connectivity assignment using charge shift
     else:
-        logger.debug("- System is open-shell: running heuristic connectivity determination by charge shift.")
+        logger.info("- System is open-shell: running heuristic connectivity determination by charge shift.")
 
         # Generate a guess singlet connectivity by charge shifting
         guess = _guess_connectivity_by_charge_shifting(mol, system.charge, system.spin)
                         
         # If no radical was set (with spin populations), let RDKit attempt to find radicals
         if get_total_number_of_radicals(mol) == 0:
-            logger.debug("- Success: Radical assignment not found, using RDKit to find radicals.")
+            logger.info("- Success: Radical assignment not found, using RDKit to find radicals.")
             
             # Directly copy back the charge shifted connectivity to the original `Mol` object
             mol : rdchem.Mol = copy_connectivity(guess, mol)
@@ -517,8 +516,8 @@ def system_to_mol(system: "System", catch_errors: bool = True) -> rdchem.Mol:
 
         # If radicals were set (with spin populations) check if they are compatible with singlet connectivity
         else:
-            logger.debug("- Radical assignment FOUND:")
-            logger.debug("    -> Checking if system is compatible with direct copy and PROPERTIES sanitization.")
+            logger.info("- Radical assignment FOUND:")
+            logger.info("    -> Checking if system is compatible with direct copy and PROPERTIES sanitization.")
 
             newmol : rdchem.Mol = copy_connectivity(guess, mol)   
             sanitized_mol = deepcopy(newmol)
@@ -534,11 +533,11 @@ def system_to_mol(system: "System", catch_errors: bool = True) -> rdchem.Mol:
             spin = get_total_number_of_radicals(sanitized_mol) + 1
             
             if charge == system.charge and spin == system.spin:
-                logger.debug("- Success: Directly adopting singlet connectivity with radical assignment.")
+                logger.info("- Success: Directly adopting singlet connectivity with radical assignment.")
                 mol = sanitized_mol
             
             else:
-                logger.debug("    -> Checking compatibility with singlet-based connectivity.")
+                logger.info("    -> Checking compatibility with singlet-based connectivity.")
 
                 # Create a copy of the temporary read-write `Mol` object and sanitize it.
                 sanitized_mol = deepcopy(newmol)
@@ -562,14 +561,14 @@ def system_to_mol(system: "System", catch_errors: bool = True) -> rdchem.Mol:
                 
                 # If the radicals have been maintained, simply copy the molecule
                 if affected_sites == []:
-                    logger.debug("- Success: Singlet-based connectivity is VALID.")
+                    logger.info("- Success: Singlet-based connectivity is VALID.")
                     mol = sanitized_mol
                 
                 # If radicals would be cleared by sanitization, try to adjust the bond order of the radical site
                 else:
-                    logger.debug("- Failed: Singlet-based connectivity is INVALID.")
-                    logger.debug(f"    -> Affected sites: {affected_sites}")
-                    logger.debug("- Trying: Adjusting connectivity around affected radical sites.")
+                    logger.info("- Failed: Singlet-based connectivity is INVALID.")
+                    logger.info(f"    -> Affected sites: {affected_sites}")
+                    logger.info("- Trying: Adjusting connectivity around affected radical sites.")
 
                     mol = _adjust_site_connectivity(newmol, guess, affected_sites, system.charge)
 

@@ -11,7 +11,7 @@ from rdkit.Chem import rdchem
 
 # Get the path of the tests directory
 TEST_DIR = dirname(abspath(__file__))
-CHEMINFOXYZ = join(TEST_DIR, "utils/xyz_examples/cheminformatics")
+CHEMINFOXYZ = join(TEST_DIR, "utils/cheminformatics")
 
 ################################################################################################
 #                          TEST system_to_mol WITHOUT SPIN POPULAIONS                          #
