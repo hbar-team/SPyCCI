@@ -5,7 +5,7 @@ from numpy.testing import assert_almost_equal, assert_array_almost_equal
 
 from spycci.systems import System
 from spycci.core.geometry import MolecularGeometry
-from spycci.core.cheminformatics import determine_connectivity, save_sdf
+from spycci.core.cheminformatics import CheminformaticWrapper
 
 from spycci.core.base import Engine
 from rdkit.Chem import rdchem
@@ -23,7 +23,8 @@ def test_System_connectivity_simple():
     mol = System.from_smiles("formaldehyde", "C=O")
 
     try:
-        adj, bt = determine_connectivity(mol)
+        wrapper = CheminformaticWrapper(mol)
+        adj, bt = wrapper.determine_connectivity()
     
     except Exception as e:
         assert False, f"Exception raised on `determine_connectivity` call: {e}"
@@ -55,7 +56,8 @@ def test_System_connectivity_charged():
     mol = System("cyanide", geom, charge=-1)
 
     try:
-        adj, bt = determine_connectivity(mol)
+        wrapper = CheminformaticWrapper(mol)
+        adj, bt = wrapper.determine_connectivity()
     
     except Exception as e:
         assert False, f"Exception raised on `determine_connectivity` call: {e}"
@@ -69,7 +71,8 @@ def test_System_connectivity_localized_radical():
     mol = System.from_smiles("methyl radical", "[CH3]", spin=2)
 
     try:
-        adj, bt = determine_connectivity(mol)
+        wrapper = CheminformaticWrapper(mol)
+        adj, bt = wrapper.determine_connectivity()
     
     except Exception as e:
         assert False, f"Exception raised on `determine_connectivity` call: {e}"
@@ -97,7 +100,8 @@ def test_System_connectivity_delocalized_radical():
     mol = System.from_smiles("benzyl radical", "[CH2]c1ccccc1", spin=2)
 
     try:
-        adj, bt = determine_connectivity(mol)
+        wrapper = CheminformaticWrapper(mol)
+        adj, bt = wrapper.determine_connectivity()
     
     except Exception as e:
         assert False, f"Exception raised on `determine_connectivity` call: {e}"
@@ -145,7 +149,8 @@ def test_System_connectivity_delocalized_cation():
     mol = System.from_smiles("benzyl cation", "[CH2]c1ccccc1", charge=1, spin=1)
 
     try:
-        adj, bt = determine_connectivity(mol)
+        wrapper = CheminformaticWrapper(mol)
+        adj, bt = wrapper.determine_connectivity()
     
     except Exception as e:
         assert False, f"Exception raised on `determine_connectivity` call: {e}"
@@ -193,7 +198,8 @@ def test_System_connectivity_carbene():
     mol = System.from_smiles("methylene", "[CH2]")
 
     try:
-        adj, bt = determine_connectivity(mol)
+        wrapper = CheminformaticWrapper(mol)
+        adj, bt = wrapper.determine_connectivity()
     
     except Exception as e:
         assert False, f"Exception raised on `determine_connectivity` call: {e}"
@@ -231,7 +237,8 @@ def test_System_connectivity_fragments():
     mol = System("dimer", geom)
 
     try:
-        adj, bt = determine_connectivity(mol)
+        wrapper = CheminformaticWrapper(mol)
+        adj, bt = wrapper.determine_connectivity()
     
     except Exception as e:
         assert False, f"Exception raised on `determine_connectivity` call: {e}"
@@ -296,7 +303,8 @@ def test_save_sdf_simple_molecule():
         sdf_path = tmp.name
 
     try:
-        save_sdf(system, sdf_path)
+        wrapper = CheminformaticWrapper(system)
+        wrapper.save_sdf(sdf_path)
 
         with open(sdf_path, "r") as file:
             for i, line in enumerate(file):
@@ -328,7 +336,8 @@ def test_save_sdf_carbene_singlet():
         sdf_path = tmp.name
 
     try:
-        save_sdf(system, sdf_path)
+        wrapper = CheminformaticWrapper(system)
+        wrapper.save_sdf(sdf_path)
 
         with open(sdf_path, "r") as file:
             for i, line in enumerate(file):
@@ -361,7 +370,8 @@ def test_save_sdf_carbene_triplet():
         sdf_path = tmp.name
 
     try:
-        save_sdf(system, sdf_path)
+        wrapper = CheminformaticWrapper(system)
+        wrapper.save_sdf(sdf_path)
 
         with open(sdf_path, "r") as file:
             for i, line in enumerate(file):
@@ -396,7 +406,8 @@ def test_save_sdf_methyl_radical():
         sdf_path = tmp.name
 
     try:
-        save_sdf(system, sdf_path)
+        wrapper = CheminformaticWrapper(system)
+        wrapper.save_sdf(sdf_path)
 
         with open(sdf_path, "r") as file:
             for i, line in enumerate(file):
@@ -431,7 +442,8 @@ def test_save_sdf_methyl_cation():
         sdf_path = tmp.name
 
     try:
-        save_sdf(system, sdf_path)
+        wrapper = CheminformaticWrapper(system)
+        wrapper.save_sdf(sdf_path)
 
         with open(sdf_path, "r") as file:
             for i, line in enumerate(file):
@@ -466,7 +478,8 @@ def test_save_sdf_methyl_anion():
         sdf_path = tmp.name
 
     try:
-        save_sdf(system, sdf_path)
+        wrapper = CheminformaticWrapper(system)
+        wrapper.save_sdf(sdf_path)
 
         with open(sdf_path, "r") as file:
             for i, line in enumerate(file):
@@ -502,7 +515,8 @@ def test_save_sdf_nitric_oxide():
         sdf_path = tmp.name
 
     try:
-        save_sdf(system, sdf_path)
+        wrapper = CheminformaticWrapper(system)
+        wrapper.save_sdf(sdf_path)
 
         with open(sdf_path, "r") as file:
             for i, line in enumerate(file):
