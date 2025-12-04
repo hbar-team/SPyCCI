@@ -12,28 +12,10 @@ from rdkit.Chem import rdchem, rdmolops, rdDetermineBonds
 
 logger = logging.getLogger(__name__)
 
-RDKIT_METALS = {
-    # s-block
-    3,  4,      # Li, Be
-    11, 12,     # Na, Mg
-    19, 20,     # K, Ca
-    37, 38,     # Rb, Sr
-    55, 56,     # Cs, Ba
 
-    # p-block
-    13, 31, 49, 50, 81, 82, 83,   # Al, Ga, In, Sn, Tl, Pb, Bi
-    32, 33, 52,                   # Ge, As, Te (possono rompere DetermineBonds)
-    
-    # d-block
-    21,22,23,24,25,26,27,28,29,30,
-    39,40,41,42,43,44,45,46,47,48,
-    57,72,73,74,75,76,77,78,79,80,
-    
-    # f-block (57–71) + (89–103)
-    57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71,
-    89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103,
-}
-
+###################################################################################################################
+#                    GENERAL FUNCTIONS DEDICATED TO OPERATE ON `rdkit.Chem.rdchem.Mol` OBJECTS                    #
+###################################################################################################################
 
 def get_charges(mol: rdchem.Mol) -> List[int]:
     """
@@ -173,6 +155,280 @@ def copy_connectivity(
         rwdest.AddBond(i, j, bond.GetBondType())
     
     return rwdest.GetMol()
+
+
+def print_mol(mol: rdchem.Mol, connectivity: bool = True) -> None:
+    """
+    Given an `rdkit.Chem.rdchem.Mol` object, print a breaf summary of atom properties and connectivity.
+
+    Arguments
+    ---------
+    mol : rdkit.Chem.rdchem.Mol
+        The input `Mol` object
+    connectivity: bool
+        If set to `True` (default) will print a summary of the connectivity of each atom.
+    
+    Raises
+    ------
+    TypeError
+        Exception raised if the `mol` argument is not of type `rdkit.Chem.rdchem.Mol`.
+    """
+    if not isinstance(mol, (rdchem.Mol, rdchem.RWMol)):
+        raise TypeError(f"The `mol` argument must be of type `rdkit.Chem.rdchem.Mol`. Invalid type {type(mol)} was used.")
+    
+    atom: rdchem.Atom = None
+    print("ATOMS:")
+    for atom in mol.GetAtoms():
+        idx = atom.GetIdx()
+        sym = atom.GetSymbol()
+        charge = atom.GetFormalCharge()
+        spin = atom.GetNumRadicalElectrons()
+        impH = atom.GetTotalNumHs(includeNeighbors=True)
+        print(f"Atom {idx:2d}: {sym:2s}, formal charge = {charge}, spin={spin}, Hcount = {impH}")
+    
+    if connectivity is True:
+        print()
+        print("CONNECTIVITY:")
+        for atom in mol.GetAtoms():
+            i = atom.GetIdx()
+            neigh_info = []
+
+            for nbr in atom.GetNeighbors():
+                j = nbr.GetIdx()
+                bond = mol.GetBondBetweenAtoms(i, j)
+
+                # bond type as string
+                btype = str(bond.GetBondType())
+
+                neigh_info.append(f"{j} {btype}")
+
+            neigh_str = ", ".join(neigh_info) if neigh_info else "—"
+            print(f"{i:2d} to: {neigh_str}")
+
+    print("\n")
+
+
+###################################################################################################################
+#  FUNCTIONS DEDICATED TO THE CONVERSION OF A `spycci.systems.System` OBJECT TO A `rdkit.Chem.rdchem.Mol` OBJECT  #
+###################################################################################################################
+
+def system_to_mol(
+    system: System,
+    metal_ox_states: Optional[Dict[int, int]] = None,
+    ligand_spin : int = 1,
+    catch_errors: bool = True,
+) -> rdchem.Mol:
+    """
+    Given a `System` object, the function generates an `rdkit.Chem.Mol` object from the stored molecular
+    geometry, system charge, and spin. The function is based on RDKit and creates a `Mol` object by directly
+    converting the stored system geometry in memory through an intermediate `RWMol` read-write molecule object.
+    The connectivity of the molecule is automatically assigned using a workflow based on the `DetermineBonds`
+    function from the `rdkit.Chem.rdDetermineBonds` module. The conversion process is higly heuristical and
+    has been designed to patch some of the limitations of the `DetermineBonds` function in the case of open-shell
+    systems. In these cases, bond determination may temporarily adjust the total charge of the system by adding
+    or removing electrons (charge-shifting) to create a hypothetical singlet (closed-shell) configuration. The
+    obtained connectivity is then copied back to the original molecule, and, for radical systems, radical electrons
+    and formal charges are assigned and sanitized using the `SANITIZE_PROPERTIES` and `SANITIZE_FINDRADICALS` 
+    options. Implicit hydrogens are not added by default, so radical sites and hydrogen counts are explicit.
+    If Mulliken spin populations are available within the system properties, these are automatically used to help
+    in the connectivity determination. When spin populations are available, radical sites are set at the beginning
+    of the connectivity assignent procedure and are enforced, by adjusting bond orders, when copying the 
+    singlet connectivity generated by the charge-shifting approach.
+
+    The case of systems containing metals is particularly problematic and tipically not well handled by the
+    standard connectivity determination workflow based on RDKit. To extend the use of the function to metal
+    containing systems, the user can provide a dictionary of oxidation states for the metals and a spin multiplicity
+    for the ligand backbone. When doing so, the function separates the metal atoms from the organic backbone
+    and generates an RDKit `Mol` for the ligand (organic) portion. The metals are then reinserted into the
+    molecule with the specified formal charges, ensuring that the final atom ordering matches the original System.
+    This approach avoids potential failures of RDKit's `DetermineBonds` function on metal atoms and preserves
+    the 3D coordinates of all atoms.
+
+    BEWARE that this function is highly experimental and can fail with open-shell systems or non-standard
+    valences. The user MUST carefully review the function output.
+
+    Arguments
+    ---------
+    system: System
+        The input `System` object to be converted
+    metal_ox_states : Dict[int, int]
+        A dictionary mapping the indices of metal atoms in `system` to their formal oxidation states. 
+        Example: {1: 2, 5: 3} where keys are system atom indices and values are formal charges.
+    ligand_spin : int
+        The spin multiplicity to assign to the organic backbone (ligand) after removing metals.
+    catch_errors: bool
+        If set to `True` (default), will not rise an exception if sanitization fails due to non-standard
+        valences. If `False` exception is raised.
+
+    Returns
+    -------
+    rdkit.Chem.Mol
+        An RDKit `Mol` object representing the molecule with explicit hydrogens, 
+        connectivity, formal charges, and radical electrons (if any).
+    """
+    # Check if metals are present in the system
+    metals_detected = False
+    if any([atomic_numbers[a] in RDKIT_METALS for a in system.geometry.atoms]):
+        metals_detected = True
+
+    if metals_detected is True and metal_ox_states is not None:
+        
+        mol = _process_metals(
+            system,
+            metal_ox_states,
+            ligand_spin=ligand_spin,
+            catch_errors=catch_errors
+        )
+
+        return mol
+
+    elif metals_detected is True:
+        logger.warning("Metals detected without informations about the metal oxidation state: Running RDKit anyways.")       
+
+    # Build `rdchem.Mol` representation of the input system (no connectivity)
+    mol = _build_mol_from_system(system)
+
+    # Connectivity assignment using the `DetermineBonds` function
+    # --------------------------------------------------------------------------------------------------------
+    
+    # If system is singlet, try connectivity assignment as is or convert to triplet    
+    if system.spin == 1:
+
+        try:
+            logger.info("- System is in singlet state: running connectivity determination as is.")
+
+            rdDetermineBonds.DetermineBonds(mol, charge=system.charge, embedChiral=True, allowChargedFragments=True)
+
+            #Check for carbene sites and warn the user
+            for i, s in enumerate(get_radicals(mol)):
+                if s == 2:
+                    logger.warning(f"{s} unpaired electrons assigned to site {i} in singlet system: converting carbene to singlet")                       
+                    carbene_atom = mol.GetAtomWithIdx(i)
+                    carbene_atom.SetNumRadicalElectrons(0)
+
+        except:
+            logger.info("    -> Connectivity assignment FAILED")
+            
+            # Note: Triplet conversion is largely unused due to conversion to charge pair 
+            logger.warning("ASSUMING molecule is a di-radical in singlet state: running conversion using TRIPLET state.")
+            obj = deepcopy(system)
+            obj.spin = 3
+            mol = system_to_mol(obj, catch_errors)
+
+        else:
+            logger.info("    -> Connectivity assignment SUCCESS")            
+    
+    # If system is multiplet, try connectivity assignment using charge shift
+    else:
+        logger.info("- System is open-shell: running heuristic connectivity determination by charge shift.")
+
+        # Generate a guess singlet connectivity by charge shifting
+        guess = _guess_connectivity_by_charge_shifting(mol, system.charge, system.spin)
+                        
+        # If no radical was set (with spin populations), let RDKit attempt to find radicals
+        if get_total_number_of_radicals(mol) == 0:
+            logger.info("- Success: Radical assignment not found, using RDKit to find radicals.")
+            
+            # Directly copy back the charge shifted connectivity to the original `Mol` object
+            mol : rdchem.Mol = copy_connectivity(guess, mol)
+
+            # Sanitize the molecule setting charges and radicals
+            rdmolops.SanitizeMol(
+                mol,
+                sanitizeOps=rdmolops.SanitizeFlags.SANITIZE_PROPERTIES | rdmolops.SanitizeFlags.SANITIZE_FINDRADICALS,
+                catchErrors=catch_errors
+            )
+
+        # If radicals were set (with spin populations) check if they are compatible with singlet connectivity
+        else:
+            logger.info("- Radical assignment FOUND:")
+            logger.info("    -> Checking if system is compatible with direct copy and PROPERTIES sanitization.")
+
+            newmol : rdchem.Mol = copy_connectivity(guess, mol)   
+            sanitized_mol = deepcopy(newmol)
+            
+            rdmolops.SanitizeMol(
+                sanitized_mol,
+                sanitizeOps=rdmolops.SanitizeFlags.SANITIZE_PROPERTIES,
+                catchErrors=catch_errors
+            )
+
+            # Check if the charge and spin multiplicity after sanitization are correct
+            charge = get_total_charge(sanitized_mol)
+            spin = get_total_number_of_radicals(sanitized_mol) + 1
+            
+            if charge == system.charge and spin == system.spin:
+                logger.info("- Success: Directly adopting singlet connectivity with radical assignment.")
+                mol = sanitized_mol
+            
+            else:
+                logger.info("    -> Checking compatibility with singlet-based connectivity.")
+
+                # Create a copy of the temporary read-write `Mol` object and sanitize it.
+                sanitized_mol = deepcopy(newmol)
+
+                rdmolops.SanitizeMol(
+                    sanitized_mol,
+                    sanitizeOps=rdmolops.SanitizeFlags.SANITIZE_PROPERTIES | rdmolops.SanitizeFlags.SANITIZE_FINDRADICALS,
+                    catchErrors=catch_errors
+                )
+
+                # Check if the originally set radicals have been removed and which are affected
+                radicals = get_radicals(mol)
+                affected_radicals = [False for _ in radicals]
+                for i, nrad in enumerate(radicals):
+                    sanitized_atom = sanitized_mol.GetAtomWithIdx(i)
+                    sanitized_nrad = sanitized_atom.GetNumRadicalElectrons()
+                    if sanitized_nrad < nrad:
+                        affected_radicals[i] = True
+                
+                affected_sites = [i for i, b in enumerate(affected_radicals) if b is True]
+                
+                # If the radicals have been maintained, simply copy the molecule
+                if affected_sites == []:
+                    logger.info("- Success: Singlet-based connectivity is VALID.")
+                    mol = sanitized_mol
+                
+                # If radicals would be cleared by sanitization, try to adjust the bond order of the radical site
+                else:
+                    logger.info("- Failed: Singlet-based connectivity is INVALID.")
+                    logger.info(f"    -> Affected sites: {affected_sites}")
+                    logger.info("- Trying: Adjusting connectivity around affected radical sites.")
+
+                    mol = _adjust_site_connectivity(newmol, guess, affected_sites, system.charge)
+
+                # Sanitize the molecule setting charges and radicals
+                rdmolops.SanitizeMol(
+                    mol,
+                    sanitizeOps=rdmolops.SanitizeFlags.SANITIZE_PROPERTIES | rdmolops.SanitizeFlags.SANITIZE_FINDRADICALS,
+                    catchErrors=catch_errors
+                )
+
+    _check_mol_consistency(mol, system.charge, system.spin)
+
+    return mol
+
+
+# *****************************************************************************************************************
+# *                                               HELPER FUNCTIONS                                                *
+# *****************************************************************************************************************
+
+# List of METALS that may cause problems with the RDKit `DetermineBonds` function
+RDKIT_METALS = {
+    # s-block
+    3,  4, 11, 12, 19, 20, 37, 38, 55, 56,
+
+    # p-block
+    13, 31, 49, 50, 81, 82, 83, 32, 33, 52,
+    
+    # d-block
+    21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 39, 40, 41, 42, 43,
+    44, 45, 46, 47, 48, 57, 72, 73, 74, 75, 76, 77, 78, 79, 80,
+    
+    # f-block
+    57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71,
+    89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103,
+}
 
 
 def _process_metals(
@@ -537,252 +793,3 @@ def _check_mol_consistency(mol: rdchem.Mol, charge: int, spin: int) -> None:
         msg = "The sum of formal charges does not match the total charge of the system."
         logger.error(msg)
         raise RuntimeError(msg)
-
-
-
-def system_to_mol(
-    system: System,
-    metal_ox_states: Optional[Dict[int, int]] = None,
-    ligand_spin : int = 1,
-    catch_errors: bool = True,
-) -> rdchem.Mol:
-    """
-    Given a `System` object, the function generates an `rdkit.Chem.Mol` object from the stored molecular
-    geometry, system charge, and spin. The function is based on RDKit and creates a `Mol` object by directly
-    converting the stored system geometry in memory through an intermediate `RWMol` read-write molecule object.
-    The connectivity of the molecule is automatically assigned using a workflow based on the `DetermineBonds`
-    function from the `rdkit.Chem.rdDetermineBonds` module. The conversion process is higly heuristical and
-    has been designed to patch some of the limitations of the `DetermineBonds` function in the case of open-shell
-    systems. In these cases, bond determination may temporarily adjust the total charge of the system by adding
-    or removing electrons (charge-shifting) to create a hypothetical singlet (closed-shell) configuration. The
-    obtained connectivity is then copied back to the original molecule, and, for radical systems, radical electrons
-    and formal charges are assigned and sanitized using the `SANITIZE_PROPERTIES` and `SANITIZE_FINDRADICALS` 
-    options. Implicit hydrogens are not added by default, so radical sites and hydrogen counts are explicit.
-    If Mulliken spin populations are available within the system properties, these are automatically used to help
-    in the connectivity determination. When spin populations are available, radical sites are set at the beginning
-    of the connectivity assignent procedure and are enforced, by adjusting bond orders, when copying the 
-    singlet connectivity generated by the charge-shifting approach.
-
-    The case of systems containing metals is particularly problematic and tipically not well handled by the
-    standard connectivity determination workflow based on RDKit. To extend the use of the function to metal
-    containing systems, the user can provide a dictionary of oxidation states for the metals and a spin multiplicity
-    for the ligand backbone. When doing so, the function separates the metal atoms from the organic backbone
-    and generates an RDKit `Mol` for the ligand (organic) portion. The metals are then reinserted into the
-    molecule with the specified formal charges, ensuring that the final atom ordering matches the original System.
-    This approach avoids potential failures of RDKit's `DetermineBonds` function on metal atoms and preserves
-    the 3D coordinates of all atoms.
-
-    BEWARE that this function is highly experimental and can fail with open-shell systems or non-standard
-    valences. The user MUST carefully review the function output.
-
-    Arguments
-    ---------
-    system: System
-        The input `System` object to be converted
-    metal_ox_states : Dict[int, int]
-        A dictionary mapping the indices of metal atoms in `system` to their formal oxidation states. 
-        Example: {1: 2, 5: 3} where keys are system atom indices and values are formal charges.
-    ligand_spin : int
-        The spin multiplicity to assign to the organic backbone (ligand) after removing metals.
-    catch_errors: bool
-        If set to `True` (default), will not rise an exception if sanitization fails due to non-standard
-        valences. If `False` exception is raised.
-
-    Returns
-    -------
-    rdkit.Chem.Mol
-        An RDKit `Mol` object representing the molecule with explicit hydrogens, 
-        connectivity, formal charges, and radical electrons (if any).
-    """
-    # Check if metals are present in the system
-    metals_detected = False
-    if any([atomic_numbers[a] in RDKIT_METALS for a in system.geometry.atoms]):
-        metals_detected = True
-
-    if metals_detected is True and metal_ox_states is not None:
-        
-        mol = _process_metals(
-            system,
-            metal_ox_states,
-            ligand_spin=ligand_spin,
-            catch_errors=catch_errors
-        )
-
-        return mol
-
-    elif metals_detected is True:
-        logger.warning("Metals detected without informations about the metal oxidation state: Running RDKit anyways.")       
-
-    # Build `rdchem.Mol` representation of the input system (no connectivity)
-    mol = _build_mol_from_system(system)
-
-    # Connectivity assignment using the `DetermineBonds` function
-    # --------------------------------------------------------------------------------------------------------
-    
-    # If system is singlet, try connectivity assignment as is or convert to triplet    
-    if system.spin == 1:
-
-        try:
-            logger.info("- System is in singlet state: running connectivity determination as is.")
-
-            rdDetermineBonds.DetermineBonds(mol, charge=system.charge, embedChiral=True, allowChargedFragments=True)
-
-            #Check for carbene sites and warn the user
-            for i, s in enumerate(get_radicals(mol)):
-                if s == 2:
-                    logger.warning(f"{s} unpaired electrons assigned to site {i} in singlet system: converting carbene to singlet")                       
-                    carbene_atom = mol.GetAtomWithIdx(i)
-                    carbene_atom.SetNumRadicalElectrons(0)
-
-        except:
-            logger.info("    -> Connectivity assignment FAILED")
-            
-            # Note: Triplet conversion is largely unused due to conversion to charge pair 
-            logger.warning("ASSUMING molecule is a di-radical in singlet state: running conversion using TRIPLET state.")
-            obj = deepcopy(system)
-            obj.spin = 3
-            mol = system_to_mol(obj, catch_errors)
-
-        else:
-            logger.info("    -> Connectivity assignment SUCCESS")            
-    
-    # If system is multiplet, try connectivity assignment using charge shift
-    else:
-        logger.info("- System is open-shell: running heuristic connectivity determination by charge shift.")
-
-        # Generate a guess singlet connectivity by charge shifting
-        guess = _guess_connectivity_by_charge_shifting(mol, system.charge, system.spin)
-                        
-        # If no radical was set (with spin populations), let RDKit attempt to find radicals
-        if get_total_number_of_radicals(mol) == 0:
-            logger.info("- Success: Radical assignment not found, using RDKit to find radicals.")
-            
-            # Directly copy back the charge shifted connectivity to the original `Mol` object
-            mol : rdchem.Mol = copy_connectivity(guess, mol)
-
-            # Sanitize the molecule setting charges and radicals
-            rdmolops.SanitizeMol(
-                mol,
-                sanitizeOps=rdmolops.SanitizeFlags.SANITIZE_PROPERTIES | rdmolops.SanitizeFlags.SANITIZE_FINDRADICALS,
-                catchErrors=catch_errors
-            )
-
-        # If radicals were set (with spin populations) check if they are compatible with singlet connectivity
-        else:
-            logger.info("- Radical assignment FOUND:")
-            logger.info("    -> Checking if system is compatible with direct copy and PROPERTIES sanitization.")
-
-            newmol : rdchem.Mol = copy_connectivity(guess, mol)   
-            sanitized_mol = deepcopy(newmol)
-            
-            rdmolops.SanitizeMol(
-                sanitized_mol,
-                sanitizeOps=rdmolops.SanitizeFlags.SANITIZE_PROPERTIES,
-                catchErrors=catch_errors
-            )
-
-            # Check if the charge and spin multiplicity after sanitization are correct
-            charge = get_total_charge(sanitized_mol)
-            spin = get_total_number_of_radicals(sanitized_mol) + 1
-            
-            if charge == system.charge and spin == system.spin:
-                logger.info("- Success: Directly adopting singlet connectivity with radical assignment.")
-                mol = sanitized_mol
-            
-            else:
-                logger.info("    -> Checking compatibility with singlet-based connectivity.")
-
-                # Create a copy of the temporary read-write `Mol` object and sanitize it.
-                sanitized_mol = deepcopy(newmol)
-
-                rdmolops.SanitizeMol(
-                    sanitized_mol,
-                    sanitizeOps=rdmolops.SanitizeFlags.SANITIZE_PROPERTIES | rdmolops.SanitizeFlags.SANITIZE_FINDRADICALS,
-                    catchErrors=catch_errors
-                )
-
-                # Check if the originally set radicals have been removed and which are affected
-                radicals = get_radicals(mol)
-                affected_radicals = [False for _ in radicals]
-                for i, nrad in enumerate(radicals):
-                    sanitized_atom = sanitized_mol.GetAtomWithIdx(i)
-                    sanitized_nrad = sanitized_atom.GetNumRadicalElectrons()
-                    if sanitized_nrad < nrad:
-                        affected_radicals[i] = True
-                
-                affected_sites = [i for i, b in enumerate(affected_radicals) if b is True]
-                
-                # If the radicals have been maintained, simply copy the molecule
-                if affected_sites == []:
-                    logger.info("- Success: Singlet-based connectivity is VALID.")
-                    mol = sanitized_mol
-                
-                # If radicals would be cleared by sanitization, try to adjust the bond order of the radical site
-                else:
-                    logger.info("- Failed: Singlet-based connectivity is INVALID.")
-                    logger.info(f"    -> Affected sites: {affected_sites}")
-                    logger.info("- Trying: Adjusting connectivity around affected radical sites.")
-
-                    mol = _adjust_site_connectivity(newmol, guess, affected_sites, system.charge)
-
-                # Sanitize the molecule setting charges and radicals
-                rdmolops.SanitizeMol(
-                    mol,
-                    sanitizeOps=rdmolops.SanitizeFlags.SANITIZE_PROPERTIES | rdmolops.SanitizeFlags.SANITIZE_FINDRADICALS,
-                    catchErrors=catch_errors
-                )
-
-    _check_mol_consistency(mol, system.charge, system.spin)
-
-    return mol
-
-
-def print_mol(mol: rdchem.Mol, connectivity: bool = True) -> None:
-    """
-    Given an `rdkit.Chem.rdchem.Mol` object, print a breaf summary of atom properties and connectivity.
-
-    Arguments
-    ---------
-    mol : rdkit.Chem.rdchem.Mol
-        The input `Mol` object
-    connectivity: bool
-        If set to `True` (default) will print a summary of the connectivity of each atom.
-    
-    Raises
-    ------
-    TypeError
-        Exception raised if the `mol` argument is not of type `rdkit.Chem.rdchem.Mol`.
-    """
-    if not isinstance(mol, (rdchem.Mol, rdchem.RWMol)):
-        raise TypeError(f"The `mol` argument must be of type `rdkit.Chem.rdchem.Mol`. Invalid type {type(mol)} was used.")
-    
-    atom: rdchem.Atom = None
-    print("ATOMS:")
-    for atom in mol.GetAtoms():
-        idx = atom.GetIdx()
-        sym = atom.GetSymbol()
-        charge = atom.GetFormalCharge()
-        spin = atom.GetNumRadicalElectrons()
-        impH = atom.GetTotalNumHs(includeNeighbors=True)
-        print(f"Atom {idx:2d}: {sym:2s}, formal charge = {charge}, spin={spin}, Hcount = {impH}")
-    
-    if connectivity is True:
-        print()
-        print("CONNECTIVITY:")
-        for atom in mol.GetAtoms():
-            i = atom.GetIdx()
-            neigh_info = []
-
-            for nbr in atom.GetNeighbors():
-                j = nbr.GetIdx()
-                bond = mol.GetBondBetweenAtoms(i, j)
-
-                # bond type as string
-                btype = str(bond.GetBondType())
-
-                neigh_info.append(f"{j} {btype}")
-
-            neigh_str = ", ".join(neigh_info) if neigh_info else "—"
-            print(f"{i:2d} to: {neigh_str}")
-
-    print("\n")
