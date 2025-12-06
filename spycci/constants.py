@@ -85,7 +85,7 @@ atoms_dict = {
     84: "Po",
     85: "At",
     86: "Rn",
-    87: "Fe",
+    87: "Fr",
     88: "Ra",
     89: "Ac",
     90: "Th",
@@ -111,6 +111,12 @@ atoms_dict = {
     110: "Ds",
     111: "Rg",
     112: "Cn",
+    113: "Nh",
+    114: "Fl",
+    115: "Mc",
+    116: "Lv",
+    117: "Ts",
+    118: "Og",
 }
 
 atomic_masses = {
@@ -200,7 +206,7 @@ atomic_masses = {
     "Po": 209,
     "At": 210,
     "Rn": 222,
-    "Fe": 55.845,
+    "Fe": 223.02,
     "Ra": 226,
     "Ac": 227,
     "Th": 232.038,
@@ -226,6 +232,12 @@ atomic_masses = {
     "Ds": 281,
     "Rg": 280,
     "Cn": 285,
+    "Nh": 286,
+    "Fl": 289,
+    "Mc": 289,
+    "Lv": 293,
+    "Ts": 294,
+    "Og": 294,
 }
 
 # Dictionary of atomic numbers
