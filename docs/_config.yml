@@ -29,6 +29,7 @@ sphinx:
   extra_extensions:
     - 'sphinx.ext.autodoc'
     - 'sphinx.ext.napoleon'
+    - 'sphinx.ext.graphviz'
   config:
     html_theme: sphinx_rtd_theme
     html_theme_options:

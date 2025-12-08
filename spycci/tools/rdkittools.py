@@ -297,13 +297,6 @@ def system_to_mol(
 
             rdDetermineBonds.DetermineBonds(mol, charge=system.charge, embedChiral=True, allowChargedFragments=True)
 
-            # Check for carbene sites and warn the user (assumption: setting 0 radical electrons for singlet carbenes)
-            for i, s in enumerate(get_radicals(mol)):
-                if s == 2:
-                    logger.warning(f"{s} unpaired electrons assigned to site {i} in singlet system: converting carbene to singlet")                       
-                    carbene_atom = mol.GetAtomWithIdx(i)
-                    carbene_atom.SetNumRadicalElectrons(0)
-
         # If standard conversion fails try running the conversion using an hypotetical TRIPLET state (Assuming di-radical)
         # Note: Triplet conversion is largely unused due to conversion to charge pair 
         except:
@@ -314,8 +307,15 @@ def system_to_mol(
             mol = system_to_mol(obj, catch_errors)
 
         else:
-            logger.info("    -> Connectivity assignment SUCCESS")            
-    
+            logger.info("    -> Connectivity assignment SUCCESS")
+        
+        # Check for carbene sites and warn the user (assumption: setting 0 radical electrons for singlet carbenes)
+        for i, s in enumerate(get_radicals(mol)):
+            if s == 2:
+                logger.warning(f"{s} unpaired electrons assigned to site {i} in singlet system: converting carbene to singlet")                       
+                carbene_atom = mol.GetAtomWithIdx(i)
+                carbene_atom.SetNumRadicalElectrons(0)
+
     # If system is multiplet (open-shell), try connectivity assignment using charge shift
     else:
         logger.info("- System is open-shell: running heuristic connectivity determination by charge shift.")

@@ -12,6 +12,7 @@ chapters:
     - file: Guide/run
     - file: Guide/properties
     - file: Guide/functions
+    - file: Guide/cheminformatics
     - file: Guide/tools
     - file: Guide/molecular_visualization
 

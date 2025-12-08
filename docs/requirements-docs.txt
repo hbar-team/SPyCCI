@@ -5,4 +5,5 @@ matplotlib
 numpy
 ghp-import
 sphinx-rtd-theme
+graphviz
 # myst-parser will be installed directly in the workflow as a temporary fix
