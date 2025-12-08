@@ -62,3 +62,12 @@
 ```{eval-rst}
 .. autofunction:: spycci.tools.reorder_energies
 ```
+
+## The `spycci.tools.rdkittools` submodule
+
+```{eval-rst}
+.. automodule:: spycci.tools.rdkittools
+    :members:
+    :undoc-members:
+    :private-members:
+```

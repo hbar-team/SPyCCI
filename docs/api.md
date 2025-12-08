@@ -11,4 +11,6 @@ This API reference is divided into the following submodules, matching the struct
 
 * [`spycci.functions`](API-functions): mid-level algorithms for manually calculating specific physical observables, such as pKa, redox potentials, Fukui functions, etc. The user must provide all the necessary species for the calculation, for example the specific protonated and deprotonated species in a pKa calculation.
 
+* [`spycci.graphicaltools`](API-graphicaltools): various tools dedicated to molecular structures and volumetric data visualization.
+
 * [`spycci.tools`](API-tools): various useful functions called internally throughout the code. The user should generally not need to use this module during normal operation.
