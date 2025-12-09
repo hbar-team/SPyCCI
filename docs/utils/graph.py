@@ -38,14 +38,17 @@ def create_function_flow() -> Digraph:
     
     dot.attr("node", **op_style_mulliken)
     dot.node("MolWithRadicals", "Define `rdchem.Mol` object\nwith radicals assigned")
+    dot.node("ValenceAdjMullFirst", "Run valence adjustment")
     dot.node("TrySanitizeProps", "Try sanitize `PROPERTIES`")
     dot.node("TrySanitizePropsRadicals", "Try sanitize `PROPERTIES`\nand `FINDRADICALS`")
     dot.node("AdjustRadicalConnectivity", "Adjust connectivity around\naffected radicals")
+    dot.node("ValenceAdjMullFinal", "Run valence adjustment")
     dot.node("SanitizeFinal", "Sanitize `PROPERTIES`\nand `FINDRADICALS`")
 
     
     dot.attr("node", **op_style_nomulliken)
     dot.node("MolCoordsOnly", "Define `rdchem.Mol` object\nwith coordinates only")
+    dot.node("ValenceAdjNoMull", "Run valence adjustment")
     dot.node("SanitizeProps", "Sanitize `PROPERTIES`\nand `FINDRADICALS`")
 
     # -----------------------------
@@ -59,7 +62,7 @@ def create_function_flow() -> Digraph:
     dot.node("ConversionSuccess", "Was the conversion successful?")
     dot.node("RadicalsAssigned", "Radicals have been set?")
     dot.node("ChargeSpinCorrect", "Are `charge` and `spin` correct?")
-    dot.node("RadicalsAffected", "Are set radicals affected?")
+    dot.node("RadicalsAffected", "Are set radicals affected or\ndid sanitation raised valence errors?")
     
     # -----------------------------
     # Edges
@@ -100,16 +103,19 @@ def create_function_flow() -> Digraph:
     # Non-singlet branch
     dot.edge("IsSinglet", "GuessConnectivity", label="NO")
     dot.edge("GuessConnectivity", "RadicalsAssigned")
-    dot.edge("RadicalsAssigned", "SanitizeProps", label="NO")
+    dot.edge("RadicalsAssigned", "ValenceAdjNoMull", label="NO")
+    dot.edge("ValenceAdjNoMull", "SanitizeProps")
     dot.edge("SanitizeProps", "End")
-    dot.edge("RadicalsAssigned", "TrySanitizeProps", label="YES")
+    dot.edge("RadicalsAssigned", "ValenceAdjMullFirst", label="YES")
+    dot.edge("ValenceAdjMullFirst", "TrySanitizeProps")
     dot.edge("TrySanitizeProps", "ChargeSpinCorrect")
     dot.edge("ChargeSpinCorrect", "End", label="YES")
     dot.edge("ChargeSpinCorrect", "TrySanitizePropsRadicals", label="NO")
     dot.edge("TrySanitizePropsRadicals", "RadicalsAffected")
     dot.edge("RadicalsAffected", "End", label="NO")
     dot.edge("RadicalsAffected", "AdjustRadicalConnectivity", label="YES")
-    dot.edge("AdjustRadicalConnectivity", "SanitizeFinal")
+    dot.edge("AdjustRadicalConnectivity", "ValenceAdjMullFinal")
+    dot.edge("ValenceAdjMullFinal", "SanitizeFinal")
     dot.edge("SanitizeFinal", "End")
     
     return dot
