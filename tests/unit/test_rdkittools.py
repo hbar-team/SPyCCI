@@ -396,7 +396,6 @@ def test_system_to_mol_methyl_anion_no_spin():
         assert atom.GetNumRadicalElectrons() == expected_nrad[i], f"Wrong number of radical electrons on atom {i}"
         assert atom.GetTotalNumHs(includeNeighbors=True) == expected_hydrogens[i], f"Wrong number of hydrogens on atom {i}"
 
-@pytest.mark.xfail
 def test_system_to_mol_nitric_oxide_no_spin():
 
     xyz_file = f"{XYZPATH}/nitric_oxide.xyz"
@@ -593,7 +592,7 @@ def test_system_to_mol_methyl_radical_with_spin():
         assert atom.GetNumRadicalElectrons() == expected_nrad[i], f"Wrong number of radical electrons on atom {i}"
         assert atom.GetTotalNumHs(includeNeighbors=True) == expected_hydrogens[i], f"Wrong number of hydrogens on atom {i}"
 
-@pytest.mark.xfail
+
 def test_system_to_mol_nitric_oxide_with_spin():
 
     xyz_file = f"{XYZPATH}/nitric_oxide.xyz"

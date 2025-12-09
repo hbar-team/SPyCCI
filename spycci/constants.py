@@ -240,20 +240,143 @@ atomic_masses = {
     "Og": 294,
 }
 
+electonegativity_pauling = {
+    "H": 2.2,
+    "He": None,
+    "Li": 0.98,
+    "Be": 1.57,
+    "B": 2.04,
+    "C": 2.55,
+    "N": 3.04,
+    "O": 3.44,
+    "F": 3.98,
+    "Ne": None,
+    "Na": 0.93,
+    "Mg": 1.31,
+    "Al": 1.61,
+    "Si": 1.9,
+    "P": 2.19,
+    "S": 2.58,
+    "Cl": 3.16,
+    "Ar": None,
+    "K": 0.82,
+    "Ca": 1.0,
+    "Sc": 1.36,
+    "Ti": 1.54,
+    "V": 1.63,
+    "Cr": 1.66,
+    "Mn": 1.55,
+    "Fe": 1.83,
+    "Co": 1.88,
+    "Ni": 1.91,
+    "Cu": 1.9,
+    "Zn": 1.65,
+    "Ga": 1.81,
+    "Ge": 2.01,
+    "As": 2.18,
+    "Se": 2.55,
+    "Br": 2.96,
+    "Kr": None,
+    "Rb": 0.82,
+    "Sr": 0.95,
+    "Y": 1.22,
+    "Zr": 1.33,
+    "Nb": 1.6,
+    "Mo": 2.16,
+    "Tc": 2.1,
+    "Ru": 2.2,
+    "Rh": 2.28,
+    "Pd": 2.2,
+    "Ag": 1.93,
+    "Cd": 1.69,
+    "In": 1.78,
+    "Sn": 1.96,
+    "Sb": 2.05,
+    "Te": 2.1,
+    "I": 2.66,
+    "Xe": 2.6,
+    "Cs": 0.79,
+    "Ba": 0.89,
+    "La": 1.1,
+    "Ce": 1.12,
+    "Pr": 1.13,
+    "Nd": 1.14,
+    "Pm": None,
+    "Sm": 1.17,
+    "Eu": None,
+    "Gd": 1.2,
+    "Tb": None,
+    "Dy": 1.22,
+    "Ho": 1.23,
+    "Er": 1.24,
+    "Tm": 1.25,
+    "Yb": None,
+    "Lu": 1.0,
+    "Hf": 1.3,
+    "Ta": 1.5,
+    "W": 1.7,
+    "Re": 1.9,
+    "Os": 2.2,
+    "Ir": 2.2,
+    "Pt": 2.2,
+    "Au": 2.4,
+    "Hg": 1.9,
+    "Tl": 1.8,
+    "Pb": 1.8,
+    "Bi": 1.9,
+    "Po": 2.0,
+    "At": 2.2,
+    "Rn": None,
+    "Fr": 0.7,
+    "Ra": 0.9,
+    "Ac": 1.1,
+    "Th": 1.3,
+    "Pa": 1.5,
+    "U": 1.7,
+    "Np": 1.3,
+    "Pu": 1.3,
+    "Am": None,
+    "Cm": None,
+    "Bk": None,
+    "Cf": None,
+    "Es": None,
+    "Fm": None,
+    "Md": None,
+    "No": None,
+    "Lr": None,
+    "Rf": None,
+    "Db": None,
+    "Sg": None,
+    "Bh": None,
+    "Hs": None,
+    "Mt": None,
+    "Ds": None,
+    "Rg": None,
+    "Cn": None,
+    "Nh": None,
+    "Fl": None,
+    "Mc": None,
+    "Lv": None,
+    "Ts": None,
+    "Og": None,
+}
+
 # Dictionary of atomic numbers
 atomic_numbers = {a: i for i, a in atoms_dict.items()}
 
 ## Tabulated constants
 kB = 3.167e-6  # Boltzmann constant in Eh/K
-R = 8.31446261815324 # Universal gas constant in J/(kg*mol)
-avogadro = 6.0221408e23 # Avogadro's number
-h = 6.62607015e-34 # Planck's constant in J*s
-c = 299792458 # Speed of light in m/s
+R = 8.31446261815324  # Universal gas constant in J/(kg*mol)
+avogadro = 6.0221408e23  # Avogadro's number
+h = 6.62607015e-34  # Planck's constant in J*s
+c = 299792458  # Speed of light in m/s
 
-proton_hydration_free_energy = -270.29 # Proton solvation free energy in water (kcal/mol)
+proton_hydration_free_energy = (
+    -270.29
+)  # Proton solvation free energy in water (kcal/mol)
 
 ## Collection of conversion factors
 Eh_to_kcalmol = 627.5
-kcal_to_J = 4184.
+kcal_to_J = 4184.0
 bohr_to_angstrom = 0.529177210544
 amu_to_kg = 1.66053906892e-27

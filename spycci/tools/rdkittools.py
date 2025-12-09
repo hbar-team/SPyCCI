@@ -1,11 +1,11 @@
 import math, logging
 
 from copy import deepcopy
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Tuple
 
 from spycci.systems import System
 from spycci.core.geometry import MolecularGeometry
-from spycci.constants import atomic_numbers
+from spycci.constants import atomic_numbers, electonegativity_pauling
 
 from rdkit.Chem import rdchem, rdmolops, rdDetermineBonds
     
@@ -216,7 +216,6 @@ def system_to_mol(
     system: System,
     metal_ox_states: Optional[Dict[int, int]] = None,
     ligand_spin : int = 1,
-    catch_errors: bool = True,
 ) -> rdchem.Mol:
     """
     Given a `System` object, the function generates an `rdkit.Chem.Mol` object from the stored molecular
@@ -256,10 +255,7 @@ def system_to_mol(
         Example: {1: 2, 5: 3} where keys are system atom indices and values are formal charges.
     ligand_spin : int
         The spin multiplicity to be assigned to the organic backbone (ligand) after removing metals.
-    catch_errors: bool
-        If set to `True` (default), will not rise an exception if sanitization fails due to non-standard
-        valences. If `False` exception is raised.
-
+    
     Returns
     -------
     rdkit.Chem.Mol
@@ -276,7 +272,7 @@ def system_to_mol(
     # If metals are detected and the user provided a dictionary of oxidation states directly apply them
     if metals_detected is True and metal_ox_states is not None:
         logger.info("Metals detected with assigned oxidation state: Running RDKit on the organic backbone.")
-        mol = _process_metals_directly(system, metal_ox_states, ligand_spin=ligand_spin, catch_errors=catch_errors)
+        mol = _process_metals_directly(system, metal_ox_states, ligand_spin=ligand_spin)
         return mol
     
     # If metals are detected issue a warning to the user and try using the standard routine
@@ -304,7 +300,7 @@ def system_to_mol(
             logger.warning("ASSUMING molecule is a di-radical in singlet state: running conversion using TRIPLET state.")
             obj = deepcopy(system)
             obj.spin = 3
-            mol = system_to_mol(obj, catch_errors)
+            mol = system_to_mol(obj)
 
         else:
             logger.info("    -> Connectivity assignment SUCCESS")
@@ -322,7 +318,7 @@ def system_to_mol(
 
         # Generate a guess singlet connectivity by charge shifting
         guess = _guess_connectivity_by_charge_shifting(mol, system.charge, system.spin)
-                        
+
         # If no radical was set (with spin populations), let RDKit attempt to find radicals
         if get_total_number_of_radicals(mol) == 0:
             logger.info("- Success: Radical assignment not found, using RDKit to find radicals.")
@@ -330,11 +326,13 @@ def system_to_mol(
             # Directly copy back the charge shifted connectivity to the original `Mol` object
             mol : rdchem.Mol = copy_connectivity(guess, mol)
 
+            # Search for valence violations and apply local bond adjustment
+            mol = _adjust_atoms_valence(mol)
+            
             # Sanitize the molecule setting charges and radicals
             rdmolops.SanitizeMol(
                 mol,
                 sanitizeOps=rdmolops.SanitizeFlags.SANITIZE_PROPERTIES | rdmolops.SanitizeFlags.SANITIZE_FINDRADICALS,
-                catchErrors=catch_errors
             )
 
         # If radicals were set (with spin populations) check if they are compatible with singlet connectivity
@@ -344,6 +342,9 @@ def system_to_mol(
             
             # Copy the singlet connectivity and check if charge and spin are correct after properties sanitization
             newmol : rdchem.Mol = copy_connectivity(guess, mol)   
+
+            # Search for valence violations and apply local bond adjustment
+            newmol = _adjust_atoms_valence(newmol)
             
             # Create a copy of the temporary read-write `Mol` object and sanitize it.
             sanitized_mol = deepcopy(newmol)
@@ -351,7 +352,6 @@ def system_to_mol(
             rdmolops.SanitizeMol(
                 sanitized_mol,
                 sanitizeOps=rdmolops.SanitizeFlags.SANITIZE_PROPERTIES,
-                catchErrors=catch_errors
             )
 
             charge = get_total_charge(sanitized_mol)
@@ -370,11 +370,16 @@ def system_to_mol(
                 # Create a copy of the temporary read-write `Mol` object and sanitize it.
                 sanitized_mol = deepcopy(newmol)
                 
-                rdmolops.SanitizeMol(
-                    sanitized_mol,
-                    sanitizeOps=rdmolops.SanitizeFlags.SANITIZE_PROPERTIES | rdmolops.SanitizeFlags.SANITIZE_FINDRADICALS,
-                    catchErrors=catch_errors
-                )
+                errors = False
+                try:
+                    rdmolops.SanitizeMol(
+                        sanitized_mol,
+                        sanitizeOps=rdmolops.SanitizeFlags.SANITIZE_PROPERTIES | rdmolops.SanitizeFlags.SANITIZE_FINDRADICALS,
+                        catchErrors=True
+                    )
+                
+                except:
+                    errors = True
 
                 # Check if the originally set radicals have been removed and which are affected
                 radicals = get_radicals(mol)
@@ -388,7 +393,7 @@ def system_to_mol(
                 affected_sites = [i for i, b in enumerate(affected_radicals) if b is True]
                 
                 # If the radicals have been maintained, simply copy the molecule
-                if affected_sites == []:
+                if affected_sites == [] and errors is False:
                     logger.info("- Success: Singlet-based connectivity is VALID.")
                     mol = sanitized_mol
                 
@@ -404,7 +409,6 @@ def system_to_mol(
                 rdmolops.SanitizeMol(
                     mol,
                     sanitizeOps=rdmolops.SanitizeFlags.SANITIZE_PROPERTIES | rdmolops.SanitizeFlags.SANITIZE_FINDRADICALS,
-                    catchErrors=catch_errors
                 )
 
     _check_mol_consistency(mol, system.charge, system.spin)
@@ -438,7 +442,6 @@ def _process_metals_directly(
     system: System,
     metal_ox_states: Dict[int, int],
     ligand_spin: int = 1,
-    catch_errors: bool = True
 ) -> rdchem.Mol:
     """
     Process a molecular `System` containing metals by separating the metal atoms from the organic 
@@ -455,8 +458,6 @@ def _process_metals_directly(
         Example: {1: 2, 5: 3} where keys are system atom indices and values are formal charges.
     ligand_spin : int
         The spin multiplicity to assign to the organic backbone (ligand) after removing metals.
-    catch_errors : bool
-        Whether to catch errors during the conversion of the organic backbone to RDKit Mol.
 
     Returns
     -------
@@ -498,7 +499,7 @@ def _process_metals_directly(
 
     # Run system to molecule conversion on the organic backbone
     logger.info(f"-> Running ligand conversion with charge {new_charge} and spin multiplicity {ligand_spin}.")
-    ligand = system_to_mol(new_system, catch_errors=catch_errors)
+    ligand = system_to_mol(new_system)
 
     # Create a RWMol representation of the molecule and add the missing metals with their formal charges
     rwmol = rdchem.RWMol(ligand)
@@ -746,8 +747,134 @@ def _adjust_site_connectivity(mol: rdchem.Mol, guess: rdchem.Mol, affected_sites
                 logger.info(f"        * Radical site {i}: changing bond with atom {idx} from DOUBLE to SINGLE.")
                 break
             
-    return rwmol.GetMol()
+    newmol = rwmol.GetMol()
+    newmol = _adjust_atoms_valence(newmol)
+    return newmol
        
+
+def _adjust_atoms_valence(mol: rdchem.Mol) -> rdchem.Mol:
+    """
+    The function adjusts atomic valences in an RDKit molecule by selectively reducing the order of multiple bonds
+    and redistributing formal charges. Atoms exceeding the maximum allowed valence according to RDKit's periodic 
+    table are identified and the order of adjacent multiple bonds (triple → double → single, double → single) reduced
+    to adjust the atom's valence. Bond-breaking priority is determined by the absolute difference in Pauling
+    electronegativity between the atom and its neighbor (bonds between atoms with similar electronegativity are
+    modified first). If the same electronecativity difference is detected, bonds are breaked according to their bond
+    order (higher-order bonds are modified before lower-order ones when electronegativity differences are equal).
+    When a bond is reduced in order, formal charges are redistributed to reflect electron flow: the more electronegative
+    atom receives a negative charge, and the less electronegative atom receives a positive charge. The original molecule
+    is not modified.
+
+    Arguments
+    ----------
+    mol : rdkit.Chem.rdchem.Mol
+        The input molecule. (Implicit hydrogens should already be removed)
+
+    Returns
+    -------
+    rdkit.Chem.rdchem.Mol
+        A new molecule with corrected valences and updated formal charges.
+    """
+    # Create a read-write copy of the input molecule
+    rwmol: rdchem.RWMol = rdchem.RWMol(mol)
+
+    # Force the computation of valences
+    rwmol.UpdatePropertyCache(strict=False)
+
+    # Obtain periodic table from RDKit to examine possible valence values
+    pt = rdchem.GetPeriodicTable()
+
+    atom: rdchem.Atom = None
+    for atom in rwmol.GetAtoms():
+        
+        # Get list of valid valences for the current element
+        symbol = atom.GetSymbol()
+        atomic_number = atomic_numbers[symbol]
+        allowed_valences = list(pt.GetValenceList(atomic_number))
+
+        # Get the explicit valence value for the current atom
+        val = atom.GetValence(which=rdchem.ValenceType.EXPLICIT)
+        
+        # If valence is OK continue
+        if val in allowed_valences:
+            continue
+
+        # Get the index of the current atom
+        idx = atom.GetIdx()
+
+        # If valence is bigger than the maximum value adjust site connectivity
+        if val > max(allowed_valences):
+            
+            # Get a list of the bonds made by the current atom
+            bonds: List[rdchem.Bond] = list(atom.GetBonds())
+
+            # From the list of bonds find the ones that can be broken to adjust valence
+            breakable_bonds: List[Tuple[rdchem.Atom, float, rdchem.Bond]] = []
+            for bond in bonds:
+                
+                # Get the bond type and order
+                bt = bond.GetBondType()
+
+                # If bond type is SINGLE skip the current bond
+                if bt == rdchem.BondType.SINGLE:
+                    continue
+                
+                # Find the index of the partner atom
+                i, j = bond.GetBeginAtomIdx(), bond.GetEndAtomIdx()
+                nidx = i if i != idx else j
+
+                # Extract the partner atom, find the element symbol and electronegativity difference
+                neighbor = rwmol.GetAtomWithIdx(nidx)        
+                nsymbol = neighbor.GetSymbol()
+                elneg_diff = electonegativity_pauling[nsymbol] - electonegativity_pauling[symbol]
+                
+                breakable_bonds.append([neighbor, elneg_diff, bond])
+            
+            # Sort the breakable bonds by the absolute value of the electronegativity difference and bond type
+            breakable_bonds.sort(key=lambda x: (abs(x[1]), -x[2].GetBondTypeAsDouble()))
+
+            # Break, in order, a number of bonds equal to the valence error
+            delta_val = val - max(allowed_valences) 
+            nbroken = 0
+            for i, (neighbor, elneg_diff, bond) in enumerate(breakable_bonds):
+                
+                # Get the current bond type and break one of the bonds
+                bt = bond.GetBondType()
+
+                if bt == rdchem.BondType.TRIPLE and delta_val - nbroken > 1:
+                    nbroken += 2
+                    bond.SetBondType(rdchem.BondType.SINGLE)
+
+                elif bt == rdchem.BondType.TRIPLE:
+                    nbroken += 1
+                    bond.SetBondType(rdchem.BondType.DOUBLE)
+                
+                elif bt == rdchem.BondType.DOUBLE:
+                    nbroken += 1
+                    bond.SetBondType(rdchem.BondType.SINGLE)
+                
+                # Get the current charge of the pair of atoms and adjust to account for bond breaking
+                atom_charge = atom.GetFormalCharge()
+                neighbor_charge = neighbor.GetFormalCharge()
+
+                if elneg_diff > 0:
+                    atom.SetFormalCharge(atom_charge + 1)
+                    neighbor.SetFormalCharge(neighbor_charge - 1)
+
+                else:
+                    atom.SetFormalCharge(atom_charge - 1)
+                    neighbor.SetFormalCharge(neighbor_charge + 1)
+                
+                if nbroken == delta_val:
+                    break
+
+        # If valence is bigger than the maximum value adjust site connectivity
+        else:
+            logger.warning(f"Unusual valence {val} detected on atom {idx}, usual valence values: {allowed_valences}")
+
+    newmol = rwmol.GetMol()
+    return newmol
+
 
 def _check_mol_consistency(mol: rdchem.Mol, charge: int, spin: int) -> None:
     """
