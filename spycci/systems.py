@@ -735,7 +735,7 @@ class ReactionPath:
         for i, arr in enumerate(new_coords):
             new_sys = deepcopy(self.systems[0])
             reshaped = arr.reshape(n_atoms, 3)
-            new_sys.geometry.coordinates = reshaped
+            new_sys.geometry.set_coordinates(reshaped)
             new_sys.name = self.name + f"_interp_{i}"
             new_systems.append(new_sys)
 
