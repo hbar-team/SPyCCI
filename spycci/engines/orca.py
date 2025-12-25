@@ -1143,12 +1143,12 @@ class OrcaInput(Engine):
 
         In doing so, the molecule ``mol`` will be updated with the computed properties without returning anything.
         """
-
-        logger.info(f"{mol.name}, charge {mol.charge} spin {mol.spin} - {self.method} FREQ")
+        ftype = "freq" if numerical is False else "nfreq"
+        logger.info(f"{mol.name}, charge {mol.charge} spin {mol.spin} - {self.method} {ftype.upper()}")
 
         tdir = mkdtemp(
             prefix=mol.name + "_",
-            suffix=f"_{self.__output_suffix}_freq",
+            suffix=f"_{self.__output_suffix}_{ftype}",
             dir=os.getcwd(),
         )
 
@@ -1178,7 +1178,7 @@ class OrcaInput(Engine):
             else:
                 self.parse_output(mol)
 
-            process_output(mol, self.__output_suffix, "freq", mol.charge, mol.spin)
+            process_output(mol, self.__output_suffix, ftype, mol.charge, mol.spin)
 
             if remove_tdir:
                 shutil.rmtree(tdir)
