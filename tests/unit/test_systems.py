@@ -3,9 +3,10 @@ import pytest, pathlib, json
 from numpy.testing import assert_array_almost_equal, assert_almost_equal
 from os.path import abspath, dirname, join
 from copy import copy, deepcopy
+from typing import List
 
 from spycci.config import __JSON_VERSION__
-from spycci.systems import System
+from spycci.systems import System, ReactionPath
 from spycci.core.base import Engine
 from spycci.core.geometry import MolecularGeometry
 from spycci.core.properties import Properties
@@ -548,3 +549,155 @@ def test___check_geometry_level_of_theory_System_mismatch():
         assert True
     else:
         assert False, "An exception was not raised when checking mismatching geometry levels of theory."
+
+
+
+# **************************************************************************************************************
+#                                     TEST FOR THE ReactionPath CLASS
+# **************************************************************************************************************
+
+# Define an helper function to generate a simple system (H2 molecule with set bond length)
+def _generate_sys(name: str, x: float) -> List[System]:
+
+    coords = [["H", 0., 0., 0.], ["H", x, 0., 0.]]
+    
+    geom = MolecularGeometry()
+    for l in coords:
+        geom.append(l[0], l[1::])
+        
+    sys = System(name, geom)
+    return sys
+
+# Define an helper function to generate a simple path (H2 molecule with different bond length)
+def _generate_sys_list(length: int) -> List[System]:
+
+    sys_list = []
+
+    for i in range(length):
+        x = (1./length)*(i+1)
+        sys = _generate_sys(f"mol_{i}", x)
+        sys_list.append(sys)
+    
+    return sys_list
+
+
+# Test the ReactionPath class constructor when no name is provided
+def test_ReactionPath___init___with_no_name():
+
+    sys_list = _generate_sys_list(4)
+    
+    try:
+        path = ReactionPath(sys_list)
+
+    except Exception as e:
+        assert False, f"Exception raised during `ReactionPath` class constructor: {e}"
+    
+    assert path.name == "mol_0"
+    assert str(path) == "Reaction path: mol_0, Number of steps: 4"
+    assert len(path) == 4
+
+    for i, s in enumerate(path):
+        assert s.name == f"mol_{i}"
+    
+    assert path[2].name == "mol_2"
+
+
+# Test the ReactionPath class constructor when name is provided
+def test_ReactionPath___init___with_name():
+
+    sys_list = _generate_sys_list(4)
+    
+    try:
+        path = ReactionPath(sys_list, "mypath")
+
+    except Exception as e:
+        assert False, f"Exception raised during `ReactionPath` class constructor: {e}"
+    
+    assert path.name == "mypath"
+    assert str(path) == "Reaction path: mypath, Number of steps: 4"
+    assert len(path) == 4
+
+    for i, s in enumerate(path):
+        assert s.name == f"mol_{i}"
+
+    assert path[2].name == "mol_2"
+
+
+# Test the add method of the ReactionPath class
+def test_ReactionPath_add():
+
+    sys_list = _generate_sys_list(4)
+    path = ReactionPath(sys_list, "mypath")
+
+    new_sys = _generate_sys("added", 2.)
+
+    try:
+        path.add([new_sys])
+
+    except Exception as e:
+        assert False, f"Exception raised when calling the `add` method: {e}"
+    
+    assert path.name == "mypath"
+    assert str(path) == "Reaction path: mypath, Number of steps: 5"
+    assert len(path) == 5
+
+    assert path[3].name == "mol_3"
+    assert path[4].name == "added"
+
+
+# Test that exception is raised when the add method is call using different system
+def test_ReactionPath_add_error():
+
+    sys_list = _generate_sys_list(4)
+    path = ReactionPath(sys_list, "mypath")
+
+    # Test exception when adding single different system
+    new_sys = System.from_smiles("methane", "C")
+
+    try:
+        path.add([new_sys])
+
+    except:
+        assert True
+    
+    else:
+        assert False, "Exception was not raised when calling the `add` method with different system"
+
+
+# Test the `interpolate` method of the ReactionPath class
+def test_ReactionPath_interpolate():
+
+    sys_list = _generate_sys_list(4)
+    path = ReactionPath(sys_list, "mypath")
+
+    try:
+        newpath = path.interpolate(6)
+    
+    except Exception as e:
+        assert False, f"Exception raised when calling the `interpolate` method: {e}"
+
+    assert len(newpath) == 6
+    
+    for i, sys in enumerate(newpath):
+        assert sys.name == f"mypath_interp_{i}"
+        assert_almost_equal(sys.geometry.coordinates[1][0], 0.25 + i*0.75/5., decimal=6)
+
+
+# Test the `analyze_active_atoms` method of the ReactionPath class
+def test_ReactionPath_analyze_active_atoms():
+
+    sys_list = _generate_sys_list(4)
+    path = ReactionPath(sys_list, "mypath")
+
+    try:
+        std, norm = path.analyze_active_atoms()
+    
+    except Exception as e:
+        assert False, f"Exception raised when calling the `interpolate` method: {e}"
+
+    expected_std = [[0., 0., 0.], [0.2795085, 0., 0.]]
+    expected_norm = [0., 0.2795085]
+
+    assert_array_almost_equal(std, expected_std, decimal=6)
+    assert_array_almost_equal(norm, expected_norm, decimal=6)
+    

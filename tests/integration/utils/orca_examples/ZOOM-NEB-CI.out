@@ -171,10 +171,10 @@ interface, adapt or use parts of their codes:
 
 
   ***********************************
-  * Starting time: Thu Dec 25 10:18:35 2025
+  * Starting time: Thu Dec 25 10:28:59 2025
   * Host name:     DESKTOP-57BLPTP
-  * Process ID:    31825
-  * Working dir.:  /home/ppravatto/Documenti/Esperimenti/ChimicaComputazionale/SPyCCI/NEB_reactant_NEB_product_3gvq21c6_orca_XTB_vacuum_NEB-CI
+  * Process ID:    40147
+  * Working dir.:  /home/ppravatto/Documenti/Esperimenti/ChimicaComputazionale/SPyCCI/NEB_reactant_NEB_product_3iheor14_orca_XTB_vacuum_NEB-ZOOM-CI
   ***********************************
 
 NOTE: MaxCore=750 MB was set to SCF,MP2,MDCI,CIPSI,MRCI,RASCI and CIS
@@ -225,7 +225,7 @@ NAME = input.inp
 |  5> %maxcore 750
 |  6> 
 |  7> ! XTB  
-|  8> ! NEB-CI
+|  8> ! ZOOM-NEB-CI
 |  9> 
 | 10> %neb
 | 11>   product "NEB_product.xyz"
@@ -279,8 +279,12 @@ H     -5.153866     0.991459    -0.378459
 ----------------------
 NEB settings
 ----------------------
-Method type                             ....  climbing image
+Method type                             ....  auto zoom
 Threshold for climbing image            ....  2.00e-02 Eh/Bohr 
+Threshold for zoom                      ....  2.00e-03 Eh/Bohr 
+  Auto selection                        ....  YES 
+  Fraction of barrier to be incl.        ....  0.50 
+  Selection offset from CI              ....  1 
 Free endpoints                          ....  off 
 Tangent type                            ....  improved 
 Number of intermediate images           ....  5 
@@ -332,7 +336,7 @@ Writing initial trajectory to file      ....  input_initial_path_trj.xyz
 
 
 ----------------------
-NEB OPTIMIZATION      
+FIRST NEB OPTIMIZATION
 ----------------------
 
 Following output files will be written:
@@ -374,7 +378,7 @@ Switch-on CI threshold               0.020000
 Image  3 will be converted to a climbing image in the next iteration (max(|Fp|) < 0.0200) 
 
 Optim.  Iteration  CI   E(CI)-E(0)   max(|Fp|)   RMS(Fp)    dS     max(|FCI|)   RMS(FCI)
-Convergence thresholds               0.005000   0.002500            0.000500    0.000250 
+Convergence thresholds                                               0.002000    0.001000 
    LBFGS     8      3    0.116070    0.013845   0.004366  4.9022    0.018755    0.007018       
    LBFGS     9      3    0.114906    0.031726   0.006759  4.9372    0.021817    0.008906       
    LBFGS    10      3    0.112160    0.043223   0.008234  5.0484    0.031234    0.010976       
@@ -388,19 +392,66 @@ Convergence thresholds               0.005000   0.002500            0.000500    
    LBFGS    18      3    0.107505    0.003071   0.000924  5.3907    0.004448    0.001390       
    LBFGS    19      3    0.107359    0.007285   0.001228  5.4061    0.003215    0.001141       
    LBFGS    20      3    0.107325    0.008146   0.001586  5.4212    0.001329    0.000468       
-   LBFGS    21      3    0.107321    0.002053   0.000527  5.4354    0.000701    0.000382       
-   LBFGS    22      3    0.107315    0.001561   0.000449  5.4362    0.000771    0.000395       
-   LBFGS    23      3    0.107310    0.001181   0.000358  5.4309    0.000589    0.000300       
-   LBFGS    24      3    0.107306    0.002841   0.000502  5.4255    0.000289    0.000142       
 
                                 .--------------------.
           ----------------------| CI-NEB convergence |-------------------------
           Item                value                   Tolerance       Converged
           ---------------------------------------------------------------------
-          RMS(Fp)             0.0005022248            0.0025000000      YES
-          MAX(|Fp|)           0.0028405617            0.0050000000      YES
-          RMS(FCI)            0.0001415476            0.0002500000      YES
-          MAX(|FCI|)          0.0002893134            0.0005000000      YES
+          RMS(FCI)            0.0004682862            0.0010000000      YES
+          MAX(|FCI|)          0.0013289616            0.0020000000      YES
+          ---------------------------------------------------------------------
+
+The climbing image has converged successfully to a saddle point in 20 iterations!
+ The regular images might only be partially converged to the MEP. 
+
+---------------------------------------------------------------
+                 STARTING SECOND NEB OPTIMIZATION         
+---------------------------------------------------------------
+            Summary and selection of zoom region 
+              (the zoom region is denoted by *)
+               Im.  S(bohr)   E(Eh)     dE(Eh)
+                0    0.00   -10.3567    0.000
+                1    1.64   -10.3275    0.029
+                2    2.25   -10.2771    0.080*
+                3    2.73   -10.2494    0.107*
+                4    3.22   -10.2783    0.078*
+                5    3.94   -10.3228    0.034
+                6    5.42   -10.3476    0.009
+  => Initial length of the zoom path           ....  0.9682 Bohr 
+  => Initial zoom traj. is written to          ....  input_zoom_initial_path
+  => Energy profile will be written to         ....  input_zoom.interp
+Optimization log-file appended to       ....  input.NEB.log
+Current trajectory will be written to    ....  input_MEP_trj.xyz
+       and written to allxyz file        ....  input_MEP_zoom.allxyz
+       and individual images to xyz file ....  input_im{NIm}.xyz
+Trajectory history will be appended to   ....  input_MEP_ALL_trj.xyz
+Converged CI will be written to          ....  input_NEB-CI_converged.xyz
+
+
+
+Starting iterations:
+
+Optim.  Iteration  HEI  E(HEI)-E(0)  max(|Fp|)   RMS(Fp)    dS
+Switch-on CI threshold               0.020000 
+   LBFGS    20      2    0.027676    0.006246   0.001496  0.9681       
+
+Image  2 will be converted to a climbing image in the next iteration (max(|Fp|) < 0.0200) 
+
+Optim.  Iteration  CI   E(CI)-E(0)   max(|Fp|)   RMS(Fp)    dS     max(|FCI|)   RMS(FCI)
+Convergence thresholds               0.005000   0.002500            0.000500    0.000250 
+   LBFGS    21      2    0.027681    0.003424   0.000886  0.9696    0.000699    0.000352       
+   LBFGS    22      2    0.027708    0.003105   0.000705  0.9706    0.000673    0.000321       
+   LBFGS    23      2    0.027742    0.001086   0.000396  0.9732    0.000579    0.000240       
+   LBFGS    24      2    0.027771    0.000877   0.000297  0.9743    0.000492    0.000192       
+
+                                .--------------------.
+          ----------------------| CI-NEB convergence |-------------------------
+          Item                value                   Tolerance       Converged
+          ---------------------------------------------------------------------
+          RMS(Fp)             0.0002973576            0.0025000000      YES
+          MAX(|Fp|)           0.0008772336            0.0050000000      YES
+          RMS(FCI)            0.0001920198            0.0002500000      YES
+          MAX(|FCI|)          0.0004922368            0.0005000000      YES
           ---------------------------------------------------------------------
 
 The elastic band and climbing image have converged successfully to a MEP in 24 iterations!
@@ -412,6 +463,8 @@ The elastic band and climbing image have converged successfully to a MEP in 24 i
 
 
 
+Note that paths from both the first and secondary NEB run have been concatenated for the following report (with a total of  9) images:
+
 ---------------------------------------------------------------
                          PATH SUMMARY              
 ---------------------------------------------------------------
@@ -419,61 +472,65 @@ All forces in Eh/Bohr.
 
 Image Dist.(Ang.)    E(Eh)   dE(kcal/mol)  max(|Fp|)  RMS(Fp)
   0     0.000     -10.35671      0.00       0.00009   0.00005
-  1     0.869     -10.32760     18.26       0.00098   0.00034
-  2     1.201     -10.27590     50.71       0.00075   0.00030
-  3     1.451     -10.24940     67.34       0.00032   0.00014 <= CI
-  4     1.717     -10.27991     48.19       0.00284   0.00100
-  5     2.075     -10.32198     21.79       0.00119   0.00055
-  6     2.871     -10.34758      5.73       0.00009   0.00003
+  1     0.867     -10.32752     18.31       0.00146   0.00075
+  2     1.193     -10.27717     49.91       0.00208   0.00088
+  3     1.339     -10.25562     63.43       0.00073   0.00037
+  4     1.450     -10.24939     67.34       0.00050   0.00019 <= CI
+  5     1.561     -10.25590     63.26       0.00088   0.00047
+  6     1.708     -10.27842     49.13       0.00112   0.00058
+  7     2.092     -10.32284     21.25       0.00807   0.00310
+  8     2.874     -10.34758      5.73       0.00009   0.00003
 
 Straight line distance between images along the path:
-        D( 0- 1) =   0.8686 Ang.
-        D( 1- 2) =   0.3323 Ang.
-        D( 2- 3) =   0.2497 Ang.
-        D( 3- 4) =   0.2665 Ang.
-        D( 4- 5) =   0.3582 Ang.
-        D( 5- 6) =   0.7957 Ang.
+        D( 0- 1) =   0.8674 Ang.
+        D( 1- 2) =   0.3251 Ang.
+        D( 2- 3) =   0.1460 Ang.
+        D( 3- 4) =   0.1111 Ang.
+        D( 4- 5) =   0.1114 Ang.
+        D( 5- 6) =   0.1470 Ang.
+        D( 6- 7) =   0.3837 Ang.
+        D( 7- 8) =   0.7826 Ang.
 
 ---------------------------------------------------------------
                INFORMATION ABOUT SADDLE POINT     
 ---------------------------------------------------------------
 
-Climbing image                            ....  3 
-Energy                                    ....  -10.24940029 Eh
-Max. abs. force                           ....  2.8931e-04 Eh/Bohr
+Climbing image                            ....  4 
+Energy                                    ....  -10.24939472 Eh
+Max. abs. force                           ....  4.9224e-04 Eh/Bohr
 
 -----------------------------------------
   SADDLE POINT (ANGSTROEM)
 -----------------------------------------
-C     -0.678615     0.273896    -0.099419 
-C      0.477434    -0.493705    -0.169316 
-H      0.878161    -0.818557     0.785461 
-H      0.801969     0.815446     0.435408 
-H      0.631350    -1.239176    -0.938494 
-O     -0.464790     1.356632     0.548396 
-H     -1.645510     0.105464    -0.562037 
+C     -0.677996     0.273894    -0.098287 
+C      0.477780    -0.494007    -0.167693 
+H      0.878449    -0.821883     0.786089 
+H      0.800777     0.816979     0.433758 
+H      0.629485    -1.237444    -0.939220 
+O     -0.464226     1.358235     0.547237 
+H     -1.644269     0.104227    -0.561884 
 
 -----------------------------------------
   FORCES (Eh/Bohr)
 -----------------------------------------
-C      0.000272     0.000050    -0.000037 
-C     -0.000023     0.000090    -0.000194 
-H     -0.000007     0.000289    -0.000039 
-H     -0.000138    -0.000285     0.000130 
-H     -0.000112    -0.000130     0.000038 
-O      0.000014     0.000136     0.000142 
-H     -0.000005    -0.000151    -0.000040 
+C      0.000004     0.000129    -0.000154 
+C      0.000032     0.000152    -0.000265 
+H      0.000001     0.000492    -0.000137 
+H      0.000109    -0.000380     0.000302 
+H     -0.000024    -0.000305     0.000109 
+O     -0.000058    -0.000041     0.000117 
+H     -0.000065    -0.000048     0.000027 
 
 -----------------------------------------
   UNIT TANGENT
 -----------------------------------------
-C      0.095817    -0.155049    -0.115738 
-C     -0.172862    -0.275725    -0.117460 
-H      0.140891     0.160818    -0.088212 
-H     -0.423961     0.492172     0.353531 
-H     -0.086374    -0.201831    -0.048226 
-O      0.407836    -0.085279     0.048472 
-H      0.038652     0.064895    -0.032367 
+C      0.093615    -0.172670    -0.122676 
+C     -0.179174    -0.265687    -0.117718 
+H      0.123334     0.157737    -0.072890 
+H     -0.445747     0.475316     0.327916 
+H     -0.073957    -0.168283    -0.041561 
+O      0.450451    -0.077603     0.057352 
+H      0.031479     0.051190    -0.030424 
  => Unit tangent is an approximation to the TS mode at the saddle point
 ----------
 STATISTICS
@@ -482,9 +539,11 @@ STATISTICS
 For the individual parts of the NEB, NEB-CI or NEB-TS run:
 
 Number of iterations:
-     NEB                               ... 25  100.0%
+     NEB                               ... 21  80.8%
+     zoomNEB                           ... 5  19.2%
 Number of SCF / gradient calculations:
-     NEB                               ... 152  100.0%
+     NEB                               ... 132  81.5%
+     zoomNEB                           ... 30  18.5%
 
 ----------
  TIMINGS
@@ -492,8 +551,9 @@ Number of SCF / gradient calculations:
 
 For the individual parts of the NEB, NEB-CI or NEB-TS run:
 
-Total                                  ...       22.584 sec
-NEB                                    ...       22.584 sec  100.0%
+Total                                  ...       22.013 sec
+NEB                                    ...       17.741 sec  80.6%
+zoomNEB                                ...        4.273 sec  19.4%
 
 
 --------------------------------
@@ -577,8 +637,8 @@ List of optional additional citations
 
 Timings for individual modules:
 
-Sum of individual times          ...       22.784 sec (=   0.380 min)
-XTB module                       ...        0.200 sec (=   0.003 min)   0.9 %
-NEB Iterations                   ...       22.584 sec (=   0.376 min)  99.1 %
+Sum of individual times          ...       22.076 sec (=   0.368 min)
+XTB module                       ...        0.062 sec (=   0.001 min)   0.3 %
+NEB Iterations                   ...       22.013 sec (=   0.367 min)  99.7 %
                              ****ORCA TERMINATED NORMALLY****
-TOTAL RUN TIME: 0 days 0 hours 0 minutes 24 seconds 467 msec
+TOTAL RUN TIME: 0 days 0 hours 0 minutes 23 seconds 866 msec
