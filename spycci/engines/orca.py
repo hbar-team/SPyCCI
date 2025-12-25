@@ -1570,7 +1570,7 @@ class OrcaInput(Engine):
                 raise FileNotFoundError(f"The Hessian initialization file provided for IRC ({hess_filename}) cannot be found")
 
         tdir = mkdtemp(
-            prefix=transition_state.name + "_" + transition_state.name + "_",
+            prefix=transition_state.name + "_",
             suffix=f"_{self.__output_suffix}_IRC",
             dir=os.getcwd(),
         )
