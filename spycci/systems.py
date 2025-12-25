@@ -640,10 +640,10 @@ class ReactionPath:
     def __init__(self, systems: List[System], name: Optional[str] = None) -> None:
 
         if len(systems) == 0:
-            raise ValueError("Cannot operate on an empty systems array")
+            raise ValueError("Cannot operate on an empty `systems` array.")
 
         if any(system.geometry.atoms != systems[0].geometry.atoms for system in systems):
-            raise RuntimeError("Different systems encountered in list")
+            raise RuntimeError("Different atoms encountered in the provided `systems` list.")
 
         self.systems: List[System] = systems
         self.name: str = systems[0].name if name is None else name
@@ -669,17 +669,25 @@ class ReactionPath:
     def __str__(self) -> str:
         return f"Reaction path: {self.name}, Number of steps: {len(self.systems)}"
 
-    def add(self, systems: List[System]):
+    def add(self, systems: List[System]) -> None:
         """
-        Append more Systems to the ensemble
+        Append more `Systems` objects to the reaction path. The function checks whether the atoms
+        list of each of the added systems matches the stored ones; if not, exception is raised.
 
         Parameters
         ----------
         systems : List[System]
             The list of systems to be added to the ensamble
+        
+        Raises
+        ------
+        RuntimeError
+            Exception raised if at least one of the provided systems atom list differs from the ones
+            stored in the current path object.
         """
-        if any(system.geometry.atoms != systems[0].geometry.atoms for system in systems):
-            raise RuntimeError("Different systems encountered in list")
+        atoms = self.systems[0].geometry.atoms
+        if any(system.geometry.atoms != atoms for system in systems):
+            raise RuntimeError("The atom lists of the given `systems` do not match that of the path.")
 
         for system in systems:
             self.systems.append(system)
