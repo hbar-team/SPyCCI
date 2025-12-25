@@ -171,10 +171,10 @@ interface, adapt or use parts of their codes:
 
 
   ***********************************
-  * Starting time: Thu Dec 25 10:18:35 2025
+  * Starting time: Thu Dec 25 10:35:07 2025
   * Host name:     DESKTOP-57BLPTP
-  * Process ID:    31825
-  * Working dir.:  /home/ppravatto/Documenti/Esperimenti/ChimicaComputazionale/SPyCCI/NEB_reactant_NEB_product_3gvq21c6_orca_XTB_vacuum_NEB-CI
+  * Process ID:    45548
+  * Working dir.:  /home/ppravatto/Documenti/Esperimenti/ChimicaComputazionale/SPyCCI/NEB_reactant_NEB_product_a07z_zy__orca_XTB_vacuum_NEB-IDPP
   ***********************************
 
 NOTE: MaxCore=750 MB was set to SCF,MP2,MDCI,CIPSI,MRCI,RASCI and CIS
@@ -225,7 +225,7 @@ NAME = input.inp
 |  5> %maxcore 750
 |  6> 
 |  7> ! XTB  
-|  8> ! NEB-CI
+|  8> ! NEB-IDPP
 |  9> 
 | 10> %neb
 | 11>   product "NEB_product.xyz"
@@ -243,8 +243,10 @@ NAME = input.inp
                         Nudged Elastic Band Calculation
 --------------------------------------------------------------------------------
 
-Number of images (incl. end points)     ....  7
-Number of intermediate images           ....  5
+Warning: End points are propagated according to the atomic force perp. to the path:
+         the end points need to be placed on opposite sides of the potential energy barrier
+Number of images (incl. end points)     ....  5
+Number of intermediate images           ....  3
 Number of optimized images              ....  5
 Optimization of end points before NEB   ....  NO
 Use existing gbw files for MO input     ....  NO
@@ -279,11 +281,11 @@ H     -5.153866     0.991459    -0.378459
 ----------------------
 NEB settings
 ----------------------
-Method type                             ....  climbing image
-Threshold for climbing image            ....  2.00e-02 Eh/Bohr 
-Free endpoints                          ....  off 
+Method type                             ....  regular
+Free endpoints                          ....  on 
+Type of end points                      ....  perp. 
 Tangent type                            ....  improved 
-Number of intermediate images           ....  5 
+Number of intermediate images           ....  3 
 Number of images free to move           ....  5 
 Spring type for image distribution      ....  distance between adjacent images 
 Spring constant                         ....  energy weighted (0.0100 -to- 0.1000) Eh/Bohr^2 
@@ -299,18 +301,11 @@ Remove external force                   ....  true
 Reparametrization of the path           ....  off 
 Convergence thresholds:
 Convergence monitored for               ....  all images
-Scaling factor                          ....  10.00
-
-Convergence parameters for regular images:
-               Max(|Fp|)                ....  5.00e-03 Eh/Bohr
-               RMS(Fp)                  ....  2.50e-03 Eh/Bohr
-
-Convergence parameters for climbing image:
-               Max(|F|)                 ....  5.00e-04 Eh/Bohr
-               RMS(F)                   ....  2.50e-04 Eh/Bohr
+               Max(|F|)                 ....  1.00e-03 Eh/Bohr
+               RMS(F)                   ....  5.00e-04 Eh/Bohr
 Optimization method:
 Method                                  ....  L-BFGS
-Max. iterations                         ....  500 
+Max. iterations                         ....  0 
 Step size                               ....  1.00 
 Maximum allowed step size               ....  0.10 Bohr
 
@@ -326,7 +321,7 @@ Minimize RMSD between reactant and product configurations     .... done
        RMSD after minimization          ....  0.9808 Bohr
 Performing linear interpolation         ....  done
 Generating initial path 1 out of 129 -> Success!
-Displacement along initial path:              4.6541 Bohr
+Displacement along initial path:              4.6448 Bohr
 Writing initial trajectory to file      ....  input_initial_path_trj.xyz
 
 
@@ -335,166 +330,8 @@ Writing initial trajectory to file      ....  input_initial_path_trj.xyz
 NEB OPTIMIZATION      
 ----------------------
 
-Following output files will be written:
-Energy profile during opt. written to    ....  input.interp
-Optimization log-file                    ....  input.NEB.log
-Current trajectory will be written to    ....  input_MEP_trj.xyz
-       and to allxyz file                ....  input_MEP.allxyz
-       and individual images to xyz file ....  input_im{NIm}.xyz
-Trajectory history will be written to    ....  input_MEP_ALL_trj.xyz
-Converged CI will be written to          ....  input_NEB-CI_converged.xyz
 
-Single point energy and gradient calculation of reactant and
-product configurations (have to be performed only once)
-Properties of fixed NEB end points:
-               Reactant:
-                         E               ....    -10.356706 Eh
-                         RMS(F)          ....      0.000050 Eh/Bohr
-                         MAX(|F|)        ....      0.000105 Eh/Bohr
-               Product:
-                         E               ....    -10.347576 Eh
-                         RMS(F)          ....      0.000028 Eh/Bohr
-                         MAX(|F|)        ....      0.000088 Eh/Bohr
-
-
-
-Starting iterations:
-
-Optim.  Iteration  HEI  E(HEI)-E(0)  max(|Fp|)   RMS(Fp)    dS
-Switch-on CI threshold               0.020000 
-   LBFGS     0      3    0.133043    0.072218   0.018737  4.6541       
-   LBFGS     1      3    0.128894    0.080950   0.017078  4.6666       
-   LBFGS     2      3    0.127284    0.057571   0.013825  4.7556       
-   LBFGS     3      3    0.124130    0.032046   0.009576  4.7576       
-   LBFGS     4      3    0.123142    0.036608   0.009102  4.7834       
-   LBFGS     5      3    0.119532    0.043322   0.008706  4.8656       
-   LBFGS     6      3    0.117753    0.033548   0.007386  4.8847       
-   LBFGS     7      3    0.116964    0.019612   0.005735  4.8944       
-
-Image  3 will be converted to a climbing image in the next iteration (max(|Fp|) < 0.0200) 
-
-Optim.  Iteration  CI   E(CI)-E(0)   max(|Fp|)   RMS(Fp)    dS     max(|FCI|)   RMS(FCI)
-Convergence thresholds               0.005000   0.002500            0.000500    0.000250 
-   LBFGS     8      3    0.116070    0.013845   0.004366  4.9022    0.018755    0.007018       
-   LBFGS     9      3    0.114906    0.031726   0.006759  4.9372    0.021817    0.008906       
-   LBFGS    10      3    0.112160    0.043223   0.008234  5.0484    0.031234    0.010976       
-   LBFGS    11      3    0.110760    0.012497   0.003819  5.0570    0.009377    0.003778       
-   LBFGS    12      3    0.110578    0.009465   0.002858  5.0631    0.008882    0.003760       
-   LBFGS    13      3    0.109502    0.024447   0.004413  5.1270    0.015990    0.005994       
-   LBFGS    14      3    0.108027    0.024545   0.005396  5.2310    0.007667    0.003810       
-   LBFGS    15      3    0.107699    0.032868   0.005191  5.3750    0.005227    0.002679       
-   LBFGS    16      3    0.107779    0.022573   0.003848  5.4494    0.005766    0.002063       
-   LBFGS    17      3    0.107591    0.004487   0.001135  5.3940    0.004834    0.001566       
-   LBFGS    18      3    0.107505    0.003071   0.000924  5.3907    0.004448    0.001390       
-   LBFGS    19      3    0.107359    0.007285   0.001228  5.4061    0.003215    0.001141       
-   LBFGS    20      3    0.107325    0.008146   0.001586  5.4212    0.001329    0.000468       
-   LBFGS    21      3    0.107321    0.002053   0.000527  5.4354    0.000701    0.000382       
-   LBFGS    22      3    0.107315    0.001561   0.000449  5.4362    0.000771    0.000395       
-   LBFGS    23      3    0.107310    0.001181   0.000358  5.4309    0.000589    0.000300       
-   LBFGS    24      3    0.107306    0.002841   0.000502  5.4255    0.000289    0.000142       
-
-                                .--------------------.
-          ----------------------| CI-NEB convergence |-------------------------
-          Item                value                   Tolerance       Converged
-          ---------------------------------------------------------------------
-          RMS(Fp)             0.0005022248            0.0025000000      YES
-          MAX(|Fp|)           0.0028405617            0.0050000000      YES
-          RMS(FCI)            0.0001415476            0.0002500000      YES
-          MAX(|FCI|)          0.0002893134            0.0005000000      YES
-          ---------------------------------------------------------------------
-
-The elastic band and climbing image have converged successfully to a MEP in 24 iterations!
-
-
-                    *********************H U R R A Y*********************
-                    ***        THE NEB OPTIMIZATION HAS CONVERGED     ***
-                    *****************************************************
-
-
-
----------------------------------------------------------------
-                         PATH SUMMARY              
----------------------------------------------------------------
-All forces in Eh/Bohr.
-
-Image Dist.(Ang.)    E(Eh)   dE(kcal/mol)  max(|Fp|)  RMS(Fp)
-  0     0.000     -10.35671      0.00       0.00009   0.00005
-  1     0.869     -10.32760     18.26       0.00098   0.00034
-  2     1.201     -10.27590     50.71       0.00075   0.00030
-  3     1.451     -10.24940     67.34       0.00032   0.00014 <= CI
-  4     1.717     -10.27991     48.19       0.00284   0.00100
-  5     2.075     -10.32198     21.79       0.00119   0.00055
-  6     2.871     -10.34758      5.73       0.00009   0.00003
-
-Straight line distance between images along the path:
-        D( 0- 1) =   0.8686 Ang.
-        D( 1- 2) =   0.3323 Ang.
-        D( 2- 3) =   0.2497 Ang.
-        D( 3- 4) =   0.2665 Ang.
-        D( 4- 5) =   0.3582 Ang.
-        D( 5- 6) =   0.7957 Ang.
-
----------------------------------------------------------------
-               INFORMATION ABOUT SADDLE POINT     
----------------------------------------------------------------
-
-Climbing image                            ....  3 
-Energy                                    ....  -10.24940029 Eh
-Max. abs. force                           ....  2.8931e-04 Eh/Bohr
-
------------------------------------------
-  SADDLE POINT (ANGSTROEM)
------------------------------------------
-C     -0.678615     0.273896    -0.099419 
-C      0.477434    -0.493705    -0.169316 
-H      0.878161    -0.818557     0.785461 
-H      0.801969     0.815446     0.435408 
-H      0.631350    -1.239176    -0.938494 
-O     -0.464790     1.356632     0.548396 
-H     -1.645510     0.105464    -0.562037 
-
------------------------------------------
-  FORCES (Eh/Bohr)
------------------------------------------
-C      0.000272     0.000050    -0.000037 
-C     -0.000023     0.000090    -0.000194 
-H     -0.000007     0.000289    -0.000039 
-H     -0.000138    -0.000285     0.000130 
-H     -0.000112    -0.000130     0.000038 
-O      0.000014     0.000136     0.000142 
-H     -0.000005    -0.000151    -0.000040 
-
------------------------------------------
-  UNIT TANGENT
------------------------------------------
-C      0.095817    -0.155049    -0.115738 
-C     -0.172862    -0.275725    -0.117460 
-H      0.140891     0.160818    -0.088212 
-H     -0.423961     0.492172     0.353531 
-H     -0.086374    -0.201831    -0.048226 
-O      0.407836    -0.085279     0.048472 
-H      0.038652     0.064895    -0.032367 
- => Unit tangent is an approximation to the TS mode at the saddle point
-----------
-STATISTICS
-----------
-
-For the individual parts of the NEB, NEB-CI or NEB-TS run:
-
-Number of iterations:
-     NEB                               ... 25  100.0%
-Number of SCF / gradient calculations:
-     NEB                               ... 152  100.0%
-
-----------
- TIMINGS
-----------
-
-For the individual parts of the NEB, NEB-CI or NEB-TS run:
-
-Total                                  ...       22.584 sec
-NEB                                    ...       22.584 sec  100.0%
-
+Max. number of iterations is 0. Exiting NEB calculation after initial path printing.
 
 --------------------------------
 SUGGESTED CITATIONS FOR THIS RUN
@@ -577,8 +414,5 @@ List of optional additional citations
 
 Timings for individual modules:
 
-Sum of individual times          ...       22.784 sec (=   0.380 min)
-XTB module                       ...        0.200 sec (=   0.003 min)   0.9 %
-NEB Iterations                   ...       22.584 sec (=   0.376 min)  99.1 %
                              ****ORCA TERMINATED NORMALLY****
-TOTAL RUN TIME: 0 days 0 hours 0 minutes 24 seconds 467 msec
+TOTAL RUN TIME: 0 days 0 hours 0 minutes 1 seconds 921 msec

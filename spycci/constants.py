@@ -233,6 +233,8 @@ atomic_masses = {
 kB = 3.167e-6  # Boltzmann constant in Eh/K
 R = 8.31446261815324 # Universal gas constant in J/(kg*mol)
 avogadro = 6.0221408e23 # Avogadro's number
+h = 6.62607015e-34 # Planck's constant in J*s
+c = 299792458 # Speed of light in m/s
 
 proton_hydration_free_energy = -270.29 # Proton solvation free energy in water (kcal/mol)
 
@@ -240,3 +242,4 @@ proton_hydration_free_energy = -270.29 # Proton solvation free energy in water (
 Eh_to_kcalmol = 627.5
 kcal_to_J = 4184.
 bohr_to_angstrom = 0.529177210544
+amu_to_kg = 1.66053906892e-27

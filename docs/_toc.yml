@@ -7,6 +7,7 @@ chapters:
 - file: user-guide
   sections:
     - file: Guide/systems
+    - file: Guide/molecular_geometry
     - file: Guide/setup
     - file: Guide/run
     - file: Guide/properties

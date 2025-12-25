@@ -48,10 +48,10 @@ def packmol_cube(
     elif nsolv and target_dens:
 
         solvent_grams = (
-            sum([atomic_masses[atom] for atom, _ in solvent.geometry]) * nsolv / avogadro
+            sum([atomic_masses[atom] for atom in solvent.geometry.atoms]) * nsolv / avogadro
         )  # g
         solute_grams = (
-            sum([atomic_masses[atom] for atom, _ in solute.geometry]) / avogadro
+            sum([atomic_masses[atom] for atom in solute.geometry.atoms]) / avogadro
         )  # g
 
         target_volume = (solvent_grams + solute_grams) / target_dens  # L
@@ -61,10 +61,10 @@ def packmol_cube(
     elif nsolv and cube_side:
 
         solvent_grams = (
-            sum([atomic_masses[atom] for atom, _ in solvent.geometry]) * nsolv / avogadro
+            sum([atomic_masses[atom] for atom in solvent.geometry.atoms]) * nsolv / avogadro
         )  # g
         solute_grams = (
-            sum([atomic_masses[atom] for atom, _ in solute.geometry]) / avogadro
+            sum([atomic_masses[atom] for atom in solute.geometry.atoms]) / avogadro
         )  # g
 
         volume = (cube_side ** 3) * 1e-27  # L
@@ -76,7 +76,7 @@ def packmol_cube(
         volume = (cube_side ** 3) * 1e-27  # L
 
         solute_grams = (
-            sum([atomic_masses[atom] for atom, _ in solute.geometry]) / avogadro
+            sum([atomic_masses[atom] for atom in solute.geometry.atoms]) / avogadro
         )  # g
 
         target_solv_weight = (target_dens * volume) - solute_grams  # g
@@ -84,11 +84,11 @@ def packmol_cube(
         nsolv = round(
             target_solv_weight
             * avogadro
-            / sum([atomic_masses[atom] for atom, _ in solvent.geometry])
+            / sum([atomic_masses[atom] for atom in solvent.geometry.atoms])
         )  # n° of molecules
 
         solvent_grams = (
-            sum([atomic_masses[atom] for atom, _ in solvent.geometry]) * nsolv / avogadro
+            sum([atomic_masses[atom] for atom in solvent.geometry.atoms]) * nsolv / avogadro
         )  # g
 
         # recalculating density with actual number of solvent molecules

@@ -4,11 +4,12 @@ import os, json
 import numpy as np
 import logging
 
-from typing import List, Generator, Optional
+from typing import List, Generator, Optional, Tuple, Union
 from copy import deepcopy
 
 from spycci.constants import kB
 from spycci.config import __JSON_VERSION__
+from spycci.core.base import Engine
 from spycci.core.geometry import MolecularGeometry
 from spycci.core.properties import Properties
 
@@ -47,18 +48,53 @@ class System:
         spin: int = 1,
         box_side: Optional[float] = None,
     ) -> None:
-        
         if type(geometry) != MolecularGeometry:
                 raise TypeError("The `geometry` argument must be of type `MolecularGeometry`.")
             
         self.name = str(name)
+
         self.__geometry: MolecularGeometry = deepcopy(geometry)
+        self.__geometry._MolecularGeometry__add_system_reset(self.__on_geometry_change)    # Set listener in MolecularGeometry class using mangled name
+
         self.__charge: int = charge
         self.__spin: int = spin
         self.__box_side = box_side
-        self.properties: Properties = Properties()
+
+        self.__properties: Properties = Properties()
+        self.__properties._Properties__add_check_geometry_level_of_theory(self.__check_geometry_level_of_theory)   # Set listener in Properties class using mangled name
+
         self.flags: list = []
+        logger.debug(f"CREATED: System object {self.name} at ID: {hex(id(self))}.")
     
+    def __on_geometry_change(self) -> None:
+        """
+        Function used by the `MolecularGeometry` listener to clear properties when molecular geometry has been changed.
+        """
+        logger.debug(f"CLEARED: Properties of {self.name} system (ID: {hex(id(self))}) due to molecular geometry change.")
+        self.properties = Properties()
+    
+    def __check_geometry_level_of_theory(self, level_of_theory: str) -> None:
+        """
+        Function used by the `Properties` class listener to check compatibility of a newly provided
+        level of theory with the currently adopted geometric level of theory. If the level of theory
+        provided is different exception is raised. If the geometry level of theory is `None` the check
+        is skipped silently.
+
+        Argument
+        --------
+        level_of_theory: str
+            The level of theory to be checked agains the geometry level of theory.
+        
+        Raises
+        ------
+        RuntimeError
+            Exception raised if the proposed level of theory is different from the one set
+            as the geometry level of theory.
+        """
+        if self.geometry.level_of_theory_geometry is not None:
+            if level_of_theory != self.geometry.level_of_theory_geometry:
+                raise RuntimeError("Mismatch between the user-provided level of theory and the one used to set geometry")
+        
     @classmethod
     def from_xyz(
         cls, 
@@ -216,7 +252,7 @@ class System:
         data["Charge"] = self.__charge
         data["Spin"] = self.__spin
         data["Box Side"] = self.__box_side
-        data["Geometry"] = self.__geometry.to_dict()
+        data["Geometry"] = self.geometry.to_dict()
         data["Properties"] = self.properties.to_dict()
         data["Flags"] = self.flags
 
@@ -225,6 +261,9 @@ class System:
 
     @property
     def geometry(self) -> MolecularGeometry:
+        """
+        The `MolecularGeometry` object encoding the geometry of the system       
+        """
         return self.__geometry
 
     @geometry.setter
@@ -237,11 +276,31 @@ class System:
             raise ValueError("The geometry object cannot be empty or not initialized")
 
         self.__geometry = new_geometry
+        self.__geometry._MolecularGeometry__add_system_reset(self.__on_geometry_change)
         logger.info(f"Geometry changed: clearing properties for {self.name}")
         self.properties = Properties()
+    
+    @property
+    def properties(self) -> Properties:
+        """
+        The `Properties` class object storing the computed system properties.       
+        """
+        return self.__properties
+    
+    @properties.setter
+    def properties(self, new_properties: Properties) -> None:
+        
+        if type(new_properties) != Properties:
+            raise TypeError("The properties attribute must be of type `Properties`")
+
+        self.__properties = new_properties
+        self.__properties._Properties__add_check_geometry_level_of_theory(self.__check_geometry_level_of_theory)
 
     @property
     def charge(self) -> int:
+        """
+        The total charge of the molecular system       
+        """
         return self.__charge
 
     @charge.setter
@@ -257,6 +316,9 @@ class System:
 
     @property
     def spin(self) -> int:
+        """
+        The spin multiplicity of the molecular system       
+        """
         return self.__spin
 
     @spin.setter
@@ -272,6 +334,10 @@ class System:
 
     @property
     def box_side(self) -> float:
+        """
+        The length of the side of the simulation box (in Å) used to define periodic boundary conditions.
+        If set to `None`, the system is treated as non-periodic.
+        """
         return self.__box_side
 
     @box_side.setter
@@ -298,11 +364,51 @@ class System:
         info += "----------------------------------------------\n"
         info += " index  atom    x (Å)      y (Å)      z (Å)   \n"
         info += "----------------------------------------------\n"
-        for idx, (atom, coordinates) in enumerate(self.geometry):
+        atoms, coordinates = self.geometry.atoms, self.geometry.coordinates
+        for idx, (atom, coord) in enumerate(zip(atoms, coordinates)):
             info += f" {idx:<6}{atom:^6}"
-            for c in coordinates:
+            for c in coord:
                 info += "{0:^11}".format(f"{c:.5f}")
             info += "\n"
+        info += "----------------------------------------------\n\n"
+
+        info += "Center of mass:\n"
+        info += "----------------------------------------------\n"
+        info += "                x (Å)      y (Å)      z (Å)   \n"
+        info += "----------------------------------------------\n"
+        info += f" {'':<6}{'':^6}"
+        for c in self.geometry.center_of_mass:
+            info += "{0:^11}".format(f"{c:.5f}")
+        info += "\n"
+        info += "----------------------------------------------\n\n"
+
+        info += "Inertia tensor (amu·Å²):\n"
+        info += "----------------------------------------------\n"
+        info += "                  x          y          z     \n"
+        info += "----------------------------------------------\n"
+        for column, row in zip(["x", "y", "z"], self.geometry.inertia_tensor):
+            info += f" {column:<10}"
+            for val in row:
+                info += f"{val:>11.5f}"
+            info += "\n"
+        info += "----------------------------------------------\n\n"
+        info += "Principal axes of rotation:\n"
+        info += "----------------------------------------------\n"
+        info += "                  x          y          z     \n"
+        info += "----------------------------------------------\n"
+        for column, row in zip(["A", "B", "C"], self.geometry.inertia_eigvecs):
+            info += f" {column:<10}"
+            for val in row:
+                info += f"{val:>11.5f}"
+            info += "\n"
+        info += "----------------------------------------------\n\n"
+        info += f"Rotor type: {self.geometry.rotor_type}\n"
+        eigvals = self.geometry.inertia_eigvals
+        info += f"Principal moments (amu·Å²):\t{eigvals[0]:.5f}  {eigvals[1]:.5f}  {eigvals[2]:.5f}\n\n"
+        rot_const = self.geometry.rotational_constants[0]
+        info += f"Rotational constants (cm⁻¹):\t{rot_const[0]:.5f}  {rot_const[1]:.5f}  {rot_const[2]:.5f}\n"
+        rot_const = self.geometry.rotational_constants[1]
+        info += f"Rotational constants (MHz):\t{rot_const[0]:.5f}  {rot_const[1]:.5f}  {rot_const[2]:.5f}\n\n"
         info += "----------------------------------------------\n\n"
 
         info += "********************** PROPERTIES *************************\n\n"
@@ -437,7 +543,7 @@ class System:
             file.write("\n")
 
             i = 1
-            for atom, coordinates in self.geometry:
+            for atom, coordinates in zip(self.geometry.atoms, self.geometry.coordinates):
                 line = (
                     f"{atom}\t"
                     + f"{coordinates[0]}\t"
@@ -502,10 +608,189 @@ def json_parser(input: dict) -> dict:
     return output
 
 
+class ReactionPath:
+    """
+    ReactionPath object, containing a series of System objects representing the
+    different steps along a reaction path.
+
+    Its primary function is to define the geometric path from reactants to products,
+    often representing **transition states** or intermediate geometries. 
+    
+    The ReactionPath is a collection of molecular geometries: it does not inherently 
+    represent a physical ensemble or thermal distribution. In that case, check
+    the `Ensemble` class.
+
+    Arguments
+    ----------
+    systems : List[System]
+        The list of System objects to be included in the ReactionPath.
+    name: Optional[str]
+        Name of the reaction path. If set to `None` (default) will take the name of the
+        first `System` frame as the name of the whole path.
+
+    Attributes
+    ----------
+    systems : List[System]
+        The list of System objects in the ReactionPath.
+    name : str
+        Name of the reaction path.
+    
+    """
+
+    def __init__(self, systems: List[System], name: Optional[str] = None) -> None:
+
+        if len(systems) == 0:
+            raise ValueError("Cannot operate on an empty `systems` array.")
+
+        if any(system.geometry.atoms != systems[0].geometry.atoms for system in systems):
+            raise RuntimeError("Different atoms encountered in the provided `systems` list.")
+
+        self.systems: List[System] = systems
+        self.name: str = systems[0].name if name is None else name
+
+    def __iter__(self) -> Generator[System]:
+        for item in self.systems:
+            yield item
+
+    def __getitem__(self, index: int) -> System:
+        if isinstance(index, int):
+            if index < 0 or index >= len(self.systems):
+                raise ValueError("Index out of bounds")
+            return self.systems[index]
+        elif isinstance(index, slice):
+            return self.systems[index]
+        else:
+            raise TypeError("Invalid argument type")
+        
+
+    def __len__(self) -> int:
+        return len(self.systems)
+    
+    def __str__(self) -> str:
+        return f"Reaction path: {self.name}, Number of steps: {len(self.systems)}"
+
+    def add(self, systems: List[System]) -> None:
+        """
+        Append more `Systems` objects to the reaction path. The function checks whether the atoms
+        list of each of the added systems matches the stored ones; if not, exception is raised.
+
+        Parameters
+        ----------
+        systems : List[System]
+            The list of systems to be added to the ensamble
+        
+        Raises
+        ------
+        RuntimeError
+            Exception raised if at least one of the provided systems atom list differs from the ones
+            stored in the current path object.
+        """
+        atoms = self.systems[0].geometry.atoms
+        if any(system.geometry.atoms != atoms for system in systems):
+            raise RuntimeError("The atom lists of the given `systems` do not match that of the path.")
+
+        for system in systems:
+            self.systems.append(system)
+
+    def interpolate(self, n_points: int) -> ReactionPath:
+        """
+        Linearly interpolate the reaction path to redistribute, extend, or reduce
+        the number of steps (systems) along the path.
+
+        Parameters
+        ----------
+        n_points : int
+            The desired number of systems (images) in the new interpolated path.
+
+        Returns
+        -------
+        ReactionPath
+            A new ReactionPath object containing `n_points` interpolated systems.
+        """
+        if len(self.systems) < 2:
+            raise ValueError("Cannot interpolate a path with fewer than two systems.")
+        if n_points < 2:
+            raise ValueError("The new path must contain at least two points.")
+
+        # Number of atoms and dimensionality
+        n_atoms = self.systems[0].geometry.atomcount
+        n_dim = n_atoms * 3
+
+        # Stack all coordinates into a 2D array where the shape of the 
+        # coordinates for each step is (x1,y1,z1,x2,y2,z2,...)
+        coords = np.array([
+            np.array(sys.geometry.coordinates).reshape(-1)
+            for sys in self.systems
+        ])
+
+        # Compute vector difference and Euclidean distance along path
+        vec_diff = np.diff(coords, axis=0)
+        eucl_dist = np.linalg.norm(vec_diff, axis=1)
+
+        # Compute cumulative distance used as reaction coordinate
+        S = np.concatenate(([0.0], np.cumsum(eucl_dist)))
+
+        # Create a evenly spaced reaction coordinate
+        rc = np.linspace(S[0], S[-1], n_points)
+
+        # Interpolate each coordinate
+        new_coords = np.zeros((n_points, n_dim))
+        for i in range(n_dim):
+            new_coords[:, i] = np.interp(rc, S, coords[:, i])
+
+        # Build new systems
+        new_systems = []
+        for i, arr in enumerate(new_coords):
+            new_sys = deepcopy(self.systems[0])
+            reshaped = arr.reshape(n_atoms, 3)
+            new_sys.geometry.set_coordinates(reshaped)
+            new_sys.name = self.name + f"_interp_{i}"
+            new_systems.append(new_sys)
+
+        return ReactionPath(new_systems)
+
+    def analyze_active_atoms(self) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Analyze atomic displacements along the reaction path.
+
+        This method computes, for each atom, the standard deviation of its cartesian
+        coordinates (x, y, z) across all steps in the reaction path. It also evaluates
+        the total spatial displacement of each atom as the Euclidean norm of the
+        coordinate standard deviations.
+
+        Returns
+        -------
+        np.ndarray 
+            The `np.ndarray` of shape (N atoms, 3) containing the standard deviation (in Å)
+            of the x, y, z coordinates for each atom.
+        np.ndarray
+            The `np.ndarray` of shape (N atoms) containing the total spatial standard 
+            deviation (in Å) for each atom, computed as the Euclidean norm of the x, y,
+            z standard deviations.
+        """
+        n_steps = len(self.systems)
+        n_atoms = self.systems[0].geometry.atomcount
+
+        all_coords = np.zeros((n_steps, n_atoms, 3))
+
+        for i, system in enumerate(self.systems):
+            coords = np.array(system.geometry.coordinates)
+            all_coords[i, :, :] = coords
+
+        std = np.std(all_coords, axis=0) # Calculate standard deviation
+        norm = np.linalg.norm(std, axis=1) # Calculate norm. Total displacement marker
+
+        return std, norm
 
 class Ensemble:
     """
-    Ensemble object, containing a series of System objects.
+    A statistical collection of molecular systems representing a **physical 
+    ensemble** (e.g., canonical NVT, microcanonical NVE) typically generated 
+    from molecular dynamics (MD) or Monte Carlo (MC) simulations.
+
+    The Ensemble represents a physical collection of states corresponding to a thermal distribution;
+    it does not inherently describe a single reaction pathway or sequence of geometries.
+    In that case, check the ReactionPath class.
 
     Parameters
     ----------

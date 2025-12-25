@@ -5,6 +5,7 @@ main.py
 *.tar.bz2
 *.tar.xz
 *.zip
+*.sif
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

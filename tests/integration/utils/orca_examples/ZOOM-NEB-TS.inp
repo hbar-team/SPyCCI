@@ -5,7 +5,7 @@ end
 %maxcore 750
 
 ! XTB  
-! NEB-TS
+! ZOOM-NEB-TS
 
 %neb
   product "NEB_product.xyz"
