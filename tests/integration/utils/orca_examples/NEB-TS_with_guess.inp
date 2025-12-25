@@ -4,7 +4,7 @@ end
 
 %maxcore 750
 
-! PBE def2-SVP D3BJ
+! XTB  
 ! NEB-TS
 
 %neb

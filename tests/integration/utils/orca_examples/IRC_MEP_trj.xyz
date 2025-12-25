@@ -17,7 +17,7 @@ Coordinates from ORCA-job input_IRC_Full E -10.355852344580
   O      -0.893903      1.471396      0.561689
   H      -1.567094     -0.076151     -0.520393
 7
-Coordinates from ORCA-job input_IRC_Full E -10.355843296230
+Coordinates from ORCA-job input_IRC_Full E -10.355843296210
   C      -0.729447      0.422671      0.007613
   C       0.567177     -0.328107     -0.031158
   H       0.616314     -0.967560      0.849694
@@ -26,7 +26,7 @@ Coordinates from ORCA-job input_IRC_Full E -10.355843296230
   O      -0.893543      1.471304      0.562243
   H      -1.567596     -0.075430     -0.521112
 7
-Coordinates from ORCA-job input_IRC_Full E -10.355764210880
+Coordinates from ORCA-job input_IRC_Full E -10.355764210870
   C      -0.730708      0.420025      0.006767
   C       0.564504     -0.330128     -0.030531
   H       0.622569     -0.968179      0.852015
@@ -35,7 +35,7 @@ Coordinates from ORCA-job input_IRC_Full E -10.355764210880
   O      -0.887871      1.468540      0.564394
   H      -1.571973     -0.067684     -0.525398
 7
-Coordinates from ORCA-job input_IRC_Full E -10.355645545930
+Coordinates from ORCA-job input_IRC_Full E -10.355645545920
   C      -0.732124      0.417506      0.006098
   C       0.563117     -0.333713     -0.030288
   H       0.628877     -0.969088      0.853350
@@ -278,7 +278,7 @@ Coordinates from ORCA-job input_IRC_Full E -10.313495903550
   O      -0.338451      1.317870      0.587035
   H      -1.608950      0.149750     -0.603068
 7
-Coordinates from ORCA-job input_IRC_Full E -10.319671733310
+Coordinates from ORCA-job input_IRC_Full E -10.319671733320
   C      -0.622827      0.207502     -0.151254
   C       0.365168     -0.680402     -0.185934
   H       1.000889     -0.706766      0.694533
@@ -296,7 +296,7 @@ Coordinates from ORCA-job input_IRC_Full E -10.325072009430
   O      -0.357513      1.306153      0.595660
   H      -1.586324      0.171235     -0.626867
 7
-Coordinates from ORCA-job input_IRC_Full E -10.329586557020
+Coordinates from ORCA-job input_IRC_Full E -10.329586557040
   C      -0.607297      0.198920     -0.156282
   C       0.350636     -0.717788     -0.183814
   H       1.049449     -0.687065      0.644303
@@ -305,7 +305,7 @@ Coordinates from ORCA-job input_IRC_Full E -10.329586557020
   O      -0.366821      1.301690      0.599625
   H      -1.573911      0.180762     -0.640531
 7
-Coordinates from ORCA-job input_IRC_Full E -10.333552896220
+Coordinates from ORCA-job input_IRC_Full E -10.333552896230
   C      -0.600593      0.196496     -0.158068
   C       0.349414     -0.731911     -0.186110
   H       1.076179     -0.680401      0.616469
@@ -314,7 +314,7 @@ Coordinates from ORCA-job input_IRC_Full E -10.333552896220
   O      -0.377866      1.299078      0.603495
   H      -1.558144      0.189374     -0.654503
 7
-Coordinates from ORCA-job input_IRC_Full E -10.336809351390
+Coordinates from ORCA-job input_IRC_Full E -10.336809351440
   C      -0.590190      0.195544     -0.157849
   C       0.350581     -0.737159     -0.186018
   H       1.101533     -0.676767      0.587767
@@ -323,7 +323,7 @@ Coordinates from ORCA-job input_IRC_Full E -10.336809351390
   O      -0.386511      1.297337      0.605895
   H      -1.543788      0.195494     -0.668675
 7
-Coordinates from ORCA-job input_IRC_Full E -10.339606766380
+Coordinates from ORCA-job input_IRC_Full E -10.339606766460
   C      -0.582134      0.194416     -0.159804
   C       0.353562     -0.742745     -0.191925
   H       1.129489     -0.675055      0.560163
@@ -332,7 +332,7 @@ Coordinates from ORCA-job input_IRC_Full E -10.339606766380
   O      -0.398142      1.300010      0.607951
   H      -1.526360      0.199642     -0.681451
 7
-Coordinates from ORCA-job input_IRC_Full E -10.341908774790
+Coordinates from ORCA-job input_IRC_Full E -10.341908774960
   C      -0.570994      0.198080     -0.158645
   C       0.359951     -0.743967     -0.192697
   H       1.155627     -0.675129      0.529849
@@ -341,7 +341,7 @@ Coordinates from ORCA-job input_IRC_Full E -10.341908774790
   O      -0.405990      1.300947      0.606678
   H      -1.511643      0.201538     -0.695095
 7
-Coordinates from ORCA-job input_IRC_Full E -10.342778441070
+Coordinates from ORCA-job input_IRC_Full E -10.342778441710
   C      -0.569200      0.198617     -0.160817
   C       0.362664     -0.746522     -0.196146
   H       1.168436     -0.675715      0.517893
@@ -350,7 +350,7 @@ Coordinates from ORCA-job input_IRC_Full E -10.342778441070
   O      -0.410951      1.304484      0.606043
   H      -1.503111      0.201465     -0.699352
 7
-Coordinates from ORCA-job input_IRC_Full E -10.343114627030
+Coordinates from ORCA-job input_IRC_Full E -10.343114627590
   C      -0.566267      0.198082     -0.160856
   C       0.362578     -0.745659     -0.196672
   H       1.173027     -0.676010      0.513226
@@ -359,7 +359,7 @@ Coordinates from ORCA-job input_IRC_Full E -10.343114627030
   O      -0.412340      1.305523      0.605463
   H      -1.500853      0.201330     -0.701369
 7
-Coordinates from ORCA-job input_IRC_Full E -10.343564548540
+Coordinates from ORCA-job input_IRC_Full E -10.343564549070
   C      -0.562801      0.197895     -0.161136
   C       0.363179     -0.744993     -0.197437
   H       1.179928     -0.676496      0.506040
@@ -368,7 +368,7 @@ Coordinates from ORCA-job input_IRC_Full E -10.343564548540
   O      -0.414386      1.307129      0.604480
   H      -1.497114      0.201050     -0.704222
 7
-Coordinates from ORCA-job input_IRC_Full E -10.344010422660
+Coordinates from ORCA-job input_IRC_Full E -10.344010423160
   C      -0.560474      0.198892     -0.161542
   C       0.365014     -0.745475     -0.198308
   H       1.187186     -0.677056      0.498230
@@ -377,7 +377,7 @@ Coordinates from ORCA-job input_IRC_Full E -10.344010422660
   O      -0.416466      1.308772      0.603214
   H      -1.492823      0.200639     -0.707053
 7
-Coordinates from ORCA-job input_IRC_Full E -10.344423343130
+Coordinates from ORCA-job input_IRC_Full E -10.344423343590
   C      -0.557283      0.199233     -0.161886
   C       0.366121     -0.745223     -0.199096
   H       1.194414     -0.677683      0.490555
@@ -386,7 +386,7 @@ Coordinates from ORCA-job input_IRC_Full E -10.344423343130
   O      -0.418402      1.310645      0.601809
   H      -1.488869      0.200119     -0.709868
 7
-Coordinates from ORCA-job input_IRC_Full E -10.344809248330
+Coordinates from ORCA-job input_IRC_Full E -10.344809248760
   C      -0.555083      0.200438     -0.162333
   C       0.368071     -0.745806     -0.199890
   H       1.201526     -0.678371      0.482773
@@ -395,7 +395,7 @@ Coordinates from ORCA-job input_IRC_Full E -10.344809248330
   O      -0.420231      1.312517      0.600149
   H      -1.484715      0.199481     -0.712460
 7
-Coordinates from ORCA-job input_IRC_Full E -10.345168600470
+Coordinates from ORCA-job input_IRC_Full E -10.345168600870
   C      -0.551940      0.200917     -0.162735
   C       0.369238     -0.745591     -0.200615
   H       1.208705     -0.679123      0.475029
@@ -404,7 +404,7 @@ Coordinates from ORCA-job input_IRC_Full E -10.345168600470
   O      -0.421947      1.314628      0.598352
   H      -1.480830      0.198755     -0.715065
 7
-Coordinates from ORCA-job input_IRC_Full E -10.345501809280
+Coordinates from ORCA-job input_IRC_Full E -10.345501809650
   C      -0.549632      0.202134     -0.163229
   C       0.371131     -0.746102     -0.201341
   H       1.215765     -0.679937      0.467178
@@ -413,16 +413,16 @@ Coordinates from ORCA-job input_IRC_Full E -10.345501809280
   O      -0.423530      1.316762      0.596306
   H      -1.476794      0.197923     -0.717455
 7
-Coordinates from ORCA-job input_IRC_Full E -10.345808887270
+Coordinates from ORCA-job input_IRC_Full E -10.345808887610
   C      -0.546517      0.202751     -0.163677
   C       0.372350     -0.745938     -0.202011
   H       1.222863     -0.680812      0.459367
   H       0.482250      1.346274      0.927460
-  H       0.334509     -1.583017     -0.869572
+  H       0.334509     -1.583017     -0.869571
   O      -0.424989      1.319105      0.594098
   H      -1.473014      0.197013     -0.719828
 7
-Coordinates from ORCA-job input_IRC_Full E -10.346090635540
+Coordinates from ORCA-job input_IRC_Full E -10.346090635860
   C      -0.544123      0.203965     -0.164242
   C       0.374182     -0.746380     -0.202670
   H       1.229845     -0.681748      0.451454
@@ -431,7 +431,7 @@ Coordinates from ORCA-job input_IRC_Full E -10.346090635540
   O      -0.426295      1.321513      0.591658
   H      -1.469106      0.196012     -0.721976
 7
-Coordinates from ORCA-job input_IRC_Full E -10.346346668120
+Coordinates from ORCA-job input_IRC_Full E -10.346346668400
   C      -0.541011      0.204734     -0.164713
   C       0.375441     -0.746275     -0.203298
   H       1.236837     -0.682736      0.443588
@@ -440,7 +440,7 @@ Coordinates from ORCA-job input_IRC_Full E -10.346346668120
   O      -0.427464      1.324071      0.589021
   H      -1.465476      0.194945     -0.724099
 7
-Coordinates from ORCA-job input_IRC_Full E -10.346578090340
+Coordinates from ORCA-job input_IRC_Full E -10.346578090600
   C      -0.538579      0.205899     -0.165407
   C       0.377217     -0.746642     -0.203888
   H       1.243715     -0.683785      0.435623
@@ -449,7 +449,7 @@ Coordinates from ORCA-job input_IRC_Full E -10.346578090340
   O      -0.428452      1.326784      0.586206
   H      -1.461691      0.193807     -0.725959
 7
-Coordinates from ORCA-job input_IRC_Full E -10.346784126760
+Coordinates from ORCA-job input_IRC_Full E -10.346784126990
   C      -0.535393      0.206906     -0.165805
   C       0.378501     -0.746631     -0.204512
   H       1.250574     -0.684866      0.427724
@@ -458,7 +458,7 @@ Coordinates from ORCA-job input_IRC_Full E -10.346784126760
   O      -0.429301      1.329474      0.583090
   H      -1.458304      0.192613     -0.727844
 7
-Coordinates from ORCA-job input_IRC_Full E -10.346965674860
+Coordinates from ORCA-job input_IRC_Full E -10.346965675060
   C      -0.533052      0.207763     -0.166857
   C       0.380189     -0.746819     -0.204990
   H       1.257299     -0.686014      0.419734
@@ -467,7 +467,7 @@ Coordinates from ORCA-job input_IRC_Full E -10.346965674860
   O      -0.429915      1.332641      0.580016
   H      -1.454554      0.191386     -0.729301
 7
-Coordinates from ORCA-job input_IRC_Full E -10.347120967890
+Coordinates from ORCA-job input_IRC_Full E -10.347120968060
   C      -0.529895      0.209367     -0.166985
   C       0.381675     -0.747149     -0.205656
   H       1.263871     -0.687138      0.411902
@@ -476,7 +476,7 @@ Coordinates from ORCA-job input_IRC_Full E -10.347120967890
   O      -0.430295      1.335238      0.576407
   H      -1.451580      0.190111     -0.730968
 7
-Coordinates from ORCA-job input_IRC_Full E -10.347249350060
+Coordinates from ORCA-job input_IRC_Full E -10.347249350270
   C      -0.527964      0.209794     -0.168581
   C       0.383242     -0.747229     -0.206061
   H       1.270277     -0.688320      0.404154
@@ -485,7 +485,7 @@ Coordinates from ORCA-job input_IRC_Full E -10.347249350060
   O      -0.430845      1.338854      0.573106
   H      -1.447808      0.188898     -0.731851
 7
-Coordinates from ORCA-job input_IRC_Full E -10.347288029240
+Coordinates from ORCA-job input_IRC_Full E -10.347288029700
   C      -0.526870      0.210841     -0.168300
   C       0.383940     -0.747599     -0.206306
   H       1.272298     -0.688681      0.401558
@@ -494,7 +494,7 @@ Coordinates from ORCA-job input_IRC_Full E -10.347288029240
   O      -0.430610      1.339489      0.571742
   H      -1.447113      0.188450     -0.732433
 7
-Coordinates from ORCA-job input_IRC_Full E -10.347306358290
+Coordinates from ORCA-job input_IRC_Full E -10.347306358630
   C      -0.526139      0.210820     -0.168339
   C       0.383893     -0.747396     -0.206409
   H       1.273295     -0.688852      0.400426
@@ -503,7 +503,7 @@ Coordinates from ORCA-job input_IRC_Full E -10.347306358290
   O      -0.430646      1.339961      0.571152
   H      -1.446746      0.188261     -0.732649
 7
-Coordinates from ORCA-job input_IRC_Full E -10.347332702530
+Coordinates from ORCA-job input_IRC_Full E -10.347332702840
   C      -0.525237      0.210906     -0.168504
   C       0.384043     -0.747237     -0.206543
   H       1.274868     -0.689132      0.398549
@@ -512,25 +512,25 @@ Coordinates from ORCA-job input_IRC_Full E -10.347332702530
   O      -0.430656      1.340761      0.570227
   H      -1.446058      0.187953     -0.732939
 7
-Coordinates from ORCA-job input_IRC_Full E -10.347358923990
+Coordinates from ORCA-job input_IRC_Full E -10.347358924290
   C      -0.524611      0.211259     -0.168725
   C       0.384495     -0.747348     -0.206682
   H       1.276494     -0.689430      0.396510
   H       0.433169      1.361709      1.002026
   H       0.273784     -1.610028     -0.833325
   O      -0.430631      1.341592      0.569228
-  H      -1.445249      0.187623     -0.733195
+  H      -1.445248      0.187623     -0.733195
 7
-Coordinates from ORCA-job input_IRC_Full E -10.347383324640
+Coordinates from ORCA-job input_IRC_Full E -10.347383324920
   C      -0.523776      0.211462     -0.168906
   C       0.384757     -0.747296     -0.206830
-  H       1.278121     -0.689721      0.394525
+  H       1.278121     -0.689721      0.394524
   H       0.431474      1.361996      1.004454
   H       0.272008     -1.610789     -0.832158
   O      -0.430615      1.342425      0.568225
   H      -1.444518      0.187300     -0.733472
 7
-Coordinates from ORCA-job input_IRC_Full E -10.347406327860
+Coordinates from ORCA-job input_IRC_Full E -10.347406328130
   C      -0.523178      0.211833     -0.169133
   C       0.385222     -0.747425     -0.206968
   H       1.279714     -0.690012      0.392505
@@ -539,7 +539,7 @@ Coordinates from ORCA-job input_IRC_Full E -10.347406327860
   O      -0.430555      1.343254      0.567216
   H      -1.443729      0.186974     -0.733704
 7
-Coordinates from ORCA-job input_IRC_Full E -10.347427773940
+Coordinates from ORCA-job input_IRC_Full E -10.347427774190
   C      -0.522358      0.212050     -0.169320
   C       0.385494     -0.747386     -0.207119
   H       1.281326     -0.690298      0.390517
