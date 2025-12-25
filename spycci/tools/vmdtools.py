@@ -10,7 +10,7 @@ from typing import List, Optional, Union
 
 from spycci.core.dependency_finder import locate_vmd
 from spycci.tools.cubetools import Cube
-from spycci.systems import System
+from spycci.systems import System, ReactionPath
 
 
 class VMDRenderer:
@@ -661,7 +661,7 @@ class VMDRenderer:
 ####################################################################
 
 def animate(
-        systems: List[System],
+        systems: Union[List[System], ReactionPath],
         filename: str,
         renderer: Optional[VMDRenderer] = None,
         duration: float = 0.1,
@@ -674,8 +674,9 @@ def animate(
 
     Arguments
     ---------
-    systems: List[System]
-        The ordered list of systems to be rendered in the animation.
+    systems: Union[List[System], ReactionPath],
+        The ordered list of systems to be rendered in the animation either as a regular
+        list object or as a ReactionPath object.
     filename: str
         The name or the path of the output animation `.gif` file.
     renderer: Optional[VMDRenderer]
@@ -692,23 +693,31 @@ def animate(
 
     if type(vmd) != VMDRenderer:
         raise ValueError(f"The renderer engine must be of type `VMDRenderer`, {type(vmd)} is not a valid renderer")
-
+    
     logging.getLogger("PIL").setLevel(logging.INFO)
     logging.getLogger("PIL").propagate = False
 
+    # Create a temporary directory where the frames will be stored
     tdir = mkdtemp(prefix = "vmd_animation_", dir=os.getcwd())
+    
+    # Extract the list of system to be used in each step of the aminmation
+    steps = systems.systems if isinstance(systems, ReactionPath) else systems
     
     with sh.pushd(tdir):
 
+        # Render each frame individually using the provided VMD renderer
         frames = []
-        for i, system in enumerate(systems):
+        for i, system in enumerate(steps):
             vmd.render_system(system, f"frame_{i}.bmp")
             frames.append(imageio.imread(f"frame_{i}.bmp"))
 
+        # Join each frame in a single .gif object using the imageio package
         imageio.mimsave("animation.gif", frames, duration=duration, loop=loop)
 
+    # Copy the generated animation to the user-specified location
     shutil.copy(f"{tdir}/animation.gif", filename)
 
+    # If required by the user remove the temporary directory
     if remove_tdir:
         shutil.rmtree(tdir)
 
