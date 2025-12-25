@@ -26,6 +26,17 @@ The `spycci.core` module is comprised of many different submodules used to defin
 
 ---
 
+## The `spycci.core.math` sub-module
+
+```{eval-rst}
+.. automodule:: spycci.core.math
+    :members:
+    :undoc-members:
+    :private-members:
+```
+
+---
+
 ## The `spycci.core.dependency_finder` sub-module
 
 ```{eval-rst}
