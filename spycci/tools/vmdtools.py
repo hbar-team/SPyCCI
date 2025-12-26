@@ -703,6 +703,10 @@ def animate(
     # Extract the list of system to be used in each step of the aminmation
     steps = systems.systems if isinstance(systems, ReactionPath) else systems
     
+    # Compute the number of frames per seconds (`fps`) from the user set frame duration
+    # Note: This is a workaround since the `duration` keyword is often ignored by `mimsave`
+    fps = int(1./duration)
+
     with sh.pushd(tdir):
 
         # Render each frame individually using the provided VMD renderer
@@ -712,7 +716,7 @@ def animate(
             frames.append(imageio.imread(f"frame_{i}.bmp"))
 
         # Join each frame in a single .gif object using the imageio package
-        imageio.mimsave("animation.gif", frames, duration=duration, loop=loop)
+        imageio.mimsave("animation.gif", frames, fps=fps, loop=loop)
 
     # Copy the generated animation to the user-specified location
     shutil.copy(f"{tdir}/animation.gif", filename)

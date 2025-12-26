@@ -244,7 +244,7 @@ engine = OrcaInput(method="XTB", basis_set=None, aux_basis=None, solvent=None)
 reactant = System.from_xyz("reactant.xyz", charge=0, spin=1)
 product = System.from_xyz("product.xyz", charge=0, spin=1)
 
-path : ReactionPath = engine.neb('', reactant, product, nimages=20, ncores=4)
+path : ReactionPath = engine.neb('', reactant, product, nimages=10, ncores=4)
 
 animate(path, "NEB.gif", duration=0.2)
 ```
