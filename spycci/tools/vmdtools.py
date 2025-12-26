@@ -44,6 +44,8 @@ class VMDRenderer:
         If set to `True` will enable the vmd dof option. (default: True)
     show_axes: bool
         If set to `True` will show the axes representation in the render window. (default: False)
+    suppress_output: bool
+        If set to `True` will run the rendering without printing any message from `vmd`. (default: False)
     VMD_PATH: str
         The path to the vmd executable. Is set to `None` (default), will automatically search `vmd`
         in the system PATH.
@@ -68,6 +70,7 @@ class VMDRenderer:
         ambientocclusion: bool = True,
         dof: bool = True,
         show_axes: bool = False,
+        suppress_output: bool = False,
         VMD_PATH: Optional[str] = None,
     ) -> None:
         
@@ -76,6 +79,7 @@ class VMDRenderer:
         self.ambientocclusion: bool = ambientocclusion
         self.dof: bool = dof
         self.show_axes: bool = show_axes
+        self.suppress_output: bool = suppress_output
 
         # Define the attributes to be set using properties
         self.__scale: float = None
@@ -541,7 +545,11 @@ class VMDRenderer:
             vmd_script.write("exit\n")
 
             vmd_script.seek(0)
-            system(f"vmd -dispdev text -e {vmd_script.name}")
+
+            if self.suppress_output is True:
+                system(f"vmd -dispdev text -e {vmd_script.name}  > /dev/null 2>&1")
+            else:
+                system(f"vmd -dispdev text -e {vmd_script.name}")
 
     def _tcl_script_preamble(self) -> str:
         """
@@ -667,6 +675,7 @@ def animate(
         duration: float = 0.1,
         loop: int = 0,
         remove_tdir: bool = True,
+        suppress_output: bool = False,
 ) -> None:
     """
     Given a list of `System` objects generate a `.gif` animation by iteratively
@@ -688,12 +697,14 @@ def animate(
     remove_tdir: bool
         If set to `False` will keep the temporary folder containing the render of
         each frame. (default: True)
+    suppress_output: bool
+        If set to `True` will run the rendering without printing any message from `vmd`. (default: False)
     """
     vmd = renderer if renderer else VMDRenderer()
 
     if type(vmd) != VMDRenderer:
         raise ValueError(f"The renderer engine must be of type `VMDRenderer`, {type(vmd)} is not a valid renderer")
-    
+        
     logging.getLogger("PIL").setLevel(logging.INFO)
     logging.getLogger("PIL").propagate = False
 
@@ -702,6 +713,9 @@ def animate(
     
     # Extract the list of system to be used in each step of the aminmation
     steps = systems.systems if isinstance(systems, ReactionPath) else systems
+
+    # Set the output state of the renderer according to user settings
+    vmd.suppress_output = suppress_output
     
     # Compute the number of frames per seconds (`fps`) from the user set frame duration
     # Note: This is a workaround since the `duration` keyword is often ignored by `mimsave`
