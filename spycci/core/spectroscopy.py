@@ -158,7 +158,8 @@ class VibrationalData:
             color: str = "#154C79",
             export_path: Optional[str] = None,
             export_dpi: int = 600,
-            show: bool = True
+            show: bool = True,
+            axes: Optional[plt.Axes] = None,
         ) -> None:
         """
         Plots the infrared spectrum of the molecule.
@@ -197,6 +198,9 @@ class VibrationalData:
             The resolution of the exported image (default: 600).
         show: bool
             If set to True (default) will open an interactive window containing the spectrum.
+        axes: Optional[matplotlib.pyplot.Axes]
+            If given a `matplotlib.pyplot.Axes` argument, the function will add the infrared spectum to the user provided
+            axes system. Beware that the `export_path` and `show` options will be automatically ignored if `axes` is set.
         
         Raises
         ------
@@ -237,18 +241,23 @@ class VibrationalData:
         else:
             fmin, fmax = min(range), max(range)
 
-        fig = plt.figure(figsize=figsize)
+        # Check if the user provided an `ax` argument, if not create one.
+        if axes is None:
+            fig, ax = plt.subplots(figsize=figsize)
+        else:
+            ax = axes
+            fig = ax.figure
 
         if logscale:
-            plt.yscale("log")
+            ax.set_yscale("log")
 
         # If the lineshape is set to None just present a stem plot with the integrated intensities values
         if lineshape is None:
-            plt.stem(bands.keys(), bands.values(), linefmt=color, basefmt="None", markerfmt="None")
-            plt.xlim((fmin, fmax))
+            ax.stem(bands.keys(), bands.values(), linefmt=color, basefmt="None", markerfmt="None")
+            ax.set_xlim((fmin, fmax))
 
             if logscale is False:
-                plt.ylim(bottom=0)
+                ax.set_ylim(bottom=0)
         
         # If the user requested a lineshape compute the spectrum by summing the contribution of each band
         # Compute each contribution by vectorizing over the frequency range. Each contribution is expressed
@@ -268,29 +277,31 @@ class VibrationalData:
                     total_intensity += intensity*normalized_gaussian(frequencies, f0, FWHM)
 
             # Plot the obtained intensity values
-            plt.plot(frequencies, total_intensity, color=color, linewidth=1.5)
+            ax.plot(frequencies, total_intensity, color=color, linewidth=1.5)
 
             if show_bars:
-                plt.stem(bands.keys(), bands.values(), linefmt=color, basefmt="None", markerfmt="None")
+                ax.stem(bands.keys(), bands.values(), linefmt=color, basefmt="None", markerfmt="None")
         
         else:
             raise TypeError(f"`{lineshape}` lineshape option is invalid.")
         
-        plt.xticks(fontsize=16)
-        plt.yticks(fontsize=16)
-        plt.xlabel(r"Wavenumber [$cm^{-1}$]", fontsize=20)
-        plt.ylabel(r"Intensity [$km/mol$]", fontsize=20)
+        ax.tick_params(axis="x", labelsize=16)
+        ax.tick_params(axis="y", labelsize=16)
+        ax.set_xlabel(r"Wavenumber [$cm^{-1}$]", fontsize=20)
+        ax.set_ylabel(r"Intensity [$km/mol$]", fontsize=20)
         
-        plt.grid(which="major", color="#DDDDDD")
-        plt.grid(which="minor", color="#EEEEEE")
+        ax.grid(which="major", color="#DDDDDD")
+        ax.grid(which="minor", color="#EEEEEE")
 
-        plt.tight_layout()
+        if axes is None:
+            
+            plt.tight_layout()
 
-        if export_path is not None:
-            plt.savefig(export_path, dpi=export_dpi)
+            if export_path is not None:
+                plt.savefig(export_path, dpi=export_dpi)
 
-        if show:
-            plt.show()
+            if show:
+                plt.show()
 
     
     def show_raman_spectrum(
@@ -306,7 +317,8 @@ class VibrationalData:
             color: str = "#154C79",
             export_path: Optional[str] = None,
             export_dpi: int = 600,
-            show: bool = True
+            show: bool = True,
+            axes: Optional[plt.Axes] = None,
         ) -> None:
         """
         Plots the raman spectrum of the molecule.
@@ -342,6 +354,9 @@ class VibrationalData:
             The resolution of the exported image (default: 600).
         show: bool
             If set to True (default) will open an interactive window containing the spectrum.
+        axes: Optional[matplotlib.pyplot.Axes]
+            If given a `matplotlib.pyplot.Axes` argument, the function will add the raman spectum to the user provided
+            axes system. Beware that the `export_path` and `show` options will be automatically ignored if `axes` is set.
         
         Raises
         ------
@@ -365,17 +380,22 @@ class VibrationalData:
         else:
             fmin, fmax = min(range), max(range)
 
-        fig = plt.figure(figsize=figsize)
+        # Check if the user provided an `ax` argument, if not create one.
+        if axes is None:
+            fig, ax = plt.subplots(figsize=figsize)
+        else:
+            ax = axes
+            fig = ax.figure
 
         if logscale:
-            plt.yscale("log")
+            ax.set_yscale("log")
 
         if lineshape is None:
-            plt.stem(bands.keys(), bands.values(), linefmt=color, basefmt="None", markerfmt="None")
-            plt.xlim((fmin, fmax))
+            ax.stem(bands.keys(), bands.values(), linefmt=color, basefmt="None", markerfmt="None")
+            ax.set_xlim((fmin, fmax))
 
             if logscale is False:
-                plt.ylim(bottom=0)
+                ax.set_ylim(bottom=0)
         
         elif lineshape.lower() in ["lorentzian", "gaussian"]:
             
@@ -390,28 +410,30 @@ class VibrationalData:
                 elif lineshape == "gaussian":
                     total_intensity += intensity*normalized_gaussian(frequencies, f0, FWHM)
 
-            plt.plot(frequencies, total_intensity, color=color, linewidth=1.5)
+            ax.plot(frequencies, total_intensity, color=color, linewidth=1.5)
 
             if show_bars:
-                plt.stem(bands.keys(), bands.values(), linefmt=color, basefmt="None", markerfmt="None")
+                ax.stem(bands.keys(), bands.values(), linefmt=color, basefmt="None", markerfmt="None")
         
         else:
             raise TypeError(f"`{lineshape}` lineshape option is invalid.")
         
-        plt.xticks(fontsize=16)
-        plt.yticks(fontsize=16)
-        plt.xlabel(r"Wavenumber [$cm^{-1}$]", fontsize=20)
-        plt.ylabel(r"Activity", fontsize=20)
+        ax.tick_params(axis="x", labelsize=16)
+        ax.tick_params(axis="y", labelsize=16)
+        ax.set_xlabel(r"Wavenumber [$cm^{-1}$]", fontsize=20)
+        ax.set_ylabel(r"Activity", fontsize=20)
         
-        plt.grid(which="major", color="#DDDDDD")
-        plt.grid(which="minor", color="#EEEEEE")
+        ax.grid(which="major", color="#DDDDDD")
+        ax.grid(which="minor", color="#EEEEEE")
 
-        plt.tight_layout()
+        if axes is None:
+            
+            plt.tight_layout()
 
-        if export_path is not None:
-            plt.savefig(export_path, dpi=export_dpi)
+            if export_path is not None:
+                plt.savefig(export_path, dpi=export_dpi)
 
-        if show:
-            plt.show()
+            if show:
+                plt.show()
 
     
