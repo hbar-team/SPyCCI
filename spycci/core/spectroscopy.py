@@ -251,6 +251,9 @@ class VibrationalData:
         if logscale:
             ax.set_yscale("log")
 
+        if lineshape is not None:
+            lineshape = lineshape.lower()
+
         # If the lineshape is set to None just present a stem plot with the integrated intensities values
         if lineshape is None:
             ax.stem(bands.keys(), bands.values(), linefmt=color, basefmt="None", markerfmt="None")
@@ -262,7 +265,7 @@ class VibrationalData:
         # If the user requested a lineshape compute the spectrum by summing the contribution of each band
         # Compute each contribution by vectorizing over the frequency range. Each contribution is expressed
         # as the product of a normalized lineshape function by the integrated intensity of the band.
-        elif lineshape.lower() in ["lorentzian", "gaussian"]:
+        elif lineshape in ["lorentzian", "gaussian"]:
             
             frequencies = np.arange(fmin, fmax, resolution)
             total_intensity = np.zeros_like(frequencies)
@@ -390,6 +393,9 @@ class VibrationalData:
         if logscale:
             ax.set_yscale("log")
 
+        if lineshape is not None:
+            lineshape = lineshape.lower()
+
         if lineshape is None:
             ax.stem(bands.keys(), bands.values(), linefmt=color, basefmt="None", markerfmt="None")
             ax.set_xlim((fmin, fmax))
@@ -397,7 +403,7 @@ class VibrationalData:
             if logscale is False:
                 ax.set_ylim(bottom=0)
         
-        elif lineshape.lower() in ["lorentzian", "gaussian"]:
+        elif lineshape in ["lorentzian", "gaussian"]:
             
             frequencies = np.arange(fmin, fmax, resolution)
             total_intensity = np.zeros_like(frequencies)
