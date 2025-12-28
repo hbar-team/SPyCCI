@@ -76,27 +76,24 @@ class VibrationalData:
         self.raman_transitions: List[Tuple[int, float, float]] = []
     
     def __str__(self) -> str:
+        
         info = "VIBRATIONAL FREQUENCIES\n"
         info += "----------------------------------------------\n"
         info += " index  frequency  intensity \n"
         info += "         (cm^-1)   (km/mol)  \n"
         info += "----------------------------------------------\n"
-        for mode, frequency in enumerate(self.frequencies):
+        
+        for i, frequency in enumerate(self.frequencies):
 
-            ir_intensity = None
-            for m, intensity in self.ir_transitions:
-                if m == mode:
-                    ir_intensity = intensity
+            intensity = None
+            for j, intensity in self.ir_transitions:
+                if j == i:
+                    intensity = intensity
                     break
             
-            if ir_intensity is None:
-                ir_intensity = ""
-            else:
-                ir_intensity = "{:.2f}  ".format(ir_intensity)   
-
-            frequency = "{:.2f}  ".format(frequency)            
+            intensity = "" if intensity is None else "{:.2f}  ".format(intensity)             
             
-            info += f" {mode:<6}{frequency:>11}{ir_intensity:>11}\n"
+            info += f" {i:<6}{frequency:>11.2f}{intensity:>11}\n"
 
         info += "\n"
 
@@ -139,9 +136,10 @@ class VibrationalData:
         obj = cls()
         obj.frequencies = data["frequencies"]
         obj.normal_modes = [np.array(x) for x in data["normal_modes"]]
-        obj.ir_transitions = [(x, y) for x, y in data["ir_transitions"]]
-        obj.ir_combination_bands = [(x, y, z) for x, y, z in data["ir_combination_bands"]]
-        obj.raman_transitions = data["raman_transitions"]
+        obj.ir_transitions = [tuple(x) for x in data["ir_transitions"]]
+        obj.ir_combination_bands = [tuple(x) for x in data["ir_combination_bands"]]
+        obj.raman_transitions = [tuple(x) for x in data["raman_transitions"]]
+
         return obj
     
     def show_ir_spectrum(
@@ -281,9 +279,13 @@ class VibrationalData:
 
             # Plot the obtained intensity values
             ax.plot(frequencies, total_intensity, color=color, linewidth=1.5)
+            ax.set_xlim((fmin, fmax))
 
             if show_bars:
-                ax.stem(bands.keys(), bands.values(), linefmt=color, basefmt="None", markerfmt="None")
+                ax2 = ax.twinx()
+                ax2.stem(bands.keys(), bands.values(), linefmt=color, basefmt="None", markerfmt="None")
+                ax2.tick_params(axis="y", labelsize=16)
+                ax2.set_ylabel(r"Integrated Intensity [$km/mol$]", fontsize=20)
         
         else:
             raise TypeError(f"`{lineshape}` lineshape option is invalid.")
@@ -366,7 +368,10 @@ class VibrationalData:
         TypeError
             Exception raised when an invalid lineshape is given as the broadening argument.
         """
+        # Define a dictionary storing the frequency of each band with the associated acitivty value
         bands = {}
+
+        # Extract all the activity values for each Raman transition
         for mode, activity, _ in self.raman_transitions:
                 
             if activity == 0:
@@ -378,6 +383,7 @@ class VibrationalData:
             else:
                 bands[frequency] += activity
 
+        # Set the limit values of the spectrum to be plotted
         if range is None:
             fmin, fmax = min(bands.keys())-padding, max(bands.keys())+padding
         else:
@@ -396,6 +402,7 @@ class VibrationalData:
         if lineshape is not None:
             lineshape = lineshape.lower()
 
+        # If the lineshape is set to None just present a stem plot with the activity values
         if lineshape is None:
             ax.stem(bands.keys(), bands.values(), linefmt=color, basefmt="None", markerfmt="None")
             ax.set_xlim((fmin, fmax))
@@ -403,6 +410,9 @@ class VibrationalData:
             if logscale is False:
                 ax.set_ylim(bottom=0)
         
+        # If the user requested a lineshape compute the spectrum by summing the contribution of each band
+        # Compute each contribution by vectorizing over the frequency range. Each contribution is expressed
+        # as the product of a normalized lineshape function by the activity of the band.
         elif lineshape in ["lorentzian", "gaussian"]:
             
             frequencies = np.arange(fmin, fmax, resolution)
@@ -415,7 +425,8 @@ class VibrationalData:
 
                 elif lineshape == "gaussian":
                     total_intensity += intensity*normalized_gaussian(frequencies, f0, FWHM)
-
+            
+            # Plot the obtained activity values
             ax.plot(frequencies, total_intensity, color=color, linewidth=1.5)
 
             if show_bars:
