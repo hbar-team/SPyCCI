@@ -86,9 +86,9 @@ class VibrationalData:
         for i, frequency in enumerate(self.frequencies):
 
             intensity = None
-            for j, intensity in self.ir_transitions:
+            for j, ir_int in self.ir_transitions:
                 if j == i:
-                    intensity = intensity
+                    intensity = ir_int
                     break
             
             intensity = "" if intensity is None else "{:.2f}  ".format(intensity)             
