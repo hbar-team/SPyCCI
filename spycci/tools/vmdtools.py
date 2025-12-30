@@ -1,6 +1,8 @@
 import sh, os, shutil, logging
 import imageio.v2 as imageio
+import numpy as np
 
+from copy import deepcopy
 from tempfile import NamedTemporaryFile as tmp
 from tempfile import mkdtemp
 
@@ -9,8 +11,12 @@ from os.path import join, basename, isfile
 from typing import List, Optional, Union
 
 from spycci.core.dependency_finder import locate_vmd
+from spycci.core.spectroscopy import VibrationalData
 from spycci.tools.cubetools import Cube
 from spycci.systems import System, ReactionPath
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 class VMDRenderer:
@@ -674,6 +680,8 @@ def animate(
         renderer: Optional[VMDRenderer] = None,
         duration: float = 0.1,
         loop: int = 0,
+        reversed: bool = False,
+        mirror: bool = False,
         remove_tdir: bool = True,
         suppress_output: bool = False,
 ) -> None:
@@ -694,6 +702,14 @@ def animate(
         The duration in seconds of each frame in the animation. (default: 0.1s)
     loop: int
         The number of time the `.gif` repetes itself. (default: 0 -> Infinite loop)
+    reversed: bool
+        If set to `True` will reverse the order in which the frames are ordered. The animation will
+        start from the last system in the list and progress toward the first. (default: False)
+    mirror: bool
+        If set to `True`, a reversed copy of the list is appended, with the first and last frames
+        removed to avoid duplication at the turning points. The resulting animation is cyclical: it
+        progresses from the first frame to the last one, then reverses direction and continues back 
+        toward the second frame. (default: False)
     remove_tdir: bool
         If set to `False` will keep the temporary folder containing the render of
         each frame. (default: True)
@@ -714,6 +730,9 @@ def animate(
     # Extract the list of system to be used in each step of the aminmation
     steps = systems.systems if isinstance(systems, ReactionPath) else systems
 
+    if reversed is True:
+        steps = steps[::-1]
+
     # Set the output state of the renderer according to user settings
     vmd.suppress_output = suppress_output
     
@@ -728,6 +747,10 @@ def animate(
         for i, system in enumerate(steps):
             vmd.render_system(system, f"frame_{i}.bmp")
             frames.append(imageio.imread(f"frame_{i}.bmp"))
+        
+        if mirror is True:
+            back = deepcopy(frames[::-1])[1:-1]
+            frames.extend(back)
 
         # Join each frame in a single .gif object using the imageio package
         imageio.mimsave("animation.gif", frames, fps=fps, loop=loop)
@@ -740,3 +763,86 @@ def animate(
         shutil.rmtree(tdir)
 
         
+def animate_normal_mode(
+    system: System,
+    mode: int,
+    filename: str,
+    displacement: float = 0.5,
+    steps: int = 10,
+    renderer: Optional[VMDRenderer] = None,
+    duration: float = 0.05,
+    remove_tdir: bool = True,
+    suppress_output: bool = False,
+) -> None:
+    """
+    Animate the normal mode of vibration of a molecular system. The function automatically
+    generates a series of `System` objects corresponding to the molecular geometries displaced
+    along a chosen normal mode and produces a `.gif` animation of the motion.
+
+    Parameters
+    ----------
+    system : System
+        The molecular system whose normal mode is to be animated. (Must contain vibrational data.)
+    mode : int
+        Index of the normal mode to animate.
+    filename : str
+        The output filename, including path, for the generated `.gif` animation.
+    displacement : float, optional
+        Maximum amplitude of displacement along the normal mode (default: 0.5 Å).
+    steps : int, optional
+        Number of intermediate frames to generate along the displacement path (default: 10).
+    renderer: Optional[VMDRenderer]
+        The rendered used to generate the animation frames. (default: `VMDRenderer()`)
+    duration: float
+        The duration in seconds of each frame in the animation. (default: 0.1s)
+    remove_tdir: bool
+        If set to `False` will keep the temporary folder containing the render of
+        each frame. (default: True)
+    suppress_output : bool, optional
+        If `True`, suppress messages from the VMD renderer during frame generation (default: False).
+    """
+    # Check if the given system is of type `System`
+    if isinstance(system, System) is False:
+        raise TypeError(f"The system argument must be of type `System`, type `{type(system)}` given instead.")
+
+    # Check if vibrational data are available
+    data: VibrationalData = system.properties.vibrational_data
+    if data is None:
+        raise RuntimeError(f"Vibrational data not found for the `{system.name}` system.")
+
+    # Check if the provided mode index is valid and extract the corresponding normal mode
+    nmodes = len(data.frequencies)
+    if mode < 0 or mode >= nmodes:
+        raise IndexError(f"Normal mode {mode} index out of bounds [0, {nmodes}].")
+
+    normal_mode: np.ndarray = data.normal_modes[mode]
+
+    # Check if the mode corresponds to zero frequency, if yes warn the user
+    if np.isclose(data.frequencies[mode], 0.0, atol=1e-12):
+        logger.warning(f"The selected mode {mode} is associated with a zero frequency.")
+
+    syslist: List[System] = []
+    for l in np.linspace(-displacement, displacement, steps):
+
+        # Copy the molecular geometry data
+        geom = deepcopy(system.geometry)
+
+        # Displace the system geometry along the selected normal mode
+        coords: np.ndarray = np.array(geom.coordinates)
+        coords += l * normal_mode.reshape(geom.atomcount, 3)
+        geom.set_coordinates(coords)
+
+        # Create a new system object and append it to the systems list
+        frame = System(f"d={l:.2f}", geom, charge=system.charge, spin=system.spin)
+        syslist.append(frame)
+
+    # Call the animation tool
+    animate(
+        syslist,
+        filename,
+        renderer=renderer,
+        duration=duration,
+        mirror=True,
+        remove_tdir=remove_tdir,
+        suppress_output=suppress_output,
+    )
