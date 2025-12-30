@@ -1,4 +1,5 @@
-import sh, os, shutil
+import sh, os, shutil, logging
+import imageio.v2 as imageio
 
 from tempfile import NamedTemporaryFile as tmp
 from tempfile import mkdtemp
@@ -9,7 +10,7 @@ from typing import List, Optional, Union
 
 from spycci.core.dependency_finder import locate_vmd
 from spycci.tools.cubetools import Cube
-from spycci.systems import System
+from spycci.systems import System, ReactionPath
 
 
 class VMDRenderer:
@@ -43,6 +44,8 @@ class VMDRenderer:
         If set to `True` will enable the vmd dof option. (default: True)
     show_axes: bool
         If set to `True` will show the axes representation in the render window. (default: False)
+    suppress_output: bool
+        If set to `True` will run the rendering without printing any message from `vmd`. (default: False)
     VMD_PATH: str
         The path to the vmd executable. Is set to `None` (default), will automatically search `vmd`
         in the system PATH.
@@ -67,6 +70,7 @@ class VMDRenderer:
         ambientocclusion: bool = True,
         dof: bool = True,
         show_axes: bool = False,
+        suppress_output: bool = False,
         VMD_PATH: Optional[str] = None,
     ) -> None:
         
@@ -75,6 +79,7 @@ class VMDRenderer:
         self.ambientocclusion: bool = ambientocclusion
         self.dof: bool = dof
         self.show_axes: bool = show_axes
+        self.suppress_output: bool = suppress_output
 
         # Define the attributes to be set using properties
         self.__scale: float = None
@@ -540,7 +545,11 @@ class VMDRenderer:
             vmd_script.write("exit\n")
 
             vmd_script.seek(0)
-            system(f"vmd -dispdev text -e {vmd_script.name}")
+
+            if self.suppress_output is True:
+                system(f"vmd -dispdev text -e {vmd_script.name}  > /dev/null 2>&1")
+            else:
+                system(f"vmd -dispdev text -e {vmd_script.name}")
 
     def _tcl_script_preamble(self) -> str:
         """
@@ -652,3 +661,82 @@ class VMDRenderer:
         script += "display cuemode Linear\n"
 
         return script
+
+
+
+####################################################################
+#               DEFINE VMD-BASED ANIMATION FUNCTIONS               #
+####################################################################
+
+def animate(
+        systems: Union[List[System], ReactionPath],
+        filename: str,
+        renderer: Optional[VMDRenderer] = None,
+        duration: float = 0.1,
+        loop: int = 0,
+        remove_tdir: bool = True,
+        suppress_output: bool = False,
+) -> None:
+    """
+    Given a list of `System` objects generate a `.gif` animation by iteratively
+    calling `vmd` to render all the frames.
+
+    Arguments
+    ---------
+    systems: Union[List[System], ReactionPath],
+        The ordered list of systems to be rendered in the animation either as a regular
+        list object or as a ReactionPath object.
+    filename: str
+        The name or the path of the output animation `.gif` file.
+    renderer: Optional[VMDRenderer]
+        The rendered used to generate the animation frames. (default: `VMDRenderer()`)
+    duration: float
+        The duration in seconds of each frame in the animation. (default: 0.1s)
+    loop: int
+        The number of time the `.gif` repetes itself. (default: 0 -> Infinite loop)
+    remove_tdir: bool
+        If set to `False` will keep the temporary folder containing the render of
+        each frame. (default: True)
+    suppress_output: bool
+        If set to `True` will run the rendering without printing any message from `vmd`. (default: False)
+    """
+    vmd = renderer if renderer else VMDRenderer()
+
+    if type(vmd) != VMDRenderer:
+        raise ValueError(f"The renderer engine must be of type `VMDRenderer`, {type(vmd)} is not a valid renderer")
+        
+    logging.getLogger("PIL").setLevel(logging.INFO)
+    logging.getLogger("PIL").propagate = False
+
+    # Create a temporary directory where the frames will be stored
+    tdir = mkdtemp(prefix = "vmd_animation_", dir=os.getcwd())
+    
+    # Extract the list of system to be used in each step of the aminmation
+    steps = systems.systems if isinstance(systems, ReactionPath) else systems
+
+    # Set the output state of the renderer according to user settings
+    vmd.suppress_output = suppress_output
+    
+    # Compute the number of frames per seconds (`fps`) from the user set frame duration
+    # Note: This is a workaround since the `duration` keyword is often ignored by `mimsave`
+    fps = int(1./duration)
+
+    with sh.pushd(tdir):
+
+        # Render each frame individually using the provided VMD renderer
+        frames = []
+        for i, system in enumerate(steps):
+            vmd.render_system(system, f"frame_{i}.bmp")
+            frames.append(imageio.imread(f"frame_{i}.bmp"))
+
+        # Join each frame in a single .gif object using the imageio package
+        imageio.mimsave("animation.gif", frames, fps=fps, loop=loop)
+
+    # Copy the generated animation to the user-specified location
+    shutil.copy(f"{tdir}/animation.gif", filename)
+
+    # If required by the user remove the temporary directory
+    if remove_tdir:
+        shutil.rmtree(tdir)
+
+        
