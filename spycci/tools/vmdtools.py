@@ -684,6 +684,7 @@ def animate(
         mirror: bool = False,
         remove_tdir: bool = True,
         suppress_output: bool = False,
+        frames_scale: Optional[list[float]] = None,
 ) -> None:
     """
     Given a list of `System` objects generate a `.gif` animation by iteratively
@@ -715,11 +716,16 @@ def animate(
         each frame. (default: True)
     suppress_output: bool
         If set to `True` will run the rendering without printing any message from `vmd`. (default: False)
+    frames_scale: Optional[list[float]]
+        If not `None` (default), will indipendently set the scale (zoom level) of each frame.
     """
     vmd = renderer if renderer else VMDRenderer()
 
     if type(vmd) != VMDRenderer:
         raise ValueError(f"The renderer engine must be of type `VMDRenderer`, {type(vmd)} is not a valid renderer")
+    
+    if frames_scale and len(frames_scale) != len(systems):
+        raise ValueError("The length of the `frames_scale` argument must match that of the input systems list.")
         
     logging.getLogger("PIL").setLevel(logging.INFO)
     logging.getLogger("PIL").propagate = False
@@ -745,6 +751,11 @@ def animate(
         # Render each frame individually using the provided VMD renderer
         frames = []
         for i, system in enumerate(steps):
+
+            # If scale factors are provided, apply them to the renderer
+            if frames_scale:
+                vmd.scale = frames_scale[i]
+
             vmd.render_system(system, f"frame_{i}.bmp")
             frames.append(imageio.imread(f"frame_{i}.bmp"))
         
@@ -768,11 +779,12 @@ def animate_normal_mode(
     mode: int,
     filename: str,
     displacement: float = 0.5,
-    steps: int = 10,
+    steps: int = 15,
     renderer: Optional[VMDRenderer] = None,
     duration: float = 0.05,
     remove_tdir: bool = True,
     suppress_output: bool = False,
+    auto_correct_zoom: bool = True,
 ) -> None:
     """
     Animate the normal mode of vibration of a molecular system. The function automatically
@@ -790,16 +802,19 @@ def animate_normal_mode(
     displacement : float, optional
         Maximum amplitude of displacement along the normal mode (default: 0.5 Å).
     steps : int, optional
-        Number of intermediate frames to generate along the displacement path (default: 10).
+        Number of intermediate frames to generate along the displacement path (default: 15).
     renderer: Optional[VMDRenderer]
         The rendered used to generate the animation frames. (default: `VMDRenderer()`)
     duration: float
-        The duration in seconds of each frame in the animation. (default: 0.1s)
+        The duration in seconds of each frame in the animation. (default: 0.05s)
     remove_tdir: bool
         If set to `False` will keep the temporary folder containing the render of
         each frame. (default: True)
     suppress_output : bool, optional
         If `True`, suppress messages from the VMD renderer during frame generation (default: False).
+    auto_correct_zoom: bool
+        If set to `True` (default), will try to automatically adjust the renderer zoom to minimize VMD auto-scale
+        effect between frames of the same normal mode using the dimension of the box containing the molecule.
     """
     # Check if the given system is of type `System`
     if isinstance(system, System) is False:
@@ -821,6 +836,7 @@ def animate_normal_mode(
     if np.isclose(data.frequencies[mode], 0.0, atol=1e-12):
         logger.warning(f"The selected mode {mode} is associated with a zero frequency.")
 
+    scales = None
     syslist: List[System] = []
     for l in np.linspace(-displacement, displacement, steps):
 
@@ -836,6 +852,30 @@ def animate_normal_mode(
         frame = System(f"d={l:.2f}", geom, charge=system.charge, spin=system.spin)
         syslist.append(frame)
 
+    # If automaitc zoom correction compute a scale factor for each frame to compensate the automatic
+    # zoom applied by VMD at startup
+    if auto_correct_zoom:
+
+        # Create a list of the size (diagonal) of a bounding box containing the molecule
+        sizes = []
+        for system in syslist:
+
+            # Extract all the coordinates of the system atoms and convert them to a 2D numpy array
+            coords = np.array(system.geometry.coordinates)
+            
+            # Find for each dimension (x, y, z) the minimum and maximum values that define opposite extremities
+            # of the bounding box
+            min_coords = coords.min(axis=0)
+            max_coords = coords.max(axis=0)
+            
+            # Compute the diagonal of the bounding box and append it to the sizes list
+            size = np.linalg.norm(max_coords - min_coords)
+            sizes.append(size)
+        
+        # Compute the scale factor using the scale 1.0 for the biggest box
+        max_size = max(sizes)
+        scales = [s / max_size for s in sizes]        
+
     # Call the animation tool
     animate(
         syslist,
@@ -845,4 +885,5 @@ def animate_normal_mode(
         mirror=True,
         remove_tdir=remove_tdir,
         suppress_output=suppress_output,
+        frames_scale=scales,
     )
