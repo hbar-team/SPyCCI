@@ -51,3 +51,5 @@ Contributor's guide 🖥️
 
 A short guide for all the developers that want to contribute to the library
 :::
+
+A small collection of practical examples is also available on the dedicated [examples page](Examples).
