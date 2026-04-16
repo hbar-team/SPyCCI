@@ -14,7 +14,7 @@ kernelspec:
 # Molecular visualization using VMD
 Beyond allowing the user to run computational chemistry calculations, the SPyCCI package also provides a simple interface to the [Visual Molecular Dynamics (VMD) software](https://www.ks.uiuc.edu/Research/vmd/) enabling the user to render molecular structures and cube files directly from a python script. The interface is constantly updated with new features and, at the moment, supports the rendering of both molecular structures, provided either in the form of `System` objects, `.xyz` or `pdb` files, and volumetric data in the form of `.cube` files or `Cube` objects.
 
-The core of the interface is represented by the `VMDRenderer` class. The class represents a generic rendering tool that can be created setting a resolution value, system position, orientation and zoom, graphical effects such as shadows, ambientocclusion and depth of field (DoF). Once created the class provides specific methods capable of generating the required renders.
+The core of the interface is represented by the `VMDRenderer` class of the `spycci.tools.vmdtool` module. The class represents a generic rendering tool that can be created setting a resolution value, system position, orientation and zoom, graphical effects such as shadows, ambientocclusion and depth of field (DoF). Once created the class provides specific methods capable of generating the required renders.
 
 :::{admonition} Notes about cube files
 :class: info
@@ -226,3 +226,34 @@ that outputs the following `condensed_fukui_plus.bmp` image file:
 :width: 450px
 :align: center
 ```
+
+## Generating animations using VMD
+
+Besides allowing the generation of simple static images, the `spycci.tools.vmdtool` module also provides an `animate` function capable of generating simple `.gif` animations from a list of `System` objects. The function simply runs a series of rendering operations generating all the animation frames; these are then joined together in a single `.gif` file by the `imageio` python library.
+
+The function can take as argument a list of `System` objects or directly a `ReactionPath` object. Duration and number of animation loops can be set by the user that can also provide a custom insance of the `VMDRenderer` onject to be used during the rendering operation.
+
+The following example shows how the `animate` function can be used to export an animation of a `ReactionPath` object:
+
+```python
+from spycci.systems import System, ReactionPath
+from spycci.tools.vmdtools import animate
+from spycci.engines.orca import OrcaInput
+
+engine = OrcaInput(method="XTB", basis_set=None, aux_basis=None, solvent=None)
+reactant = System.from_xyz("reactant.xyz", charge=0, spin=1)
+product = System.from_xyz("product.xyz", charge=0, spin=1)
+
+path : ReactionPath = engine.neb('', reactant, product, nimages=10, ncores=4)
+
+animate(path, "NEB.gif", duration=0.2)
+```
+
+the following `NEB.gif` animation is generated and all the temporary file automatically cleared.
+
+```{image} ./images/NEB.gif
+:alt: NEB.gif
+:width: 450px
+:align: center
+```
+
