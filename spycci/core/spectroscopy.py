@@ -158,6 +158,7 @@ class VibrationalData:
             export_dpi: int = 600,
             show: bool = True,
             axes: Optional[plt.Axes] = None,
+            label: Optional[str] = None,
         ) -> None:
         """
         Plots the infrared spectrum of the molecule.
@@ -199,6 +200,8 @@ class VibrationalData:
         axes: Optional[matplotlib.pyplot.Axes]
             If given a `matplotlib.pyplot.Axes` argument, the function will add the infrared spectum to the user provided
             axes system. Beware that the `export_path` and `show` options will be automatically ignored if `axes` is set.
+        label: Optional[str] = None
+            The name to be given to the plotted spectrum in the legend.
         
         Raises
         ------
@@ -254,7 +257,7 @@ class VibrationalData:
 
         # If the lineshape is set to None just present a stem plot with the integrated intensities values
         if lineshape is None:
-            ax.stem(bands.keys(), bands.values(), linefmt=color, basefmt="None", markerfmt="None")
+            ax.stem(bands.keys(), bands.values(), linefmt=color, basefmt="None", markerfmt="None", label=label)
             ax.set_xlim((fmin, fmax))
 
             if logscale is False:
@@ -278,7 +281,7 @@ class VibrationalData:
                     total_intensity += intensity*normalized_gaussian(frequencies, f0, FWHM)
 
             # Plot the obtained intensity values
-            ax.plot(frequencies, total_intensity, color=color, linewidth=1.5)
+            ax.plot(frequencies, total_intensity, color=color, linewidth=1.5, label=label)
             ax.set_xlim((fmin, fmax))
 
             if show_bars:
@@ -324,6 +327,7 @@ class VibrationalData:
             export_dpi: int = 600,
             show: bool = True,
             axes: Optional[plt.Axes] = None,
+            label: Optional[str] = None,
         ) -> None:
         """
         Plots the raman spectrum of the molecule.
@@ -362,6 +366,8 @@ class VibrationalData:
         axes: Optional[matplotlib.pyplot.Axes]
             If given a `matplotlib.pyplot.Axes` argument, the function will add the raman spectum to the user provided
             axes system. Beware that the `export_path` and `show` options will be automatically ignored if `axes` is set.
+        label: Optional[str] = None
+            The name to be given to the plotted spectrum in the legend.
         
         Raises
         ------
@@ -404,7 +410,7 @@ class VibrationalData:
 
         # If the lineshape is set to None just present a stem plot with the activity values
         if lineshape is None:
-            ax.stem(bands.keys(), bands.values(), linefmt=color, basefmt="None", markerfmt="None")
+            ax.stem(bands.keys(), bands.values(), linefmt=color, basefmt="None", markerfmt="None", label=label)
             ax.set_xlim((fmin, fmax))
 
             if logscale is False:
@@ -427,7 +433,7 @@ class VibrationalData:
                     total_intensity += intensity*normalized_gaussian(frequencies, f0, FWHM)
             
             # Plot the obtained activity values
-            ax.plot(frequencies, total_intensity, color=color, linewidth=1.5)
+            ax.plot(frequencies, total_intensity, color=color, linewidth=1.5, label=label)
 
             if show_bars:
                 ax.stem(bands.keys(), bands.values(), linefmt=color, basefmt="None", markerfmt="None")
