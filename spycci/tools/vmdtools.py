@@ -1,6 +1,9 @@
 import sh, os, shutil, logging
 import imageio.v2 as imageio
+<<<<<<< HEAD
 import numpy as np
+=======
+>>>>>>> d0a14bd40001e278844a40d9562f42d9285c23f6
 
 from copy import deepcopy
 from tempfile import NamedTemporaryFile as tmp
@@ -14,9 +17,12 @@ from spycci.core.dependency_finder import locate_vmd
 from spycci.core.spectroscopy import VibrationalData
 from spycci.tools.cubetools import Cube
 from spycci.systems import System, ReactionPath
+<<<<<<< HEAD
 
 import logging
 logger = logging.getLogger(__name__)
+=======
+>>>>>>> d0a14bd40001e278844a40d9562f42d9285c23f6
 
 
 class VMDRenderer:
