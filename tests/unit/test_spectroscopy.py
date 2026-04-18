@@ -29,21 +29,20 @@ def test_VibrationalData___str__():
 
     mol = System.from_json(f"{TEST_DIR}/utils/json_examples/CO2_ir_raman.json")
     obj = mol.properties.vibrational_data
-
     expected_string = """VIBRATIONAL FREQUENCIES
 ----------------------------------------------
  index  frequency  intensity 
          (cm^-1)   (km/mol)  
 ----------------------------------------------
- 0          0.00             
- 1          0.00             
- 2          0.00             
- 3          0.00             
- 4          0.00             
- 5        623.24      23.18  
- 6        626.59      21.94  
- 7       1339.10       0.00  
- 8       2421.89     489.86  
+ 0            0.00           
+ 1            0.00           
+ 2            0.00           
+ 3            0.00           
+ 4            0.00           
+ 5          623.24    23.18  
+ 6          626.59    21.94  
+ 7         1339.10     0.00  
+ 8         2421.89   489.86  
 
 """
     assert expected_string == str(obj)
