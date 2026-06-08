@@ -257,3 +257,57 @@ the following `NEB.gif` animation is generated and all the temporary file automa
 :align: center
 ```
 
+### Visualizing normal modes of vibration using VMD
+
+Building upon the previously discussed VMD-based animation functionality, the `spycci.tools.vmdtools` module also provides a convenient `animate_normal_mode` function to visualize normal modes of vibration obtained from vibrational calculations.
+
+This function takes a `System` object as input, provided that its `vibrational_data` attribute has been populated (e.g., via a frequency calculation). The user can specify which normal mode to animate and save the resulting animation as a `.gif` file.
+
+The following example demonstrates how to use `animate_normal_mode` to generate an animation of the antisymmetric stretching mode of a water molecule:
+
+```python
+from spycci.systems import System
+from spycci.engines.orca import OrcaInput
+from spycci.tools.vmdtools import animate_normal_mode
+
+system = System.from_smiles("water", "O")
+orca = OrcaInput(method="BP86", basis_set="def2-TZVP")
+orca.opt(system, optimization_level="TightOpt", frequency_analysis=True, inplace=True)
+
+animate_normal_mode(system, 8, "water_mode_8.gif")
+```
+
+The command above generates the following `water_mode_8.gif` animation file and automatically removes any temporary files created during the process.
+
+```{image} ./images/water_mode_8.gif
+:alt: NEB.gif
+:width: 450px
+:align: center
+```
+
+:::{admonition} Note on frame scaling
+:class: info
+As explained above, animations generated with the `VMDRenderer` class are created by rendering each frame individually and then stitching the resulting images into a `.gif` file. This approach involves multiple calls to the `vmd` software, each time passing the coordinates of the system for a given frame. By default, `vmd` automatically adjusts the view (i.e., zoom level) to best fit the molecule within the window. This behavior is ideal for visualizing reaction paths, as it ensures a consistent and comprehensive view of the system throughout the transformation. 
+
+However, it can introduce visual artifacts when animating normal modes of vibration, especially for small molecules.During vibrational motion, the apparent size of the molecule may change (e.g., bond stretching or compression). As a result, `vmd` dynamically rescales the view for each frame, leading to inconsistent zoom levels across the animation (see example below).
+
+To mitigate this effect, the `animate_normal_mode` function applies an automatic frame scaling correction. Specifically, each frame is rescaled based on the diagonal length of the bounding box enclosing the molecule, ensuring a more uniform apparent size throughout the animation. If this behavior is not desired, it can be disabled by setting `auto_correct_zoom=False`. Note, however, that this may lead to visually misleading animations.
+
+For example, animating the 7th vibrational mode of a water molecule with automatic scaling correction enabled produces:
+
+```{image} ./images/water_mode_7.gif
+:alt: NEB.gif
+:width: 200px
+:align: center
+```
+
+Disabling the automatic correction results in:
+
+```{image} ./images/water_mode_7_no_zoom_corr.gif
+:alt: NEB.gif
+:width: 200px
+:align: center
+```
+
+In the latter case, the atoms appear to change size due to the varying zoom level applied to compensate for bond length variations.
+:::

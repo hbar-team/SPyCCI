@@ -2,16 +2,16 @@ from __future__ import annotations
 
 import numpy as np
 import matplotlib.pyplot as plt
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Union
 
-def unitary_height_gaussian(x: float, c: float, FWHM: float) -> float:
+def normalized_gaussian(x: Union[float, np.ndarray], c: float, FWHM: float) -> Union[float, np.ndarray]:
     """
-    Unitary height gaussian function
+    Normalized gaussian function
 
     Arguments
     ---------
-    x: float
-        The position at wich the function must be evaluated.
+    x: Union[float, np.ndarray]
+        The position or the array of positions at wich the function must be evaluated.
     c: float
         The center of the distribution
     FWHM: float
@@ -19,20 +19,20 @@ def unitary_height_gaussian(x: float, c: float, FWHM: float) -> float:
     
     Returns
     -------
-    float
-        The value of the function at the specified point.
+    Union[float, np.ndarray]
+        The values of the function at the specified points.
     """
     sigma = FWHM/(2*np.sqrt(2*np.log(2)))
-    return np.exp(-(x-c)**2/(2*sigma**2))
+    return np.exp(-(x-c)**2/(2*sigma**2))/np.sqrt(2.*np.pi*sigma**2)
 
-def unitary_height_lorentzian(x, c, FWHM):
+def normalized_lorentzian(x: Union[float, np.ndarray], c: float, FWHM: float) -> Union[float, np.ndarray]:
     """
-    Unitary height lorentzian function
+    Normalized lorentzian function
 
     Arguments
     ---------
-    x: float
-        The position at wich the function must be evaluated.
+    x: Union[float, np.ndarray]
+        The position or the array of positions at wich the function must be evaluated.
     c: float
         The center of the distribution
     FWHM: float
@@ -40,11 +40,11 @@ def unitary_height_lorentzian(x, c, FWHM):
     
     Returns
     -------
-    float
-        The value of the function at the specified point.
+    Union[float, np.ndarray]
+        The values of the function at the specified points.
     """
-    gamma = FWHM/2
-    return (gamma/2)**2 /((x - c)**2 + (gamma/2)**2)
+    gamma = FWHM/2.
+    return (1./np.pi) * gamma /((x - c)**2 + gamma**2)
 
 
 class VibrationalData:
@@ -76,27 +76,24 @@ class VibrationalData:
         self.raman_transitions: List[Tuple[int, float, float]] = []
     
     def __str__(self) -> str:
+        
         info = "VIBRATIONAL FREQUENCIES\n"
         info += "----------------------------------------------\n"
         info += " index  frequency  intensity \n"
         info += "         (cm^-1)   (km/mol)  \n"
         info += "----------------------------------------------\n"
-        for mode, frequency in enumerate(self.frequencies):
+        
+        for i, frequency in enumerate(self.frequencies):
 
-            ir_intensity = None
-            for m, intensity in self.ir_transitions:
-                if m == mode:
-                    ir_intensity = intensity
+            intensity = None
+            for j, ir_int in self.ir_transitions:
+                if j == i:
+                    intensity = ir_int
                     break
             
-            if ir_intensity is None:
-                ir_intensity = ""
-            else:
-                ir_intensity = "{:.2f}  ".format(ir_intensity)   
-
-            frequency = "{:.2f}  ".format(frequency)            
+            intensity = "" if intensity is None else "{:.2f}  ".format(intensity)             
             
-            info += f" {mode:<6}{frequency:>11}{ir_intensity:>11}\n"
+            info += f" {i:<6}{frequency:>11.2f}{intensity:>11}\n"
 
         info += "\n"
 
@@ -139,15 +136,18 @@ class VibrationalData:
         obj = cls()
         obj.frequencies = data["frequencies"]
         obj.normal_modes = [np.array(x) for x in data["normal_modes"]]
-        obj.ir_transitions = [(x, y) for x, y in data["ir_transitions"]]
-        obj.ir_combination_bands = [(x, y, z) for x, y, z in data["ir_combination_bands"]]
-        obj.raman_transitions = data["raman_transitions"]
+        obj.ir_transitions = [tuple(x) for x in data["ir_transitions"]]
+        obj.ir_combination_bands = [tuple(x) for x in data["ir_combination_bands"]]
+        obj.raman_transitions = [tuple(x) for x in data["raman_transitions"]]
+
         return obj
     
     def show_ir_spectrum(
             self,
             lineshape: Optional[str] = None,
             FWHM: float = 25.,
+            range: Optional[Tuple[float, float]] = None,
+            resolution: float = 0.025,
             padding: float = 200.,
             include_overtones: bool = True,
             show_bars: bool = False,
@@ -156,7 +156,9 @@ class VibrationalData:
             color: str = "#154C79",
             export_path: Optional[str] = None,
             export_dpi: int = 600,
-            show: bool = True
+            show: bool = True,
+            axes: Optional[plt.Axes] = None,
+            label: Optional[str] = None,
         ) -> None:
         """
         Plots the infrared spectrum of the molecule.
@@ -168,9 +170,15 @@ class VibrationalData:
             `gaussian`. If set to `None` only vertical bars will be used to represent the spectrum.
         FWHM: float
             The full width at half maximum in cm^-1 of the broadening lineshapes (default: 25).
+        range: Optional[Tuple[float, float]]
+            The interval of wavenumbers that define the reagion of the spectrum to plot. If set to `None` (default) will
+            use the padding option to compute the spectrum range.
+        resolution: float
+            The distance (in cm^-1) between subsequent points in the spectrum plot. (default: 0.025)
         padding: float
             The padding to be used in plotting the spectrum. If set to 0, will plot the spectrum between the highest and
-            lowest wavenumbers associated to the IR-active transitions (default: 200).
+            lowest wavenumbers associated to the IR-active transitions (default: 200). If `range` is set, this option will
+            be ignored.
         include_overtones: bool
             If set to True (default) will use, if available, the overtones and combination bands to plot the spectrum.
         show_bars: bool
@@ -189,26 +197,33 @@ class VibrationalData:
             The resolution of the exported image (default: 600).
         show: bool
             If set to True (default) will open an interactive window containing the spectrum.
+        axes: Optional[matplotlib.pyplot.Axes]
+            If given a `matplotlib.pyplot.Axes` argument, the function will add the infrared spectum to the user provided
+            axes system. Beware that the `export_path` and `show` options will be automatically ignored if `axes` is set.
+        label: Optional[str] = None
+            The name to be given to the plotted spectrum in the legend.
         
         Raises
         ------
         TypeError
             Exception raised when an invalid lineshape is given as the broadening argument.
         """
+        # Define a dictionary storing the frequency of each band with the associated integrated intensity value
+        bands = {}
 
-        ir_bands = {}
+        # Extract all the intensity values for fundamental IR transitions
         for mode, intensity in self.ir_transitions:
                 
             if intensity == 0:
                 continue
 
             frequency = self.frequencies[mode]
-            if frequency not in ir_bands:
-                ir_bands[frequency] = intensity
+            if frequency not in bands:
+                bands[frequency] = intensity
             else:
-                ir_bands[frequency] += intensity
+                bands[frequency] += intensity
         
-
+        # If available and required by the user extract all the intensity values for the combination bands
         if self.ir_combination_bands != [] and include_overtones is True:
             for mode1, mode2, intensity in self.ir_combination_bands:
                 
@@ -216,69 +231,93 @@ class VibrationalData:
                     continue
 
                 frequency = self.frequencies[mode1] + self.frequencies[mode2]
-                if frequency not in ir_bands:
-                    ir_bands[frequency] = intensity
+                if frequency not in bands:
+                    bands[frequency] = intensity
                 else:
-                    ir_bands[frequency] += intensity
+                    bands[frequency] += intensity
+        
+        # Set the limit values of the spectrum to be plotted
+        if range is None:
+            fmin, fmax = min(bands.keys())-padding, max(bands.keys())+padding
+        else:
+            fmin, fmax = min(range), max(range)
 
-        fmin, fmax = min(ir_bands.keys())-padding, max(ir_bands.keys())+padding
-
-        fig = plt.figure(figsize=figsize)
+        # Check if the user provided an `ax` argument, if not create one.
+        if axes is None:
+            fig, ax = plt.subplots(figsize=figsize)
+        else:
+            ax = axes
+            fig = ax.figure
 
         if logscale:
-            plt.yscale("log")
+            ax.set_yscale("log")
 
+        if lineshape is not None:
+            lineshape = lineshape.lower()
+
+        # If the lineshape is set to None just present a stem plot with the integrated intensities values
         if lineshape is None:
-            plt.stem(ir_bands.keys(), ir_bands.values(), linefmt=color, basefmt="None", markerfmt="None")
-            plt.xlim((fmin, fmax))
+            ax.stem(bands.keys(), bands.values(), linefmt=color, basefmt="None", markerfmt="None", label=label)
+            ax.set_xlim((fmin, fmax))
 
             if logscale is False:
-                plt.ylim(bottom=0)
+                ax.set_ylim(bottom=0)
         
-        else:
-            amplitude = []
-            frequency = np.arange(fmin, fmax, 0.01)
-            for f in frequency:
-                value = 0
-                for f0, intensity in ir_bands.items():
-                    
-                    if lineshape == "lorentzian":
-                        value += intensity*unitary_height_lorentzian(f, f0, FWHM)
+        # If the user requested a lineshape compute the spectrum by summing the contribution of each band
+        # Compute each contribution by vectorizing over the frequency range. Each contribution is expressed
+        # as the product of a normalized lineshape function by the integrated intensity of the band.
+        elif lineshape in ["lorentzian", "gaussian"]:
+            
+            frequencies = np.arange(fmin, fmax, resolution)
+            total_intensity = np.zeros_like(frequencies)
+            
+            # Compute each band contribution to the total intensity
+            for f0, intensity in bands.items():
 
-                    elif lineshape == "gaussian":
-                        value += intensity*unitary_height_gaussian(f, f0, FWHM)
-                    
-                    else:
-                        raise TypeError(f"`{lineshape}` lineshape option is invalid.")
-                
-                amplitude.append(value)
+                if lineshape == "lorentzian":
+                    total_intensity += intensity*normalized_lorentzian(frequencies, f0, FWHM)
 
-            plt.plot(frequency, amplitude, color=color, linewidth=1.5)
+                elif lineshape == "gaussian":
+                    total_intensity += intensity*normalized_gaussian(frequencies, f0, FWHM)
+
+            # Plot the obtained intensity values
+            ax.plot(frequencies, total_intensity, color=color, linewidth=1.5, label=label)
+            ax.set_xlim((fmin, fmax))
 
             if show_bars:
-                plt.stem(ir_bands.keys(), ir_bands.values(), linefmt=color, basefmt="None", markerfmt="None")
+                ax2 = ax.twinx()
+                ax2.stem(bands.keys(), bands.values(), linefmt=color, basefmt="None", markerfmt="None")
+                ax2.tick_params(axis="y", labelsize=16)
+                ax2.set_ylabel(r"Integrated Intensity [$km/mol$]", fontsize=20)
         
-        plt.xticks(fontsize=16)
-        plt.yticks(fontsize=16)
-        plt.xlabel(r"Wavenumber [$cm^{-1}$]", fontsize=20)
-        plt.ylabel(r"Intensity [$km/mol$]", fontsize=20)
+        else:
+            raise TypeError(f"`{lineshape}` lineshape option is invalid.")
         
-        plt.grid(which="major", color="#DDDDDD")
-        plt.grid(which="minor", color="#EEEEEE")
+        ax.tick_params(axis="x", labelsize=16)
+        ax.tick_params(axis="y", labelsize=16)
+        ax.set_xlabel(r"Wavenumber [$cm^{-1}$]", fontsize=20)
+        ax.set_ylabel(r"Intensity [$km/mol$]", fontsize=20)
+        
+        ax.grid(which="major", color="#DDDDDD")
+        ax.grid(which="minor", color="#EEEEEE")
 
-        plt.tight_layout()
+        if axes is None:
+            
+            plt.tight_layout()
 
-        if export_path is not None:
-            plt.savefig(export_path, dpi=export_dpi)
+            if export_path is not None:
+                plt.savefig(export_path, dpi=export_dpi)
 
-        if show:
-            plt.show()
+            if show:
+                plt.show()
 
     
     def show_raman_spectrum(
             self,
             lineshape: Optional[str] = None,
             FWHM: float = 25.,
+            range: Optional[Tuple[float, float]] = None,
+            resolution: float = 0.025,
             padding: float = 200.,
             show_bars: bool = False,
             logscale: bool = False,
@@ -286,7 +325,9 @@ class VibrationalData:
             color: str = "#154C79",
             export_path: Optional[str] = None,
             export_dpi: int = 600,
-            show: bool = True
+            show: bool = True,
+            axes: Optional[plt.Axes] = None,
+            label: Optional[str] = None,
         ) -> None:
         """
         Plots the raman spectrum of the molecule.
@@ -298,6 +339,11 @@ class VibrationalData:
             `gaussian`. If set to `None` only vertical bars will be used to represent the spectrum.
         FWHM: float
             The full width at half maximum in cm^-1 of the broadening lineshapes (default: 25).
+        range: Optional[Tuple[float, float]]
+            The interval of wavenumbers that define the reagion of the spectrum to plot. If set to `None` (default) will
+            use the padding option to compute the spectrum range.
+        resolution: float
+            The distance (in cm^-1) between subsequent points in the spectrum plot. (default: 0.025)
         padding: float
             The padding to be used in plotting the spectrum. If set to 0, will plot the spectrum between the highest and
             lowest wavenumbers associated to the IR-active transitions (default: 200).
@@ -317,75 +363,100 @@ class VibrationalData:
             The resolution of the exported image (default: 600).
         show: bool
             If set to True (default) will open an interactive window containing the spectrum.
+        axes: Optional[matplotlib.pyplot.Axes]
+            If given a `matplotlib.pyplot.Axes` argument, the function will add the raman spectum to the user provided
+            axes system. Beware that the `export_path` and `show` options will be automatically ignored if `axes` is set.
+        label: Optional[str] = None
+            The name to be given to the plotted spectrum in the legend.
         
         Raises
         ------
         TypeError
             Exception raised when an invalid lineshape is given as the broadening argument.
         """
-        raman_bands = {}
+        # Define a dictionary storing the frequency of each band with the associated acitivty value
+        bands = {}
+
+        # Extract all the activity values for each Raman transition
         for mode, activity, _ in self.raman_transitions:
                 
             if activity == 0:
                 continue
 
             frequency = self.frequencies[mode]
-            if frequency not in raman_bands:
-                raman_bands[frequency] = activity
+            if frequency not in bands:
+                bands[frequency] = activity
             else:
-                raman_bands[frequency] += activity
+                bands[frequency] += activity
 
-        fmin, fmax = min(raman_bands.keys())-padding, max(raman_bands.keys())+padding
+        # Set the limit values of the spectrum to be plotted
+        if range is None:
+            fmin, fmax = min(bands.keys())-padding, max(bands.keys())+padding
+        else:
+            fmin, fmax = min(range), max(range)
 
-        fig = plt.figure(figsize=figsize)
+        # Check if the user provided an `ax` argument, if not create one.
+        if axes is None:
+            fig, ax = plt.subplots(figsize=figsize)
+        else:
+            ax = axes
+            fig = ax.figure
 
         if logscale:
-            plt.yscale("log")
+            ax.set_yscale("log")
 
+        if lineshape is not None:
+            lineshape = lineshape.lower()
+
+        # If the lineshape is set to None just present a stem plot with the activity values
         if lineshape is None:
-            plt.stem(raman_bands.keys(), raman_bands.values(), linefmt=color, basefmt="None", markerfmt="None")
-            plt.xlim((fmin, fmax))
+            ax.stem(bands.keys(), bands.values(), linefmt=color, basefmt="None", markerfmt="None", label=label)
+            ax.set_xlim((fmin, fmax))
 
             if logscale is False:
-                plt.ylim(bottom=0)
+                ax.set_ylim(bottom=0)
         
-        else:
-            amplitude = []
-            frequency = np.arange(fmin, fmax, 0.01)
-            for f in frequency:
-                value = 0
-                for f0, intensity in raman_bands.items():
-                    
-                    if lineshape == "lorentzian":
-                        value += intensity*unitary_height_lorentzian(f, f0, FWHM)
+        # If the user requested a lineshape compute the spectrum by summing the contribution of each band
+        # Compute each contribution by vectorizing over the frequency range. Each contribution is expressed
+        # as the product of a normalized lineshape function by the activity of the band.
+        elif lineshape in ["lorentzian", "gaussian"]:
+            
+            frequencies = np.arange(fmin, fmax, resolution)
+            total_intensity = np.zeros_like(frequencies)
 
-                    elif lineshape == "gaussian":
-                        value += intensity*unitary_height_gaussian(f, f0, FWHM)
-                    
-                    else:
-                        raise TypeError(f"`{lineshape}` lineshape option is invalid.")
+            for f0, intensity in bands.items():
                 
-                amplitude.append(value)
+                if lineshape == "lorentzian":
+                    total_intensity += intensity*normalized_lorentzian(frequencies, f0, FWHM)
 
-            plt.plot(frequency, amplitude, color=color, linewidth=1.5)
+                elif lineshape == "gaussian":
+                    total_intensity += intensity*normalized_gaussian(frequencies, f0, FWHM)
+            
+            # Plot the obtained activity values
+            ax.plot(frequencies, total_intensity, color=color, linewidth=1.5, label=label)
 
             if show_bars:
-                plt.stem(raman_bands.keys(), raman_bands.values(), linefmt=color, basefmt="None", markerfmt="None")
+                ax.stem(bands.keys(), bands.values(), linefmt=color, basefmt="None", markerfmt="None")
         
-        plt.xticks(fontsize=16)
-        plt.yticks(fontsize=16)
-        plt.xlabel(r"Wavenumber [$cm^{-1}$]", fontsize=20)
-        plt.ylabel(r"Activity", fontsize=20)
+        else:
+            raise TypeError(f"`{lineshape}` lineshape option is invalid.")
         
-        plt.grid(which="major", color="#DDDDDD")
-        plt.grid(which="minor", color="#EEEEEE")
+        ax.tick_params(axis="x", labelsize=16)
+        ax.tick_params(axis="y", labelsize=16)
+        ax.set_xlabel(r"Wavenumber [$cm^{-1}$]", fontsize=20)
+        ax.set_ylabel(r"Activity", fontsize=20)
+        
+        ax.grid(which="major", color="#DDDDDD")
+        ax.grid(which="minor", color="#EEEEEE")
 
-        plt.tight_layout()
+        if axes is None:
+            
+            plt.tight_layout()
 
-        if export_path is not None:
-            plt.savefig(export_path, dpi=export_dpi)
+            if export_path is not None:
+                plt.savefig(export_path, dpi=export_dpi)
 
-        if show:
-            plt.show()
+            if show:
+                plt.show()
 
     
