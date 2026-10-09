@@ -296,7 +296,7 @@ To mitigate this effect, the `animate_normal_mode` function applies an automatic
 For example, animating the 7th vibrational mode of a water molecule with automatic scaling correction enabled produces:
 
 ```{image} ./images/water_mode_7.gif
-:alt: NEB.gif
+:alt: water_mode_7.gif
 :width: 200px
 :align: center
 ```
@@ -304,7 +304,7 @@ For example, animating the 7th vibrational mode of a water molecule with automat
 Disabling the automatic correction results in:
 
 ```{image} ./images/water_mode_7_no_zoom_corr.gif
-:alt: NEB.gif
+:alt: water_mode_7_no_zoom_corr.gif
 :width: 200px
 :align: center
 ```

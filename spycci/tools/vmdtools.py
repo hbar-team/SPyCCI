@@ -738,6 +738,8 @@ def animate(
 
     if reversed is True:
         steps = steps[::-1]
+        if frames_scale:
+             frames_scale = frames_scale[::-1]
 
     # Set the output state of the renderer according to user settings
     vmd.suppress_output = suppress_output
@@ -828,7 +830,7 @@ def animate_normal_mode(
     # Check if the provided mode index is valid and extract the corresponding normal mode
     nmodes = len(data.frequencies)
     if mode < 0 or mode >= nmodes:
-        raise IndexError(f"Normal mode {mode} index out of bounds [0, {nmodes}].")
+        raise IndexError(f"Normal mode {mode} index out of bounds [0, {nmodes-1}].")
 
     normal_mode: np.ndarray = data.normal_modes[mode]
 

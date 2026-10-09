@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 import matplotlib.pyplot as plt
-from typing import List, Tuple, Optional, Union
+from typing import List, Tuple, Optional, Union, Dict
 
 def normalized_gaussian(x: Union[float, np.ndarray], c: float, FWHM: float) -> Union[float, np.ndarray]:
     """
@@ -91,7 +91,7 @@ class VibrationalData:
                     intensity = ir_int
                     break
             
-            intensity = "" if intensity is None else "{:.2f}  ".format(intensity)             
+            intensity = "" if intensity is None else f"{intensity:.2f}  "              
             
             info += f" {i:<6}{frequency:>11.2f}{intensity:>11}\n"
 
@@ -236,12 +236,6 @@ class VibrationalData:
                 else:
                     bands[frequency] += intensity
         
-        # Set the limit values of the spectrum to be plotted
-        if range is None:
-            fmin, fmax = min(bands.keys())-padding, max(bands.keys())+padding
-        else:
-            fmin, fmax = min(range), max(range)
-
         # Check if the user provided an `ax` argument, if not create one.
         if axes is None:
             fig, ax = plt.subplots(figsize=figsize)
@@ -249,58 +243,24 @@ class VibrationalData:
             ax = axes
             fig = ax.figure
 
-        if logscale:
-            ax.set_yscale("log")
+        # Add spectrum plot to the obtained axes
+        self.__add_spectrum(
+            ax,
+            bands,
+            r"Integrated Intensity [$km/mol$]",
+            r"Intensity [a.u.]",
+            lineshape=lineshape,
+            FWHM=FWHM,
+            range=range,
+            resolution=resolution,
+            padding=padding,
+            show_bars=show_bars,
+            logscale=logscale,
+            color=color,
+            label=label,
+        )
 
-        if lineshape is not None:
-            lineshape = lineshape.lower()
-
-        # If the lineshape is set to None just present a stem plot with the integrated intensities values
-        if lineshape is None:
-            ax.stem(bands.keys(), bands.values(), linefmt=color, basefmt="None", markerfmt="None", label=label)
-            ax.set_xlim((fmin, fmax))
-
-            if logscale is False:
-                ax.set_ylim(bottom=0)
-        
-        # If the user requested a lineshape compute the spectrum by summing the contribution of each band
-        # Compute each contribution by vectorizing over the frequency range. Each contribution is expressed
-        # as the product of a normalized lineshape function by the integrated intensity of the band.
-        elif lineshape in ["lorentzian", "gaussian"]:
-            
-            frequencies = np.arange(fmin, fmax, resolution)
-            total_intensity = np.zeros_like(frequencies)
-            
-            # Compute each band contribution to the total intensity
-            for f0, intensity in bands.items():
-
-                if lineshape == "lorentzian":
-                    total_intensity += intensity*normalized_lorentzian(frequencies, f0, FWHM)
-
-                elif lineshape == "gaussian":
-                    total_intensity += intensity*normalized_gaussian(frequencies, f0, FWHM)
-
-            # Plot the obtained intensity values
-            ax.plot(frequencies, total_intensity, color=color, linewidth=1.5, label=label)
-            ax.set_xlim((fmin, fmax))
-
-            if show_bars:
-                ax2 = ax.twinx()
-                ax2.stem(bands.keys(), bands.values(), linefmt=color, basefmt="None", markerfmt="None")
-                ax2.tick_params(axis="y", labelsize=16)
-                ax2.set_ylabel(r"Integrated Intensity [$km/mol$]", fontsize=20)
-        
-        else:
-            raise TypeError(f"`{lineshape}` lineshape option is invalid.")
-        
-        ax.tick_params(axis="x", labelsize=16)
-        ax.tick_params(axis="y", labelsize=16)
-        ax.set_xlabel(r"Wavenumber [$cm^{-1}$]", fontsize=20)
-        ax.set_ylabel(r"Intensity [$km/mol$]", fontsize=20)
-        
-        ax.grid(which="major", color="#DDDDDD")
-        ax.grid(which="minor", color="#EEEEEE")
-
+        # If the axes have been generated complete by showing the plot or/and saving it
         if axes is None:
             
             plt.tight_layout()
@@ -389,12 +349,6 @@ class VibrationalData:
             else:
                 bands[frequency] += activity
 
-        # Set the limit values of the spectrum to be plotted
-        if range is None:
-            fmin, fmax = min(bands.keys())-padding, max(bands.keys())+padding
-        else:
-            fmin, fmax = min(range), max(range)
-
         # Check if the user provided an `ax` argument, if not create one.
         if axes is None:
             fig, ax = plt.subplots(figsize=figsize)
@@ -402,6 +356,99 @@ class VibrationalData:
             ax = axes
             fig = ax.figure
 
+        # Add spectrum plot to the obtained axes
+        self.__add_spectrum(
+            ax,
+            bands,
+            r"Activity [$\mathrm{\AA^4/amu}$]",
+            r"Raman intensity [a.u.]",
+            lineshape=lineshape,
+            FWHM=FWHM,
+            range=range,
+            resolution=resolution,
+            padding=padding,
+            show_bars=show_bars,
+            logscale=logscale,
+            color=color,
+            label=label,
+        )
+
+        # If the axes have been generated complete by showing the plot or/and saving it
+        if axes is None:
+            
+            plt.tight_layout()
+
+            if export_path is not None:
+                plt.savefig(export_path, dpi=export_dpi)
+
+            if show:
+                plt.show()
+
+
+    def __add_spectrum(
+            self,
+            ax: plt.Axes,
+            bands: Dict[float, float],
+            stem_title: str,
+            lineshape_title: str,
+            lineshape: Optional[str] = None,
+            FWHM: float = 25.,
+            range: Optional[Tuple[float, float]] = None,
+            resolution: float = 0.025,
+            padding: float = 200.,
+            show_bars: bool = False,
+            logscale: bool = False,
+            color: str = "#154C79",
+            label: Optional[str] = None,
+        ) -> None:
+        """
+        Common utility function to plot infrared and raman spectra.
+
+        Arguments
+        ---------
+        ax: Optional[matplotlib.pyplot.Axes]
+            The `matplotlib.pyplot.Axes` object to which the plot should be added.
+        bands: Dict[float, float]
+            The dictionary containing the band frequencies as keys and their intensity as values.
+        stem_title: str
+            The title to be used on the 'y' axis while using a stem plot.
+        lineshape_title: str
+            The title to be used on the 'y' axis when applying a normalized lineshape broadening.
+        lineshape: Optional[str]
+            The type of broadening to be used in rendering the spectrum. The available lineshapes are `lorentzian` and
+            `gaussian`. If set to `None` only vertical bars will be used to represent the spectrum.
+        FWHM: float
+            The full width at half maximum in cm^-1 of the broadening lineshapes (default: 25).
+        range: Optional[Tuple[float, float]]
+            The interval of wavenumbers that define the reagion of the spectrum to plot. If set to `None` (default) will
+            use the padding option to compute the spectrum range.
+        resolution: float
+            The distance (in cm^-1) between subsequent points in the spectrum plot. (default: 0.025)
+        padding: float
+            The padding to be used in plotting the spectrum. If set to 0, will plot the spectrum between the highest and
+            lowest wavenumbers associated to the IR-active transitions (default: 200).
+        show_bars: bool
+            If set to True will show the intensity bars even if the lineshape parameters is set.
+        logscale: bool
+            If set to True will use a logaritmic scale to represent the intensities (default: False). The option is mainly
+            useful when plotting the spectrum without broadening.
+        color: str
+            The string encoding the color of the line.       
+        label: Optional[str] = None
+            The name to be given to the plotted spectrum in the legend.
+        
+        Raises
+        ------
+        TypeError
+            Exception raised when an invalid lineshape is given as the broadening argument.
+        """
+        # Set the limit values of the spectrum to be plotted
+        if range is None:
+            fmin, fmax = min(bands.keys())-padding, max(bands.keys())+padding
+        else:
+            fmin, fmax = min(range), max(range)
+
+        # Set logscale if requred by the user
         if logscale:
             ax.set_yscale("log")
 
@@ -411,11 +458,12 @@ class VibrationalData:
         # If the lineshape is set to None just present a stem plot with the activity values
         if lineshape is None:
             ax.stem(bands.keys(), bands.values(), linefmt=color, basefmt="None", markerfmt="None", label=label)
+            ax.set_ylabel(stem_title, fontsize=20)
             ax.set_xlim((fmin, fmax))
 
             if logscale is False:
                 ax.set_ylim(bottom=0)
-        
+            
         # If the user requested a lineshape compute the spectrum by summing the contribution of each band
         # Compute each contribution by vectorizing over the frequency range. Each contribution is expressed
         # as the product of a normalized lineshape function by the activity of the band.
@@ -434,29 +482,22 @@ class VibrationalData:
             
             # Plot the obtained activity values
             ax.plot(frequencies, total_intensity, color=color, linewidth=1.5, label=label)
+            ax.set_ylabel(lineshape_title, fontsize=20)
+            ax.set_xlim((fmin, fmax))
 
             if show_bars:
-                ax.stem(bands.keys(), bands.values(), linefmt=color, basefmt="None", markerfmt="None")
+                ax2 = ax.twinx()
+                ax2.stem(bands.keys(), bands.values(), linefmt=color, basefmt="None", markerfmt="None")
+                ax2.tick_params(axis="y", labelsize=16)
+                ax2.set_ylabel(stem_title, fontsize=20)
         
         else:
             raise TypeError(f"`{lineshape}` lineshape option is invalid.")
-        
+
         ax.tick_params(axis="x", labelsize=16)
         ax.tick_params(axis="y", labelsize=16)
-        ax.set_xlabel(r"Wavenumber [$cm^{-1}$]", fontsize=20)
-        ax.set_ylabel(r"Activity", fontsize=20)
-        
+        ax.set_xlabel(r"Wavenumber [$cm^{-1}$]", fontsize=20)        
         ax.grid(which="major", color="#DDDDDD")
         ax.grid(which="minor", color="#EEEEEE")
-
-        if axes is None:
-            
-            plt.tight_layout()
-
-            if export_path is not None:
-                plt.savefig(export_path, dpi=export_dpi)
-
-            if show:
-                plt.show()
 
     
