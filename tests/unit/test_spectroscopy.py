@@ -1,14 +1,49 @@
 import pytest
+import numpy as np
 
 from os import remove
 from os.path import dirname, abspath, isfile
 
+from scipy.integrate import quad
+
 from spycci.systems import System
-from spycci.core.spectroscopy import VibrationalData
+from spycci.core.spectroscopy import VibrationalData, normalized_gaussian, normalized_lorentzian
 
 
 # Get the path of the tests directory
 TEST_DIR = dirname(abspath(__file__))
+
+
+def test_normalized_gaussian():
+
+    try:
+        integral, error = quad(
+            normalized_gaussian,
+            -np.inf,
+            np.inf,
+            args=(1, 1),
+        )
+
+    except:
+        assert False, "Unexpected exception raised during integration."
+
+    assert np.isclose(integral, 1.0, atol=1e-10)
+
+
+def test_normalized_lorentzian():
+
+    try:
+        integral, error = quad(
+            normalized_lorentzian,
+            -np.inf,
+            np.inf,
+            args=(1, 1),
+        )
+
+    except:
+        assert False, "Unexpected exception raised during integration."
+
+    assert np.isclose(integral, 1.0, atol=1e-10)
 
 
 def test_VibrationalData___init__():
