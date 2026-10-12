@@ -470,7 +470,7 @@ class VibrationalData:
         elif lineshape in ["lorentzian", "gaussian"]:
             
             frequencies = np.arange(fmin, fmax, resolution)
-            total_intensity = np.zeros_like(frequencies)
+            total_intensity = np.zeros_like(frequencies, dtype=float)
 
             for f0, intensity in bands.items():
                 
