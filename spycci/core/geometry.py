@@ -17,7 +17,7 @@ from rdkit.Chem.rdForceFieldHelpers import (
 )
 
 from spycci.constants import atoms_dict, atomic_masses, h, c, amu_to_kg
-from spycci.core.math import distance, angle, dihedral
+from spycci.core.math import distance_3d, angle_3d, dihedral_3d
 
 if TYPE_CHECKING:
     from spycci.systems import System
@@ -708,7 +708,7 @@ class MolecularGeometry:
         """
         self.__check_indices(i, j)
         p1, p2 = self.coordinates[i], self.coordinates[j]
-        return distance(p1, p2)
+        return distance_3d(p1, p2)
     
     def angle(self, i: int, j: int, k: int) -> float:
         """
@@ -733,7 +733,7 @@ class MolecularGeometry:
         self.__check_indices(*indices)
         
         p1, p2, p3 = [self.coordinates[idx] for idx in indices]
-        return angle(p1, p2, p3)
+        return angle_3d(p1, p2, p3)
     
     def dihedral(self, i: int, j: int, k: int, l: int) -> float:
         """
@@ -760,7 +760,7 @@ class MolecularGeometry:
         self.__check_indices(*indices)
         
         p1, p2, p3, p4 = [self.coordinates[idx] for idx in indices]
-        return dihedral(p1, p2, p3, p4)
+        return dihedral_3d(p1, p2, p3, p4)
 
     def buried_volume_fraction(
         self,
