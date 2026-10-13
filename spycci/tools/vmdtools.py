@@ -787,6 +787,7 @@ def animate_normal_mode(
     remove_tdir: bool = True,
     suppress_output: bool = False,
     auto_correct_zoom: bool = True,
+    zoom_multiplier: float = 1.,
 ) -> None:
     """
     Animate the normal mode of vibration of a molecular system. The function automatically
@@ -817,6 +818,8 @@ def animate_normal_mode(
     auto_correct_zoom: bool
         If set to `True` (default), will try to automatically adjust the renderer zoom to minimize VMD auto-scale
         effect between frames of the same normal mode using the dimension of the box containing the molecule.
+    zoom_multiplier: float
+        When using the automatic zoom correction option, sets a user defined zoom adjustment to all the frames.
     """
     # Check if the given system is of type `System`
     if isinstance(system, System) is False:
@@ -876,7 +879,7 @@ def animate_normal_mode(
         
         # Compute the scale factor using the scale 1.0 for the biggest box
         max_size = max(sizes)
-        scales = [s / max_size for s in sizes]        
+        scales = [zoom_multiplier*s / max_size for s in sizes]        
 
     # Call the animation tool
     animate(

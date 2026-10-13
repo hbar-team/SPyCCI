@@ -91,7 +91,7 @@ class VibrationalData:
                     intensity = ir_int
                     break
             
-            intensity = "" if intensity is None else f"{intensity:.2f}  "              
+            intensity = "" if intensity is None else f"{intensity:.2f}  "
             
             info += f" {i:<6}{frequency:>11.2f}{intensity:>11}\n"
 
