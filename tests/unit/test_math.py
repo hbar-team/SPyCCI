@@ -3,7 +3,7 @@ import numpy as np
 
 from numpy.testing import assert_almost_equal, assert_array_almost_equal
 
-from spycci.core.math import unit_vector, distance_3d, angle_3d, dihedral_3d
+from spycci.core.math import unit_vector, validate_3d_input, distance_3d, angle_3d, dihedral_3d
 
 
 def test_unit_vector():
@@ -17,6 +17,46 @@ def test_unit_vector():
     # Test that normalizing a zero vector raises an exception
     with pytest.raises(ValueError):
         unit_vector(np.array([0.0, 0.0, 0.0]))
+
+
+def test_validate_3d_input_decorator():
+
+    @validate_3d_input
+    def dummy(x: np.ndarray, y: float = 1):
+        if type(x) != np.ndarray:
+            raise RuntimeError("Decorator conversion to np.ndarray failed")
+        return y*x
+
+    try:
+        v = dummy([0, 1, 2])
+        assert_almost_equal(v, [0., 1., 2.], decimal=12)
+
+        v = dummy([0, 1, 2], 2.)
+        assert_almost_equal(v, [0., 2., 4.], decimal=12)
+
+        v = dummy(y=2., x=[0, 1, 2])
+        assert_almost_equal(v, [0., 2., 4.], decimal=12)
+
+    except Exception as e:
+        assert False, f"Exception raised by decorator function: {e}"
+
+    try:
+        v = dummy([0, 1, 2, 3])
+
+    except:
+        pass
+
+    else:
+        assert False, "An exception was not raised when (4,) shape was provided"
+
+    try:
+        v = dummy([0, 1])
+
+    except:
+        pass
+
+    else:
+        assert False, "An exception was not raised when (2,) shape was provided"
 
 
 def test_distance():
