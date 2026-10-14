@@ -1,0 +1,10 @@
+numpy==2.2.6
+pandas==3.0.0
+sh==2.2.2
+rdkit==2026.3.6
+morfeus-ml==0.7.2
+matplotlib==3.10.3
+packaging==23.1
+imageio==2.37.0
+pytest==8.4.2
+pytest-cov==6.2.1
