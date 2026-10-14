@@ -22,7 +22,7 @@ def test_MolecularGeometry___init__():
 # Test the MolecularGeometry class from_xyz classmethod
 def test_MolecularGeometry_from_xyz():
     
-    xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
+    xyzfile = join(TEST_DIR, "utils/xyz_format_samples/with_comment.xyz")
 
     try:
         _ = MolecularGeometry.from_xyz(xyzfile)
@@ -93,7 +93,7 @@ def test_from_smiles_macrocycle_torsions_enabled():
 # Test the MolecularGeometry load_xyz method
 def test_MolecularGeometry_load_xyz():
 
-    folder = join(TEST_DIR, "utils/xyz_examples")
+    folder = join(TEST_DIR, "utils/xyz_format_samples")
     for xyzfile in listdir(folder):
         print(xyzfile)
 
@@ -138,7 +138,7 @@ def test_MolecularGeometry_write_via_set_atoms():
 # Test property setters
 def test_MolecularGeometry_write_via_set_coordinates():
 
-    xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
+    xyzfile = join(TEST_DIR, "utils/xyz_format_samples/with_comment.xyz")
     geom = MolecularGeometry.from_xyz(xyzfile)
 
     expected_coordinates = (
@@ -163,7 +163,7 @@ def test_MolecularGeometry_write_via_set_coordinates():
 # Test the append method
 def test_MolecularGeometry_append():
 
-    xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
+    xyzfile = join(TEST_DIR, "utils/xyz_format_samples/with_comment.xyz")
     mol = MolecularGeometry.from_xyz(xyzfile)
 
     mol.append("Am", [0., 1., 2.])
@@ -177,7 +177,7 @@ def test_MolecularGeometry_append():
 # Test the write_xyz method
 def test_MolecularGeometry_write_xyz(tmp_path_factory):
     
-    xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
+    xyzfile = join(TEST_DIR, "utils/xyz_format_samples/with_comment.xyz")
     mol = MolecularGeometry.from_xyz(xyzfile)
     mol.append("N", np.array([0, 0, 0]))
 
@@ -201,7 +201,7 @@ def test_MolecularGeometry_write_xyz(tmp_path_factory):
 # Test the remaining MolecularGeometry class general properties
 def test_MolecularGeometry_general_properties():
 
-    xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
+    xyzfile = join(TEST_DIR, "utils/xyz_format_samples/with_comment.xyz")
     mol = MolecularGeometry.from_xyz(xyzfile)
 
     assert_almost_equal(mol.mass, 18.01528, decimal=4)
@@ -210,7 +210,7 @@ def test_MolecularGeometry_general_properties():
 
 def test_MolecularGeometry_center_of_mass():
     
-    xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
+    xyzfile = join(TEST_DIR, "utils/xyz_format_samples/with_comment.xyz")
     mol = MolecularGeometry.from_xyz(xyzfile)
 
     expected = [-3.17179934199191, -0.62405335766083, 0.024132922929869]
@@ -336,7 +336,7 @@ def test_stored_properties_clearing_on_load_xyz():
     assert mol.rotor_type == "spherical top"
 
     # Change the coordinates through the `load_xyz`
-    xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
+    xyzfile = join(TEST_DIR, "utils/xyz_format_samples/with_comment.xyz")
     mol.load_xyz(xyzfile)
 
     # Check that the molecule has been loaded correctly
@@ -349,10 +349,55 @@ def test_stored_properties_clearing_on_load_xyz():
     assert mol.rotor_type == "asymmetric top"
 
 
+# Test the MolecularGeometry distance method
+def test_MolecularGeometry_distance():
+
+    path = join(TEST_DIR, "utils/xyz_examples/ethane.xyz")
+    
+    mol = MolecularGeometry.from_xyz(path)
+    
+    d = mol.distance(0, 1)
+    assert_almost_equal(d, 1.51206, decimal=5)
+
+    d = mol.distance(1, 5)
+    assert_almost_equal(d, 1.09409, decimal=5)
+
+
+# Test the MolecularGeometry angle method
+def test_MolecularGeometry_angle():
+
+    path = join(TEST_DIR, "utils/xyz_examples/ethane.xyz")
+    
+    mol = MolecularGeometry.from_xyz(path)
+    
+    a = mol.angle(2, 0, 3)
+    assert_almost_equal(a, 108.352*(np.pi/180.), decimal=5)
+
+    a = mol.angle(7, 1, 0)
+    assert_almost_equal(a, 110.568*(np.pi/180.), decimal=5)
+
+
+# Test the MolecularGeometry dihedral method
+def test_MolecularGeometry_dihedral():
+
+    path = join(TEST_DIR, "utils/xyz_examples/ethane.xyz")
+    
+    mol = MolecularGeometry.from_xyz(path)
+    
+    d = mol.dihedral(2, 0, 1, 5)
+    assert_almost_equal(d, 60.*(np.pi/180.), decimal=5)
+
+    d = mol.dihedral(2, 0, 1, 6)
+    assert_almost_equal(d, -60.*(np.pi/180.), decimal=5)
+
+    d = mol.dihedral(3, 0, 1, 5)
+    assert_almost_equal(d, -60.*(np.pi/180.), decimal=5)
+
+
 # Test the MolecularGeometry bureid_volume_fraction method
 def test_MolecularGeometry_buried_volume_fraction():
 
-    path = join(TEST_DIR, "utils/xyz_examples/without_comment.xyz")
+    path = join(TEST_DIR, "utils/xyz_format_samples/without_comment.xyz")
     
     mol = MolecularGeometry()
     mol.load_xyz(path)
@@ -377,7 +422,7 @@ def test_MolecularGeometry_buried_volume_fraction():
 # Test the MolecularGeometry bureid_volume_fraction method with invalid parameters
 def test_MolecularGeometry_buried_volume_fraction_fail():
 
-    path = join(TEST_DIR, "utils/xyz_examples/without_comment.xyz")
+    path = join(TEST_DIR, "utils/xyz_format_samples/without_comment.xyz")
     
     mol = MolecularGeometry()
     mol.load_xyz(path)

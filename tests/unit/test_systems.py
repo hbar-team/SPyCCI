@@ -48,7 +48,7 @@ def test_System_geometry___init__():
 # Test the System class constructor when loading data from an XYZ file
 def test_System_from_xyz():
 
-    xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
+    xyzfile = join(TEST_DIR, "utils/xyz_format_samples/with_comment.xyz")
 
     expected_coordinates = [
         [-3.21035, -0.58504, -0.01395],
@@ -142,7 +142,7 @@ def test_System_from_smiles():
 # Test the System class method to save all the system data to a JSON file
 def test_System_save_json(tmp_path_factory):
 
-    xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
+    xyzfile = join(TEST_DIR, "utils/xyz_format_samples/with_comment.xyz")
     folder = tmp_path_factory.mktemp("random_text_files")
     path = join(folder, "water.json")
 
@@ -197,7 +197,7 @@ def test_System_save_json(tmp_path_factory):
 # Test the geometry property getter and setter of the System class
 def test_System_geometry_property():
 
-    xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
+    xyzfile = join(TEST_DIR, "utils/xyz_format_samples/with_comment.xyz")
     mol = System.from_xyz(xyzfile)
 
     expected_coordinates = [
@@ -218,7 +218,7 @@ def test_System_geometry_property():
 
 def test_System_geometry_property_none_rejection():
 
-    xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
+    xyzfile = join(TEST_DIR, "utils/xyz_format_samples/with_comment.xyz")
     mol = System.from_xyz(xyzfile)
 
     try:
@@ -243,7 +243,7 @@ def test_System_geometry_property_none_rejection():
 # Test the charge property getter and setter of the System class
 def test_System_charge_property():
 
-    xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
+    xyzfile = join(TEST_DIR, "utils/xyz_format_samples/with_comment.xyz")
     mol = System.from_xyz(xyzfile)
 
     mol.properties.set_electronic_energy(1.5, Engine("Dummy"))
@@ -259,7 +259,7 @@ def test_System_charge_property():
 # Test the spin property getter and setter of the System class
 def test_System_spin_property():
 
-    xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
+    xyzfile = join(TEST_DIR, "utils/xyz_format_samples/with_comment.xyz")
     mol = System.from_xyz(xyzfile)
 
     mol.properties.set_electronic_energy(1.5, Engine("Dummy"))
@@ -275,7 +275,7 @@ def test_System_spin_property():
 # Test the box_side property getter and setter of the System class
 def test_System_box_side_property():
 
-    xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
+    xyzfile = join(TEST_DIR, "utils/xyz_format_samples/with_comment.xyz")
     mol = System.from_xyz(xyzfile)
 
     mol.properties.set_electronic_energy(1.5, Engine("Dummy"))
@@ -306,7 +306,7 @@ def test_MolecularGeometry_listener___init__():
 # Test assignment of the listener of the MolecularGeometry class on from_xyz
 def test_MolecularGeometry_listener_from_xyz():
 
-    xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
+    xyzfile = join(TEST_DIR, "utils/xyz_format_samples/with_comment.xyz")
     mol = System.from_xyz(xyzfile)
     assert mol.geometry._MolecularGeometry__system_reset == mol._System__on_geometry_change
 
@@ -394,7 +394,7 @@ def test_System_clearing_geometry_load_xyz():
     assert_almost_equal(mol.properties.electronic_energy, -1.25, decimal=6)
 
     # Change the geometry
-    xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
+    xyzfile = join(TEST_DIR, "utils/xyz_format_samples/with_comment.xyz")
     mol.geometry.load_xyz(xyzfile)
 
     # Check that the properties have been cleared
@@ -420,7 +420,7 @@ def test_System_clearing_geometry_set_atoms():
 # Test property setters
 def test_System_clearing_geometry_coordinates_setter():
 
-    xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
+    xyzfile = join(TEST_DIR, "utils/xyz_format_samples/with_comment.xyz")
     mol = System.from_xyz(xyzfile)
 
     # Set one of the properties of the `Property` class
@@ -458,7 +458,7 @@ def test_Properties_listener___init__():
 # Test assignment of the listener of the Properties class on from_xyz
 def test_Properties_listener_from_xyz():
 
-    xyzfile = join(TEST_DIR, "utils/xyz_examples/with_comment.xyz")
+    xyzfile = join(TEST_DIR, "utils/xyz_format_samples/with_comment.xyz")
     mol = System.from_xyz(xyzfile)
     assert mol.properties._Properties__check_geometry_level_of_theory == mol._System__check_geometry_level_of_theory
 
