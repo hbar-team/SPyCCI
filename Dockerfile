@@ -18,7 +18,8 @@ WORKDIR /workspace
 COPY ./spycci /workspace/spycci
 COPY ./tests /workspace/tests
 COPY ./pyproject.toml /workspace/
-RUN pip install --no-cache-dir -e .
+COPY ./requirements_ci.txt /workspace/requirements_ci.txt
+RUN pip install --no-cache-dir -e ".[testing]" -r requirements_ci.txt
 
 # --- DFTB+ parameters --------------------------------------------------------
 ENV DFTBPLUS_PARAM_DIR=/opt/dftbplus/slakos

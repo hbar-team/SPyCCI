@@ -17,6 +17,7 @@ dependencies = [
     "morfeus-ml>=0.7.2",
     "matplotlib>=3.10.3",
     "packaging>=23.1",
+    "imageio>=2.37.0"
 ]
 
 [project.optional-dependencies]

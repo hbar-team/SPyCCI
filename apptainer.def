@@ -10,6 +10,8 @@ From: condaforge/mambaforge:24.9.2-0
     spycci /workspace/spycci
     tests /workspace/tests
     pyproject.toml /workspace/pyproject.toml
+    README.md /workspace/README.md
+    requirements_ci.txt /workspace/requirements_ci.txt
     {{ ORCA_LOCAL_ARCHIVE }} /workspace/orca.tar.xz
 
 %post
@@ -20,16 +22,23 @@ From: condaforge/mambaforge:24.9.2-0
         apt-get install -y --no-install-recommends wget ca-certificates tar zip xz-utils curl jq && \
         rm -rf /var/lib/apt/lists/*
 
-    # Set up conda environment and install SPyCCI
+    # Set up the Conda environment
     mamba env create -f /workspace/environment.yml
     mamba clean -afy
-    conda run -n spycci python -m pip install --no-cache-dir -e /workspace
     rm /workspace/environment.yml
+
+    # Install SPyCCI, testing tools, and pinned CI dependencies
+    cd /workspace
+    conda run -n spycci python -m pip install \
+        --no-cache-dir \
+        -e ".[testing]" \
+        -r requirements_ci.txt
 
     # Install DFTB+ parameters
     DFTBPLUS_PARAM_DIR=/opt/dftbplus/slakos
     mkdir -p "${DFTBPLUS_PARAM_DIR}"
-    wget -q https://github.com/dftbparams/3ob/releases/download/v3.1.0/3ob-3-1.tar.xz -O /tmp/3ob.tar.xz
+    wget -q https://github.com/dftbparams/3ob/releases/download/v3.1.0/3ob-3-1.tar.xz 
+        -O /tmp/3ob.tar.xz
     tar -xf /tmp/3ob.tar.xz -C "${DFTBPLUS_PARAM_DIR}"
     rm /tmp/3ob.tar.xz
 
@@ -40,27 +49,29 @@ From: condaforge/mambaforge:24.9.2-0
         tar -xf "${ORCA_TMP}" -C /opt/orca
     rm "${ORCA_TMP}"
     chmod -R a+rx /opt/orca
-    find /opt/orca -maxdepth 2 -type f -name orca -perm -u+x -print -quit || { echo "ORCA binary not found in /opt/orca"; exit 1; }
+    find /opt/orca -maxdepth 2 -type f -name orca -perm -u+x -print -quit | \
+        grep -q . || { echo "ORCA binary not found in /opt/orca"; exit 1; }
 
     # Install XTB
     XTBHOME=/opt/xtb
-    wget -q https://github.com/grimme-lab/xtb/releases/download/v6.7.0/xtb-6.7.0-linux-x86_64.tar.xz
-    tar -xf xtb-6.7.0-linux-x86_64.tar.xz
-    mv xtb-dist "${XTBHOME}"
-    rm xtb-6.7.0-linux-x86_64.tar.xz
+    wget -q https://github.com/grimme-lab/xtb/releases/download/v6.7.0/xtb-6.7.0-linux-x86_64.tar.xz \
+        -O /tmp/xtb.tar.xz
+    tar -xf /tmp/xtb.tar.xz -C /tmp
+    mv /tmp/xtb-dist "${XTBHOME}"
+    rm /tmp/xtb.tar.xz
 
     # Install CREST
     CREST_BIN=/opt/crest
-    wget -q https://github.com/crest-lab/crest/releases/download/v3.0.2/crest-gnu-12-ubuntu-latest.tar.xz
-    tar -xf crest-gnu-12-ubuntu-latest.tar.xz
-    mv crest "${CREST_BIN}"
-    rm crest-gnu-12-ubuntu-latest.tar.xz
+    wget -q https://github.com/crest-lab/crest/releases/download/v3.0.2/crest-gnu-12-ubuntu-latest.tar.xz \
+        -O /tmp/crest.tar.xz
+    tar -xf /tmp/crest.tar.xz -C /tmp
+    mv /tmp/crest "${CREST_BIN}"
+    rm /tmp/crest.tar.xz
     chmod +x "${CREST_BIN}/crest"
 
-    # Create user and set permissions
+    # Create a dedicated test user and set permissions
     ORCA_ROOT=/opt/orca
-    useradd -m -s /bin/bash spyccitest || true
-    mkdir -p /workspace
+    useradd -m -s /bin/bash spyccitest
     chown -R spyccitest:spyccitest \
         /workspace \
         /opt/conda/envs/spycci \

@@ -1,14 +1,49 @@
 import pytest
+import numpy as np
 
 from os import remove
 from os.path import dirname, abspath, isfile
 
+from scipy.integrate import quad
+
 from spycci.systems import System
-from spycci.core.spectroscopy import VibrationalData
+from spycci.core.spectroscopy import VibrationalData, normalized_gaussian, normalized_lorentzian
 
 
 # Get the path of the tests directory
 TEST_DIR = dirname(abspath(__file__))
+
+
+def test_normalized_gaussian():
+
+    try:
+        integral, error = quad(
+            normalized_gaussian,
+            -np.inf,
+            np.inf,
+            args=(1, 1),
+        )
+
+    except:
+        assert False, "Unexpected exception raised during integration."
+
+    assert np.isclose(integral, 1.0, atol=1e-10)
+
+
+def test_normalized_lorentzian():
+
+    try:
+        integral, error = quad(
+            normalized_lorentzian,
+            -np.inf,
+            np.inf,
+            args=(1, 1),
+        )
+
+    except:
+        assert False, "Unexpected exception raised during integration."
+
+    assert np.isclose(integral, 1.0, atol=1e-10)
 
 
 def test_VibrationalData___init__():
@@ -29,21 +64,20 @@ def test_VibrationalData___str__():
 
     mol = System.from_json(f"{TEST_DIR}/utils/json_examples/CO2_ir_raman.json")
     obj = mol.properties.vibrational_data
-
     expected_string = """VIBRATIONAL FREQUENCIES
 ----------------------------------------------
  index  frequency  intensity 
          (cm^-1)   (km/mol)  
 ----------------------------------------------
- 0          0.00             
- 1          0.00             
- 2          0.00             
- 3          0.00             
- 4          0.00             
- 5        623.24      23.18  
- 6        626.59      21.94  
- 7       1339.10       0.00  
- 8       2421.89     489.86  
+ 0            0.00           
+ 1            0.00           
+ 2            0.00           
+ 3            0.00           
+ 4            0.00           
+ 5          623.24    23.18  
+ 6          626.59    21.94  
+ 7         1339.10     0.00  
+ 8         2421.89   489.86  
 
 """
     assert expected_string == str(obj)

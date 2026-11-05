@@ -1,5 +1,8 @@
-import sh, os, shutil
+import sh, os, shutil, logging
+import imageio.v2 as imageio
+import numpy as np
 
+from copy import deepcopy
 from tempfile import NamedTemporaryFile as tmp
 from tempfile import mkdtemp
 
@@ -8,8 +11,12 @@ from os.path import join, basename, isfile
 from typing import List, Optional, Union
 
 from spycci.core.dependency_finder import locate_vmd
+from spycci.core.spectroscopy import VibrationalData
 from spycci.tools.cubetools import Cube
-from spycci.systems import System
+from spycci.systems import System, ReactionPath
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 class VMDRenderer:
@@ -43,6 +50,8 @@ class VMDRenderer:
         If set to `True` will enable the vmd dof option. (default: True)
     show_axes: bool
         If set to `True` will show the axes representation in the render window. (default: False)
+    suppress_output: bool
+        If set to `True` will run the rendering without printing any message from `vmd`. (default: False)
     VMD_PATH: str
         The path to the vmd executable. Is set to `None` (default), will automatically search `vmd`
         in the system PATH.
@@ -67,6 +76,7 @@ class VMDRenderer:
         ambientocclusion: bool = True,
         dof: bool = True,
         show_axes: bool = False,
+        suppress_output: bool = False,
         VMD_PATH: Optional[str] = None,
     ) -> None:
         
@@ -75,6 +85,7 @@ class VMDRenderer:
         self.ambientocclusion: bool = ambientocclusion
         self.dof: bool = dof
         self.show_axes: bool = show_axes
+        self.suppress_output: bool = suppress_output
 
         # Define the attributes to be set using properties
         self.__scale: float = None
@@ -540,7 +551,11 @@ class VMDRenderer:
             vmd_script.write("exit\n")
 
             vmd_script.seek(0)
-            system(f"vmd -dispdev text -e {vmd_script.name}")
+
+            if self.suppress_output is True:
+                system(f"vmd -dispdev text -e {vmd_script.name}  > /dev/null 2>&1")
+            else:
+                system(f"vmd -dispdev text -e {vmd_script.name}")
 
     def _tcl_script_preamble(self) -> str:
         """
@@ -652,3 +667,228 @@ class VMDRenderer:
         script += "display cuemode Linear\n"
 
         return script
+
+
+
+####################################################################
+#               DEFINE VMD-BASED ANIMATION FUNCTIONS               #
+####################################################################
+
+def animate(
+        systems: Union[List[System], ReactionPath],
+        filename: str,
+        renderer: Optional[VMDRenderer] = None,
+        duration: float = 0.1,
+        loop: int = 0,
+        reversed: bool = False,
+        mirror: bool = False,
+        remove_tdir: bool = True,
+        suppress_output: bool = False,
+        frames_scale: Optional[list[float]] = None,
+) -> None:
+    """
+    Given a list of `System` objects generate a `.gif` animation by iteratively
+    calling `vmd` to render all the frames.
+
+    Arguments
+    ---------
+    systems: Union[List[System], ReactionPath],
+        The ordered list of systems to be rendered in the animation either as a regular
+        list object or as a ReactionPath object.
+    filename: str
+        The name or the path of the output animation `.gif` file.
+    renderer: Optional[VMDRenderer]
+        The rendered used to generate the animation frames. (default: `VMDRenderer()`)
+    duration: float
+        The duration in seconds of each frame in the animation. (default: 0.1s)
+    loop: int
+        The number of time the `.gif` repetes itself. (default: 0 -> Infinite loop)
+    reversed: bool
+        If set to `True` will reverse the order in which the frames are ordered. The animation will
+        start from the last system in the list and progress toward the first. (default: False)
+    mirror: bool
+        If set to `True`, a reversed copy of the list is appended, with the first and last frames
+        removed to avoid duplication at the turning points. The resulting animation is cyclical: it
+        progresses from the first frame to the last one, then reverses direction and continues back 
+        toward the second frame. (default: False)
+    remove_tdir: bool
+        If set to `False` will keep the temporary folder containing the render of
+        each frame. (default: True)
+    suppress_output: bool
+        If set to `True` will run the rendering without printing any message from `vmd`. (default: False)
+    frames_scale: Optional[list[float]]
+        If not `None` (default), will indipendently set the scale (zoom level) of each frame.
+    """
+    vmd = renderer if renderer else VMDRenderer()
+
+    if type(vmd) != VMDRenderer:
+        raise ValueError(f"The renderer engine must be of type `VMDRenderer`, {type(vmd)} is not a valid renderer")
+    
+    if frames_scale and len(frames_scale) != len(systems):
+        raise ValueError("The length of the `frames_scale` argument must match that of the input systems list.")
+        
+    logging.getLogger("PIL").setLevel(logging.INFO)
+    logging.getLogger("PIL").propagate = False
+
+    # Create a temporary directory where the frames will be stored
+    tdir = mkdtemp(prefix = "vmd_animation_", dir=os.getcwd())
+    
+    # Extract the list of system to be used in each step of the aminmation
+    steps = systems.systems if isinstance(systems, ReactionPath) else systems
+
+    if reversed is True:
+        steps = steps[::-1]
+        if frames_scale:
+             frames_scale = frames_scale[::-1]
+
+    # Set the output state of the renderer according to user settings
+    vmd.suppress_output = suppress_output
+    
+    # Compute the number of frames per seconds (`fps`) from the user set frame duration
+    # Note: This is a workaround since the `duration` keyword is often ignored by `mimsave`
+    fps = int(1./duration)
+
+    with sh.pushd(tdir):
+
+        # Render each frame individually using the provided VMD renderer
+        frames = []
+        for i, system in enumerate(steps):
+
+            # If scale factors are provided, apply them to the renderer
+            if frames_scale:
+                vmd.scale = frames_scale[i]
+
+            vmd.render_system(system, f"frame_{i}.bmp")
+            frames.append(imageio.imread(f"frame_{i}.bmp"))
+        
+        if mirror is True:
+            back = deepcopy(frames[::-1])[1:-1]
+            frames.extend(back)
+
+        # Join each frame in a single .gif object using the imageio package
+        imageio.mimsave("animation.gif", frames, fps=fps, loop=loop)
+
+    # Copy the generated animation to the user-specified location
+    shutil.copy(f"{tdir}/animation.gif", filename)
+
+    # If required by the user remove the temporary directory
+    if remove_tdir:
+        shutil.rmtree(tdir)
+
+        
+def animate_normal_mode(
+    system: System,
+    mode: int,
+    filename: str,
+    displacement: float = 0.5,
+    steps: int = 15,
+    renderer: Optional[VMDRenderer] = None,
+    duration: float = 0.05,
+    remove_tdir: bool = True,
+    suppress_output: bool = False,
+    auto_correct_zoom: bool = True,
+    zoom_multiplier: float = 1.,
+) -> None:
+    """
+    Animate the normal mode of vibration of a molecular system. The function automatically
+    generates a series of `System` objects corresponding to the molecular geometries displaced
+    along a chosen normal mode and produces a `.gif` animation of the motion.
+
+    Parameters
+    ----------
+    system : System
+        The molecular system whose normal mode is to be animated. (Must contain vibrational data.)
+    mode : int
+        Index of the normal mode to animate.
+    filename : str
+        The output filename, including path, for the generated `.gif` animation.
+    displacement : float, optional
+        Maximum amplitude of displacement along the normal mode (default: 0.5 Å).
+    steps : int, optional
+        Number of intermediate frames to generate along the displacement path (default: 15).
+    renderer: Optional[VMDRenderer]
+        The rendered used to generate the animation frames. (default: `VMDRenderer()`)
+    duration: float
+        The duration in seconds of each frame in the animation. (default: 0.05s)
+    remove_tdir: bool
+        If set to `False` will keep the temporary folder containing the render of
+        each frame. (default: True)
+    suppress_output : bool, optional
+        If `True`, suppress messages from the VMD renderer during frame generation (default: False).
+    auto_correct_zoom: bool
+        If set to `True` (default), will try to automatically adjust the renderer zoom to minimize VMD auto-scale
+        effect between frames of the same normal mode using the dimension of the box containing the molecule.
+    zoom_multiplier: float
+        When using the automatic zoom correction option, sets a user defined zoom adjustment to all the frames.
+    """
+    # Check if the given system is of type `System`
+    if isinstance(system, System) is False:
+        raise TypeError(f"The system argument must be of type `System`, type `{type(system)}` given instead.")
+
+    # Check if vibrational data are available
+    data: VibrationalData = system.properties.vibrational_data
+    if data is None:
+        raise RuntimeError(f"Vibrational data not found for the `{system.name}` system.")
+
+    # Check if the provided mode index is valid and extract the corresponding normal mode
+    nmodes = len(data.frequencies)
+    if mode < 0 or mode >= nmodes:
+        raise IndexError(f"Normal mode {mode} index out of bounds [0, {nmodes-1}].")
+
+    normal_mode: np.ndarray = data.normal_modes[mode]
+
+    # Check if the mode corresponds to zero frequency, if yes warn the user
+    if np.isclose(data.frequencies[mode], 0.0, atol=1e-12):
+        logger.warning(f"The selected mode {mode} is associated with a zero frequency.")
+
+    scales = None
+    syslist: List[System] = []
+    for l in np.linspace(-displacement, displacement, steps):
+
+        # Copy the molecular geometry data
+        geom = deepcopy(system.geometry)
+
+        # Displace the system geometry along the selected normal mode
+        coords: np.ndarray = np.array(geom.coordinates)
+        coords += l * normal_mode.reshape(geom.atomcount, 3)
+        geom.set_coordinates(coords)
+
+        # Create a new system object and append it to the systems list
+        frame = System(f"d={l:.2f}", geom, charge=system.charge, spin=system.spin)
+        syslist.append(frame)
+
+    # If automaitc zoom correction compute a scale factor for each frame to compensate the automatic
+    # zoom applied by VMD at startup
+    if auto_correct_zoom:
+
+        # Create a list of the size (diagonal) of a bounding box containing the molecule
+        sizes = []
+        for system in syslist:
+
+            # Extract all the coordinates of the system atoms and convert them to a 2D numpy array
+            coords = np.array(system.geometry.coordinates)
+            
+            # Find for each dimension (x, y, z) the minimum and maximum values that define opposite extremities
+            # of the bounding box
+            min_coords = coords.min(axis=0)
+            max_coords = coords.max(axis=0)
+            
+            # Compute the diagonal of the bounding box and append it to the sizes list
+            size = np.linalg.norm(max_coords - min_coords)
+            sizes.append(size)
+        
+        # Compute the scale factor using the scale 1.0 for the biggest box
+        max_size = max(sizes)
+        scales = [zoom_multiplier*s / max_size for s in sizes]        
+
+    # Call the animation tool
+    animate(
+        syslist,
+        filename,
+        renderer=renderer,
+        duration=duration,
+        mirror=True,
+        remove_tdir=remove_tdir,
+        suppress_output=suppress_output,
+        frames_scale=scales,
+    )

@@ -14,7 +14,7 @@ kernelspec:
 # Molecular visualization using VMD
 Beyond allowing the user to run computational chemistry calculations, the SPyCCI package also provides a simple interface to the [Visual Molecular Dynamics (VMD) software](https://www.ks.uiuc.edu/Research/vmd/) enabling the user to render molecular structures and cube files directly from a python script. The interface is constantly updated with new features and, at the moment, supports the rendering of both molecular structures, provided either in the form of `System` objects, `.xyz` or `pdb` files, and volumetric data in the form of `.cube` files or `Cube` objects.
 
-The core of the interface is represented by the `VMDRenderer` class. The class represents a generic rendering tool that can be created setting a resolution value, system position, orientation and zoom, graphical effects such as shadows, ambientocclusion and depth of field (DoF). Once created the class provides specific methods capable of generating the required renders.
+The core of the interface is represented by the `VMDRenderer` class of the `spycci.tools.vmdtool` module. The class represents a generic rendering tool that can be created setting a resolution value, system position, orientation and zoom, graphical effects such as shadows, ambientocclusion and depth of field (DoF). Once created the class provides specific methods capable of generating the required renders.
 
 :::{admonition} Notes about cube files
 :class: info
@@ -226,3 +226,88 @@ that outputs the following `condensed_fukui_plus.bmp` image file:
 :width: 450px
 :align: center
 ```
+
+## Generating animations using VMD
+
+Besides allowing the generation of simple static images, the `spycci.tools.vmdtool` module also provides an `animate` function capable of generating simple `.gif` animations from a list of `System` objects. The function simply runs a series of rendering operations generating all the animation frames; these are then joined together in a single `.gif` file by the `imageio` python library.
+
+The function can take as argument a list of `System` objects or directly a `ReactionPath` object. Duration and number of animation loops can be set by the user that can also provide a custom insance of the `VMDRenderer` onject to be used during the rendering operation.
+
+The following example shows how the `animate` function can be used to export an animation of a `ReactionPath` object:
+
+```python
+from spycci.systems import System, ReactionPath
+from spycci.tools.vmdtools import animate
+from spycci.engines.orca import OrcaInput
+
+engine = OrcaInput(method="XTB", basis_set=None, aux_basis=None, solvent=None)
+reactant = System.from_xyz("reactant.xyz", charge=0, spin=1)
+product = System.from_xyz("product.xyz", charge=0, spin=1)
+
+path : ReactionPath = engine.neb('', reactant, product, nimages=10, ncores=4)
+
+animate(path, "NEB.gif", duration=0.2)
+```
+
+the following `NEB.gif` animation is generated and all the temporary file automatically cleared.
+
+```{image} ./images/NEB.gif
+:alt: NEB.gif
+:width: 450px
+:align: center
+```
+
+### Visualizing normal modes of vibration using VMD
+
+Building upon the previously discussed VMD-based animation functionality, the `spycci.tools.vmdtools` module also provides a convenient `animate_normal_mode` function to visualize normal modes of vibration obtained from vibrational calculations.
+
+This function takes a `System` object as input, provided that its `vibrational_data` attribute has been populated (e.g., via a frequency calculation). The user can specify which normal mode to animate and save the resulting animation as a `.gif` file.
+
+The following example demonstrates how to use `animate_normal_mode` to generate an animation of the antisymmetric stretching mode of a water molecule:
+
+```python
+from spycci.systems import System
+from spycci.engines.orca import OrcaInput
+from spycci.tools.vmdtools import animate_normal_mode
+
+system = System.from_smiles("water", "O")
+orca = OrcaInput(method="BP86", basis_set="def2-TZVP")
+orca.opt(system, optimization_level="TightOpt", frequency_analysis=True, inplace=True)
+
+animate_normal_mode(system, 8, "water_mode_8.gif")
+```
+
+The command above generates the following `water_mode_8.gif` animation file and automatically removes any temporary files created during the process.
+
+```{image} ./images/water_mode_8.gif
+:alt: NEB.gif
+:width: 450px
+:align: center
+```
+
+:::{admonition} Note on frame scaling
+:class: info
+As explained above, animations generated with the `VMDRenderer` class are created by rendering each frame individually and then stitching the resulting images into a `.gif` file. This approach involves multiple calls to the `vmd` software, each time passing the coordinates of the system for a given frame. By default, `vmd` automatically adjusts the view (i.e., zoom level) to best fit the molecule within the window. This behavior is ideal for visualizing reaction paths, as it ensures a consistent and comprehensive view of the system throughout the transformation. 
+
+However, it can introduce visual artifacts when animating normal modes of vibration, especially for small molecules.During vibrational motion, the apparent size of the molecule may change (e.g., bond stretching or compression). As a result, `vmd` dynamically rescales the view for each frame, leading to inconsistent zoom levels across the animation (see example below).
+
+To mitigate this effect, the `animate_normal_mode` function applies an automatic frame scaling correction. Specifically, each frame is rescaled based on the diagonal length of the bounding box enclosing the molecule, ensuring a more uniform apparent size throughout the animation. If this behavior is not desired, it can be disabled by setting `auto_correct_zoom=False`. Note, however, that this may lead to visually misleading animations.
+
+For example, animating the 7th vibrational mode of a water molecule with automatic scaling correction enabled produces:
+
+```{image} ./images/water_mode_7.gif
+:alt: water_mode_7.gif
+:width: 200px
+:align: center
+```
+
+Disabling the automatic correction results in:
+
+```{image} ./images/water_mode_7_no_zoom_corr.gif
+:alt: water_mode_7_no_zoom_corr.gif
+:width: 200px
+:align: center
+```
+
+In the latter case, the atoms appear to change size due to the varying zoom level applied to compensate for bond length variations.
+:::
