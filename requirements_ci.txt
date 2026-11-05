@@ -1,5 +1,5 @@
 numpy==2.2.6
-pandas==3.0.0
+pandas==2.3.3
 sh==2.2.2
 rdkit==2026.3.6
 morfeus-ml==0.7.2
