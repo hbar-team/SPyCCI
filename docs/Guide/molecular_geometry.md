@@ -162,7 +162,7 @@ we can see how the atom list is unchanged. This because the `atoms` property get
 
 This behavior is expected for all mutable properties of the `MolecularGeometry` and ensures that data cannot be altered without the imput triggering proper validation methods ensuring data validity and consistency; i.e If the `MolecularGeometry` object is part of a `System` object, a call to `set_atoms()` will change the system definition an, as such, clear the system properties.
 
-## Structural properties
+## Structural properties and descriptor functions
 
 The `MolecularGeometry` class also implements some internal properties directly computed from its definition:
 
@@ -181,3 +181,14 @@ The `MolecularGeometry` class also implements some internal properties directly 
 | `rotor_type` | Type of rigid rotor. | `str` | ❌ (Computed) |
 | `rotational_constants` | Rotational constants in cm⁻¹ and MHz. | `tuple[np.ndarray, np.ndarray]` | ❌ (Computed) |
 
+Furthermore, the `MolecularGeometry` class also implements simple functions intended to compute structural properties and descriptors. These can be purely geometrical such as the `distance` between two atoms, the `angle` between triplets of atoms and the `dihedral` angle formed by the plane defined by four atoms. As an example the following example can be used to examine the structure of the water molecule:
+
+```{code-cell} python
+from spycci.core.geometry import MolecularGeometry
+
+geom = MolecularGeometry.from_xyz("../example_files/water.xyz")
+
+print(f"Water atoms list: {geom.atoms}")
+print(f"O-H bond length:  {geom.distance(0, 1):.3f} Å")
+print(f"H-O-H bond angle: {geom.angle(1, 0, 2):.3f} rad")
+```
